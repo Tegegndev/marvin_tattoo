@@ -1,0 +1,385 @@
+import React, { useState } from 'react';
+import { CartItem } from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+interface ShopModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cart: CartItem[];
+  onUpdateQuantity: (productId: string, delta: number) => void;
+  onRemoveItem: (productId: string) => void;
+  onClearCart: () => void;
+}
+
+export const ShopModal: React.FC<ShopModalProps> = ({
+  isOpen,
+  onClose,
+  cart,
+  onUpdateQuantity,
+  onRemoveItem,
+  onClearCart
+}) => {
+  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'confirmed'>('cart');
+  const [shippingData, setShippingData] = useState({
+    fullName: '',
+    email: '',
+    address: '',
+    city: '',
+    country: 'United States'
+  });
+
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
+  const shipping = subtotal > 150 || subtotal === 0 ? 0 : 15;
+  const total = subtotal + shipping;
+
+  const handleCheckoutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCheckoutStep('confirmed');
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#8a0b14', '#d4af37', '#e5e2e1']
+    });
+  };
+
+  const handleResetAndClose = () => {
+    onClearCart();
+    setCheckoutStep('cart');
+    onClose();
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+          />
+
+          {/* Sliding Panel */}
+          <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="w-screen max-w-md bg-surface-container-low border-l border-surface-container-highest shadow-2xl flex flex-col justify-between"
+            >
+              {/* Header */}
+              <div className="p-6 border-b border-surface-container-highest flex items-center justify-between bg-surface-container">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary-container/30 text-primary border border-primary/30">
+                    <ShoppingBag className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-title-editorial text-title-editorial uppercase text-on-surface">
+                      Atelier Equipment Bag
+                    </h3>
+                    <span className="font-label-data text-xs text-outline">
+                      {cart.length} distinct item{cart.length === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 text-outline hover:text-on-surface transition-colors"
+                  aria-label="Close cart"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Body Content */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {checkoutStep === 'cart' && (
+                  <>
+                    {cart.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-center py-16 space-y-4">
+                        <ShoppingBag className="w-16 h-16 text-outline-variant stroke-1" />
+                        <div className="space-y-1">
+                          <p className="font-title-editorial text-lg text-on-surface">
+                            Your Bag is Empty
+                          </p>
+                          <p className="font-body-sm text-sm text-outline max-w-xs">
+                            Explore our clinical rotary pens, autoclave supplies, and organic aftercare salves.
+                          </p>
+                        </div>
+                        <button
+                          onClick={onClose}
+                          className="px-6 py-2.5 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors border border-surface-container-highest"
+                        >
+                          Browse Apothecary
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {cart.map((item) => (
+                          <div
+                            key={item.product.id}
+                            className="p-4 bg-surface-container border border-surface-container-highest flex gap-4 items-center"
+                          >
+                            <img
+                              src={item.product.image}
+                              alt={item.product.name}
+                              className="w-16 h-16 object-cover bg-surface-container-lowest shrink-0 border border-surface-container-highest"
+                            />
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <span className="font-label-caps text-[9px] text-primary uppercase block">
+                                {item.product.category}
+                              </span>
+                              <h4 className="font-title-editorial text-sm text-on-surface uppercase truncate">
+                                {item.product.name}
+                              </h4>
+                              <div className="font-label-data text-xs text-secondary font-bold">
+                                ${(item.product.price * item.quantity).toFixed(2)}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-2">
+                              <button
+                                onClick={() => onRemoveItem(item.product.id)}
+                                className="text-outline hover:text-error transition-colors p-1"
+                                title="Remove item"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                              <div className="flex items-center border border-surface-container-highest bg-surface-container-lowest">
+                                <button
+                                  onClick={() => onUpdateQuantity(item.product.id, -1)}
+                                  className="p-1 hover:bg-surface-container text-outline hover:text-on-surface"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="px-2 font-label-data text-xs text-on-surface">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => onUpdateQuantity(item.product.id, 1)}
+                                  className="p-1 hover:bg-surface-container text-outline hover:text-on-surface"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Order Subtotal Breakdown */}
+                        <div className="p-4 bg-surface-container-lowest border border-surface-container-highest space-y-2 font-label-data text-xs">
+                          <div className="flex justify-between text-outline">
+                            <span>Subtotal</span>
+                            <span>${subtotal.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-outline">
+                            <span>Sterile Packaging &amp; Shipping</span>
+                            <span>{shipping === 0 ? 'COMPLIMENTARY' : `$${shipping.toFixed(2)}`}</span>
+                          </div>
+                          {shipping > 0 && (
+                            <div className="text-[10px] text-secondary">
+                              Free shipping on orders over $150.00
+                            </div>
+                          )}
+                          <div className="pt-2 border-t border-surface-container-highest flex justify-between text-sm text-on-surface font-bold">
+                            <span>Total</span>
+                            <span className="text-primary">${total.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {checkoutStep === 'checkout' && (
+                  <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+                    <div className="flex items-center justify-between pb-2 border-b border-surface-container-highest">
+                      <h4 className="font-title-editorial text-sm uppercase text-on-surface">
+                        Shipping Protocol &amp; Patron Details
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutStep('cart')}
+                        className="text-xs text-primary font-label-caps uppercase underline"
+                      >
+                        Edit Bag
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
+                          Full Patron Name
+                        </label>
+                        <input
+                          required
+                          type="text"
+                          value={shippingData.fullName}
+                          onChange={(e) =>
+                            setShippingData({ ...shippingData, fullName: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
+                          placeholder="e.g. Christian Moreau"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
+                          Email Address (Tracking &amp; Invoice)
+                        </label>
+                        <input
+                          required
+                          type="email"
+                          value={shippingData.email}
+                          onChange={(e) =>
+                            setShippingData({ ...shippingData, email: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
+                          placeholder="patron@domain.com"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
+                          Destination Address
+                        </label>
+                        <input
+                          required
+                          type="text"
+                          value={shippingData.address}
+                          onChange={(e) =>
+                            setShippingData({ ...shippingData, address: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
+                          placeholder="Street address & unit #"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
+                            City / District
+                          </label>
+                          <input
+                            required
+                            type="text"
+                            value={shippingData.city}
+                            onChange={(e) =>
+                              setShippingData({ ...shippingData, city: e.target.value })
+                            }
+                            className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
+                            placeholder="New York"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
+                            Country
+                          </label>
+                          <select
+                            value={shippingData.country}
+                            onChange={(e) =>
+                              setShippingData({ ...shippingData, country: e.target.value })
+                            }
+                            className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
+                          >
+                            <option value="United States">United States</option>
+                            <option value="Canada">Canada</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Germany">Germany</option>
+                            <option value="International">International</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-surface-container border border-surface-container-highest space-y-1">
+                      <div className="flex items-center gap-1.5 text-xs text-secondary font-label-caps uppercase">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Aseptic Sealed Packaging</span>
+                      </div>
+                      <p className="text-[11px] text-outline">
+                        All instruments and salves ship sealed in tamper-evident clinical bio-barrier sleeves.
+                      </p>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-primary/30"
+                    >
+                      Authorize Order (${total.toFixed(2)})
+                    </button>
+                  </form>
+                )}
+
+                {checkoutStep === 'confirmed' && (
+                  <div className="text-center py-12 space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-primary-container/30 border border-primary text-primary flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="font-label-caps text-[10px] text-secondary uppercase tracking-widest block">
+                        ORDER DISPATCH REGISTERED
+                      </span>
+                      <h4 className="font-headline-md text-xl text-on-surface uppercase">
+                        Order #MV-9082 Authenticated
+                      </h4>
+                      <p className="font-body-sm text-xs text-outline max-w-xs mx-auto leading-relaxed">
+                        A clinical receipt and tamper-evident tracking code have been dispatched to {shippingData.email || 'your email'}.
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-surface-container border border-surface-container-highest text-left font-label-data text-xs space-y-1.5">
+                      <div className="flex justify-between text-outline">
+                        <span>Recipient:</span>
+                        <span className="text-on-surface">{shippingData.fullName || 'Patron'}</span>
+                      </div>
+                      <div className="flex justify-between text-outline">
+                        <span>Total Paid:</span>
+                        <span className="text-primary font-bold">${total.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-outline">
+                        <span>Dispatch:</span>
+                        <span className="text-secondary">Priority Medical Carrier</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleResetAndClose}
+                      className="px-6 py-2.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-widest transition-colors"
+                    >
+                      Return to Atelier
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer CTA */}
+              {checkoutStep === 'cart' && cart.length > 0 && (
+                <div className="p-6 border-t border-surface-container-highest bg-surface-container space-y-3">
+                  <button
+                    onClick={() => setCheckoutStep('checkout')}
+                    className="w-full py-3.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-primary/30"
+                  >
+                    <span>Proceed to Dispatch</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <p className="text-center font-label-data text-[10px] text-outline uppercase">
+                    100% Autoclave &amp; Sterile Bio-Barrier Certified
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};

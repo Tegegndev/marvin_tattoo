@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&amp;family=Geist:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary":"#680009","surface-container-low":"#1c1b1b","secondary-container":"#af8d11","outline-variant":"#59413f","surface-bright":"#3a3939","surface-dim":"#131313","on-error-container":"#ffdad6","on-tertiary-fixed":"#001c39","surface-container":"#201f1f","on-tertiary":"#00315d","secondary-fixed":"#ffe088","secondary-fixed-dim":"#e9c349","primary-container":"#8a0b14","on-secondary-fixed-variant":"#574500","tertiary":"#a4c9ff","on-primary-fixed-variant":"#8f1017","surface-container-high":"#2a2a2a","primary-fixed":"#ffdad6","on-tertiary-fixed-variant":"#084882","background":"#131313","on-surface":"#e5e2e1","secondary":"#e9c349","tertiary-fixed":"#d4e3ff","on-primary-container":"#ff928a","surface-container-lowest":"#0e0e0e","on-primary-fixed":"#410003","error":"#ffb4ab","outline":"#a88a87","tertiary-container":"#00447e","primary":"#ffb3ad","surface":"#131313","on-secondary-fixed":"#241a00","inverse-surface":"#e5e2e1","on-tertiary-container":"#85b3f3","inverse-on-surface":"#313030","error-container":"#93000a","surface-tint":"#ffb3ad","tertiary-fixed-dim":"#a4c9ff","on-secondary":"#3c2f00","on-secondary-container":"#342800","on-surface-variant":"#e1bfbb","surface-container-highest":"#353534","on-background":"#e5e2e1","on-error":"#690005","surface-variant":"#353534","primary-fixed-dim":"#ffb3ad","inverse-primary":"#b12c2b"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin-desktop":"4rem","space-2xs":"0.25rem","gutter-desktop":"2rem","space-4xl":"6rem","space-xs":"0.5rem","space-3xl":"4.5rem","space-md":"1rem","margin-mobile":"1.25rem","space-3xs":"0.125rem","space-lg":"1.5rem","gutter-mobile":"1rem","space-2xl":"3rem","space-sm":"0.75rem","space-xl":"2rem"},fontFamily:{"label-caps":["Space Grotesk"],"title-editorial":["Bodoni Moda"],"body-lg":["Geist"],"display-hero":["Bodoni Moda"],"body-md":["Geist"],"headline-md":["Bodoni Moda"],"headline-lg":["Bodoni Moda"],"body-sm":["Geist"],"display-hero-mobile":["Bodoni Moda"],"headline-xl-mobile":["Bodoni Moda"],"headline-xl":["Bodoni Moda"],"label-data":["Space Grotesk"],"headline-lg-mobile":["Bodoni Moda"],"headline-sm":["Bodoni Moda"]},fontSize:{"label-caps":["11px",{lineHeight:"16px",letterSpacing:"0.22em",fontWeight:"600"}],"title-editorial":["18px",{lineHeight:"26px",letterSpacing:"0.08em",fontWeight:"600"}],"body-lg":["18px",{lineHeight:"28px",letterSpacing:"0.01em",fontWeight:"400"}],"display-hero":["96px",{lineHeight:"100px",letterSpacing:"-0.03em",fontWeight:"700"}],"body-md":["15px",{lineHeight:"24px",letterSpacing:"0.015em",fontWeight:"400"}],"headline-md":["28px",{lineHeight:"36px",letterSpacing:"0em",fontWeight:"500"}],"headline-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["13px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"400"}],"display-hero-mobile":["48px",{lineHeight:"52px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-xl-mobile":["36px",{lineHeight:"44px",letterSpacing:"-0.01em",fontWeight:"600"}],"headline-xl":["56px",{lineHeight:"64px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-data":["13px",{lineHeight:"18px",letterSpacing:"0.06em",fontWeight:"500"}],"headline-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"0em",fontWeight:"600"}],"headline-sm":["22px",{lineHeight:"30px",letterSpacing:"0.01em",fontWeight:"500"}]}}}};</script></head><body class="bg-surface-container-lowest font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-surface"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-md"><div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Marvin Tattoos Wordmark Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjFl_nSOS_6RWQhUzrcNar1puWqHkgKyMSCNA36jVXLWyzgswerWxsmPL_vuA-a_02U33sveHMz9EBDJeGJC8yxtP90T3M_iRxV-p3kR7-VmEh5UhvRDXzE1avsJbiGkmUAHCEZ4udWiEh9Wt-B6RFF-ggEsM9pXPEoFZSloQRUNCHusrBSW7gb-aQ0tu9QmZ7iGzOLtMnzhrfNADhvDPkDjTKMz9KAZITk8nn7zHqUjcZC-4jnowLXd1Z"/><div class="flex flex-col"><span class="font-title-editorial text-title-editorial uppercase tracking-widest text-on-surface">Marvin</span><span class="font-label-caps text-label-caps text-outline uppercase tracking-[0.25em]">Atelier &amp; Piercing</span></div></div><nav class="hidden xl:flex items-center gap-space-sm" data-active-classes="bg-surface-container-high text-on-surface"><a aria-current="page" class="px-space-xs py-space-2xs font-label-caps uppercase transition-colors bg-surface-container-high text-on-surface" data-path="home" href="#">Home</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="services" href="#">Services</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="portfolio" href="#">Portfolio</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="shop-equipment" href="#">Shop Equipment</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="about-studio" href="#">About Studio</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="studio-location" href="#">Studio Location</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="official-socials" href="#">Official Socials</a></nav><div class="flex items-center gap-space-sm shrink-0"><a class="inline-flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-container text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors hover:bg-surface-container-high hover:text-on-surface" href="#"><span class="w-2 h-2 rounded-full bg-secondary shrink-0"></span><span>WhatsApp Direct</span></a><a class="inline-flex items-center px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest transition-colors hover:bg-on-primary-fixed-variant hover:text-on-surface" href="#"><span class="material-symbols-outlined text-[16px] mr-space-2xs">calendar_today</span><span>Book Appointment</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface-container-lowest min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Archival Intro & Status Band -->
+<section class="w-full bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop py-space-xl lg:py-space-2xl">
+<div class="max-w-[1540px] mx-auto flex flex-col gap-space-xl">
+<!-- Metadata Row & Section Monogram -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="space-y-space-2xs">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="inline-block w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-[0.28em]">CURATED ARCHIVE // CODEX 2014—2025</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl uppercase tracking-tight text-on-surface">
+            The Flesh Archive
+          </h1>
+</div>
+<div class="flex flex-wrap items-center gap-space-lg bg-surface-container px-space-lg py-space-sm">
+<div class="flex flex-col">
+<span class="font-label-data text-label-data text-secondary">842</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Logged Relics</span>
+</div>
+<div class="h-8 w-px bg-surface-variant"></div>
+<div class="flex flex-col">
+<span class="font-label-data text-label-data text-on-surface">100%</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Healed Registry</span>
+</div>
+<div class="h-8 w-px bg-surface-variant"></div>
+<div class="flex flex-col">
+<span class="font-label-data text-label-data text-primary">ISO-7</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Surgical Grade</span>
+</div>
+</div>
+</div>
+<!-- Atmospheric Framing Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<p class="lg:col-span-8 font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+          A solemn, permanent record of anatomical blackwork, visceral dark realism, and curated titanium needlework. Every entry represents bespoke somatic architecture executed under strict clinical surgical sterilization protocols within our obsidian sanctum.
+        </p>
+<!-- Search & Dynamic Filter Trigger -->
+<div class="lg:col-span-4 flex items-center bg-surface-container-low px-space-md py-space-sm gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[18px]">manage_search</span>
+<input class="bg-transparent font-label-data text-label-data uppercase text-on-surface placeholder:text-outline w-full focus:outline-none" id="archiveSearchInput" placeholder="FILTER BY CODEX ID, MOTIF, OR PLACEMENT..." type="text"/>
+<span class="font-label-caps text-label-caps text-outline px-space-2xs bg-surface-container">ESC</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Taxonomy & Master Filter Console -->
+<section class="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-space-md sticky top-20 z-30 shadow-md">
+<div class="max-w-[1540px] mx-auto flex flex-col gap-space-sm">
+<!-- Primary Style Navigation Tabs -->
+<div class="flex items-center justify-between overflow-x-auto no-scrollbar gap-space-xs pb-space-2xs">
+<div class="flex items-center gap-space-2xs shrink-0" id="primaryFilterGroup">
+<button class="px-space-md py-space-2xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors filter-btn active" data-filter="all">
+            All Works [842]
+          </button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors filter-btn" data-filter="dark-realism">
+            Dark Realism &amp; Voidwork
+          </button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors filter-btn" data-filter="neo-arcane">
+            Neo-Traditional &amp; Arcane
+          </button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors filter-btn" data-filter="micro-detail">
+            Micro-Fine &amp; Single Needle
+          </button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors filter-btn" data-filter="piercing">
+            Curated Titanium &amp; Gold
+          </button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-colors filter-btn" data-filter="coverup">
+            Restoration &amp; Cover-Up
+          </button>
+</div>
+<!-- Freshness Status State -->
+<div class="flex items-center bg-surface-container p-space-3xs shrink-0 ml-space-md">
+<button class="px-space-sm py-space-3xs font-label-caps text-label-caps uppercase text-on-surface bg-surface-bright">All Cycles</button>
+<button class="px-space-sm py-space-3xs font-label-caps text-label-caps uppercase text-outline hover:text-on-surface">Healed 1yr+</button>
+<button class="px-space-sm py-space-3xs font-label-caps text-label-caps uppercase text-outline hover:text-on-surface">Fresh Ink</button>
+</div>
+</div>
+<!-- Secondary Refinement Matrix -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm text-outline pt-space-3xs">
+<div class="flex flex-wrap items-center gap-space-xs font-label-data text-label-data uppercase">
+<span class="text-on-surface font-semibold">Anatomical Zone:</span>
+<span class="px-space-xs py-space-3xs bg-surface-container text-on-surface cursor-pointer hover:bg-surface-variant">Full Sleeves</span>
+<span class="px-space-xs py-space-3xs bg-surface-container text-outline hover:text-on-surface cursor-pointer">Backpiece Sanctuary</span>
+<span class="px-space-xs py-space-3xs bg-surface-container text-outline hover:text-on-surface cursor-pointer">Sternum / Thorax</span>
+<span class="px-space-xs py-space-3xs bg-surface-container text-outline hover:text-on-surface cursor-pointer">Hands &amp; Phalanges</span>
+<span class="px-space-xs py-space-3xs bg-surface-container text-outline hover:text-on-surface cursor-pointer">Ear Cartilage Constellation</span>
+</div>
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps uppercase">
+<span class="text-outline">Resident Master:</span>
+<span class="text-primary font-bold">Marvin [Founder]</span>
+<span class="text-surface-variant">/</span>
+<span class="text-outline hover:text-on-surface cursor-pointer">Elena Kostas</span>
+<span class="text-surface-variant">/</span>
+<span class="text-outline hover:text-on-surface cursor-pointer">S. Choi [Aseptic Piercing]</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Masterpiece Spotlight -->
+<section class="w-full bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop py-space-2xl">
+<div class="max-w-[1540px] mx-auto">
+<div class="flex items-center justify-between mb-space-md">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-[0.25em]">CHRONICLE SPOTLIGHT // 01</span>
+<span class="font-label-data text-label-data text-outline uppercase">ARCHIVE REF: CODEX-LUCIFER-884</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 bg-surface-container-low overflow-hidden shadow-xl">
+<!-- Visual Column -->
+<div class="lg:col-span-7 relative min-h-[460px] lg:min-h-[580px] bg-surface-container-lowest">
+<img class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-700" data-alt="Editorial dark gothic close-up photograph of a monumental human backpiece tattoo showing an anatomical fallen seraph with intricate obsidian feather gradients, baroque filigree ornaments, and hyper-detailed biomechanical musculature. Cinematographic studio chiaroscuro lighting, deep shadows, rich jet black inks, and sterile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhf9WWboZm6VtIX0sgA6TR4C5Vb8FxzXviJyTJ5ijvIdnoAPCZnzby69tFz-XpzlPcIyf7CMYscKO5USLqqKCAZAhK4jS4fZ9vktrBKIjaOIzcLfr5QDkSLE8rlneloji3YYmNZl0eStHydIHTpqbf-ZEPIuPbTYqQHi6kZis67yjg_nNIZ4RrXR0AvDW_Y4yJacr5I0PpNeMWlB7uMoyzCv79KyPivEkNSDWBqYqSSpSKY1I9JpuQFg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent lg:hidden"></div>
+<div class="absolute top-space-md left-space-md flex flex-col gap-space-2xs">
+<span class="bg-primary-container text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase tracking-widest">
+              MONUMENTAL SCALE
+            </span>
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+              HEALED 18 MONTHS
+            </span>
+</div>
+<div class="absolute bottom-space-md left-space-md hidden lg:flex items-center gap-space-xs bg-surface-container-lowest/80 backdrop-blur-md px-space-sm py-space-xs text-on-surface font-label-data text-label-data uppercase">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+            Surgical Derm-Scan Authenticated
+          </div>
+</div>
+<!-- Detailed Spec Sheet & Context -->
+<div class="lg:col-span-5 p-space-lg lg:p-space-2xl flex flex-col justify-between space-y-space-lg bg-surface-container-low">
+<div class="space-y-space-md">
+<div class="space-y-space-2xs">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Opus Magnum // Dark Realism</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">
+                The Luciferian Seraph
+              </h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                A 42-hour visceral exploration across the entire dorsal plane. Blending 17th-century baroque anatomical etchings with subterranean void shading. Designed to flex naturally along the spine and scapular dynamics.
+              </p>
+</div>
+<!-- Parametric Spec List -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<div class="p-space-sm bg-surface-container space-y-space-3xs">
+<span class="font-label-caps text-label-caps text-outline uppercase block">Lead Artist</span>
+<span class="font-label-data text-label-data text-on-surface uppercase">Master Marvin</span>
+</div>
+<div class="p-space-sm bg-surface-container space-y-space-3xs">
+<span class="font-label-caps text-label-caps text-outline uppercase block">Total Duration</span>
+<span class="font-label-data text-label-data text-secondary uppercase">42 Hours (5 Sessions)</span>
+</div>
+<div class="p-space-sm bg-surface-container space-y-space-3xs">
+<span class="font-label-caps text-label-caps text-outline uppercase block">Pigment Matrix</span>
+<span class="font-label-data text-label-data text-on-surface uppercase">Dynamic Carbon Deep</span>
+</div>
+<div class="p-space-sm bg-surface-container space-y-space-3xs">
+<span class="font-label-caps text-label-caps text-outline uppercase block">Skin Morphology</span>
+<span class="font-label-data text-label-data text-on-surface uppercase">Full Back to Iliac Crest</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-lowest space-y-space-3xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-outline uppercase">Client Recovery Audit</span>
+<span class="font-label-data text-label-data text-secondary">Zero Fading // 100% Saturation</span>
+</div>
+<div class="w-full h-1 bg-surface-variant overflow-hidden">
+<div class="w-full h-full bg-secondary"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-space-sm pt-space-md">
+<a class="w-full sm:w-auto inline-flex items-center justify-center px-space-lg py-space-sm bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest hover:bg-on-primary-fixed-variant transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] mr-space-2xs">draw</span>
+              Commission Variant Work
+            </a>
+<button class="w-full sm:w-auto inline-flex items-center justify-center px-space-md py-space-sm bg-surface-container text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider hover:text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px] mr-space-2xs">zoom_in</span>
+              High-Res Texture Scan
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Editorial Masonry Gallery Grid -->
+<section class="w-full bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop py-space-2xl">
+<div class="max-w-[1540px] mx-auto space-y-space-xl">
+<!-- Section Header with View Mode Controls -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-[0.2em]">CODEX REPOSITORY // VOL. IV</span>
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface tracking-tight">Permanent Artifacts</h2>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-caps text-label-caps text-outline uppercase">Curated Index: 01—08 of 842</span>
+<div class="flex items-center bg-surface-container-low p-space-3xs">
+<button class="p-space-2xs text-on-surface bg-surface-bright"><span class="material-symbols-outlined text-[18px]">grid_view</span></button>
+<button class="p-space-2xs text-outline hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">view_agenda</span></button>
+</div>
+</div>
+</div>
+<!-- Masonry Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg" id="codexGrid">
+<!-- Artifact 01: Micro Fine Line & Gothic Calligraphy -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="micro-detail">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Editorial close-up of a client forearm featuring ultra sharp micro-detail gothic calligraphy and sacred geometry mandalas with delicate stipple shading. High contrast monochrome blackwork on fair skin, surgical precision studio backdrop with soft shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO2ONq2qJolzZ1BsmEyonoLDNy4rmY9Ri8UYB56DWYKomg4izxeIOm68cX7Q3ZJiJN8Ilm0UrVLO0aaRwes1vvPXtYbpglnoi6mh5QysVE-55gpZYJNkLV_kU7nwwdqLaEo8JWAR2H1XIQpGscL2hPr_yY5gZ1OK4Uc-BCSERWDX5E1NoUfJ5VKg6gSjy7vm-PyuXLe9BG605vgZuwV4RWt6achQkNxjgA7QrsXfwyL3N7ms5_mbKtLg"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                HEALED 2 YRS
+              </span>
+<span class="bg-surface-container-high/90 backdrop-blur-sm text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                0.25mm Needle
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#CODEX-092</span>
+<span>ELENA KOSTAS</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Corvus Nocturne Script</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Sacred blackletter liturgical fragment inscribed with single needle technique along radial forearm nerve lines.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Forearm Flexor</span>
+<span class="text-secondary">4.5 Hrs</span>
+</div>
+</div>
+</div>
+<!-- Artifact 02: Full Biomechanical Blackwork Sleeve -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="dark-realism">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Monochromatic fine art tattoo photo of an entire male arm covered in a dark surreal biomechanical obsidian sleeve with organic ribbing, gothic cathedral arches, and deep black saturated zones. High-end dark aesthetic studio shot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbjJ5Gx_O2VWtBCMnMX7hwjPgoSlcFVPAN8pb3Te3PKnGlrLf_Ba4mfo8KC3U0yYKqCOtcPVTq4vc7XgTUA1xssniyvOXjmb5Tiwr4ssIO35FOv6pNLVZ69EDtHnH8OK4XkgibWE6YPdkOAQcYVToZnQBJ38y-ufSZci4j7uZtB4-DLFFSRxAF-ogjF1LRCfmHyWL3cFPZAi_7lgayWJhMyuWtyez6tulANQU5ywBFQI5bjfKffGnyCQ"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-primary-container text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                RESIDENT MARVIN
+              </span>
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                HEALED 8 MOS
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#CODEX-118</span>
+<span>MARVIN [MASTER]</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Onyx Biomorphic Sleeve</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Complete arm transformation incorporating mechanical tendons and obsidian cathedral geometry.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Full Right Arm</span>
+<span class="text-secondary">28 Hrs</span>
+</div>
+</div>
+</div>
+<!-- Artifact 03: Precision Curated Titanium & Solid Gold Piercing -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="piercing">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Macro surgical editorial photograph of a female ear showing an intricate constellation curation of ASTM F-136 implant grade titanium and solid 18k yellow gold seam rings, daith clicker with black diamonds, and triple forward helix studs. Clinical pristine skin, high-end fine jewelry atelier look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP7-x2POVhKh86bHl2gueQejXvY3JSWQP4eVefQ8yjPJuKMOumzv5wj1zV9c-MJiuATeCXQQjAy3K3TyS8f0JZTz09HsRHwRsNwl596IxiFy3OxEU3M0oWnOs7cluf6YEnlPe-YhxSAAapAr8wi93mfVLIDyIV-V3lr9znto9Bwenzv6-wKHhMlvDjx4Q64wa5AX8OUv-AWIU57a7WKuXdRzMO046IRAPDOGDMJ28hvEUe1RuLc4jp8A"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                ASTM F-136 TITANIUM
+              </span>
+<span class="bg-surface-container-high/90 backdrop-blur-sm text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                18K SOLID GOLD
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#PIERCE-409</span>
+<span>S. CHOI [RITUAL]</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Occult Ear Constellation</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Surgical blade needle mapping: Daith, Conch, and triple stacked anti-helix loaded with black spinel gems.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Auricular Complex</span>
+<span class="text-secondary">Fully Healed</span>
+</div>
+</div>
+</div>
+<!-- Artifact 04: Dark Realism Memento Mori Chest -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="dark-realism">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Moody atmospheric photograph of a comprehensive male chest and sternum tattoo with a baroque carved marble skull flanked by cracked gothic arches, thorned black roses, and volumetric atmospheric fog. Deep jet carbon black pigments, pristine skin contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7rK0AaQH6MSMhVUznVxG8pmfOnRVQ49SG67cyO3ZERW2BN04xFcnUGs1VNj0QoXJHtr2ZV1fnrZUQmea0bLIRuSEF1h8JaLFfWbPslfw2E_kQpDWU9LIiW6JddvuzKjmTuPFEDDo4bDjgCq1n13rN6Sj95Co1Q-AoD16hT90-Eztlcv2PV78wNrGvZZCm4tMRUs-vsDQSGghl5GCY_KECDG74vietblXGuDW9GPgpWaZAYax_-8vasA"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                HEALED 3 YRS
+              </span>
+<span class="bg-primary-container text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                RESIDENT MARVIN
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#CODEX-203</span>
+<span>MARVIN [MASTER]</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Baroque Memento Mori</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Volumetric chiaroscuro skull and architectural columns balanced harmoniously across pectoral muscles.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Bilateral Thorax</span>
+<span class="text-secondary">16 Hrs</span>
+</div>
+</div>
+</div>
+<!-- Artifact 05: Cover-Up Restoration & Void Realism -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="coverup">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Artistic tattoo photograph showcasing a seamless cover-up on a client shoulder blade: deep opaque textured black raven wings completely obliterating an old tribal tattoo, surrounded by ethereal atmospheric smoke and occult geometry." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8G1zGQubUkQUeF8l1kBr44BaQqncO5Bba-JPrrvt-m1om-qf6GtknUzNaYEWBTFmszX658sI43F952lOYiPs5NMTOR0pRL-PeUghxwO6zLP_RUNkmH5gKVGSdbVR1zm7QhBOrv3z8ovk9fvJWEvj8Hc1_9LZdm6fw1G1UjVcph9n83lmuTiCTDwGjCDE4Bag2KYZoCBvIi5NI_enVLL1au4QSCH-rhdWkIeI4uggnd9d4vPJxRyFOvw"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-primary-container text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                TOTAL OBLITERATION
+              </span>
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                100% CONCEALMENT
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#RESTORE-044</span>
+<span>ELENA KOSTAS</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Abyssal Raven Relic</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Full concealment of scarred 1990s tribal motif using optical density gradients and deep textural plumage.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Scapula / Shoulder</span>
+<span class="text-secondary">11 Hrs</span>
+</div>
+</div>
+</div>
+<!-- Artifact 06: Neo-Arcane & Alchemical Occultism -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="neo-arcane">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Editorial macro tattoo photograph of an intricate thigh piece featuring neo-traditional esoteric tarot symbology, a crowned serpent wound around a ritual athame dagger, framed in heavy black ornamental borders with delicate dotwork gradients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzLBny-nKoQN0ClSquHUL7kN3gAS1mfb8SvL0TADqjHvg9MJ4O_gcLia4KNTUUHKK8BX1yC9Ov4-OJk7zuAvBKKHJX56N9Trz_aSbSrbIKYLmh-Gvq0A5Uy3CE2fZuL2ijKrXoTSMP3ZAHIpocZQpFJmUcDrKx9r7CL9ad_Vw4DRxrz6NOjq7XFPEKKrjVLMUJFMpRLhi0iCZrX474URkFqd0ROlBd1DmZhH_kYprrzT5yJw5UTj9NYA"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                HEALED 14 MOS
+              </span>
+<span class="bg-surface-container-high/90 backdrop-blur-sm text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                Arcane Linework
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#CODEX-319</span>
+<span>ELENA KOSTAS</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">The Alchemical Viper</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Rigid medieval manuscript woodcut line weights combined with deep saturated dark ink drops.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Lateral Thigh</span>
+<span class="text-secondary">9 Hrs</span>
+</div>
+</div>
+</div>
+<!-- Artifact 07: Hand & Phalanges Ritual Tattooing -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="micro-detail">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Close-up photograph of heavily tattooed human hands wearing brutalist oxidized silver rings, decorated with crisp geometric runes, micro-linework sigils on the knuckles, and seamless shading extending to fingertips. Atmospheric dark gothic studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdZSTdSo9EsS96PoywI6_4HTnTbsUxOC5J2k_11zZ-mt2my7_dHosR-HoEo5YA1IE2gwEAKGG_bNOp--syYYAMRveFo-uSP2MtqBLWsJSFgnJtD-P59SEAQrhxsytS9iWpcL03Gk3Tyslthh3seE_8a86YbEVjetu-yzhgAPXzt6hXlEpnhzIY4vtD9sa8K72RN5apo0CZgGKj0P36n_A7fBKarZxt_LKCeO44N0eyWzMfL-WVMN0sLg"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-primary-container text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                RESIDENT MARVIN
+              </span>
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                ZERO BLOWOUT
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#CODEX-510</span>
+<span>MARVIN [MASTER]</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Ritualistic Phalanges</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Precision needle depth control engineered specifically for high friction finger and joint mobility.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Bilateral Hands</span>
+<span class="text-secondary">6 Hrs</span>
+</div>
+</div>
+</div>
+<!-- Artifact 08: Septum & Nostril Titanium Ritual Curation -->
+<div class="flex flex-col bg-surface-container-low group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="piercing">
+<div class="relative aspect-[3/4] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Editorial beauty portrait of a person face featuring a custom high polished implant-grade titanium septum clicker with gothic cathedral arches and paired symmetrical high nostril studs. Dramatic moody lighting, sharp focus, aesthetic body modification." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXGPpXw2ODKoV01W74_bH-MHrbWfMFWCrq5n5-47JSoB1Lx8AVtO3r8TGaz_lRgIPrqqKYiHJLoYXB2xAa-N4wpHnANYc9o17JXDnT0ryfH8Irpcd2yULp4BV27Z-0RM_xdnoiqUoIzJWizSQqZCHRYhf1zsxCqQfhCWoMTE7W23ad3g9efysz-aQknVVs5-0AgfytOSg184xOmyJpxt45a9tA_91be3mNinBvuScUQ_6SNALHEwhP4g"/>
+<div class="absolute top-space-xs left-space-xs flex flex-col gap-space-3xs">
+<span class="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                BIOCOMPATIBLE F-136
+              </span>
+<span class="bg-surface-container-high/90 backdrop-blur-sm text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">
+                AUTOCLAVE CERTIFIED
+              </span>
+</div>
+<div class="absolute inset-0 bg-surface-container-lowest/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-space-sm p-space-md">
+<button class="px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest">
+                Inspect Codex
+              </button>
+</div>
+</div>
+<div class="p-space-md flex flex-col justify-between flex-grow space-y-space-sm bg-surface-container-low">
+<div class="space-y-space-3xs">
+<div class="flex items-center justify-between text-outline font-label-data text-label-data">
+<span>#PIERCE-622</span>
+<span>S. CHOI [RITUAL]</span>
+</div>
+<h3 class="font-title-editorial text-title-editorial uppercase text-on-surface">Archival Nasal Suite</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Paired 16G high nostrils synchronized with bespoke hand-turned titanium cathedral septum ring.</p>
+</div>
+<div class="pt-space-xs flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Mid-Face Zone</span>
+<span class="text-secondary">Fully Settled</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Gallery Pagination & Extended Vault Access -->
+<div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md bg-surface-container p-space-md">
+<div class="font-label-caps text-label-caps text-outline uppercase">
+          Displaying <span class="text-on-surface">08</span> of <span class="text-on-surface">842</span> registered archival monographs
+        </div>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-space-xs bg-surface-container-low text-outline hover:text-on-surface font-label-caps text-label-caps uppercase">
+            Previous Page
+          </button>
+<span class="px-space-sm py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps">01</span>
+<button class="px-space-sm py-space-xs bg-surface-container-low text-outline hover:text-on-surface font-label-caps text-label-caps">02</button>
+<button class="px-space-sm py-space-xs bg-surface-container-low text-outline hover:text-on-surface font-label-caps text-label-caps">03</button>
+<span class="text-outline font-label-caps text-label-caps">...</span>
+<button class="px-space-sm py-space-xs bg-surface-container-low text-outline hover:text-on-surface font-label-caps text-label-caps">106</button>
+<button class="px-space-md py-space-xs bg-surface-container-high text-on-surface font-label-caps text-label-caps uppercase hover:bg-surface-variant">
+            Next Page
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Client Healed Progression & Case Studies Section -->
+<section class="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-space-3xl">
+<div class="max-w-[1540px] mx-auto space-y-space-2xl">
+<div class="space-y-space-2xs">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-[0.25em]">LONGITUDINAL CLINICAL AUDIT</span>
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface tracking-tight">From Stencil to Healed Relic</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+          Tattooing is a temporal medium. We document the physiological evolution of ink under subcutaneous tissue: from algorithmic morphology transfer to fresh trauma, through to permanent integration 12 months post-procedure.
+        </p>
+</div>
+<!-- 3-Phase Progression Timeline Card -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+<!-- Step 1 -->
+<div class="bg-surface-container p-space-lg space-y-space-md relative flex flex-col justify-between">
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-label-caps text-label-caps uppercase tracking-widest">PHASE 01 // ANATOMICAL MAPPING</span>
+<span class="font-label-data text-label-data">DAY 00</span>
+</div>
+<div class="aspect-square bg-surface-container-lowest overflow-hidden relative">
+<img class="w-full h-full object-cover grayscale" data-alt="Detailed studio photo showing purple carbon surgical stencil transfer on client upper shoulder and neck muscles, precise cross-hatching grid alignment matching natural bone contours before inking starts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWkH895VRYQpl9LHW3xSa7Ko3p4FQimG0lMwV99HWPSkNihJeRL8zX9_hD0GlVVgO1lRdvhAZtBZlRxHXN5rtb2DI76wEu1V1fceTHAIuq1buAG2fu5LAVK2SQPfbDQECPIwFoA104lBOCtyfrAHwCkniH847aC9rCEMv9rJJid-C-OUhFZv229q1oNjhTLRwtwpqiwtybCe31UUgQKw1aEmaXSSumuivB1b6tPojdhQ7BWqHeLZXwWw"/>
+<span class="absolute bottom-space-xs left-space-xs bg-surface-container-lowest/80 text-outline font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">Purple Dye Grid</span>
+</div>
+<h4 class="font-title-editorial text-title-editorial uppercase text-on-surface">Musculoskeletal Stencil</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Every blueprint is calibrated against muscular contraction. The client moves through full range of motion while the purple spirit transfer is locked into the stratum corneum.
+            </p>
+</div>
+<div class="pt-space-sm flex items-center gap-space-xs text-outline font-label-data text-label-data uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            Sterile Field Prepared
+          </div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container p-space-lg space-y-space-md relative flex flex-col justify-between">
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between text-primary">
+<span class="font-label-caps text-label-caps uppercase tracking-widest">PHASE 02 // FRESH EXECUTION</span>
+<span class="font-label-data text-label-data">SESSION COMPLETE</span>
+</div>
+<div class="aspect-square bg-surface-container-lowest overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Close-up photograph of a freshly inked dark gothic tattoo with slight skin redness, glistening sterile medical ointment applied, pristine jet black ink saturation without excessive bleeding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABTC8ps5X3DThI_NToJInPx0y216pDAQt3UnZ3hSUgsAbRGTcj0dBcixgOuzQ8y8jbisw3B_b8cSPtu36FIwJ8hKXdvpFzWk3JEOrUrUmRcqgFpgL-e309sKvZJVbK4HOGmwVoYrOw6shuBysB-UC3KfglvXWj64RjY6UxG7Oafm8TSfZt7fT4g_xUA4sl9-FJTUOyhPj92rwkkhqKa4DeCdkz4EVKkw8Z8e268QRrUM1sZm3uj6x-Hg"/>
+<span class="absolute bottom-space-xs left-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">Post-Procedure Wash</span>
+</div>
+<h4 class="font-title-editorial text-title-editorial uppercase text-on-surface">Acute Vascular Settling</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              High definition black pigment injected between 1.5mm to 2.0mm depth. Sealed immediately with medical polyurethane derm-shield membrane under hypoallergenic adhesive.
+            </p>
+</div>
+<div class="pt-space-sm flex items-center gap-space-xs text-outline font-label-data text-label-data uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            Microbial Barrier Sealed
+          </div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container p-space-lg space-y-space-md relative flex flex-col justify-between">
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between text-on-surface">
+<span class="font-label-caps text-label-caps uppercase tracking-widest">PHASE 03 // PERMANENT RELIC</span>
+<span class="font-label-data text-label-data">365 DAYS HEALED</span>
+</div>
+<div class="aspect-square bg-surface-container-lowest overflow-hidden relative">
+<img class="w-full h-full object-cover grayscale" data-alt="Editorial portrait showing completely healed matte black tattoo one year later, smooth settled velvet dark tones seamlessly integrated into hydrated skin without blur or pigment blowout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZxy7EUYrnfUHn40AjYQ4r7eAckGfPac9BkKOOLYTQi5XsrOVsfUoFngrA0zzNeX-p4RrPep_wa8kDuWQmaJVAScHw33q4oVps7TZV8Ts3MukxnAfoQMWdCZc6JFDYBfkoKAQSub5KbocobIVe2lnizYtsf3RA-pWIShGsb5Zbha45A0N77rXdFpe5JabWMNzrysdG3AcymrASOPNImmV8_UWQq26z2pn-ApKUakE9RbXB_XKtEA5E7Q"/>
+<span class="absolute bottom-space-xs left-space-xs bg-surface-container-lowest/80 text-secondary font-label-caps text-label-caps px-space-xs py-space-3xs uppercase">Natural Dermis Settled</span>
+</div>
+<h4 class="font-title-editorial text-title-editorial uppercase text-on-surface">The Velvet Obsidian State</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Complete epidermal regeneration. No raised keloids or ink migration. The work settles into an everlasting velvet matte texture with timeless contrast retention.
+            </p>
+</div>
+<div class="pt-space-sm flex items-center gap-space-xs text-outline font-label-data text-label-data uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-bright"></span>
+            Certified Archive Inscribed
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Direct WhatsApp Desk & Bespoke Feasibility Callout -->
+<section class="w-full bg-surface-container-lowest px-margin-mobile lg:px-margin-desktop py-space-3xl">
+<div class="max-w-[1540px] mx-auto bg-gradient-to-r from-surface-container-low via-surface-container to-surface-container-low p-space-xl lg:p-space-3xl relative overflow-hidden shadow-2xl">
+<!-- Background Ambient Glow -->
+<div class="absolute -right-20 -top-20 w-96 h-96 bg-primary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<div class="lg:col-span-8 space-y-space-md">
+<div class="flex items-center gap-space-xs text-secondary font-label-caps text-label-caps uppercase tracking-widest">
+<span class="w-2 h-2 rounded-full bg-secondary shrink-0"></span>
+            DIRECT CONCIERGE &amp; SIZING TRIAGE
+          </div>
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface tracking-tight leading-tight">
+            Have a Bespoke Concept or Anatomical Vision?
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed max-w-2xl">
+            Submit rough sketches, reference photos, or existing body placement images directly to Marvin’s private studio WhatsApp desk. Our senior artists provide rapid feasibility assessment, estimated hours, and calendar reservation slots.
+          </p>
+<div class="flex flex-wrap items-center gap-space-md text-outline font-label-data text-label-data uppercase pt-space-xs">
+<span class="flex items-center gap-space-2xs text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-secondary">timer</span>
+              Response Window: &lt; 2 Hours
+            </span>
+<span class="text-surface-variant">/</span>
+<span class="flex items-center gap-space-2xs text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-primary">encrypted</span>
+              Confidential Client Triage
+            </span>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-space-sm w-full">
+<a class="w-full inline-flex items-center justify-center gap-space-xs px-space-lg py-space-md bg-secondary text-on-secondary font-label-caps text-label-caps uppercase tracking-widest shadow-md hover:bg-secondary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span>WhatsApp Direct Feasibility</span>
+</a>
+<a class="w-full inline-flex items-center justify-center gap-space-xs px-space-lg py-space-md bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest hover:bg-on-primary-fixed-variant transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_add_on</span>
+<span>Formal Codex Session Booking</span>
+</a>
+<div class="text-center font-label-caps text-label-caps text-outline uppercase tracking-wider">
+            Consultations free of charge. Booking deposits required.
+          </div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<script>
+  // Simple interactive filter toggle logic for portfolio items
+  (function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const codexItems = document.querySelectorAll('#codexGrid > div');
+    const searchInput = document.getElementById('archiveSearchInput');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-primary-container', 'text-on-surface', 'active');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        btn.classList.add('bg-primary-container', 'text-on-surface', 'active');
+
+        const filterVal = btn.getAttribute('data-filter');
+        codexItems.forEach(item => {
+          if (filterVal === 'all' || item.getAttribute('data-category') === filterVal) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        codexItems.forEach(item => {
+          const text = item.innerText.toLowerCase();
+          if (text.includes(query)) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface-container-lowest"><div class="w-full px-margin-desktop py-space-3xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop mb-space-2xl"><div class="space-y-space-md"><div class="flex items-center gap-space-xs"><img alt="Marvin Tattoos Wordmark Logo" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjFl_nSOS_6RWQhUzrcNar1puWqHkgKyMSCNA36jVXLWyzgswerWxsmPL_vuA-a_02U33sveHMz9EBDJeGJC8yxtP90T3M_iRxV-p3kR7-VmEh5UhvRDXzE1avsJbiGkmUAHCEZ4udWiEh9Wt-B6RFF-ggEsM9pXPEoFZSloQRUNCHusrBSW7gb-aQ0tu9QmZ7iGzOLtMnzhrfNADhvDPkDjTKMz9KAZITk8nn7zHqUjcZC-4jnowLXd1Z"/><span class="font-title-editorial text-title-editorial uppercase text-on-surface">Marvin</span></div><div class="font-label-caps text-label-caps text-primary uppercase">Sanctum of Avant-Garde Ink &amp; Steel</div><p class="font-body-sm text-body-sm text-outline leading-relaxed">Monolithic artistry and ritualistic body modification operating under clinical surgical standards.</p><div class="flex items-center gap-space-xs pt-space-xs"><span class="w-2 h-2 rounded-full bg-secondary shrink-0"></span><span class="font-label-data text-label-data text-on-surface-variant uppercase">Sterile Bay Certification #709-DX</span></div></div><div class="space-y-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">Atelier Coordinates</div><div class="font-body-sm text-body-sm text-on-surface-variant space-y-space-2xs"><p class="text-on-surface">04 Obsidian Alley, Floor 03</p><p>Cultural Quarter / Design Void</p><p class="font-label-data text-label-data text-outline">Direct: +1 (800) 555-MARK</p></div><div class="pt-space-xs"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface mb-space-2xs">Operating Hours</div><p class="font-body-sm text-body-sm text-on-surface-variant">Tue – Sat: 12:00 — 22:00</p><p class="font-body-sm text-body-sm text-outline">Sun – Mon: Private Bookings Only</p></div></div><div class="space-y-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">Walk-In Protocol</div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Daily consult spots open strictly at 11:30 AM on first-arrived basis. Custom sleeve blueprints and complex body modifications require formal digital booking deposits.</p><div class="p-space-sm bg-surface-container space-y-space-2xs"><div class="flex items-center gap-space-2xs text-error"><span class="material-symbols-outlined text-[16px]">verified_user</span><span class="font-label-caps text-label-caps uppercase tracking-wider">Official Channels Warning</span></div><p class="font-body-sm text-body-sm text-outline leading-tight">Marvin operates exclusively through this verified domain and documented social handles below. Beware unauthorized proxy agents.</p></div></div><div class="space-y-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">Official Social Registry</div><ul class="space-y-space-xs font-label-data text-label-data uppercase"><li class="flex items-center justify-between text-on-surface-variant hover:text-on-surface"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px]">photo_camera</span>Instagram</span><span class="text-primary font-label-caps text-label-caps">@marvin_atelier</span></li><li class="flex items-center justify-between text-on-surface-variant hover:text-on-surface"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px]">play_circle</span>TikTok</span><span class="text-primary font-label-caps text-label-caps">@marvintattoos.official</span></li><li class="flex items-center justify-between text-on-surface-variant hover:text-on-surface"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px]">video_library</span>YouTube</span><span class="text-primary font-label-caps text-label-caps">/marvintattoostudio</span></li></ul><div class="pt-space-sm"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface mb-space-xs">Quick Navigation</div><div class="grid grid-cols-2 gap-space-2xs font-label-caps text-label-caps uppercase text-outline"><a class="hover:text-on-surface" href="#">Aftercare</a><a class="hover:text-on-surface" href="#">Sterilization</a><a class="hover:text-on-surface" href="#">Apprenticeship</a><a class="hover:text-on-surface" href="#">Press Kit</a></div></div></div></div><div class="pt-space-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-outline">© 2025 MARVIN TATTOOS &amp; PIERCINGS ATELIER. ALL RIGHTS RESERVED.</div><div class="flex items-center gap-space-lg font-label-caps text-label-caps uppercase text-outline"><a class="hover:text-on-surface" href="#">Privacy Ordinance</a><a class="hover:text-on-surface" href="#">Sterile Standard Compliance</a><a class="hover:text-on-surface" href="#">Terms of Ritual</a></div></div></div></footer><div class="fixed bottom-space-lg right-space-lg z-50"><a class="flex items-center gap-space-xs px-space-md py-space-sm bg-surface-container text-on-surface shadow-2xl transition-all hover:bg-surface-container-high hover:text-on-surface" href="#"><span class="w-2.5 h-2.5 rounded-full bg-secondary shrink-0 animate-pulse"></span><span class="material-symbols-outlined text-[18px]">chat</span><span class="font-label-caps text-label-caps uppercase tracking-widest">WhatsApp Desk</span></a></div></body></html>

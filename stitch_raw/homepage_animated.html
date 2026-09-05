@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&amp;family=Geist:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&amp;family=Pirata+One&amp;display=swap" rel="stylesheet"/><style>
+@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}
+
+/* Motion & Atmospheric Keyframes */
+@keyframes gothic-pulse {
+  0%, 100% {
+    text-shadow: 0 0 25px rgba(255, 179, 173, 0.45), 0 0 50px rgba(138, 11, 20, 0.3), 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 45px rgba(255, 179, 173, 0.8), 0 0 75px rgba(219, 39, 39, 0.5), 0 0 15px rgba(255, 255, 255, 0.9);
+  }
+}
+
+@keyframes gothic-pulse-sub {
+  0%, 100% {
+    text-shadow: 0 0 18px rgba(233, 195, 73, 0.35), 0 0 35px rgba(175, 141, 17, 0.25);
+  }
+  50% {
+    text-shadow: 0 0 32px rgba(233, 195, 73, 0.75), 0 0 55px rgba(233, 195, 73, 0.45);
+  }
+}
+
+@keyframes ember-float {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--ember-opacity, 0.7);
+  }
+  85% {
+    opacity: var(--ember-opacity, 0.7);
+  }
+  100% {
+    transform: translateY(-10vh) translateX(var(--drift-x, 30px)) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badge-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 179, 173, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 179, 173, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 179, 173, 0);
+  }
+}
+
+@keyframes scroll-nudge {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+/* Atmospheric utility classes */
+.gothic-aura-title {
+  animation: gothic-pulse 5s ease-in-out infinite alternate;
+}
+.gothic-aura-sub {
+  animation: gothic-pulse-sub 4.5s ease-in-out infinite alternate;
+}
+
+.animate-entrance {
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Interactive Hover & Glow Accents */
+.btn-gothic-glow {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-gothic-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(138, 11, 20, 0.6), 0 10px 20px -10px rgba(0, 0, 0, 0.8);
+}
+
+.btn-secondary-glow {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-secondary-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(233, 195, 73, 0.35);
+}
+
+.gothic-card {
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gothic-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+.gothic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(138, 11, 20, 0.2);
+}
+.gothic-card:hover::after {
+  border-color: rgba(255, 179, 173, 0.25);
+}
+
+.interactive-img-zoom {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+}
+.group:hover .interactive-img-zoom {
+  transform: scale(1.06);
+  filter: brightness(1.1);
+}
+
+.pulse-badge {
+  animation: badge-pulse-ring 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.scroll-indicator-bounce {
+  animation: scroll-nudge 2s ease-in-out infinite;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .gothic-aura-title,
+  .gothic-aura-sub,
+  .animate-entrance,
+  .pulse-badge,
+  .scroll-indicator-bounce,
+  .btn-gothic-glow:hover,
+  .gothic-card:hover,
+  .interactive-img-zoom {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary":"#680009","surface-container-low":"#1c1b1b","secondary-container":"#af8d11","outline-variant":"#59413f","surface-bright":"#3a3939","surface-dim":"#131313","on-error-container":"#ffdad6","on-tertiary-fixed":"#001c39","surface-container":"#201f1f","on-tertiary":"#00315d","secondary-fixed":"#ffe088","secondary-fixed-dim":"#e9c349","primary-container":"#8a0b14","on-secondary-fixed-variant":"#574500","tertiary":"#a4c9ff","on-primary-fixed-variant":"#8f1017","surface-container-high":"#2a2a2a","primary-fixed":"#ffdad6","on-tertiary-fixed-variant":"#084882","background":"#131313","on-surface":"#e5e2e1","secondary":"#e9c349","tertiary-fixed":"#d4e3ff","on-primary-container":"#ff928a","surface-container-lowest":"#0e0e0e","on-primary-fixed":"#410003","error":"#ffb4ab","outline":"#a88a87","tertiary-container":"#00447e","primary":"#ffb3ad","surface":"#131313","on-secondary-fixed":"#241a00","inverse-surface":"#e5e2e1","on-tertiary-container":"#85b3f3","inverse-on-surface":"#313030","error-container":"#93000a","surface-tint":"#ffb3ad","tertiary-fixed-dim":"#a4c9ff","on-secondary":"#3c2f00","on-secondary-container":"#342800","on-surface-variant":"#e1bfbb","surface-container-highest":"#353534","on-background":"#e5e2e1","on-error":"#690005","surface-variant":"#353534","primary-fixed-dim":"#ffb3ad","inverse-primary":"#b12c2b"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin-desktop":"4rem","space-2xs":"0.25rem","gutter-desktop":"2rem","space-4xl":"6rem","space-xs":"0.5rem","space-3xl":"4.5rem","space-md":"1rem","margin-mobile":"1.25rem","space-3xs":"0.125rem","space-lg":"1.5rem","gutter-mobile":"1rem","space-2xl":"3rem","space-sm":"0.75rem","space-xl":"2rem"},fontFamily:{"label-caps":["Space Grotesk"],"title-editorial":["Bodoni Moda"],"body-lg":["Geist"],"display-hero":["Bodoni Moda"],"body-md":["Geist"],"headline-md":["Bodoni Moda"],"headline-lg":["Bodoni Moda"],"body-sm":["Geist"],"display-hero-mobile":["Bodoni Moda"],"headline-xl-mobile":["Bodoni Moda"],"headline-xl":["Bodoni Moda"],"label-data":["Space Grotesk"],"headline-lg-mobile":["Bodoni Moda"],"headline-sm":["Bodoni Moda"]},fontSize:{"label-caps":["11px",{lineHeight:"16px",letterSpacing:"0.22em",fontWeight:"600"}],"title-editorial":["18px",{lineHeight:"26px",letterSpacing:"0.08em",fontWeight:"600"}],"body-lg":["18px",{lineHeight:"28px",letterSpacing:"0.01em",fontWeight:"400"}],"display-hero":["96px",{lineHeight:"100px",letterSpacing:"-0.03em",fontWeight:"700"}],"body-md":["15px",{lineHeight:"24px",letterSpacing:"0.015em",fontWeight:"400"}],"headline-md":["28px",{lineHeight:"36px",letterSpacing:"0em",fontWeight:"500"}],"headline-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["13px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"400"}],"display-hero-mobile":["48px",{lineHeight:"52px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-xl-mobile":["36px",{lineHeight:"44px",letterSpacing:"-0.01em",fontWeight:"600"}],"headline-xl":["56px",{lineHeight:"64px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-data":["13px",{lineHeight:"18px",letterSpacing:"0.06em",fontWeight:"500"}],"headline-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"0em",fontWeight:"600"}],"headline-sm":["22px",{lineHeight:"30px",letterSpacing:"0.01em",fontWeight:"500"}]}}}};</script></head><body class="bg-surface-container-lowest font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-surface"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-md transition-all duration-300"><div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Marvin Tattoos Wordmark Logo" class="h-8 w-auto object-contain transition-transform duration-300 hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UjFl_nSOS_6RWQhUzrcNar1puWqHkgKyMSCNA36jVXLWyzgswerWxsmPL_vuA-a_02U33sveHMz9EBDJeGJC8yxtP90T3M_iRxV-p3kR7-VmEh5UhvRDXzE1avsJbiGkmUAHCEZ4udWiEh9Wt-B6RFF-ggEsM9pXPEoFZSloQRUNCHusrBSW7gb-aQ0tu9QmZ7iGzOLtMnzhrfNADhvDPkDjTKMz9KAZITk8nn7zHqUjcZC-4jnowLXd1Z"/><div class="flex flex-col"><span class="font-title-editorial text-title-editorial uppercase tracking-widest text-on-surface">Marvin</span><span class="font-label-caps text-label-caps text-outline uppercase tracking-[0.25em]">Atelier &amp; Piercing</span></div></div><nav class="hidden xl:flex items-center gap-space-sm" data-active-classes="bg-surface-container-high text-on-surface"><a aria-current="page" class="px-space-xs py-space-2xs font-label-caps uppercase transition-colors bg-surface-container-high text-on-surface" data-path="home" href="#">Home</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="services" href="#">Services</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="portfolio" href="#">Portfolio</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="shop-equipment" href="#">Shop Equipment</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="about-studio" href="#">About Studio</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="studio-location" href="#">Studio Location</a><a class="px-space-xs py-space-2xs font-label-caps text-label-caps uppercase transition-colors text-on-surface-variant hover:text-on-surface" data-path="official-socials" href="#">Official Socials</a></nav><div class="flex items-center gap-space-sm shrink-0"><a class="inline-flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-container text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-all duration-300 hover:bg-surface-container-high hover:text-on-surface hover:-translate-y-0.5" href="#"><span class="w-2 h-2 rounded-full bg-secondary shrink-0 animate-pulse"></span><span class="">WhatsApp Direct</span></a><a class="inline-flex items-center px-space-md py-space-xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-widest transition-all duration-300 btn-gothic-glow" href="#"><span class="material-symbols-outlined text-[16px] mr-space-2xs">calendar_today</span><span class="">Book Appointment</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface-container-lowest min-h-screen"><div class="flex flex-col w-full">
+<!-- HERO SECTION: Dark Gothic Editorial Impact -->
+<section class="relative w-full min-h-[92vh] flex items-center justify-center overflow-hidden -mt-20 pt-24 pb-space-2xl bg-surface-container-lowest" id="hero-sanctum">
+<!-- Floating Gothic Ambient Embers/Particles Canvas Container -->
+<div class="absolute inset-0 pointer-events-none z-10 overflow-hidden" id="hero-ember-container"></div>
+<!-- Atmospheric Visual Backdrop (https://lh3.googleusercontent.com/aida/AEtjO1WxJneVTTiW5FtUrPA-UR2MCffuWJAbObh5_9W0vlQKxC_piV154sBLGppN0_wQIIb2QAx1s4TtQItttuHFTtoKW_9vpl7OcIRzDT0xXw5czitVp0NkmhS7cZ-MzVz0skE9_yEGcoDFgvZQdsHHM1rv32xYstg6XDqLe5pD0LijkVhE9CY4QoesFaarKdffwvL8_6aJVdyy4-7wR0JXMwckNFfjtX61dr9yRUqlYQSOHZ-DHbaO_bE-a2E) -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-75 mix-blend-luminosity transition-transform duration-1000 ease-out" data-alt="Dramatic dark gothic editorial photograph of tattooed arms with Marvin Tattoos and Piercing in blackletter script" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1WxJneVTTiW5FtUrPA-UR2MCffuWJAbObh5_9W0vlQKxC_piV154sBLGppN0_wQIIb2QAx1s4TtQItttuHFTtoKW_9vpl7OcIRzDT0xXw5czitVp0NkmhS7cZ-MzVz0skE9_yEGcoDFgvZQdsHHM1rv32xYstg6XDqLe5pD0LijkVhE9CY4QoesFaarKdffwvL8_6aJVdyy4-7wR0JXMwckNFfjtX61dr9yRUqlYQSOHZ-DHbaO_bE-a2E'); background-position: center 30%;"></div>
+<!-- Radial Dark Vignette & Crimson Mist Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/50 to-surface-container-lowest/70 pointer-events-none"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-transparent to-surface-container-lowest pointer-events-none"></div>
+<div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-container/20 rounded-full blur-[120px] pointer-events-none animate-pulse" style="animation-duration: 6s;"></div>
+<!-- Index Counter Flank -->
+<div class="hidden xl:flex flex-col items-center gap-space-sm absolute right-margin-desktop top-1/2 -translate-y-1/2 z-20">
+<span class="font-label-data text-label-data text-on-surface">01</span>
+<div class="w-[1px] h-12 bg-primary"></div>
+<span class="font-label-data text-label-data text-outline/50 transition-colors hover:text-on-surface cursor-pointer">02</span>
+<span class="font-label-data text-label-data text-outline/50 transition-colors hover:text-on-surface cursor-pointer">03</span>
+<span class="font-label-data text-label-data text-outline/50 transition-colors hover:text-on-surface cursor-pointer">04</span>
+</div>
+<!-- Vertical Accent Label -->
+<div class="hidden xl:block absolute left-margin-desktop bottom-space-2xl z-20 [writing-mode:vertical-rl] rotate-180">
+<span class="font-label-caps text-label-caps tracking-[0.3em] uppercase text-outline/70">Sanctum Sanctorum // Codex Est. 2014</span>
+</div>
+<div class="relative z-10 w-full max-w-6xl mx-auto px-margin-mobile md:px-gutter-desktop flex flex-col items-center text-center">
+<!-- Atelier Provenance Pill -->
+<div class="inline-flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container/80 backdrop-blur-md rounded-full mb-space-md shadow-xl animate-entrance delay-100 pulse-badge border border-outline-variant/30">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-[0.25em]">Master Crafted Body Art &amp; Precision Piercings</span>
+</div>
+<!-- Grand Gothic Headline Stack with Breathing Aura -->
+<h1 class="text-headline-xl md:text-display-hero text-on-surface mb-space-xs leading-none gothic-aura-title animate-entrance delay-200" style='font-family: UnifrakturMaguntia, "Pirata One", serif; letter-spacing: 0.04em;'>Marvin Tattoos</h1>
+<div class="text-headline-md md:text-headline-lg text-primary mb-space-lg gothic-aura-sub animate-entrance delay-300" style='font-family: UnifrakturMaguntia, "Pirata One", serif; letter-spacing: 0.12em;'>Piercing Atelier</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-space-xl leading-relaxed animate-entrance delay-300">
+        Where subterranean ritualistic discipline merges with surgical sterile precision. Curating permanent flesh narratives, hyper-realism relics, and bespoke titanium modifications.
+      </p>
+<!-- Action Ritual CTAs -->
+<div class="flex flex-col sm:flex-row items-center justify-center gap-space-md w-full max-w-md mb-space-3xl animate-entrance delay-400">
+<a class="group w-full sm:w-auto px-space-xl py-space-sm bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-[0.2em] shadow-xl btn-gothic-glow flex items-center justify-center gap-space-xs border border-primary/20" href="#">
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:rotate-12">ink_pen</span>
+<span class="">Book a Session</span>
+</a>
+<a class="group w-full sm:w-auto px-space-xl py-space-sm bg-surface-container-high text-on-surface font-label-caps text-label-caps uppercase tracking-[0.2em] shadow-md btn-secondary-glow flex items-center justify-center gap-space-xs border border-outline-variant/30" href="#">
+<span class="w-2 h-2 rounded-full bg-secondary group-hover:animate-ping"></span>
+<span class="">WhatsApp Direct</span>
+</a>
+</div>
+<!-- Quick Stats Floating Monolith Bar -->
+<div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-space-md bg-surface-container/60 backdrop-blur-xl p-space-md shadow-2xl animate-entrance delay-500 border border-outline-variant/30 transition-all duration-300 hover:border-primary/40">
+<div class="flex items-center gap-space-sm px-space-sm py-space-2xs transition-transform duration-300 hover:translate-x-1">
+<span class="font-headline-md text-headline-md text-on-surface font-title-editorial">12K<span class="text-primary">+</span></span>
+<div class="text-left flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Artefacts Inked</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Uncompromising needle craft</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm py-space-2xs bg-surface-container-low/40 transition-transform duration-300 hover:translate-x-1">
+<span class="material-symbols-outlined text-primary text-[32px] transition-transform duration-300 hover:scale-110">verified</span>
+<div class="text-left flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Clinical Grade</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">100% Sterile &amp; Certified</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm py-space-2xs transition-transform duration-300 hover:translate-x-1">
+<div class="flex items-center gap-1 text-secondary">
+<span class="font-title-editorial text-headline-md text-on-surface">4.9</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="text-left flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Verified Lore</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">From 3,400+ collectors</span>
+</div>
+</div>
+</div>
+<!-- Scroll Indicator Cue -->
+<div class="mt-space-lg flex flex-col items-center gap-space-3xs scroll-indicator-bounce text-outline hover:text-on-surface transition-colors cursor-pointer" onclick="window.scrollBy({top: 600, behavior: 'smooth'})">
+<span class="font-label-caps text-[9px] uppercase tracking-[0.25em]">Explore Codex</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</div>
+</div>
+</section>
+<!-- STUDIO OVERVIEW & MASTER SERVICES -->
+<section class="w-full py-space-4xl px-margin-mobile md:px-margin-desktop bg-surface">
+<div class="max-w-7xl mx-auto">
+<!-- Section Header with Asymmetric Typographic Alignment -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-3xl">
+<div class="space-y-space-xs max-w-xl">
+<div class="flex items-center gap-space-xs">
+<span class="w-8 h-[2px] bg-primary"></span>
+<span class="font-label-caps text-label-caps uppercase text-primary tracking-[0.25em]">Ritual Portfolio</span>
+</div>
+<h2 class="font-headline-xl text-headline-lg md:text-headline-xl text-on-surface uppercase">
+            Surgical Discipline &amp; Avant-Garde Ink
+          </h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">
+          Every incision and needle pass respects human anatomy. We formulate tailored pigments, anatomical flows, and autoclave-certified piercings.
+        </p>
+</div>
+<!-- 4-Column Service Matrix with Razor-Sharp Surfaces -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop">
+<!-- Service 01: Realism & Blackwork -->
+<div class="group flex flex-col bg-surface-container p-space-lg shadow-xl hover:bg-surface-container-high transition-all duration-300 gothic-card border border-transparent hover:border-primary/20">
+<div class="w-full h-48 bg-cover bg-center mb-space-md overflow-hidden" data-alt="Macro close-up of deeply saturated dark blackwork tattoo on skin featuring photorealistic gothic cathedral arches, intricate bone textures, deep shadows and micro-stippling dotwork" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1VRMTxwNcUrz_Rss-qZc3E5RnE38-tSlJ4efYJkYzOUKo2ZN9ys9JnjZeiDZXZbrF7HgG9OK9BGTtgBFnoyPt6ac9u4OtqM4qYPNumvWLiNzA5v5D3J0qQk8dLF3CjJI8kr150no4Xm0tS79r_Jj9ovdPDtAI1v6Xq6ld4EphFcsclWD5C6MossDCf5mgjAeRUbi48xxrS5Wa-8taGXyGBttf4agd_gLKd7RIEZNci961NDrm9-H_dE0IR_')">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1VRMTxwNcUrz_Rss-qZc3E5RnE38-tSlJ4efYJkYzOUKo2ZN9ys9JnjZeiDZXZbrF7HgG9OK9BGTtgBFnoyPt6ac9u4OtqM4qYPNumvWLiNzA5v5D3J0qQk8dLF3CjJI8kr150no4Xm0tS79r_Jj9ovdPDtAI1v6Xq6ld4EphFcsclWD5C6MossDCf5mgjAeRUbi48xxrS5Wa-8taGXyGBttf4agd_gLKd7RIEZNci961NDrm9-H_dE0IR_')"></div>
+</div>
+<div class="flex items-center justify-between text-outline mb-space-2xs">
+<span class="font-label-data text-label-data uppercase">Discipline // 01</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:rotate-12 group-hover:text-primary">skull</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface uppercase mb-space-xs transition-colors duration-300 group-hover:text-primary">
+            Dark Realism &amp; Blackwork
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md flex-1">
+            Chiaroscuro contrasts, gothic renaissance portraits, cathedral architecture, and opaque blackwork packed with surgical precision.
+          </p>
+<a class="inline-flex items-center justify-between w-full pt-space-sm font-label-caps text-label-caps uppercase tracking-wider text-primary group-hover:text-on-surface transition-colors" href="#">
+<span class="">View Pricing &amp; Specs</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1.5 transition-transform duration-300">arrow_forward</span>
+</a>
+</div>
+<!-- Service 02: Neo-Traditional & Script -->
+<div class="group flex flex-col bg-surface-container p-space-lg shadow-xl hover:bg-surface-container-high transition-all duration-300 gothic-card border border-transparent hover:border-primary/20">
+<div class="w-full h-48 bg-cover bg-center mb-space-md overflow-hidden" data-alt="Editorial close up of bold calligraphic gothic script tattoo across a muscular forearm, razor sharp linework, deep black and crimson ink accents under moody warm studio spotlights" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1X6wlJFnSfwjjK1t1rory9O60Sg-Za-xZ0KtUNagkCf6JzyXTzndPK_r_Ik8FidX2Ol8Toz88COxQ6mtaMLKx62QfFFa7WGUT6TjXgP4d9A_pdzVJipjUm8tOpMEa2OJ8KukhUh0d1SoOC7AVfMu0-TBzsD325rDKe1PVYbuefOuDzvXCg4AXMWOglIwkCis3ynY6JYLQLDZWm-N60sWNjW7xs-RkLFGEeygAoVkeA870M_SMZ8ERwrvQ8f')">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1X6wlJFnSfwjjK1t1rory9O60Sg-Za-xZ0KtUNagkCf6JzyXTzndPK_r_Ik8FidX2Ol8Toz88COxQ6mtaMLKx62QfFFa7WGUT6TjXgP4d9A_pdzVJipjUm8tOpMEa2OJ8KukhUh0d1SoOC7AVfMu0-TBzsD325rDKe1PVYbuefOuDzvXCg4AXMWOglIwkCis3ynY6JYLQLDZWm-N60sWNjW7xs-RkLFGEeygAoVkeA870M_SMZ8ERwrvQ8f')"></div>
+</div>
+<div class="flex items-center justify-between text-outline mb-space-2xs">
+<span class="font-label-data text-label-data uppercase">Discipline // 02</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:rotate-12 group-hover:text-primary">edit_note</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface uppercase mb-space-xs transition-colors duration-300 group-hover:text-primary">
+            Neo-Traditional &amp; Script
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md flex-1">
+            Heavy variable weight line work, custom freehand calligraphy, arcane typography, and saturated illustrative pigments crafted for permanence.
+          </p>
+<a class="inline-flex items-center justify-between w-full pt-space-sm font-label-caps text-label-caps uppercase tracking-wider text-primary group-hover:text-on-surface transition-colors" href="#">
+<span class="">View Pricing &amp; Specs</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1.5 transition-transform duration-300">arrow_forward</span>
+</a>
+</div>
+<!-- Service 03: Precision Body Piercings -->
+<div class="group flex flex-col bg-surface-container p-space-lg shadow-xl hover:bg-surface-container-high transition-all duration-300 gothic-card border border-transparent hover:border-primary/20">
+<div class="w-full h-48 bg-cover bg-center mb-space-md overflow-hidden" data-alt="Cinematic high fashion detail photo of curated ear piercing styling featuring mirror-polished ASTM F-136 titanium studs, cabochon onyx, and geometric gold jewelry on ears under pristine studio lighting" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbXHWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv')">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbXHWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv')"></div>
+</div>
+<div class="flex items-center justify-between text-outline mb-space-2xs">
+<span class="font-label-data text-label-data uppercase">Discipline // 03</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:rotate-12 group-hover:text-secondary">colorize</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface uppercase mb-space-xs transition-colors duration-300 group-hover:text-secondary">
+            Precision Piercings
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md flex-1">
+            Anatomy-specific needle pierces using implant-grade ASTM-F136 titanium and solid 14k gold. Curated ear projects with autoclave sterilization.
+          </p>
+<a class="inline-flex items-center justify-between w-full pt-space-sm font-label-caps text-label-caps uppercase tracking-wider text-primary group-hover:text-on-surface transition-colors" href="#">
+<span class="">View Pricing &amp; Specs</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1.5 transition-transform duration-300">arrow_forward</span>
+</a>
+</div>
+<!-- Service 04: Cover-ups & Reworks -->
+<div class="group flex flex-col bg-surface-container p-space-lg shadow-xl hover:bg-surface-container-high transition-all duration-300 gothic-card border border-transparent hover:border-primary/20">
+<div class="w-full h-48 bg-cover bg-center mb-space-md overflow-hidden" data-alt="Detailed macro view of a massive dark gothic blast-over tattoo masking previous faded ink, dense black textures with subtle geometric negative spaces and dark crimson highlights" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1XNohxnOuUyiuRH81bDZ-UO8NfUNRWjsUcNf17CRapKv9vqwRHRvs3ImL_JXOm2FvDj6HykULWGcCWZgYx9hVcVCLxqzHuv1hF1ialW4869cGWPNTHer5TvmOtY_nxwDKw6nQDMXi3mq1XDnV16QhONJg9c1lC6tE19Ss8zvWLgg3iC8edIVpUsZahYztL6uWO1QlydX2_bGpDx5xF0AII2u44j6IKQa1Bcw-3gRSQPd0R3M512GxMVb3KS')">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1XNohxnOuUyiuRH81bDZ-UO8NfUNRWjsUcNf17CRapKv9vqwRHRvs3ImL_JXOm2FvDj6HykULWGcCWZgYx9hVcVCLxqzHuv1hF1ialW4869cGWPNTHer5TvmOtY_nxwDKw6nQDMXi3mq1XDnV16QhONJg9c1lC6tE19Ss8zvWLgg3iC8edIVpUsZahYztL6uWO1QlydX2_bGpDx5xF0AII2u44j6IKQa1Bcw-3gRSQPd0R3M512GxMVb3KS')"></div>
+</div>
+<div class="flex items-center justify-between text-outline mb-space-2xs">
+<span class="font-label-data text-label-data uppercase">Discipline // 04</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:rotate-12 group-hover:text-primary">layers</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface uppercase mb-space-xs transition-colors duration-300 group-hover:text-primary">
+            Cover-Ups &amp; Reworks
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md flex-1">
+            Master heavy blast-overs, anatomical redesigns, and surgical scar camouflage. Strategic dark density layers tailored to nullify prior ink.
+          </p>
+<a class="inline-flex items-center justify-between w-full pt-space-sm font-label-caps text-label-caps uppercase tracking-wider text-primary group-hover:text-on-surface transition-colors" href="#">
+<span class="">View Pricing &amp; Specs</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1.5 transition-transform duration-300">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- FEATURED PORTFOLIO MONOGRAPH SHOWCASE -->
+<section class="w-full py-space-4xl px-margin-mobile md:px-margin-desktop bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-2xl">
+<div>
+<div class="font-label-caps text-label-caps uppercase text-primary tracking-[0.25em] mb-space-2xs">Curated Archive</div>
+<h2 class="font-headline-xl text-headline-lg md:text-headline-xl text-on-surface uppercase">Healed Relics &amp; Flesh Works</h2>
+</div>
+<!-- Filter Tabs -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="px-space-md py-space-2xs bg-primary-container text-on-surface font-label-caps text-label-caps uppercase shadow-md transition-all hover:bg-on-primary-fixed-variant">All Works</button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-caps text-label-caps uppercase transition-colors">Blackwork</button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-caps text-label-caps uppercase transition-colors">Portraits</button>
+<button class="px-space-md py-space-2xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-caps text-label-caps uppercase transition-colors">Titanium Piercings</button>
+</div>
+</div>
+<!-- Asymmetric Mosaic Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-desktop">
+<!-- Piece 01 -->
+<div class="group relative bg-surface-container overflow-hidden shadow-2xl flex flex-col gothic-card border border-transparent hover:border-primary/20">
+<div class="relative w-full h-96 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" data-alt="Striking editorial tattoo photograph of a gothic full chest piece depicting an ornate raven skull framed by baroque filigree and dark thorns, rich obsidian shades, healed and moisturized skin texture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDw-LC5T3Qbuh7cVBwh64V7VAoe8Ji5bovK8uNUZ4_v3NsbJb85T29qes9hXL9_P8_1PBf4wfVbpQ_jhbL7XRLNg8w6HEDLrcJAX0s-fEqouRmmSgnmSX4qP-JFofp3EYwIAzGx2qwAD2dLADwjsqU0HiGAmtiB23NnoxvWdaDOCmJsCexXeKQls6PGxa9d3IKZH2vpMnHSv2iHvMuWAVnCpD0quFwqf3o3NX5hf9o8wD-qFGjCUh9oDQ')">
+</div>
+<div class="absolute top-space-sm left-space-sm px-space-xs py-space-3xs bg-surface-container-lowest/80 backdrop-blur-sm text-secondary font-label-caps text-label-caps uppercase tracking-widest border border-secondary/30">
+              Healed 8 Months
+            </div>
+</div>
+<div class="p-space-md flex flex-col justify-between bg-surface-container">
+<div class="flex items-center justify-between mb-space-2xs">
+<span class="font-title-editorial text-title-editorial uppercase text-on-surface group-hover:text-primary transition-colors">Corvus Nocturne</span>
+<span class="font-label-data text-label-data text-outline">ARTIST // M. VOSS</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Full sternum expansion, 14 hours execution over 2 ritual phases.</p>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Flash ID: #882-CR</span>
+<a class="px-space-sm py-space-2xs bg-surface-container-high hover:bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,11,20,0.5)]" href="#">Book Similar</a>
+</div>
+</div>
+</div>
+<!-- Piece 02 -->
+<div class="group relative bg-surface-container overflow-hidden shadow-2xl flex flex-col gothic-card border border-transparent hover:border-primary/20">
+<div class="relative w-full h-96 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" data-alt="Editorial shot of full back tattoo featuring dark renaissance marble angel sculpture emerging from deep black textured shading with photorealistic cracked stone effects" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdo0bmFlXnX1D3392Tsa9epf80ypykcTNyGVsl-WoyqvJcgmBe84RihyvVZ2Oh_bw9_WQL2aUI3cXniK6UxJzO8limg9nUwTyfltgEo5dv3tOjhK4u-dtK8tbaQmZoNJL2l1OA1397Ox7uPI_Pxd38c4lFA7aeN84kZTRUfQ9gi19aT1j3k2VUSZ4W8jSfYCG0NZHDo3pa3hhvZxQS7Ohzwkx-O6Bzm-C_OjRifSEYXrf8tjKLibeW4w')">
+</div>
+<div class="absolute top-space-sm left-space-sm px-space-xs py-space-3xs bg-surface-container-lowest/80 backdrop-blur-sm text-secondary font-label-caps text-label-caps uppercase tracking-widest border border-secondary/30">
+              Healed 1 Year
+            </div>
+</div>
+<div class="p-space-md flex flex-col justify-between bg-surface-container">
+<div class="flex items-center justify-between mb-space-2xs">
+<span class="font-title-editorial text-title-editorial uppercase text-on-surface group-hover:text-primary transition-colors">The Marble Seraph</span>
+<span class="font-label-data text-label-data text-outline">ARTIST // ELENA K.</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Anatomical back piece, continuous gray wash graduation.</p>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Flash ID: #401-SR</span>
+<a class="px-space-sm py-space-2xs bg-surface-container-high hover:bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,11,20,0.5)]" href="#">Book Similar</a>
+</div>
+</div>
+</div>
+<!-- Piece 03 -->
+<div class="group relative bg-surface-container overflow-hidden shadow-2xl flex flex-col gothic-card border border-transparent hover:border-primary/20">
+<div class="relative w-full h-96 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" data-alt="Curated ear project photograph displaying double daith and industrial piercing using anodized dark slate and yellow gold titanium with genuine black diamond clusters" style="background-image: url('https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbXHWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv')">
+</div>
+<div class="absolute top-space-sm left-space-sm px-space-xs py-space-3xs bg-surface-container-lowest/80 backdrop-blur-sm text-primary font-label-caps text-label-caps uppercase tracking-widest border border-primary/30">
+              Custom Titanium
+            </div>
+</div>
+<div class="p-space-md flex flex-col justify-between bg-surface-container">
+<div class="flex items-center justify-between mb-space-2xs">
+<span class="font-title-editorial text-title-editorial uppercase text-on-surface group-hover:text-secondary transition-colors">Onyx Constellation</span>
+<span class="font-label-data text-label-data text-outline">PIERCER // S. CHOI</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Freehand needle execution, ASTM-F136 body jewelry curation.</p>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Project ID: #712-TI</span>
+<a class="px-space-sm py-space-2xs bg-surface-container-high hover:bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,11,20,0.5)]" href="#">Book Similar</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- EQUIPMENT, APOTHECARY & AFTERCARE SPOTLIGHT -->
+<section class="w-full py-space-4xl px-margin-mobile md:px-margin-desktop bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-center">
+<div class="lg:col-span-5 space-y-space-md">
+<div class="inline-flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-caps text-label-caps uppercase text-secondary tracking-[0.25em]">Pro Equipment &amp; Apothecary</span>
+</div>
+<h2 class="font-headline-xl text-headline-lg md:text-headline-xl text-on-surface uppercase leading-tight">
+            Surgical Discipline In Every Needle &amp; Balm
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Our private line of studio-engineered supplies, medical-grade membrane cartridges, and botanical healing salves developed for optimal pigment retention and cellular recovery.
+          </p>
+<!-- Precision Metric Inline Bar Chart -->
+<div class="p-space-md bg-surface-container space-y-space-sm shadow-xl border border-outline-variant/30">
+<div class="flex justify-between items-center font-label-caps text-label-caps uppercase">
+<span class="text-on-surface">Pigment Retention Rate</span>
+<span class="text-primary font-label-data">98.4%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[98.4%] transition-all duration-1000 ease-out"></div>
+</div>
+<div class="flex justify-between items-center font-label-caps text-label-caps uppercase pt-space-2xs">
+<span class="text-on-surface">Autoclave Sterility Index</span>
+<span class="text-secondary font-label-data">100% Class-B</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-full transition-all duration-1000 ease-out"></div>
+</div>
+</div>
+<div class="pt-space-xs">
+<a class="group inline-flex items-center gap-space-xs px-space-lg py-space-sm bg-surface-container-highest text-on-surface font-label-caps text-label-caps uppercase tracking-widest hover:bg-primary-container transition-all duration-300 btn-gothic-glow border border-outline-variant/40" href="#">
+<span class="">Explore Supplies Store</span>
+<span class="material-symbols-outlined text-[16px] transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-0.5">shopping_bag</span>
+</a>
+</div>
+</div>
+<!-- Equipment Cards Showcase -->
+<div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Item 01 -->
+<div class="group bg-surface-container p-space-md shadow-xl flex flex-col justify-between gothic-card border border-transparent hover:border-primary/25">
+<div class="w-full h-44 bg-cover bg-center mb-space-sm overflow-hidden" data-alt="Close-up product photograph of premium rotary tattoo machine with anodized matte black aluminum body, precision gold cam wheel, and clinical needle cartridge on obsidian stone table">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAEH8HyVGDUmyNIYB_ozfjZC3d_Snybt1fw4elc5WrsWjCK7ruPDVXY1033SzVeC5ziQox58N5K7_pawWks4y0GlyDEqTNRg2LCEWlAZwn6falcTEsjGTeJwL8D3VPvHWd1KTejeG-ypst5FsqwTaE9DQKDkuCm2onFL80aaXOUt_Z1476nCjQbyTTnmbS0ZagPdyRh2KLpI9AvMxL2ts4Mj7-jm5NNPN_1dAg9y9R5wnR5pU17SvXehw')"></div>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase">Hard Goods</span>
+<h4 class="font-title-editorial text-title-editorial text-on-surface uppercase mb-space-2xs group-hover:text-primary transition-colors">Vanguard Rotary Pen V2</h4>
+<p class="font-body-sm text-body-sm text-outline mb-space-sm">Wireless direct-drive coreless motor, 4.0mm fixed stroke for dense saturated blackwork.</p>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-data text-label-data text-on-surface font-bold">$740.00</span>
+<button class="px-space-sm py-space-2xs bg-surface-container-high hover:bg-on-surface hover:text-surface font-label-caps text-label-caps uppercase transition-all duration-300">Acquire</button>
+</div>
+</div>
+</div>
+<!-- Item 02 -->
+<div class="group bg-surface-container p-space-md shadow-xl flex flex-col justify-between gothic-card border border-transparent hover:border-secondary/25">
+<div class="w-full h-44 bg-cover bg-center mb-space-sm overflow-hidden" data-alt="Editorial product shot of luxury amber glass jar containing rich herbal tattoo aftercare healing balm surrounded by dried botanical herbs on dark slate background">
+<div class="w-full h-full bg-cover bg-center interactive-img-zoom" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDJ3BR6lxY9HGmiiaJwYhonKL0kFpQ-pr6OIFA1ddhzlKNAEYKkS_laFJLgVPyMFqNoKIpMZjb7lp4yILotsaCwiZOTqHWAPq0t1Xd6LSOHamN2KjSOxqssgImwqUdSocVTb78LSGQQMXfUmKuGK5vKYZYBYt-XrCbCjVWAfXA8Z_qveN_-hXXdMRMihRUXc5CwLH4IknwB3MYUEsApWB42-YGWEKFvm7ZdZijYUBy0ZmQ_jqgnV7PTkQ')"></div>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Aftercare Codex</span>
+<h4 class="font-title-editorial text-title-editorial text-on-surface uppercase mb-space-2xs group-hover:text-secondary transition-colors">Ritual Obsidian Salve</h4>
+<p class="font-body-sm text-body-sm text-outline mb-space-sm">Cold-pressed calendula, bisabolol, and organic shea. Zero petroleum, anti-inflammatory shield.</p>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-data text-label-data text-on-surface font-bold">$28.00</span>
+<button class="px-space-sm py-space-2xs bg-surface-container-high hover:bg-on-surface hover:text-surface font-label-caps text-label-caps uppercase transition-all duration-300">Acquire</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CLIENT REVIEWS & TESTIMONIAL CHRONICLES -->
+<section class="w-full py-space-4xl px-margin-mobile md:px-margin-desktop bg-surface">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-space-3xl space-y-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-primary tracking-[0.25em]">Verified Testimonials</span>
+<h2 class="font-headline-xl text-headline-lg md:text-headline-xl text-on-surface uppercase">The Collector's Voice</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Unvarnished feedback from patrons who have committed their skin to our sanctum.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop">
+<!-- Review 01 -->
+<div class="bg-surface-container p-space-xl flex flex-col justify-between shadow-xl gothic-card border border-transparent hover:border-primary/20">
+<div>
+<div class="flex items-center gap-1 text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed mb-space-lg italic">
+              "The level of clinical hygiene surpasses even private surgical suites I’ve visited. Marvin spent 2 hours refining the anatomical flow of my chest armor before a needle touched skin. Healed with zero scabbing."
+            </p>
+</div>
+<div class="flex items-center gap-space-sm pt-space-md bg-surface-container-low/50 p-space-xs">
+<div class="w-12 h-12 bg-cover bg-center rounded-full shrink-0 border border-outline-variant" data-alt="Portrait of a sophisticated client with healed fine-line neck tattoo, monochromatic dark atmospheric lighting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA_Ac-e7bEVS-36L39MbRDP7s7PJdpwFjaB0CEZkHJfjp55tfDpRNJIIKe3B7c35yrDKlJ8wbmNV33qNH4SvOA6dZDsUgftKuwzW0mMYIdWJoXEbRkV14nNJO7iIC8zbtVWh-xWotDxJI0BJJzWrMLCtObIvE-iLwnctOaKqLUZVN_t9Hvv_HAXFVywfjU9XpuWY9vnknmh3SoXTacvHfSjGmnUYOcD_rmPGw2VFiBGA29wF5d4LLKE-w')">
+</div>
+<div class="flex flex-col">
+<span class="font-title-editorial text-title-editorial text-on-surface">Christian Moreau</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Custom Sleeve Collector</span>
+</div>
+</div>
+</div>
+<!-- Review 02 -->
+<div class="bg-surface-container p-space-xl flex flex-col justify-between shadow-xl gothic-card border border-transparent hover:border-primary/20">
+<div>
+<div class="flex items-center gap-1 text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed mb-space-lg italic">
+              "Completed my curated ear project here. Their piercer mapped my cartilage structure with calipers and custom-bent the titanium bars to prevent migration. Zero pain, flawless healing."
+            </p>
+</div>
+<div class="flex items-center gap-space-sm pt-space-md bg-surface-container-low/50 p-space-xs">
+<div class="w-12 h-12 bg-cover bg-center rounded-full shrink-0 border border-outline-variant" data-alt="Portrait of an elegant woman showcasing multiple titanium and gold ear piercings with sleek dark hair in studio lighting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuACl5TDYhkHxDnUNAqLaqOA72iCaB1_fj_vVRrzFcyMzZ-x6zNZ4Y_9pBBPgFer7xLnSePNYY5_6LUcEVQthy6ArgkCJhpMz9mcsluBLjEPt9SihUheS-XFAyio-kXj9KBGkCHmW0heMxUoB3cBoKU18eBU_YaKlL587Ejf0A3zjglTbM0t19euF1ekZx4OkbrAXT0yYNeNdOiGtFIP5d6E1ARTCtJMfzkVeWbZClRH0G25nT2kXmbFqQ')">
+</div>
+<div class="flex flex-col">
+<span class="font-title-editorial text-title-editorial text-on-surface">Valeria Danvers</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Piercing Client</span>
+</div>
+</div>
+</div>
+<!-- Review 03 -->
+<div class="bg-surface-container p-space-xl flex flex-col justify-between shadow-xl gothic-card border border-transparent hover:border-primary/20">
+<div>
+<div class="flex items-center gap-1 text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed mb-space-lg italic">
+              "Had a horrific botched tribal from 2008 that three other studios refused to touch without laser. The blast-over work by Marvin turned a badge of shame into a breathtaking gothic relic."
+            </p>
+</div>
+<div class="flex items-center gap-space-sm pt-space-md bg-surface-container-low/50 p-space-xs">
+<div class="w-12 h-12 bg-cover bg-center rounded-full shrink-0 border border-outline-variant" data-alt="Portrait of a tattooed creative director with dense blackwork sleeve, moody lighting and refined confident posture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcSTxYZcRELvyPhHyC0rXzHgFYO1bfzU4qCw5yr6tpwiYR75X8H48LGh-d-tucDipwwpOSCMS-lrt_lrkNU_c-v6W0W2ig3CivuYBnwg7hgoLm5eGw9Hztu0n0Om5gbsAihcJqCt5cDRluupnEovckw_UVx5OIrcEV7dlyz62L1mxTJlv_d66aqAvlWIEBOxkRq3JfWESpIcW01R3GBe9dyidVSWPxVG3eZUjhgZk4iZywF1-nX6ii1Q')">
+</div>
+<div class="flex flex-col">
+<span class="font-title-editorial text-title-editorial text-on-surface">Marcus Thorne</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Cover-Up Patron</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- STUDIO SANCTUM LOCATION, HOURS & ANTI-SCAM ADVISORY -->
+<section class="w-full py-space-4xl px-margin-mobile md:px-margin-desktop bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto space-y-space-2xl">
+<!-- High Priority Security Warning Banner -->
+<div class="w-full p-space-md bg-error-container/20 text-on-surface flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md shadow-2xl border border-error/20">
+<div class="flex items-start gap-space-sm">
+<div class="p-space-2xs bg-error-container text-on-error-container shrink-0 mt-0.5 pulse-badge">
+<span class="material-symbols-outlined text-[24px]">gshield</span>
+</div>
+<div>
+<div class="font-label-caps text-label-caps uppercase text-error tracking-wider mb-space-3xs font-bold">
+              Official Verification Protocol &amp; Anti-Scam Notice
+            </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-3xl leading-snug">
+              Imposter accounts frequently impersonate Marvin Tattoos on Instagram soliciting deposit wire transfers. We NEVER request funds through unauthorized DMs or cash apps. Only confirmed bookings through this portal and our direct verified WhatsApp line (+1 800 555-MARK) are honored.
+            </p>
+</div>
+</div>
+<a class="shrink-0 px-space-md py-space-xs bg-error-container text-on-error-container font-label-caps text-label-caps uppercase tracking-widest hover:bg-error hover:text-on-error transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,180,171,0.4)]" href="#">
+          Verify Channel
+        </a>
+</div>
+<!-- Location & Operating Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop">
+<!-- Interactive Atelier Map Mockup View -->
+<div class="lg:col-span-7 flex flex-col bg-surface-container overflow-hidden shadow-2xl gothic-card border border-transparent hover:border-primary/20">
+<div class="w-full h-80 md:h-96 bg-cover bg-center relative" data-location="04 Obsidian Alley, Cultural Quarter, New York, NY" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDREC5pLTdXJO9fp7vuWhpIAppPWmY4qSTJFCXzqlUcHi3fZn0gVE-noAZzaS8SEDDLh1lZ4oFoupXQ5NuT2OZdFMFRBi9bf1rXRgjL5JVQDM5eOljrx_syn6Z_sjQ5Q3bz0ZjyL8BL1VfcSpTQSddMSSp_sHB62jK0ST79vxxgbvglq3jteejwFoma9kAsCXzziKmSSyrh11T-SMQQ4TL_pVcDo1x_MBWIVx9omsFuPYnfkoalDF-y7g')">
+<div class="absolute inset-0 bg-surface-container-lowest/30"></div>
+<!-- Pin Overlay -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="p-space-xs bg-primary-container text-on-surface rounded-full shadow-2xl animate-bounce">
+<span class="material-symbols-outlined text-[24px]">location_on</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase bg-surface-container-lowest px-space-xs py-space-3xs text-on-surface mt-space-2xs shadow-xl border border-outline-variant/40">Marvin Sanctuary Bay</span>
+</div>
+</div>
+<div class="p-space-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm bg-surface-container">
+<div>
+<div class="font-title-editorial text-title-editorial uppercase text-on-surface">Sanctum Address</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">04 Obsidian Alley, Floor 03 — Cultural Quarter // Design Void</div>
+</div>
+<a class="px-space-md py-space-xs bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-label-caps uppercase tracking-wider transition-all duration-300 flex items-center gap-space-2xs hover:-translate-y-0.5" href="#">
+<span class="material-symbols-outlined text-[16px]">directions</span>
+<span class="">Open in Maps</span>
+</a>
+</div>
+</div>
+<!-- Schedule & Protocol Sidebar -->
+<div class="lg:col-span-5 flex flex-col justify-between bg-surface-container p-space-xl shadow-2xl gothic-card border border-transparent hover:border-primary/20">
+<div class="space-y-space-lg">
+<div class="space-y-space-2xs">
+<span class="font-label-caps text-label-caps uppercase text-primary tracking-[0.25em]">Atelier Timetable</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface uppercase">Operating Hours</h3>
+</div>
+<div class="space-y-space-sm font-label-data text-label-data">
+<div class="flex justify-between items-center py-space-xs bg-surface-container-low/40 px-space-sm transition-colors hover:bg-surface-container-low">
+<span class="text-on-surface">Tuesday — Friday</span>
+<span class="text-on-surface-variant font-bold">11:00 — 21:00</span>
+</div>
+<div class="flex justify-between items-center py-space-xs bg-surface-container-high/60 px-space-sm border border-secondary/20">
+<div class="flex items-center gap-space-xs">
+<span class="text-secondary font-bold">Saturday</span>
+<span class="px-space-2xs bg-secondary text-on-secondary font-label-caps text-[9px] uppercase pulse-badge">Walk-Ins Open</span>
+</div>
+<span class="text-secondary font-bold">11:00 — 21:00</span>
+</div>
+<div class="flex justify-between items-center py-space-xs bg-surface-container-low/40 px-space-sm transition-colors hover:bg-surface-container-low">
+<span class="text-on-surface">Sunday</span>
+<span class="text-on-surface-variant">12:00 — 18:00 (Private Sessions)</span>
+</div>
+<div class="flex justify-between items-center py-space-xs bg-surface-container-lowest px-space-sm text-outline">
+<span class="">Monday</span>
+<span class="uppercase font-label-caps text-label-caps">Sterilization Bay Protocol / Closed</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low space-y-space-2xs border-l-2 border-secondary">
+<div class="font-label-caps text-label-caps uppercase text-secondary">Walk-in Policy Notice</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Walk-in appointments are dedicated exclusively to Saturdays on a first-arrived basis. Flash book opens at 10:45 AM sharp. Complex cover-ups and whole backpieces strictly mandate consultation appointments.
+              </p>
+</div>
+</div>
+<div class="pt-space-lg">
+<a class="w-full py-space-sm bg-primary-container text-on-surface font-label-caps text-label-caps uppercase tracking-[0.2em] shadow-xl btn-gothic-glow flex items-center justify-center gap-space-xs border border-primary/20" href="#">
+<span class="material-symbols-outlined text-[18px]">calendar_add_on</span>
+<span class="">Reserve Consultation Date</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-lowest"><div class="w-full px-margin-desktop py-space-3xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop mb-space-2xl"><div class="space-y-space-md"><div class="flex items-center gap-space-xs"><img alt="Marvin Tattoos Wordmark Logo" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UjFl_nSOS_6RWQhUzrcNar1puWqHkgKyMSCNA36jVXLWyzgswerWxsmPL_vuA-a_02U33sveHMz9EBDJeGJC8yxtP90T3M_iRxV-p3kR7-VmEh5UhvRDXzE1avsJbiGkmUAHCEZ4udWiEh9Wt-B6RFF-ggEsM9pXPEoFZSloQRUNCHusrBSW7gb-aQ0tu9QmZ7iGzOLtMnzhrfNADhvDPkDjTKMz9KAZITk8nn7zHqUjcZC-4jnowLXd1Z"/><span class="font-title-editorial text-title-editorial uppercase text-on-surface">Marvin</span></div><div class="font-label-caps text-label-caps text-primary uppercase">Sanctum of Avant-Garde Ink &amp; Steel</div><p class="font-body-sm text-body-sm text-outline leading-relaxed">Monolithic artistry and ritualistic body modification operating under clinical surgical standards.</p><div class="flex items-center gap-space-xs pt-space-xs"><span class="w-2 h-2 rounded-full bg-secondary shrink-0 animate-ping"></span><span class="font-label-data text-label-data text-on-surface-variant uppercase">Sterile Bay Certification #709-DX</span></div></div><div class="space-y-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">Atelier Coordinates</div><div class="font-body-sm text-body-sm text-on-surface-variant space-y-space-2xs"><p class="text-on-surface">04 Obsidian Alley, Floor 03</p><p class="">Cultural Quarter / Design Void</p><p class="font-label-data text-label-data text-outline">Direct: +1 (800) 555-MARK</p></div><div class="pt-space-xs"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface mb-space-2xs">Operating Hours</div><p class="font-body-sm text-body-sm text-on-surface-variant">Tue – Sat: 12:00 — 22:00</p><p class="font-body-sm text-body-sm text-outline">Sun – Mon: Private Bookings Only</p></div></div><div class="space-y-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">Walk-In Protocol</div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Daily consult spots open strictly at 11:30 AM on first-arrived basis. Custom sleeve blueprints and complex body modifications require formal digital booking deposits.</p><div class="p-space-sm bg-surface-container space-y-space-2xs border border-error/20"><div class="flex items-center gap-space-2xs text-error"><span class="material-symbols-outlined text-[16px]">verified_user</span><span class="font-label-caps text-label-caps uppercase tracking-wider">Official Channels Warning</span></div><p class="font-body-sm text-body-sm text-outline leading-tight">Marvin operates exclusively through this verified domain and documented social handles below. Beware unauthorized proxy agents.</p></div></div><div class="space-y-space-md"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">Official Social Registry</div><ul class="space-y-space-xs font-label-data text-label-data uppercase"><li class="flex items-center justify-between text-on-surface-variant hover:text-on-surface group cursor-pointer"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] group-hover:text-primary transition-colors">photo_camera</span>Instagram</span><span class="text-primary font-label-caps text-label-caps group-hover:underline">@marvin_atelier</span></li><li class="flex items-center justify-between text-on-surface-variant hover:text-on-surface group cursor-pointer"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] group-hover:text-primary transition-colors">play_circle</span>TikTok</span><span class="text-primary font-label-caps text-label-caps group-hover:underline">@marvintattoos.official</span></li><li class="flex items-center justify-between text-on-surface-variant hover:text-on-surface group cursor-pointer"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] group-hover:text-primary transition-colors">video_library</span>YouTube</span><span class="text-primary font-label-caps text-label-caps group-hover:underline">/marvintattoostudio</span></li></ul><div class="pt-space-sm"><div class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface mb-space-xs">Quick Navigation</div><div class="grid grid-cols-2 gap-space-2xs font-label-caps text-label-caps uppercase text-outline"><a class="hover:text-on-surface transition-colors" href="#">Aftercare</a><a class="hover:text-on-surface transition-colors" href="#">Sterilization</a><a class="hover:text-on-surface transition-colors" href="#">Apprenticeship</a><a class="hover:text-on-surface transition-colors" href="#">Press Kit</a></div></div></div></div><div class="pt-space-xl flex flex-col md:flex-row items-center justify-between gap-space-md border-t border-outline-variant/20"><div class="font-label-caps text-label-caps uppercase tracking-widest text-outline">© 2025 MARVIN TATTOOS &amp; PIERCINGS ATELIER. ALL RIGHTS RESERVED.</div><div class="flex items-center gap-space-lg font-label-caps text-label-caps uppercase text-outline"><a class="hover:text-on-surface transition-colors" href="#">Privacy Ordinance</a><a class="hover:text-on-surface transition-colors" href="#">Sterile Standard Compliance</a><a class="hover:text-on-surface transition-colors" href="#">Terms of Ritual</a></div></div></div></footer><div class="fixed bottom-space-lg right-space-lg z-50"><a class="flex items-center gap-space-xs px-space-md py-space-sm bg-surface-container text-on-surface shadow-2xl transition-all duration-300 hover:bg-surface-container-high hover:text-on-surface btn-gothic-glow border border-secondary/30" href="#"><span class="w-2.5 h-2.5 rounded-full bg-secondary shrink-0 animate-ping"></span><span class="material-symbols-outlined text-[18px]">chat</span><span class="font-label-caps text-label-caps uppercase tracking-widest">WhatsApp Desk</span></a></div>
+<!-- Vanilla JS: Atmospheric Ember Dust Particle System -->
+<script>
+(function() {
+  // Check if reduced motion is preferred
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReducedMotion) return;
+
+  const container = document.getElementById('hero-ember-container');
+  if (!container) return;
+
+  const particleCount = 28;
+  const colors = [
+    'rgba(255, 179, 173, 0.75)', // crimson pale
+    'rgba(138, 11, 20, 0.65)',   // deep primary red
+    'rgba(233, 195, 73, 0.55)',  // amber secondary gold
+    'rgba(229, 226, 225, 0.45)', // bone white dust
+    'rgba(255, 146, 138, 0.6)'   // vivid ember
+  ];
+
+  for (let i = 0; i < particleCount; i++) {
+    const p = document.createElement('div');
+    const size = Math.random() * 3.5 + 1.5;
+    const duration = Math.random() * 8 + 7; // 7s to 15s
+    const delay = Math.random() * 8;
+    const leftPos = Math.random() * 100;
+    const drift = (Math.random() - 0.5) * 80;
+    const opacity = Math.random() * 0.6 + 0.25;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    p.style.position = 'absolute';
+    p.style.bottom = '-10px';
+    p.style.left = leftPos + '%';
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.borderRadius = '50%';
+    p.style.backgroundColor = color;
+    p.style.boxShadow = '0 0 ' + (size * 2.5) + 'px ' + color;
+    p.style.pointerEvents = 'none';
+    p.style.setProperty('--drift-x', drift + 'px');
+    p.style.setProperty('--ember-opacity', opacity);
+    p.style.animation = `ember-float ${duration}s cubic-bezier(0.25, 0.1, 0.25, 1) ${delay}s infinite`;
+
+    container.appendChild(p);
+  }
+})();
+</script>
+</body></html>
