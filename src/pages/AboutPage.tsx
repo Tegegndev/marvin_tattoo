@@ -2,7 +2,7 @@ import React from 'react';
 import { PageView } from '../types';
 import { ARTISTS_DATA } from '../data/atelierData';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Award, HeartHandshake, Syringe, Sparkles, MessageCircle, Calendar, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Award, HeartHandshake, Syringe, Sparkles, MessageCircle } from 'lucide-react';
 
 interface AboutPageProps {
   onNavigate: (page: PageView) => void;
@@ -20,7 +20,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
 
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           {/* Section Tag */}
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-surface-container-highest/40">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center justify-between mb-8 pb-4 border-b border-surface-container-highest/40"
+          >
             <div className="flex items-center gap-3">
               <span className="font-label-caps text-xs text-primary tracking-[0.25em]">
                 FOUNDER MANIFESTO // CODEX EST. 2014
@@ -29,12 +34,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               <span className="font-label-data text-xs text-outline">SANCTUM 04 / FL. 03</span>
             </div>
             <span className="font-label-data text-xs text-secondary">FOLIO REF: M-14/RELIC</span>
-          </div>
+          </motion.div>
 
           {/* Asymmetric Split Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Master Portrait Card (7 Cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between bg-surface-container-low rounded-xl overflow-hidden shadow-2xl relative group border border-surface-container-highest/80">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-7 flex flex-col justify-between bg-surface-container-low rounded-xl overflow-hidden shadow-2xl relative group border border-surface-container-highest/80"
+            >
               <div className="relative h-[480px] md:h-[580px] w-full overflow-hidden">
                 <img
                   alt="Master Marvin in leather apron holding tattoo machine"
@@ -68,10 +78,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Master Marvin Specs & Story (5 Cols) */}
-            <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="lg:col-span-5 flex flex-col justify-between gap-6"
+            >
               <div className="bg-surface-container p-6 md:p-8 rounded-xl flex flex-col justify-between h-full shadow-lg border border-surface-container-highest">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -126,7 +141,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-title-editorial text-sm uppercase text-on-surface">
+                    <span className="font-title-editorial text-sm uppercase text-on-surface font-bold">
                       Private Sanctuary Inquiries
                     </span>
                     <span className="font-label-caps text-[10px] text-on-surface-variant uppercase">
@@ -141,15 +156,21 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   Inquire Now
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Atelier Philosophy & Triple Codex Lineage */}
+      {/* Atelier Philosophy & Triple Codex Lineage with Scroll Animation */}
       <section className="w-full bg-surface-container-lowest py-20 px-4 md:px-8 lg:px-12 border-b border-surface-container-highest/40">
         <div className="max-w-7xl mx-auto space-y-12">
-          <div className="flex flex-col md:flex-row md:items-end justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
+            className="flex flex-col md:flex-row md:items-end justify-between"
+          >
             <div>
               <span className="font-label-caps text-xs text-primary tracking-[0.2em] block mb-2">
                 ARCHITECTURAL PROTOCOLS
@@ -161,68 +182,62 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             <p className="font-body-sm text-sm text-on-surface-variant max-w-md mt-4 md:mt-0 leading-relaxed">
               Rooted in Chiaroscuro depth and aseptic biomechanics, our studio redefines permanence through three non-negotiable sanctum pillars.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Codex 01 */}
-            <div className="bg-surface-container p-8 rounded-xl flex flex-col justify-between shadow-lg relative overflow-hidden group border border-surface-container-highest hover:border-primary/30 transition-all">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary-container/10 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-label-data text-3xl text-primary font-bold">01</span>
-                  <ShieldCheck className="w-6 h-6 text-on-surface-variant" />
+            {[
+              {
+                num: '01',
+                icon: <ShieldCheck className="w-6 h-6 text-on-surface-variant" />,
+                title: 'Surgical Aseptic Genesis',
+                desc: "Infusing Marvin's clinical background into custom tattoo arts. We deploy certified Class B medical autoclaves, single-use surgical titanium cartridges, continuous airborne HEPA filtration, and hospital bio-barrier hygiene.",
+                tag: 'ISO-7 Cleanroom Grade',
+                accent: 'primary'
+              },
+              {
+                num: '02',
+                icon: <Sparkles className="w-6 h-6 text-on-surface-variant" />,
+                title: 'Anatomical Morphology',
+                desc: 'Designs are never stamped flat onto skin. Every template is hand-drawn directly over muscle striations, skeletal axes, and joint pivot points, ensuring dynamic kinetic flow when you move.',
+                tag: 'Freehand Topography Mapping',
+                accent: 'secondary'
+              },
+              {
+                num: '03',
+                icon: <HeartHandshake className="w-6 h-6 text-on-surface-variant" />,
+                title: 'Permanent Relic Warranty',
+                desc: 'Tattooing is a lifetime compact. Every bespoke commission includes complimentary 6-month dermal inspection, pigment settling top-ups, and custom botanical aftercare prescriptions.',
+                tag: 'Lifetime Artistic Compact',
+                accent: 'primary'
+              }
+            ].map((codex, idx) => (
+              <motion.div
+                key={codex.num}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                className="bg-surface-container p-8 rounded-xl flex flex-col justify-between shadow-lg relative overflow-hidden group border border-surface-container-highest hover:border-primary/30 transition-all"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className={`font-label-data text-3xl font-bold ${codex.accent === 'primary' ? 'text-primary' : 'text-secondary'}`}>
+                      {codex.num}
+                    </span>
+                    {codex.icon}
+                  </div>
+                  <h3 className="font-headline-sm text-xl text-on-surface mb-3 uppercase font-bold">
+                    {codex.title}
+                  </h3>
+                  <p className="font-body-md text-sm text-on-surface-variant leading-relaxed mb-6">
+                    {codex.desc}
+                  </p>
                 </div>
-                <h3 className="font-headline-sm text-xl text-on-surface mb-3 uppercase font-bold">
-                  Surgical Aseptic Genesis
-                </h3>
-                <p className="font-body-md text-sm text-on-surface-variant leading-relaxed mb-6">
-                  Infusing Marvin's clinical background into custom tattoo arts. We deploy certified Class B medical autoclaves, single-use surgical titanium cartridges, continuous airborne HEPA filtration, and hospital bio-barrier hygiene.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-surface-container-highest text-xs font-label-data text-outline uppercase">
-                ISO-7 Cleanroom Grade
-              </div>
-            </div>
-
-            {/* Codex 02 */}
-            <div className="bg-surface-container p-8 rounded-xl flex flex-col justify-between shadow-lg relative overflow-hidden group border border-surface-container-highest hover:border-secondary/30 transition-all">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/10 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-label-data text-3xl text-secondary font-bold">02</span>
-                  <Sparkles className="w-6 h-6 text-on-surface-variant" />
+                <div className="pt-4 border-t border-surface-container-highest text-xs font-label-data text-outline uppercase">
+                  {codex.tag}
                 </div>
-                <h3 className="font-headline-sm text-xl text-on-surface mb-3 uppercase font-bold">
-                  Anatomical Morphology
-                </h3>
-                <p className="font-body-md text-sm text-on-surface-variant leading-relaxed mb-6">
-                  Designs are never stamped flat onto skin. Every template is hand-drawn directly over muscle striations, skeletal axes, and joint pivot points, ensuring dynamic kinetic flow when you move.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-surface-container-highest text-xs font-label-data text-outline uppercase">
-                Freehand Topography Mapping
-              </div>
-            </div>
-
-            {/* Codex 03 */}
-            <div className="bg-surface-container p-8 rounded-xl flex flex-col justify-between shadow-lg relative overflow-hidden group border border-surface-container-highest hover:border-primary/30 transition-all">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary-container/10 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-label-data text-3xl text-primary font-bold">03</span>
-                  <HeartHandshake className="w-6 h-6 text-on-surface-variant" />
-                </div>
-                <h3 className="font-headline-sm text-xl text-on-surface mb-3 uppercase font-bold">
-                  Permanent Relic Warranty
-                </h3>
-                <p className="font-body-md text-sm text-on-surface-variant leading-relaxed mb-6">
-                  Tattooing is a lifetime compact. Every bespoke commission includes complimentary 6-month dermal inspection, pigment settling top-ups, and custom botanical aftercare prescriptions.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-surface-container-highest text-xs font-label-data text-outline uppercase">
-                Lifetime Artistic Compact
-              </div>
-            </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -230,9 +245,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
       {/* Resident Master Artists Roster */}
       <section className="w-full bg-surface-container-lowest py-20 px-4 md:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
+            className="text-center max-w-2xl mx-auto space-y-2"
+          >
             <span className="font-label-caps text-xs uppercase text-primary tracking-[0.25em]">
-              The Atelier Guild
+              THE ATELIER GUILD
             </span>
             <h2 className="font-headline-xl text-3xl sm:text-4xl text-on-surface uppercase font-bold">
               Resident Masters &amp; Specialists
@@ -240,12 +261,16 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             <p className="font-body-md text-sm text-on-surface-variant">
               Every practitioner in our sanctum operates with distinct stylistic authority and medical discipline.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {ARTISTS_DATA.map((art) => (
-              <div
+            {ARTISTS_DATA.map((art, idx) => (
+              <motion.div
                 key={art.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
                 className="bg-surface-container rounded-xl overflow-hidden shadow-xl border border-surface-container-highest flex flex-col justify-between gothic-card"
               >
                 <div className="relative h-72 overflow-hidden bg-surface-dim">
@@ -294,28 +319,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
-
-          <div className="p-8 bg-surface-container rounded-xl border border-secondary/30 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-1 text-center md:text-left">
-              <span className="font-label-caps text-xs text-secondary uppercase tracking-widest">
-                APPRENTICESHIP CODEX
-              </span>
-              <h3 className="font-headline-sm text-2xl text-on-surface uppercase font-bold">
-                Seeking Dedicated Apprentices &amp; Guest Residents
-              </h3>
-              <p className="font-body-sm text-xs text-outline max-w-xl">
-                We accept 2 intensive apprentices per calendar cycle. Requirements: Classical anatomy illustration portfolio and clean bloodborne pathogen certifications.
-              </p>
-            </div>
-            <button
-              onClick={onOpenWhatsApp}
-              className="px-6 py-3 bg-secondary text-on-secondary font-label-caps text-xs uppercase tracking-widest font-bold shrink-0 hover:bg-secondary-fixed transition-colors"
-            >
-              Submit Portfolio Dossier
-            </button>
           </div>
         </div>
       </section>
