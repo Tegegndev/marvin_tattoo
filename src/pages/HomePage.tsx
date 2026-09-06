@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA } from '../data/atelierData';
 import { 
@@ -27,51 +27,19 @@ interface HomePageProps {
   onOpenVerify: () => void;
 }
 
-// Interactive Founder Portrait with Black & White to Color Spotlight Lens on Hover
+// Founder Portrait with Black & White to Full Color on Hover
 const MarvinPortraitLens: React.FC = () => {
-  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-    setMousePos({ x, y });
-  };
-
   return (
     <div 
-      ref={containerRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseMove={handleMouseMove}
-      className="relative w-full h-[480px] sm:h-[540px] lg:h-[600px] bg-noir-900 border border-noir-700 overflow-hidden group select-none cursor-crosshair"
+      className="relative w-full h-[480px] sm:h-[540px] lg:h-[600px] bg-noir-900 border border-noir-700 overflow-hidden group select-none"
     >
-      {/* Base Layer: High-Contrast Black & White Portrait */}
+      {/* Marvin's Portrait: High-Contrast Black & White by default, Full Original Color on hover */}
       <img
         src="/images/marvin-founder.png"
         alt="Marvin - Founder & Resident Tattooist"
-        className="absolute inset-0 w-full h-full object-cover object-[center_15%] scale-110 filter grayscale contrast-125 brightness-95 transition-transform duration-700 group-hover:scale-[1.13]"
+        className="absolute inset-0 w-full h-full object-cover object-[center_15%] scale-110 filter grayscale contrast-125 brightness-95 transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:scale-[1.14]"
       />
-      <div className="absolute inset-0 bg-noir-950/20 pointer-events-none" />
-
-      {/* Top Layer: Color Reveal Mask following mouse cursor */}
-      <div
-        className="absolute inset-0 transition-opacity duration-300 pointer-events-none"
-        style={{
-          opacity: isHovered ? 1 : 0,
-          WebkitMaskImage: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`,
-          maskImage: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`
-        }}
-      >
-        <img
-          src="/images/marvin-founder.png"
-          alt="Marvin in Color"
-          className="w-full h-full object-cover object-[center_15%] scale-110 filter contrast-110 saturate-125 transition-transform duration-700 group-hover:scale-[1.13]"
-        />
-      </div>
+      <div className="absolute inset-0 bg-noir-950/20 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
 
       {/* Bottom Name & Story Overlay */}
       <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-noir-950 via-noir-950/85 to-transparent z-20 space-y-2 pointer-events-none">
