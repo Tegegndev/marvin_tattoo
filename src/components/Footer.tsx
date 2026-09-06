@@ -81,16 +81,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             <p className="font-body-sm text-body-sm text-bone-muted leading-relaxed">
               Saturday walk-in flash spots open at 10:45 AM, first come first served. Custom sleeves and cover-ups require a booked consultation.
             </p>
-            <div className="p-3 bg-noir-850 space-y-1 border border-noir-700">
-              <button
-                onClick={onOpenVerify}
-                className="flex items-center gap-1.5 text-gold font-label-caps text-label-caps uppercase tracking-wider hover:underline"
-              >
+            <div className="p-3.5 bg-noir-850 space-y-1.5 border border-noir-700">
+              <div className="flex items-center gap-1.5 text-gold font-label-caps text-label-caps uppercase tracking-wider font-bold">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Verify Official Accounts</span>
-              </button>
-              <p className="font-body-sm text-body-sm text-bone-dim leading-tight">
-                Beware of imposters asking for wire transfers. We only accept confirmed bookings through this site.
+                <span>Sterilization Guarantee</span>
+              </div>
+              <p className="font-body-sm text-body-sm text-bone-dim leading-relaxed">
+                Hospital-grade autoclave sterilization, single-use needle cartridges, and medical-grade sanitation protocols for every session.
               </p>
             </div>
           </div>
@@ -194,8 +191,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             © 2026 MARVIN TATTOOS &amp; PIERCINGS. ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-bone-dim">
-            <button onClick={onOpenVerify} className="hover:text-bone transition-colors">
-              Scam Alert
+            <button onClick={() => onNavigate('location')} className="hover:text-bone transition-colors">
+              Studio Location
             </button>
             <button onClick={() => onNavigate('about')} className="hover:text-bone transition-colors">
               Hygiene Standards

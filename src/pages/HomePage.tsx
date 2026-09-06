@@ -9,7 +9,6 @@ import {
   Star, 
   ShoppingBag, 
   MapPin, 
-  ShieldAlert, 
   Skull, 
   FileText, 
   Syringe, 
@@ -676,29 +675,6 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 06. LOCATION & APPOINTMENT DESK */}
       <section id="location-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto space-y-10">
-          {/* Security Advisory */}
-          <div className="w-full p-5 sm:p-6 bg-noir-850 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-noir-700">
-            <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-noir-800 text-gold shrink-0 mt-0.5 border border-noir-700">
-                <ShieldAlert className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="font-label-caps text-xs uppercase text-bone tracking-wider mb-1 font-bold">
-                  Anti-Scam Notice — Official Channels Only
-                </div>
-                <p className="font-body-sm text-xs text-bone-muted max-w-3xl leading-relaxed">
-                  We never request payments through unofficial social media channels. Consultations and deposits are arranged only through this website, our official phone, or verified WhatsApp desk.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onOpenVerify}
-              className="shrink-0 px-4 py-2 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-noir-750 transition-colors border border-noir-700"
-            >
-              Verify Channels
-            </button>
-          </div>
-
           {/* Location Details Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Atelier Address View */}
