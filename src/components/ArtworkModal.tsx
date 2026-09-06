@@ -1,7 +1,7 @@
 import React from 'react';
 import { PortfolioPiece } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, User, Clock, Palette, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X, User, Clock, Palette, Layers, ShieldCheck, ArrowRight } from 'lucide-react';
 
 interface ArtworkModalProps {
   piece: PortfolioPiece | null;
@@ -66,7 +66,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
 
                 <div className="absolute bottom-4 left-4 hidden lg:flex items-center gap-2 px-3 py-1.5 bg-surface-container-lowest/90 text-on-surface font-label-data text-xs uppercase border border-surface-container-highest">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                  <span>Derm-Scan Authenticated</span>
+                  <span>Authenticated Studio Work</span>
                 </div>
               </div>
 
@@ -74,7 +74,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
               <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-surface-container-low">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-outline text-xs font-label-data">
-                    <span className="uppercase tracking-wider">FLASH ID: {piece.flashId}</span>
+                    <span className="uppercase tracking-wider">ID: {piece.flashId}</span>
                     <span className="text-secondary uppercase">{piece.zone}</span>
                   </div>
 
@@ -90,7 +90,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-outline uppercase flex items-center gap-1">
-                        <User className="w-3 h-3 text-primary" /> Lead Artist
+                        <User className="w-3 h-3 text-primary" /> Artist
                       </span>
                       <span className="font-label-data text-xs text-on-surface uppercase block font-semibold">
                         {piece.artist}
@@ -108,7 +108,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
 
                     <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-outline uppercase flex items-center gap-1">
-                        <Palette className="w-3 h-3 text-primary" /> Pigment Matrix
+                        <Palette className="w-3 h-3 text-primary" /> Pigment
                       </span>
                       <span className="font-label-data text-xs text-on-surface uppercase block font-semibold">
                         {piece.pigment || 'Dynamic Carbon Deep'}
@@ -117,7 +117,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
 
                     <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-outline uppercase flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-secondary" /> Morphology
+                        <Layers className="w-3 h-3 text-secondary" /> Placement
                       </span>
                       <span className="font-label-data text-xs text-on-surface uppercase block font-semibold truncate">
                         {piece.morphology || piece.zone}
@@ -135,13 +135,13 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
                     }}
                     className="w-full py-3.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-primary/30"
                   >
-                    <span>Commission Similar Relic</span>
+                    <span>Book Similar Piece</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
                   <div className="text-center">
                     <span className="font-label-data text-[10px] text-outline uppercase">
-                      Clinical Consultation Deposit Required
+                      Consultation required to book
                     </span>
                   </div>
                 </div>

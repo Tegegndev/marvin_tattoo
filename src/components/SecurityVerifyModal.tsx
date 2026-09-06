@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShieldAlert, CheckCircle2, XCircle, Search, ExternalLink } from 'lucide-react';
+import { X, ShieldAlert, CheckCircle2, XCircle, Search } from 'lucide-react';
 
 interface SecurityVerifyModalProps {
   isOpen: boolean;
@@ -63,10 +63,10 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                 </div>
                 <div>
                   <h3 className="font-title-editorial text-title-editorial uppercase text-on-surface">
-                    Sanctum Security &amp; Anti-Scam Protocol
+                    Scam Check
                   </h3>
                   <span className="font-label-caps text-[10px] text-error uppercase tracking-wider">
-                    Official Registry Verification
+                    Verify our official accounts
                   </span>
                 </div>
               </div>
@@ -78,14 +78,14 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
             {/* Advisory Info */}
             <div className="p-4 bg-error-container/20 border border-error/20 space-y-2">
               <p className="font-body-sm text-xs text-on-surface leading-relaxed">
-                Fraudulent third parties periodically impersonate Master Marvin and resident artists to solicit illegitimate booking deposits. Use this tool to verify any handle or phone number contacting you.
+                Scammers sometimes impersonate our artists to collect fake booking deposits. Check any handle or phone number here before you pay.
               </p>
             </div>
 
             {/* Search Input Form */}
             <form onSubmit={handleVerify} className="space-y-3">
               <label className="block font-label-caps text-[10px] uppercase text-outline">
-                Enter Instagram Handle, TikTok, or Phone Number to Verify
+                Enter an Instagram, TikTok, or phone number
               </label>
               <div className="flex gap-2">
                 <input
@@ -118,10 +118,10 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs text-emerald-400 uppercase tracking-wider font-bold block">
-                    100% Authentic Verified Channel
+                    Verified — Official Account
                   </span>
                   <p className="font-body-sm text-xs text-on-surface-variant">
-                    This account or contact number is officially managed by Marvin Tattoos &amp; Piercing Atelier.
+                    This is an official Marvin Tattoos account or contact number.
                   </p>
                 </div>
               </motion.div>
@@ -136,10 +136,10 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                 <XCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs text-error uppercase tracking-wider font-bold block">
-                    WARNING: Unverified / Imposter Channel
+                    Warning — Not an Official Account
                   </span>
                   <p className="font-body-sm text-xs text-on-surface leading-snug">
-                    This contact is NOT recognized in our official registry. Do NOT transfer funds or provide sensitive information. Report this account immediately.
+                    Don't send money or personal info to this account, and report it to us.
                   </p>
                 </div>
               </motion.div>
@@ -148,7 +148,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
             {/* Official Registry List */}
             <div className="space-y-2 pt-2 border-t border-surface-container-highest">
               <span className="font-label-caps text-[10px] text-outline uppercase tracking-wider block">
-                Official Sanctum Channels
+                Official Accounts
               </span>
               <div className="space-y-1 font-label-data text-xs">
                 <div className="flex justify-between p-2 bg-surface-container">

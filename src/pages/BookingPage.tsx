@@ -4,9 +4,6 @@ import { ARTISTS_DATA } from '../data/atelierData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  User, 
   CheckCircle2, 
   ArrowRight, 
   Upload, 
@@ -14,10 +11,8 @@ import {
   MessageCircle, 
   Layers, 
   Edit3, 
-  FileText, 
   Syringe, 
-  MapPin, 
-  HelpCircle 
+  MapPin 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -32,23 +27,22 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   onNavigate,
   onOpenWhatsApp
 }) => {
-  const [step, setStep] = useState<number>(1);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   // Form State
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>(
-    initialPiece?.category === 'piercing' ? 'Clinical Piercing Suite' : 'New Bespoke Tattoo'
+    initialPiece?.category === 'piercing' ? 'Piercing' : 'Custom Tattoo'
   );
   const [selectedZone, setSelectedZone] = useState<string>(initialPiece?.zone || 'Forearm');
   const [selectedDimension, setSelectedDimension] = useState<string>('Large (7-10")');
   const [selectedTags, setSelectedTags] = useState<string[]>(['Dark Gothic', 'Black & Grey Realism']);
   const [conceptNarrative, setConceptNarrative] = useState<string>(
-    initialPiece ? `Commission inspired by archive piece: ${initialPiece.title} (Flash ID: ${initialPiece.flashId}).` : ''
+    initialPiece ? `Based on our piece "${initialPiece.title}" (ID: ${initialPiece.flashId}).` : ''
   );
   const [selectedVaultSample, setSelectedVaultSample] = useState<string>(initialPiece?.title || 'Baroque Memento Mori');
   const [selectedArtist, setSelectedArtist] = useState<string>(initialPiece?.artist || 'Master Marvin');
   const [selectedDate, setSelectedDate] = useState<string>('2026-09-18');
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('14:00 PM (Aseptic Session)');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('2:00 PM');
   const [patronName, setPatronName] = useState<string>('');
   const [patronPhone, setPatronPhone] = useState<string>('');
   const [patronEmail, setPatronEmail] = useState<string>('');
@@ -56,31 +50,31 @@ export const BookingPage: React.FC<BookingPageProps> = ({
 
   const disciplines = [
     {
-      id: 'New Bespoke Tattoo',
-      badge: 'Bespoke',
+      id: 'Custom Tattoo',
+      badge: 'Custom',
       icon: <Edit3 className="w-5 h-5 text-primary" />,
-      desc: 'Original custom composition calibrated to musculoskeletal morphology.',
+      desc: 'One-of-a-kind custom design drawn from scratch, just for you.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCbF0kjVhLkWWHDVZS3MXB0sFTeR4iCUYZg4PZUSC-y7hFLZrwH4NoOC8wQQ0hjpzsPVEhsM76SuYl4PSZkFcjxz7qtzn-CzlJ5hlOfMoCsUan-DkuIgrh3lVblkkZw7F4lQVXH5g6Efhls9C4TNPHTA3_UGebNk9jBmtbWXWR7Hbpfw6V0kVEdb87CN_ZiCPN1oTpmEgaCTJTpIscHTnqHfNhCWOBBjVWeu9UzEwtW9TzyeIc0R2CsRQ'
     },
     {
-      id: 'Atelier Flash Series',
-      badge: 'Atelier Vault',
+      id: 'Flash Designs',
+      badge: 'Flash',
       icon: <Sparkles className="w-5 h-5 text-secondary" />,
-      desc: 'Limited single-run archival flash, baroque skulls & neogothic iconography.',
+      desc: 'Ready-to-go designs from the flash wall, first come first served.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAJ8XqYldeN2RLQHWF5mM1iUwFoIEFi163iGeRSQb40gZPzBn-3RUjkhfB51oBBTPjA3uahQRjcq02m0In3-lZV7LDyQ5vI2GPGUxkaqkkM_1PQWYOjBvd9kXWznG22_1kx20Ucqd12cbl19WH01AJeWux7AMskIdhTR1oEmpbLdcdQ57gPiWa3W8_zh50nd8lR2xLldytTG1xAelB0jp5Y8_YyU4OEJQ0UkzLdNZUX35mpVg-kAKvsKg'
     },
     {
-      id: 'Cover-Up & Restructure',
-      badge: 'Restructure',
+      id: 'Cover-Up',
+      badge: 'Cover-Up',
       icon: <Layers className="w-5 h-5 text-primary" />,
-      desc: 'Dense blackwork, laser-calibrated blast-overs, or sacred geometry maskings.',
+      desc: 'Cover-ups and redesigns for tattoos you no longer want.',
       img: 'https://lh3.googleusercontent.com/aida/AEtjO1XNohxnOuUyiuRH81bDZ-UO8NfUNRWjsUcNf17CRapKv9vqwRHRvs3ImL_JXOm2FvDj6HykULWGcCWZgYx9hVcVCLxqzHuv1hF1ialW4869cGWPNTHer5TvmOtY_nxwDKw6nQDMXi3mq1XDnV16QhONJg9c1lC6tE19Ss8zvWLgg3iC8edIVpUsZahYztL6uWO1QlydX2_bGpDx5xF0AII2u44j6IKQa1Bcw-3gRSQPd0R3M512GxMVb3KS'
     },
     {
-      id: 'Clinical Piercing Suite',
-      badge: 'Clinical',
+      id: 'Piercing',
+      badge: 'Piercing',
       icon: <Syringe className="w-5 h-5 text-secondary" />,
-      desc: 'ASTM F-136 Titanium & solid 18k onyx curated ear constellations.',
+      desc: 'Titanium and gold piercings, done in a sterile room.',
       img: 'https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbXHWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv'
     }
   ];
@@ -89,26 +83,26 @@ export const BookingPage: React.FC<BookingPageProps> = ({
     'Forearm',
     'Full Sleeve',
     'Backpiece',
-    'Sternum / Thorax',
+    'Chest',
     'Leg / Calf',
     'Neck / Throat',
     'Hand / Knuckle',
-    'Ear Curated'
+    'Ear'
   ];
 
   const dimensionOptions = [
-    { title: 'Compact', sub: '< 3 inches', val: 'Small (<3")' },
+    { title: 'Small', sub: '< 3 inches', val: 'Small (<3")' },
     { title: 'Medium', sub: '4 to 6 inches', val: 'Medium (4-6")' },
-    { title: 'Substantial', sub: '7 to 10 inches', val: 'Large (7-10")' },
-    { title: 'Master Project', sub: 'Full Day (6-8h)', val: 'Full Day Master Session' }
+    { title: 'Large', sub: '7 to 10 inches', val: 'Large (7-10")' },
+    { title: 'Full Day', sub: '6-8 hours', val: 'Full Day Master Session' }
   ];
 
   const vectorTags = [
     'Dark Gothic',
     'Black & Grey Realism',
-    'Micro Fine-Line',
-    'Surrealist Chiaroscuro',
-    'Neogothic Calligraphy',
+    'Fine Line',
+    'Surrealism',
+    'Gothic Lettering',
     'Heavy Blackwork'
   ];
 
@@ -121,7 +115,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   };
 
   const calculateDeposit = () => {
-    if (selectedDiscipline === 'Clinical Piercing Suite') return 40;
+    if (selectedDiscipline === 'Piercing') return 40;
     if (selectedDimension === 'Full Day Master Session') return 250;
     if (selectedDimension === 'Large (7-10")') return 150;
     return 100;
@@ -153,18 +147,18 @@ export const BookingPage: React.FC<BookingPageProps> = ({
             <div className="space-y-3 max-w-3xl">
               <div className="flex items-center gap-3">
                 <span className="px-2.5 py-0.5 bg-primary-container text-on-primary font-label-caps text-xs uppercase tracking-widest border border-primary/30">
-                  Atelier Ritual
+                  Booking
                 </span>
                 <span className="text-outline font-label-data text-xs uppercase tracking-widest flex items-center gap-1.5">
-                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Marvin Resident &amp; Guests
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+                  Marvin &amp; Team
                 </span>
               </div>
               <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-6xl text-on-surface tracking-tight leading-none font-bold">
-                Inscribe <span className="italic font-normal text-primary">&amp;</span> Pierce
+                Tattoo &amp; Pierce
               </h1>
               <p className="font-body-md text-sm text-on-surface-variant max-w-2xl leading-relaxed">
-                Custom permanent iconography, complex reconstructive cover-ups, and surgical implant piercing. Every session commences with clinical calibration and bespoke conceptualisation.
+                Custom tattoos, cover-ups, and piercing appointments. Every booking starts with a consultation to go over design, placement, and aftercare.
               </p>
             </div>
 
@@ -177,10 +171,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                 <MessageCircle className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
                 <div className="text-left">
                   <span className="block font-label-caps text-[10px] uppercase text-secondary">
-                    Expedited Triage
+                    Fast Response
                   </span>
                   <span className="font-body-sm text-xs font-semibold text-on-surface">
-                    Direct WhatsApp Desk
+                    Message on WhatsApp
                   </span>
                 </div>
               </div>
@@ -201,7 +195,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                         01
                       </span>
                       <h2 className="font-headline-sm text-lg sm:text-xl text-on-surface tracking-wide uppercase font-bold">
-                        Select Discipline
+                        Choose a Service
                       </h2>
                     </div>
                     <span className="font-label-data text-xs text-outline font-semibold">
@@ -278,7 +272,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                     {/* Zone Selector */}
                     <div>
                       <span className="font-label-caps text-xs text-outline block mb-3 uppercase tracking-wider">
-                        Topography Zone
+                        Placement
                       </span>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {zoneOptions.map((z) => (
@@ -301,7 +295,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                     {/* Dimension Selector */}
                     <div>
                       <span className="font-label-caps text-xs text-outline block mb-3 uppercase tracking-wider">
-                        Dimension Scope
+                        Size
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
                         {dimensionOptions.map((dim) => {
@@ -334,10 +328,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                       <div className="flex items-center justify-between mb-3">
                         <span className="font-label-caps text-xs text-outline uppercase tracking-wider flex items-center gap-1.5">
                           <MapPin className="w-3.5 h-3.5 text-secondary" />
-                          Anatomical Calibration Preview
+                          Placement Preview
                         </span>
                         <span className="font-label-data text-xs text-secondary">
-                          {selectedZone} Zone
+                          {selectedZone}
                         </span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 bg-surface-container-low border border-surface-container-highest items-center">
@@ -359,15 +353,15 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                             </div>
                             <div className="p-2 bg-surface-container border border-surface-container-highest text-center">
                               <span className="block font-label-caps text-outline uppercase text-[9px]">Protocol</span>
-                              <span className="font-title-editorial text-primary text-xs truncate block">1-2 Phases</span>
+                              <span className="font-title-editorial text-primary text-xs truncate block">1-2 Sessions</span>
                             </div>
                             <div className="p-2 bg-surface-container border border-surface-container-highest text-center">
-                              <span className="block font-label-caps text-outline uppercase text-[9px]">Standard</span>
-                              <span className="font-title-editorial text-secondary text-xs truncate block">Class-B Aseptic</span>
+                              <span className="block font-label-caps text-outline uppercase text-[9px]">Sterilization</span>
+                              <span className="font-title-editorial text-secondary text-xs truncate block">Autoclave</span>
                             </div>
                           </div>
                           <p className="font-body-sm text-xs text-outline leading-snug">
-                            Skin tone calibration and muscle striations are mapped during in-person clinical stenciling to ensure perfect kinetic movement across joint articulation.
+                            We'll map the design to your body at the stencil appointment, so it sits right and moves naturally.
                           </p>
                         </div>
                       </div>
@@ -383,19 +377,19 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                         03
                       </span>
                       <h2 className="font-headline-sm text-lg sm:text-xl text-on-surface tracking-wide uppercase font-bold">
-                        Stylistic Reference &amp; Narrative
+                        Design &amp; Details
                       </h2>
                     </div>
                     <span className="font-label-data text-xs text-outline">
-                      {selectedTags.length} Vectors Selected
+                      {selectedTags.length} styles selected
                     </span>
                   </div>
 
                   <div className="p-6 bg-surface-container border border-surface-container-highest space-y-6">
-                    {/* Aesthetic Vectors */}
+                    {/* Styles */}
                     <div>
                       <span className="font-label-caps text-xs text-outline block mb-2 uppercase tracking-wider">
-                        Aesthetic Vector (Multi-Select)
+                        Style (select all that apply)
                       </span>
                       <div className="flex flex-wrap gap-2">
                         {vectorTags.map((tag) => {
@@ -421,13 +415,13 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                     {/* Narrative Textarea */}
                     <div className="space-y-2">
                       <label className="font-label-caps text-xs text-outline block uppercase tracking-wider">
-                        Concept Narrative &amp; Symbolism
+                        About Your Tattoo
                       </label>
                       <textarea
                         rows={4}
                         value={conceptNarrative}
                         onChange={(e) => setConceptNarrative(e.target.value)}
-                        placeholder="Detail the symbolism, motifs (e.g. raven skull, baroque filigree, memento mori), existing surrounding ink, and philosophical context..."
+                        placeholder="Tell us what you want: the subject, the meaning, and any tattoos already in that area..."
                         className="w-full p-4 bg-surface-container-low border border-surface-container-highest text-on-surface placeholder:text-outline font-body-md text-sm focus:outline-none focus:border-primary transition-colors resize-none"
                       />
                     </div>
@@ -437,10 +431,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                       <div className="flex items-center justify-between">
                         <span className="font-label-caps text-xs text-outline uppercase tracking-wider flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5 text-secondary" />
-                          Featured Atelier Flash &amp; Style Sample Vault
+                          Flash Inspiration
                         </span>
                         <span className="font-label-data text-[10px] text-outline uppercase">
-                          Tap to Select Base
+                          Tap to pick
                         </span>
                       </div>
 
@@ -501,10 +495,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                     <div className="p-6 bg-surface-container-low border-dashed border border-surface-container-highest hover:border-outline text-center transition-colors cursor-pointer group">
                       <Upload className="w-8 h-8 text-outline group-hover:text-primary transition-colors mx-auto mb-2" />
                       <span className="font-title-editorial text-sm text-on-surface block mb-1">
-                        Drag &amp; drop reference photos or anatomical selfies
+                        Drag &amp; drop reference photos
                       </span>
                       <span className="font-body-sm text-xs text-outline block">
-                        Supported: JPG, PNG, HEIC up to 25MB. Please include photos of existing skin/cover-up targets in neutral lighting.
+                        JPG, PNG, HEIC up to 25MB. Include clear photos of the area, especially for cover-ups.
                       </span>
                     </div>
                   </div>
@@ -557,7 +551,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                           </div>
                           <div className="flex justify-between items-center text-[10px] font-label-data text-outline pt-2 border-t border-surface-container-highest">
                             <span>{art.experience}</span>
-                            <span className="text-secondary">{art.slotsRemaining} Slots</span>
+                            <span className="text-secondary">{art.slotsRemaining} slots left</span>
                           </div>
                         </div>
                       );
@@ -580,22 +574,22 @@ export const BookingPage: React.FC<BookingPageProps> = ({
 
                     <div>
                       <label className="block font-label-caps text-xs text-outline uppercase mb-2">
-                        Session Window
+                        Time
                       </label>
                       <select
                         value={selectedTimeSlot}
                         onChange={(e) => setSelectedTimeSlot(e.target.value)}
                         className="w-full px-3 py-2.5 bg-surface-container-low border border-surface-container-highest text-on-surface font-label-data text-xs focus:outline-none focus:border-primary"
                       >
-                        <option value="11:00 AM (Morning Aseptic Calibration)">11:00 AM (Morning Calibration)</option>
-                        <option value="14:00 PM (Aseptic Session)">14:00 PM (Aseptic Session)</option>
-                        <option value="18:00 PM (Dusk Extended Session)">18:00 PM (Dusk Extended Session)</option>
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="6:00 PM">6:00 PM</option>
                       </select>
                     </div>
                   </div>
                 </section>
 
-                {/* STEP 05: Patron Info & Submission */}
+                {/* STEP 05: Your Details */}
                 <section className="space-y-6">
                   <div className="flex items-baseline justify-between">
                     <div className="flex items-center gap-3">
@@ -603,7 +597,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                         05
                       </span>
                       <h2 className="font-headline-sm text-lg sm:text-xl text-on-surface tracking-wide uppercase font-bold">
-                        Patron Identification &amp; Agreement
+                        Your Details
                       </h2>
                     </div>
                   </div>
@@ -612,14 +606,14 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
-                          Full Legal Name *
+                          Full Name *
                         </label>
                         <input
                           required
                           type="text"
                           value={patronName}
                           onChange={(e) => setPatronName(e.target.value)}
-                          placeholder="e.g. Christian Moreau"
+                          placeholder="e.g. Jane Doe"
                           className="w-full px-3 py-2 bg-surface-container-low border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
                         />
                       </div>
@@ -640,14 +634,14 @@ export const BookingPage: React.FC<BookingPageProps> = ({
 
                       <div>
                         <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
-                          Email Address *
+                          Email *
                         </label>
                         <input
                           required
                           type="email"
                           value={patronEmail}
                           onChange={(e) => setPatronEmail(e.target.value)}
-                          placeholder="patron@gmail.com"
+                          placeholder="you@email.com"
                           className="w-full px-3 py-2 bg-surface-container-low border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
                         />
                       </div>
@@ -662,7 +656,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                           className="mt-0.5 rounded border-surface-container-highest text-primary focus:ring-0"
                         />
                         <span>
-                          I confirm I am 18+ years of age, not pregnant or nursing, and agree to the 48-hour consultation cancellation policy and hospital-grade sterile protocols.
+                          I confirm I'm 18+ years old, not pregnant or nursing, and I agree to the 48-hour cancellation policy.
                         </span>
                       </label>
                     </div>
@@ -673,24 +667,24 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                       className="w-full py-4 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-[0.25em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-primary/40 disabled:opacity-50 disabled:cursor-not-allowed font-bold mt-4"
                     >
                       <CheckCircle2 className="w-5 h-5" />
-                      <span>Transmit Consultation Booking Dossier</span>
+                      <span>Send Booking Request</span>
                     </button>
                   </div>
                 </section>
               </form>
 
-              {/* Right Column: Live Dossier Summary Monolith (4 Cols) */}
+              {/* Right Column: Summary */}
               <div className="lg:col-span-4 space-y-6">
                 <div className="sticky top-28 bg-surface-container p-6 border border-surface-container-highest shadow-2xl space-y-6">
                   <div className="flex items-center justify-between pb-3 border-b border-surface-container-highest">
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-5 h-5 text-primary" />
                       <h3 className="font-title-editorial text-base uppercase text-on-surface">
-                        Session Blueprint
+                        Booking Summary
                       </h3>
                     </div>
                     <span className="font-label-caps text-[9px] text-secondary uppercase tracking-wider">
-                      Dossier Ref #9921
+                      Ref #9921
                     </span>
                   </div>
 
@@ -735,7 +729,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                       </span>
                     </div>
                     <p className="text-[11px] text-outline leading-tight font-body-sm">
-                      Applied in full towards your tattoo session or titanium jewelry on the day of appointment.
+                      Applied to your session on the day of your appointment.
                     </p>
                   </div>
 
@@ -743,16 +737,16 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                   <div className="p-3 bg-surface-container-low border border-secondary/30 space-y-2">
                     <div className="flex items-center gap-1.5 text-xs text-secondary font-label-caps uppercase">
                       <MessageCircle className="w-3.5 h-3.5" />
-                      <span>Instant Concierge Bridge</span>
+                      <span>Questions?</span>
                     </div>
                     <p className="font-body-sm text-[11px] text-outline">
-                      Prefer instant conversational booking? Connect directly with our studio coordinator.
+                      Prefer to talk? Message us on WhatsApp and we'll help you book.
                     </p>
                     <button
                       onClick={onOpenWhatsApp}
                       className="w-full py-2 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors border border-surface-container-highest text-center block"
                     >
-                      Open WhatsApp Triage
+                      Message on WhatsApp
                     </button>
                   </div>
                 </div>
@@ -771,13 +765,13 @@ export const BookingPage: React.FC<BookingPageProps> = ({
 
               <div className="space-y-3">
                 <span className="font-label-caps text-xs text-secondary uppercase tracking-widest block">
-                  SANCTUM DOSSIER #MV-8821 REGISTERED
+                  Request Sent
                 </span>
                 <h2 className="font-headline-xl text-3xl sm:text-4xl text-on-surface uppercase font-bold">
-                  Consultation Transmitted
+                  Booking request received
                 </h2>
                 <p className="font-body-md text-sm text-on-surface-variant max-w-lg mx-auto leading-relaxed">
-                  Thank you, <span className="text-on-surface font-bold">{patronName || 'Patron'}</span>. Master Marvin and the sanctum coordinator will review your narrative and confirm your calendar window ({selectedDate}) within 4 business hours.
+                  Thanks, <span className="text-on-surface font-bold">{patronName || 'friend'}</span>. We'll review your details and confirm your appointment ({selectedDate}) within 4 business hours.
                 </p>
               </div>
 
@@ -787,19 +781,19 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                   <span className="text-on-surface">{selectedDiscipline}</span>
                 </div>
                 <div className="flex justify-between text-outline">
-                  <span>Lead Artist:</span>
+                  <span>Artist:</span>
                   <span className="text-primary font-bold">{selectedArtist}</span>
                 </div>
                 <div className="flex justify-between text-outline">
-                  <span>Topography:</span>
+                  <span>Placement:</span>
                   <span className="text-on-surface">{selectedZone}</span>
                 </div>
                 <div className="flex justify-between text-outline">
-                  <span>Target Date:</span>
+                  <span>Date:</span>
                   <span className="text-secondary font-bold">{selectedDate}</span>
                 </div>
                 <div className="flex justify-between text-outline">
-                  <span>Contact WhatsApp:</span>
+                  <span>Phone:</span>
                   <span className="text-on-surface">{patronPhone || 'Verified'}</span>
                 </div>
               </div>
@@ -810,13 +804,13 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                   className="px-6 py-3 bg-secondary text-on-secondary font-label-caps text-xs uppercase tracking-widest font-bold hover:bg-secondary-fixed transition-colors flex items-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Expedite via WhatsApp</span>
+                  <span>Message on WhatsApp</span>
                 </button>
                 <button
                   onClick={() => onNavigate('home')}
                   className="px-6 py-3 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors border border-surface-container-highest"
                 >
-                  Return to Sanctuary
+                  Back to Home
                 </button>
               </div>
             </motion.div>

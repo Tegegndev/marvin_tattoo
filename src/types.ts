@@ -23,7 +23,7 @@ export interface PortfolioPiece {
   artist: string;
   healingState: 'Healed 8 Months' | 'Healed 1 Year' | 'Healed 18 Months' | 'Fresh Ink' | 'Custom Titanium';
   cycle: 'all' | 'healed' | 'fresh';
-  zone: 'Full Sleeves' | 'Backpiece Sanctuary' | 'Sternum / Thorax' | 'Hands & Phalanges' | 'Ear Cartilage Constellation';
+  zone: 'Full Sleeve' | 'Backpiece' | 'Chest' | 'Hands' | 'Ear Stack';
   flashId: string;
   image: string;
   description: string;
@@ -58,7 +58,7 @@ export interface Testimonial {
 export interface ProductItem {
   id: string;
   name: string;
-  category: 'Hard Goods' | 'Aftercare Codex' | 'Needle Cartridges' | 'Titanium Jewelry';
+  category: 'Hard Goods' | 'Aftercare' | 'Needles' | 'Titanium Jewelry';
   price: number;
   description: string;
   image: string;

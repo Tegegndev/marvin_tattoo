@@ -84,10 +84,10 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                   </div>
                   <div>
                     <h3 className="font-title-editorial text-title-editorial uppercase text-on-surface">
-                      Atelier Equipment Bag
+                      Your Bag
                     </h3>
                     <span className="font-label-data text-xs text-outline">
-                      {cart.length} distinct item{cart.length === 1 ? '' : 's'}
+                      {cart.length} item{cart.length === 1 ? '' : 's'}
                     </span>
                   </div>
                 </div>
@@ -112,14 +112,14 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             Your Bag is Empty
                           </p>
                           <p className="font-body-sm text-sm text-outline max-w-xs">
-                            Explore our clinical rotary pens, autoclave supplies, and organic aftercare salves.
+                            Browse machines, needles, jewelry, and aftercare supplies.
                           </p>
                         </div>
                         <button
                           onClick={onClose}
                           className="px-6 py-2.5 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors border border-surface-container-highest"
                         >
-                          Browse Apothecary
+                          Browse Shop
                         </button>
                       </div>
                     ) : (
@@ -181,8 +181,8 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             <span>${subtotal.toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between text-outline">
-                            <span>Sterile Packaging &amp; Shipping</span>
-                            <span>{shipping === 0 ? 'COMPLIMENTARY' : `$${shipping.toFixed(2)}`}</span>
+                            <span>Shipping</span>
+                            <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
                           </div>
                           {shipping > 0 && (
                             <div className="text-[10px] text-secondary">
@@ -203,7 +203,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                   <form onSubmit={handleCheckoutSubmit} className="space-y-4">
                     <div className="flex items-center justify-between pb-2 border-b border-surface-container-highest">
                       <h4 className="font-title-editorial text-sm uppercase text-on-surface">
-                        Shipping Protocol &amp; Patron Details
+                        Shipping Details
                       </h4>
                       <button
                         type="button"
@@ -217,7 +217,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                     <div className="space-y-3">
                       <div>
                         <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
-                          Full Patron Name
+                          Full Name
                         </label>
                         <input
                           required
@@ -227,13 +227,13 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             setShippingData({ ...shippingData, fullName: e.target.value })
                           }
                           className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
-                          placeholder="e.g. Christian Moreau"
+                          placeholder="e.g. Jane Doe"
                         />
                       </div>
 
                       <div>
                         <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
-                          Email Address (Tracking &amp; Invoice)
+                          Email
                         </label>
                         <input
                           required
@@ -243,13 +243,13 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             setShippingData({ ...shippingData, email: e.target.value })
                           }
                           className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
-                          placeholder="patron@domain.com"
+                          placeholder="you@email.com"
                         />
                       </div>
 
                       <div>
                         <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
-                          Destination Address
+                          Address
                         </label>
                         <input
                           required
@@ -259,14 +259,14 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             setShippingData({ ...shippingData, address: e.target.value })
                           }
                           className="w-full px-3 py-2 bg-surface-container border border-surface-container-highest text-on-surface font-body-sm text-sm focus:outline-none focus:border-primary"
-                          placeholder="Street address & unit #"
+                          placeholder="Street address & unit"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="block font-label-caps text-[10px] uppercase text-outline mb-1">
-                            City / District
+                            City
                           </label>
                           <input
                             required
@@ -303,10 +303,10 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                     <div className="p-3 bg-surface-container border border-surface-container-highest space-y-1">
                       <div className="flex items-center gap-1.5 text-xs text-secondary font-label-caps uppercase">
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Aseptic Sealed Packaging</span>
+                        <span>Sealed Sterile Packaging</span>
                       </div>
                       <p className="text-[11px] text-outline">
-                        All instruments and salves ship sealed in tamper-evident clinical bio-barrier sleeves.
+                        All orders ship in sealed, tamper-evident packaging.
                       </p>
                     </div>
 
@@ -314,7 +314,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                       type="submit"
                       className="w-full py-3 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-primary/30"
                     >
-                      Authorize Order (${total.toFixed(2)})
+                      Place Order (${total.toFixed(2)})
                     </button>
                   </form>
                 )}
@@ -326,28 +326,28 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                     </div>
                     <div className="space-y-1">
                       <span className="font-label-caps text-[10px] text-secondary uppercase tracking-widest block">
-                        ORDER DISPATCH REGISTERED
+                        Order Confirmed
                       </span>
                       <h4 className="font-headline-md text-xl text-on-surface uppercase">
-                        Order #MV-9082 Authenticated
+                        Thanks for your order
                       </h4>
                       <p className="font-body-sm text-xs text-outline max-w-xs mx-auto leading-relaxed">
-                        A clinical receipt and tamper-evident tracking code have been dispatched to {shippingData.email || 'your email'}.
+                        A receipt and tracking number have been sent to {shippingData.email || 'your email'}.
                       </p>
                     </div>
 
                     <div className="p-4 bg-surface-container border border-surface-container-highest text-left font-label-data text-xs space-y-1.5">
                       <div className="flex justify-between text-outline">
-                        <span>Recipient:</span>
-                        <span className="text-on-surface">{shippingData.fullName || 'Patron'}</span>
+                        <span>Ship to:</span>
+                        <span className="text-on-surface">{shippingData.fullName || 'Customer'}</span>
                       </div>
                       <div className="flex justify-between text-outline">
                         <span>Total Paid:</span>
                         <span className="text-primary font-bold">${total.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-outline">
-                        <span>Dispatch:</span>
-                        <span className="text-secondary">Priority Medical Carrier</span>
+                        <span>Delivery:</span>
+                        <span className="text-secondary">Standard Shipping</span>
                       </div>
                     </div>
 
@@ -355,7 +355,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                       onClick={handleResetAndClose}
                       className="px-6 py-2.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-widest transition-colors"
                     >
-                      Return to Atelier
+                      Close
                     </button>
                   </div>
                 )}
@@ -368,11 +368,11 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                     onClick={() => setCheckoutStep('checkout')}
                     className="w-full py-3.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-primary/30"
                   >
-                    <span>Proceed to Dispatch</span>
+                    <span>Checkout</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <p className="text-center font-label-data text-[10px] text-outline uppercase">
-                    100% Autoclave &amp; Sterile Bio-Barrier Certified
+                    Ships in sealed, sterile packaging
                   </p>
                 </div>
               )}

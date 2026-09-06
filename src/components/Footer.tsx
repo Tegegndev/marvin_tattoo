@@ -26,15 +26,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
               </span>
             </div>
             <div className="font-label-caps text-label-caps text-primary uppercase tracking-wider">
-              Sanctum of Avant-Garde Ink &amp; Steel
+              Tattoos &amp; Piercings
             </div>
             <p className="font-body-sm text-body-sm text-outline leading-relaxed">
-              Monolithic artistry and ritualistic body modification operating under hospital-grade clinical surgical standards.
+              Custom tattoos and piercing work done in a clean, professional studio with hospital-grade sterilization.
             </p>
             <div className="flex items-center gap-2 pt-2">
-              <span className="w-2 h-2 rounded-full bg-secondary shrink-0 animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-secondary shrink-0" />
               <span className="font-label-data text-label-data text-on-surface-variant uppercase">
-                Sterile Bay Certification #709-DX
+                OSHA-Approved Sterilization
               </span>
             </div>
           </div>
@@ -43,36 +43,36 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
           <div className="space-y-4">
             <div className="font-label-caps text-label-caps uppercase tracking-widest text-on-surface flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary" />
-              <span>Atelier Coordinates</span>
+              <span>Studio Location</span>
             </div>
             <div className="font-body-sm text-body-sm text-on-surface-variant space-y-1">
               <p className="text-on-surface font-semibold">04 Obsidian Alley, Floor 03</p>
-              <p className="text-outline">Cultural Quarter // Design Void</p>
+              <p className="text-outline">Cultural Quarter, New York</p>
               <p className="font-label-data text-label-data text-primary pt-1">
-                Direct: +1 (800) 555-MARK
+                Call: +1 (800) 555-MARK
               </p>
             </div>
             <div className="pt-2">
               <div className="font-label-caps text-label-caps uppercase tracking-widest text-on-surface mb-1 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-secondary" />
-                <span>Operating Hours</span>
+                <span>Hours</span>
               </div>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
                 Tue – Sat: 11:00 — 21:00
               </p>
               <p className="font-body-sm text-body-sm text-outline">
-                Sun – Mon: Private Bookings &amp; Sterilization Bay
+                Sun – Mon: By appointment
               </p>
             </div>
           </div>
 
-          {/* Column 3: Walk-In Protocol & Advisory */}
+          {/* Column 3: Walk-Ins & Advisory */}
           <div className="space-y-4">
             <div className="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">
-              Walk-In Protocol
+              Walk-Ins
             </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-              Saturday consult spots open strictly at 10:45 AM on a first-arrived basis. Custom sleeve blueprints and complex cover-ups strictly mandate digital consultation booking.
+              Saturday walk-in flash spots open at 10:45 AM, first come first served. Custom sleeves and cover-ups require a booked consultation.
             </p>
             <div className="p-3 bg-surface-container space-y-1 border border-error/20">
               <button
@@ -80,18 +80,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                 className="flex items-center gap-1.5 text-error font-label-caps text-label-caps uppercase tracking-wider hover:underline"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Official Verification Notice</span>
+                <span>Report a Fake Account</span>
               </button>
               <p className="font-body-sm text-body-sm text-outline leading-tight">
-                Beware imposter accounts soliciting wire transfers. Only confirmed bookings through this portal are honored.
+                Beware of imposters asking for wire transfers. We only accept confirmed bookings through this site.
               </p>
             </div>
           </div>
 
-          {/* Column 4: Social Registry & Quick Links */}
+          {/* Column 4: Social & Quick Links */}
           <div className="space-y-4">
             <div className="font-label-caps text-label-caps uppercase tracking-widest text-on-surface">
-              Official Social Registry
+              Follow Us
             </div>
             <ul className="space-y-2 font-label-data text-label-data uppercase">
               <li>
@@ -156,25 +156,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   onClick={() => onNavigate('about')}
                   className="text-left hover:text-on-surface transition-colors py-1"
                 >
-                  Aseptic Codex
+                  About
                 </button>
                 <button
                   onClick={() => onNavigate('portfolio')}
                   className="text-left hover:text-on-surface transition-colors py-1"
                 >
-                  Healed Relics
+                  Portfolio
                 </button>
                 <button
                   onClick={() => onNavigate('equipment')}
                   className="text-left hover:text-on-surface transition-colors py-1"
                 >
-                  Pro Supplies
+                  Shop
                 </button>
                 <button
                   onClick={() => onNavigate('booking')}
                   className="text-left hover:text-on-surface transition-colors py-1"
                 >
-                  Consultation
+                  Book
                 </button>
               </div>
             </div>
@@ -184,17 +184,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
         {/* Bottom Legal */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-surface-container-highest/30">
           <div className="font-label-caps text-label-caps uppercase tracking-widest text-outline text-center md:text-left">
-            © 2026 MARVIN TATTOOS &amp; PIERCINGS ATELIER. ALL RIGHTS RESERVED.
+            © 2026 MARVIN TATTOOS &amp; PIERCINGS. ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-outline">
             <button onClick={onOpenVerify} className="hover:text-on-surface transition-colors">
-              Privacy Ordinance
+              Scam Alert
             </button>
             <button onClick={() => onNavigate('about')} className="hover:text-on-surface transition-colors">
-              Sterile Compliance
+              Hygiene Standards
             </button>
             <button onClick={() => onNavigate('booking')} className="hover:text-on-surface transition-colors">
-              Terms of Ritual
+              Book Terms
             </button>
           </div>
         </div>

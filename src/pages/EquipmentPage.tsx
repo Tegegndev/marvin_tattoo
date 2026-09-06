@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageView, ProductItem } from '../types';
 import { PRODUCTS_DATA } from '../data/atelierData';
 import { motion } from 'framer-motion';
-import { ShoppingBag, ShieldCheck, Check, Sparkles, Filter, ArrowRight } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, Check } from 'lucide-react';
 
 interface EquipmentPageProps {
   onAddToCart: (product: ProductItem) => void;
@@ -20,10 +20,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
 
   const categories = [
     { id: 'all', label: 'All Supplies' },
-    { id: 'Hard Goods', label: 'Hard Goods & Rotary Machines' },
-    { id: 'Aftercare Codex', label: 'Aftercare & Botanical Salves' },
-    { id: 'Needle Cartridges', label: 'Safety Membrane Needles' },
-    { id: 'Titanium Jewelry', label: 'ASTM F-136 Titanium Jewelry' }
+    { id: 'Hard Goods', label: 'Machines' },
+    { id: 'Aftercare', label: 'Aftercare' },
+    { id: 'Needles', label: 'Needles' },
+    { id: 'Titanium Jewelry', label: 'Titanium Jewelry' }
   ];
 
   const filteredProducts = selectedCategory === 'all'
@@ -44,16 +44,15 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
       <section className="w-full bg-surface-container-low py-12 md:py-16 px-4 md:px-8 lg:px-12 border-b border-surface-container-highest/40">
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-            <span className="font-label-caps text-xs uppercase text-secondary tracking-[0.25em]">
-              SANCTUM APOTHECARY &amp; HARD GOODS
+            <span className="font-label-caps text-xs uppercase text-primary tracking-[0.25em]">
+              SHOP
             </span>
           </div>
           <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-on-surface uppercase font-bold">
-            Studio Engineered Supplies &amp; Healing Salves
+            Equipment, Needles &amp; Aftercare
           </h1>
           <p className="font-body-md text-sm text-on-surface-variant max-w-2xl leading-relaxed">
-            Every instrument, needle cartridge, and organic salve is developed in-house to satisfy clinical sterilization thresholds and maximal pigment retention.
+            The same sterilized supplies and aftercare we use in the studio, available to take home or restock your own kit.
           </p>
 
           {/* Filter Bar */}
@@ -139,7 +138,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                       ) : (
                         <>
                           <ShoppingBag className="w-3.5 h-3.5" />
-                          <span>Acquire</span>
+                          <span>Add to Bag</span>
                         </>
                       )}
                     </button>
@@ -155,10 +154,10 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
               <ShieldCheck className="w-8 h-8 text-secondary shrink-0" />
               <div>
                 <h4 className="font-title-editorial text-sm uppercase text-on-surface">
-                  Tamper-Evident Medical Bio-Barrier Packaging
+                  Sterilized and Sealed
                 </h4>
                 <p className="font-body-sm text-xs text-outline">
-                  All equipment and supplies ship sealed directly from the Marvin sterilization suite.
+                  Every item is autoclave-sealed in our sterilization suite before shipping.
                 </p>
               </div>
             </div>
@@ -166,7 +165,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
               onClick={onOpenCart}
               className="px-6 py-2.5 bg-secondary hover:bg-secondary-fixed text-on-secondary font-label-caps text-xs uppercase tracking-wider font-bold shrink-0"
             >
-              View Active Bag
+              View Bag
             </button>
           </div>
         </div>

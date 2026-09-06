@@ -13,7 +13,6 @@ import { BookingPage } from './pages/BookingPage';
 import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle } from 'lucide-react';
 
 export function App() {
   const [currentPage, setCurrentPage] = useState<PageView>('home');
@@ -149,20 +148,6 @@ export function App() {
 
       {/* Footer */}
       <Footer onNavigate={setCurrentPage} onOpenVerify={() => setIsVerifyOpen(true)} />
-
-      {/* Floating Bottom-Right WhatsApp Desk Monolith (Matching Stitch Design) */}
-      <aside aria-label="WhatsApp Concierge" className="fixed bottom-6 right-6 z-40">
-        <button
-          onClick={() => setIsWhatsAppOpen(true)}
-          className="flex items-center gap-2.5 px-4 py-3 bg-surface-container text-on-surface shadow-2xl transition-all duration-300 hover:bg-surface-container-high btn-gothic-glow border border-secondary/40 rounded-none group"
-        >
-          <span className="w-2.5 h-2.5 rounded-full bg-secondary shrink-0 animate-ping" />
-          <MessageCircle className="w-4 h-4 text-secondary group-hover:scale-110 transition-transform" />
-          <span className="font-label-caps text-xs uppercase tracking-widest hidden sm:inline font-bold">
-            WhatsApp Desk
-          </span>
-        </button>
-      </aside>
 
       {/* Modals */}
       <ArtworkModal

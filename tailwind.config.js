@@ -79,7 +79,7 @@ export default {
         "space-xl": "2rem"
       },
       fontFamily: {
-        "label-caps": ["'Space Grotesk'", "sans-serif"],
+        "label-caps": ["'Geist'", "sans-serif"],
         "title-editorial": ["'Bodoni Moda'", "serif"],
         "body-lg": ["'Geist'", "sans-serif"],
         "display-hero": ["'Bodoni Moda'", "serif"],
@@ -90,10 +90,9 @@ export default {
         "display-hero-mobile": ["'Bodoni Moda'", "serif"],
         "headline-xl-mobile": ["'Bodoni Moda'", "serif"],
         "headline-xl": ["'Bodoni Moda'", "serif"],
-        "label-data": ["'Space Grotesk'", "monospace"],
+        "label-data": ["'Geist'", "sans-serif"],
         "headline-lg-mobile": ["'Bodoni Moda'", "serif"],
         "headline-sm": ["'Bodoni Moda'", "serif"],
-        "gothic": ["'UnifrakturMaguntia'", "'Pirata One'", "serif"],
       },
       fontSize: {
         "label-caps": ["11px", { lineHeight: "16px", letterSpacing: "0.22em", fontWeight: "600" }],

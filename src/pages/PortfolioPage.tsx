@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageView, PortfolioPiece } from '../types';
 import { PORTFOLIO_DATA } from '../data/atelierData';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, ShieldCheck, User, Clock, Palette, Filter, Eye } from 'lucide-react';
+import { Filter, Eye } from 'lucide-react';
 
 interface PortfolioPageProps {
   onNavigate: (page: PageView) => void;
@@ -21,28 +21,28 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   const [selectedArtist, setSelectedArtist] = useState<string>('all');
 
   const categories = [
-    { id: 'all', label: 'All Works [842]' },
-    { id: 'dark-realism', label: 'Dark Realism & Voidwork' },
-    { id: 'neo-arcane', label: 'Neo-Traditional & Arcane' },
-    { id: 'micro-detail', label: 'Micro-Fine & Single Needle' },
-    { id: 'piercing', label: 'Curated Titanium & Gold' },
-    { id: 'coverup', label: 'Restoration & Cover-Up' },
+    { id: 'all', label: 'All' },
+    { id: 'dark-realism', label: 'Dark Realism' },
+    { id: 'neo-arcane', label: 'Neo-Traditional' },
+    { id: 'micro-detail', label: 'Micro & Single-Needle' },
+    { id: 'piercing', label: 'Piercings' },
+    { id: 'coverup', label: 'Cover-Ups' },
   ];
 
   const zones = [
     'All Zones',
-    'Full Sleeves',
-    'Backpiece Sanctuary',
-    'Sternum / Thorax',
-    'Hands & Phalanges',
-    'Ear Cartilage Constellation'
+    'Full Sleeve',
+    'Backpiece',
+    'Chest',
+    'Hands',
+    'Ear Stack'
   ];
 
   const artists = [
-    { id: 'all', label: 'All Resident Masters' },
-    { id: 'Master Marvin', label: 'Master Marvin [Founder]' },
+    { id: 'all', label: 'All Artists' },
+    { id: 'Master Marvin', label: 'Marvin' },
     { id: 'Elena Kostas', label: 'Elena Kostas' },
-    { id: 'S. Choi', label: 'S. Choi [Aseptic Piercing]' }
+    { id: 'S. Choi', label: 'S. Choi' }
   ];
 
   const filteredPieces = PORTFOLIO_DATA.filter((piece) => {
@@ -86,7 +86,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               ))}
             </div>
 
-            {/* Freshness Cycle Toggle */}
+            {/* Healing State Toggle */}
             <div className="flex items-center bg-surface-container p-1 shrink-0 ml-4 border border-surface-container-highest">
               <button
                 onClick={() => setSelectedCycle('all')}
@@ -94,7 +94,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   selectedCycle === 'all' ? 'bg-surface-bright text-on-surface' : 'text-outline hover:text-on-surface'
                 }`}
               >
-                All Cycles
+                All
               </button>
               <button
                 onClick={() => setSelectedCycle('healed')}
@@ -102,7 +102,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   selectedCycle === 'healed' ? 'bg-surface-bright text-on-surface' : 'text-outline hover:text-on-surface'
                 }`}
               >
-                Healed 1yr+
+                Healed
               </button>
               <button
                 onClick={() => setSelectedCycle('fresh')}
@@ -110,7 +110,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   selectedCycle === 'fresh' ? 'bg-surface-bright text-on-surface' : 'text-outline hover:text-on-surface'
                 }`}
               >
-                Fresh Ink
+                Fresh
               </button>
             </div>
           </div>
@@ -120,7 +120,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-on-surface font-semibold uppercase flex items-center gap-1">
                 <Filter className="w-3.5 h-3.5 text-primary" />
-                <span>Anatomical Zone:</span>
+                <span>Placement:</span>
               </span>
               {zones.map((z) => (
                 <button
@@ -138,7 +138,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             </div>
 
             <div className="flex items-center gap-2 font-label-caps text-[11px] uppercase">
-              <span className="text-outline">Resident Master:</span>
+              <span className="text-outline">Artist:</span>
               {artists.map((art, i) => (
                 <React.Fragment key={art.id}>
                   {i > 0 && <span className="text-surface-variant">/</span>}
@@ -162,10 +162,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <span className="font-label-caps text-xs text-secondary uppercase tracking-[0.25em]">
-              CHRONICLE SPOTLIGHT // 01
-            </span>
-            <span className="font-label-data text-xs text-outline uppercase">
-              ARCHIVE REF: {featuredPiece.flashId}
+              Featured Work
             </span>
           </div>
 
@@ -182,15 +179,11 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               />
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 <span className="bg-primary-container text-on-surface font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest shadow-lg">
-                  MONUMENTAL SCALE
+                  Featured
                 </span>
                 <span className="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-[10px] px-3 py-1 uppercase border border-secondary/30">
                   {featuredPiece.healingState}
                 </span>
-              </div>
-              <div className="absolute bottom-4 left-4 hidden lg:flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1.5 text-on-surface font-label-data text-xs uppercase border border-surface-container-highest">
-                <ShieldCheck className="w-4 h-4 text-primary" />
-                <span>Surgical Derm-Scan Authenticated</span>
               </div>
             </div>
 
@@ -199,7 +192,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               <div className="space-y-4">
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs text-primary uppercase tracking-widest">
-                    Opus Magnum // {featuredPiece.categoryLabel}
+                    {featuredPiece.categoryLabel}
                   </span>
                   <h2 className="font-headline-lg text-2xl lg:text-3xl text-on-surface uppercase tracking-tight font-bold">
                     {featuredPiece.title}
@@ -210,11 +203,11 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   {featuredPiece.description}
                 </p>
 
-                {/* Parametric Spec List */}
+                {/* Spec List */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                     <span className="font-label-caps text-[9px] text-outline uppercase block">
-                      Lead Artist
+                      Artist
                     </span>
                     <span className="font-label-data text-xs text-on-surface uppercase font-bold">
                       {featuredPiece.artist}
@@ -223,7 +216,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
                   <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                     <span className="font-label-caps text-[9px] text-outline uppercase block">
-                      Total Duration
+                      Duration
                     </span>
                     <span className="font-label-data text-xs text-secondary uppercase font-bold">
                       {featuredPiece.duration}
@@ -232,7 +225,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
                   <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                     <span className="font-label-caps text-[9px] text-outline uppercase block">
-                      Pigment Matrix
+                      Pigment
                     </span>
                     <span className="font-label-data text-xs text-on-surface uppercase font-bold">
                       {featuredPiece.pigment}
@@ -241,7 +234,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
                   <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
                     <span className="font-label-caps text-[9px] text-outline uppercase block">
-                      Skin Morphology
+                      Placement
                     </span>
                     <span className="font-label-data text-xs text-on-surface uppercase font-bold">
                       {featuredPiece.morphology}
@@ -256,13 +249,13 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   className="px-4 py-2.5 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5"
                 >
                   <Eye className="w-4 h-4 text-primary" />
-                  <span>Inspect High-Res</span>
+                  <span>View Piece</span>
                 </button>
                 <button
                   onClick={() => onBookSimilar(featuredPiece)}
                   className="flex-1 py-2.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow text-center border border-primary/30"
                 >
-                  Book Similar Relic
+                  Book Similar
                 </button>
               </div>
             </div>
@@ -275,10 +268,10 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <h3 className="font-headline-md text-2xl uppercase text-on-surface font-bold">
-              Archival Relics ({filteredPieces.length})
+              Portfolio ({filteredPieces.length})
             </h3>
             <span className="font-label-data text-xs text-outline">
-              Showing filtered results
+              {filteredPieces.length} of {PORTFOLIO_DATA.length}
             </span>
           </div>
 
@@ -333,11 +326,11 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                         onClick={() => onSelectPiece(piece)}
                         className="px-3 py-1.5 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors"
                       >
-                        Inspect
+                        View
                       </button>
                       <button
                         onClick={() => onBookSimilar(piece)}
-                        className="px-3 py-1.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,11,20,0.5)]"
+                        className="px-3 py-1.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-wider transition-all duration-300"
                       >
                         Book
                       </button>
@@ -351,7 +344,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           {filteredPieces.length === 0 && (
             <div className="text-center py-20 bg-surface-container p-8 space-y-4 border border-surface-container-highest">
               <p className="font-title-editorial text-lg text-on-surface">
-                No relics matched your filter parameters.
+                No pieces match your filters.
               </p>
               <button
                 onClick={() => {
@@ -362,7 +355,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 }}
                 className="px-6 py-2 bg-primary-container text-on-surface font-label-caps text-xs uppercase tracking-widest"
               >
-                Reset Filter Matrix
+                Clear Filters
               </button>
             </div>
           )}

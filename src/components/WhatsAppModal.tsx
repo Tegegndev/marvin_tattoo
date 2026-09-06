@@ -15,7 +15,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
 }) => {
   const [topic, setTopic] = useState<'consultation' | 'piercing' | 'aftercare' | 'walkin'>('consultation');
   const [message, setMessage] = useState(
-    prefilledMessage || 'Greetings Master Marvin. I wish to inquire regarding an upcoming dark realism session...'
+    prefilledMessage || "Hi, I'd like to ask about booking a dark realism tattoo."
   );
   const [copied, setCopied] = useState(false);
 
@@ -58,11 +58,11 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                 </div>
                 <div>
                   <h3 className="font-title-editorial text-title-editorial uppercase text-on-surface">
-                    Direct WhatsApp Desk
+                    WhatsApp
                   </h3>
                   <span className="font-label-data text-xs text-secondary flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                    Verified Line: {phone}
+                    <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                    Line: {phone}
                   </span>
                 </div>
               </div>
@@ -71,10 +71,10 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
               </button>
             </div>
 
-            {/* Quick Inquiry Vector */}
+            {/* Topic */}
             <div className="space-y-2">
               <label className="font-label-caps text-[10px] text-outline uppercase tracking-wider block">
-                Select Inquiry Vector
+                What's your question?
               </label>
               <div className="grid grid-cols-2 gap-2 font-label-data text-xs">
                 <button
@@ -95,7 +95,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   type="button"
                   onClick={() => {
                     setTopic('piercing');
-                    setMessage('Hello, I would like to book an appointment for an ASTM F-136 titanium curated ear piercing.');
+                    setMessage("Hi, I'd like to book an ear piercing appointment.");
                   }}
                   className={`p-2.5 text-left border transition-all ${
                     topic === 'piercing'
@@ -109,7 +109,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   type="button"
                   onClick={() => {
                     setTopic('walkin');
-                    setMessage('Hello! Are there any Saturday walk-in slots currently open for flash tattoos?');
+                    setMessage("Hi! Do you have Saturday walk-in spots open for flash tattoos?");
                   }}
                   className={`p-2.5 text-left border transition-all ${
                     topic === 'walkin'
@@ -123,7 +123,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   type="button"
                   onClick={() => {
                     setTopic('aftercare');
-                    setMessage('Hello Marvin Atelier team. I have a question regarding my ongoing tattoo healing and aftercare protocol.');
+                    setMessage("Hi, I have a question about healing and aftercare for my new tattoo.");
                   }}
                   className={`p-2.5 text-left border transition-all ${
                     topic === 'aftercare'
@@ -140,7 +140,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="font-label-caps text-[10px] text-outline uppercase tracking-wider">
-                  Prefilled Message
+                  Message
                 </label>
                 <button
                   onClick={handleCopy}
@@ -161,7 +161,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
             <div className="p-3 bg-surface-container border border-surface-container-highest flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-secondary shrink-0" />
               <p className="font-body-sm text-[11px] text-outline">
-                Marvin Tattoos never solicits deposits via personal cash apps or unverified phone numbers.
+                We never ask for deposits through personal cash apps or unverified phone numbers.
               </p>
             </div>
 
@@ -172,7 +172,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                 className="flex-1 py-3 bg-secondary text-on-secondary font-label-caps text-xs uppercase tracking-widest transition-all hover:bg-secondary-fixed flex items-center justify-center gap-2 font-bold shadow-lg"
               >
                 <Send className="w-4 h-4" />
-                <span>Launch Verified WhatsApp</span>
+                <span>Open WhatsApp</span>
               </button>
               <button
                 onClick={onClose}

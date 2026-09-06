@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageView } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, ShoppingBag, Menu, X, ShieldAlert, Sparkles } from 'lucide-react';
+import { Calendar, ShoppingBag, Menu, X, ShieldAlert } from 'lucide-react';
 import { LOGO_URL } from '../data/atelierData';
 
 interface NavbarProps {
@@ -35,10 +35,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navLinks: { id: PageView; label: string }[] = [
     { id: 'home', label: 'Home' },
     { id: 'portfolio', label: 'Portfolio' },
-    { id: 'about', label: 'About Studio' },
-    { id: 'equipment', label: 'Shop Equipment' },
-    { id: 'location', label: 'Studio Location' },
-    { id: 'booking', label: 'Booking' },
+    { id: 'about', label: 'About' },
+    { id: 'equipment', label: 'Shop' },
+    { id: 'location', label: 'Location' },
   ];
 
   return (
@@ -96,9 +95,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
                 <span className="relative z-10 flex items-center gap-1">
                   {link.label}
-                  {link.id === 'booking' && (
-                    <Sparkles className="w-2.5 h-2.5 text-secondary animate-pulse" />
-                  )}
                 </span>
               </button>
             );
@@ -107,24 +103,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action CTAs */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Official Verify Button */}
-          <button
-            onClick={onOpenVerify}
-            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-container/60 hover:bg-error-container/30 text-outline-variant hover:text-error font-label-caps text-[10px] uppercase tracking-wider transition-colors border border-surface-container-highest/60"
-            title="Verify Official Marvin Tattoos Channel"
-          >
-            <ShieldAlert className="w-3.5 h-3.5" />
-            <span>Anti-Scam</span>
-          </button>
-
           {/* WhatsApp Direct */}
           <button
             onClick={onOpenWhatsApp}
             className="inline-flex items-center gap-2 px-3 py-2 bg-surface-container text-on-surface font-label-caps text-[10px] uppercase tracking-wider transition-all duration-300 hover:bg-surface-container-high hover:-translate-y-0.5 border border-surface-container-highest"
           >
-            <span className="w-2 h-2 rounded-full bg-secondary shrink-0 animate-pulse" />
-            <span className="hidden sm:inline">WhatsApp Direct</span>
-            <span className="sm:hidden">WhatsApp</span>
+            <span className="w-2 h-2 rounded-full bg-secondary shrink-0" />
+            <span className="hidden sm:inline">WhatsApp</span>
           </button>
 
           {/* Cart Icon */}
@@ -135,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <ShoppingBag className="w-4 h-4 text-primary" />
             {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-primary-container text-on-surface text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-primary-container text-on-surface text-[10px] font-bold rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
@@ -203,7 +188,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <ShieldAlert className="w-4 h-4" />
                 <span>Verify Official Channel</span>
               </button>
-              <span className="text-[11px] font-label-data text-outline">Sanctum Est. 2014</span>
+              <span className="text-[11px] font-label-data text-outline">Est. 2014</span>
             </div>
           </motion.div>
         )}

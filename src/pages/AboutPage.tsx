@@ -28,12 +28,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
           >
             <div className="flex items-center gap-3">
               <span className="font-label-caps text-xs text-primary tracking-[0.25em]">
-                FOUNDER MANIFESTO // CODEX EST. 2014
+                ABOUT THE STUDIO
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-outline-variant" />
-              <span className="font-label-data text-xs text-outline">SANCTUM 04 / FL. 03</span>
+              <span className="font-label-data text-xs text-outline">EST. 2014</span>
             </div>
-            <span className="font-label-data text-xs text-secondary">FOLIO REF: M-14/RELIC</span>
           </motion.div>
 
           {/* Asymmetric Split Layout */}
@@ -55,25 +54,25 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
 
                 {/* Floating Top Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-surface-container-lowest/80 backdrop-blur-md text-secondary font-label-caps text-xs rounded flex items-center gap-1.5 shadow border border-secondary/30">
-                    <Award className="w-3.5 h-3.5" /> MASTER ARTISAN &amp; FOUNDER
+                  <span className="px-3 py-1 bg-surface-container-lowest/80 backdrop-blur-md text-secondary font-label-caps text-xs flex items-center gap-1.5 shadow border border-secondary/30">
+                    <Award className="w-3.5 h-3.5" /> FOUNDER &amp; MASTER TATTOOIST
                   </span>
-                  <span className="px-3 py-1 bg-primary-container/90 text-on-primary font-label-caps text-xs rounded shadow border border-primary/30">
-                    SURGICAL BIO-BARRIER CERTIFIED
+                  <span className="px-3 py-1 bg-primary-container/90 text-on-primary font-label-caps text-xs shadow border border-primary/30">
+                    STERILE PROTOCOL CERTIFIED
                   </span>
                 </div>
 
-                {/* Kinetic Quote Overlay */}
+                {/* Quote Overlay */}
                 <div className="absolute bottom-6 left-6 right-6 p-5 bg-surface-container-lowest/90 backdrop-blur-md rounded-lg border border-surface-container-highest">
                   <p className="font-headline-sm text-lg sm:text-xl italic text-on-surface leading-snug">
-                    "Tattooing is not merely decoration; it is permanent anatomical architecture. We carve history into living flesh with surgical sterile discipline."
+                    "A tattoo has to work on your body — the placement, the flow, and the way it heals. That's what I focus on, every time."
                   </p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="font-label-caps text-xs text-primary tracking-widest font-bold">
-                      — MASTER MARVIN
+                      — MARVIN
                     </span>
                     <span className="font-label-data text-xs text-on-surface-variant">
-                      14+ YRS SURGICAL DISCIPLINE
+                      14+ YEARS
                     </span>
                   </div>
                 </div>
@@ -92,21 +91,21 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   <div className="flex items-center gap-2 mb-3">
                     <Syringe className="w-4 h-4 text-primary" />
                     <span className="font-label-caps text-xs text-primary tracking-wider uppercase">
-                      THE BIOGRAPHY
+                      THE FOUNDER
                     </span>
                   </div>
                   <h1 className="font-headline-xl text-3xl sm:text-4xl font-bold text-on-surface mb-2 leading-tight">
-                    The Hand Behind The Ink: Master Marvin
+                    The Hand Behind The Ink: Marvin
                   </h1>
                   <p className="font-title-editorial text-base italic text-secondary mb-5">
-                    Ritual Discipline &amp; Surgical Sterile Precision
+                    Tattooist &amp; former surgical technician
                   </p>
                   <div className="space-y-4 font-body-md text-sm text-on-surface-variant leading-relaxed">
                     <p>
-                      Before carving his name across subterranean dark realism and gothic calligraphy, Master Marvin served four years as an accredited hospital-grade surgical trauma technician. In operating theaters, he absorbed the profound sanctity of asepsis, tissue resilience, and micro-needle calibration.
+                      Before tattooing, Marvin spent four years working as a surgical trauma technician. It taught him a standard of hygiene and precision that still shapes how the studio runs today — every surface, every cartridge, every piece of equipment.
                     </p>
                     <p>
-                      In 2014, he established the obsidian sanctum of Marvin Tattoos to dissolve the boundary between visceral underground ritualism and uncompromising medical sterile protocol. Every puncture is treated with surgical ceremony.
+                      He opened Marvin Tattoos in 2014 with one rule: permanent work deserves to be clean, well-planned, and made to fit the person wearing it. That's still how every appointment works.
                     </p>
                   </div>
                 </div>
@@ -116,25 +115,25 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   <div className="flex flex-col">
                     <span className="font-label-data text-2xl font-bold text-primary">14+</span>
                     <span className="font-label-caps text-[10px] text-on-surface-variant uppercase">
-                      Years Craft
+                      Years
                     </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-label-data text-2xl font-bold text-on-surface">12,000+</span>
+                    <span className="font-label-data text-2xl font-bold text-on-surface">500+</span>
                     <span className="font-label-caps text-[10px] text-on-surface-variant uppercase">
-                      Relics Inked
+                      Pieces Done
                     </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-label-data text-2xl font-bold text-secondary">ISO-7</span>
+                    <span className="font-label-data text-2xl font-bold text-secondary">App</span>
                     <span className="font-label-caps text-[10px] text-on-surface-variant uppercase">
-                      Aseptic Class
+                      Piercing Certified
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* WhatsApp Consultation Direct Card */}
+              {/* WhatsApp Consultation Card */}
               <div className="bg-surface-container-high p-5 rounded-xl flex items-center justify-between gap-4 border border-surface-container-highest">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-secondary/20 border border-secondary flex items-center justify-center text-secondary shrink-0">
@@ -142,10 +141,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   </div>
                   <div className="flex flex-col">
                     <span className="font-title-editorial text-sm uppercase text-on-surface font-bold">
-                      Private Sanctuary Inquiries
+                      Questions?
                     </span>
                     <span className="font-label-caps text-[10px] text-on-surface-variant uppercase">
-                      Direct WhatsApp Desk with Master Marvin
+                      Message us on WhatsApp for a consult
                     </span>
                   </div>
                 </div>
@@ -153,7 +152,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   onClick={onOpenWhatsApp}
                   className="px-4 py-2 bg-secondary hover:bg-secondary-fixed text-on-secondary font-label-caps text-xs uppercase font-bold transition-colors"
                 >
-                  Inquire Now
+                  Inquire
                 </button>
               </div>
             </motion.div>
@@ -161,7 +160,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
         </div>
       </section>
 
-      {/* Atelier Philosophy & Triple Codex Lineage with Scroll Animation */}
+      {/* Studio Values */}
       <section className="w-full bg-surface-container-lowest py-20 px-4 md:px-8 lg:px-12 border-b border-surface-container-highest/40">
         <div className="max-w-7xl mx-auto space-y-12">
           <motion.div
@@ -173,14 +172,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
           >
             <div>
               <span className="font-label-caps text-xs text-primary tracking-[0.2em] block mb-2">
-                ARCHITECTURAL PROTOCOLS
+                HOW WE WORK
               </span>
               <h2 className="font-headline-lg text-3xl sm:text-4xl text-on-surface uppercase font-bold">
-                The Atelier Philosophy &amp; Lineage
+                What To Expect
               </h2>
             </div>
             <p className="font-body-sm text-sm text-on-surface-variant max-w-md mt-4 md:mt-0 leading-relaxed">
-              Rooted in Chiaroscuro depth and aseptic biomechanics, our studio redefines permanence through three non-negotiable sanctum pillars.
+              Three standards every appointment follows — no exceptions.
             </p>
           </motion.div>
 
@@ -189,25 +188,25 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               {
                 num: '01',
                 icon: <ShieldCheck className="w-6 h-6 text-on-surface-variant" />,
-                title: 'Surgical Aseptic Genesis',
-                desc: "Infusing Marvin's clinical background into custom tattoo arts. We deploy certified Class B medical autoclaves, single-use surgical titanium cartridges, continuous airborne HEPA filtration, and hospital bio-barrier hygiene.",
-                tag: 'ISO-7 Cleanroom Grade',
+                title: 'Clean, Every Time',
+                desc: "Class B autoclave sterilization, single-use cartridges, and fresh barriers on every surface. The standard comes from Marvin's years as a surgical technician and it never slips.",
+                tag: 'Sterile & Certified',
                 accent: 'primary'
               },
               {
                 num: '02',
                 icon: <Sparkles className="w-6 h-6 text-on-surface-variant" />,
-                title: 'Anatomical Morphology',
-                desc: 'Designs are never stamped flat onto skin. Every template is hand-drawn directly over muscle striations, skeletal axes, and joint pivot points, ensuring dynamic kinetic flow when you move.',
-                tag: 'Freehand Topography Mapping',
-                accent: 'secondary'
+                title: 'Made For Your Body',
+                desc: 'Designs are drawn freehand and placed to flow with your muscles and joints — never stamped flat. What looks good in a photo has to work in real life.',
+                tag: 'Freehand & Anatomical',
+                accent: 'primary'
               },
               {
                 num: '03',
                 icon: <HeartHandshake className="w-6 h-6 text-on-surface-variant" />,
-                title: 'Permanent Relic Warranty',
-                desc: 'Tattooing is a lifetime compact. Every bespoke commission includes complimentary 6-month dermal inspection, pigment settling top-ups, and custom botanical aftercare prescriptions.',
-                tag: 'Lifetime Artistic Compact',
+                title: 'Right The First Time',
+                desc: 'We plan carefully and go at the right pace for you. You get clear aftercare and we check in to make sure it heals the way it should.',
+                tag: 'Proper Aftercare',
                 accent: 'primary'
               }
             ].map((codex, idx) => (
@@ -221,7 +220,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">
-                    <span className={`font-label-data text-3xl font-bold ${codex.accent === 'primary' ? 'text-primary' : 'text-secondary'}`}>
+                    <span className="font-label-data text-3xl font-bold text-primary">
                       {codex.num}
                     </span>
                     {codex.icon}
@@ -253,13 +252,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             className="text-center max-w-2xl mx-auto space-y-2"
           >
             <span className="font-label-caps text-xs uppercase text-primary tracking-[0.25em]">
-              THE ATELIER GUILD
+              THE ARTISTS
             </span>
             <h2 className="font-headline-xl text-3xl sm:text-4xl text-on-surface uppercase font-bold">
-              Resident Masters &amp; Specialists
+              Our Tattoo &amp; Piercing Team
             </h2>
             <p className="font-body-md text-sm text-on-surface-variant">
-              Every practitioner in our sanctum operates with distinct stylistic authority and medical discipline.
+              Each artist has their own style and specialties. Pick the one that fits your idea.
             </p>
           </motion.div>
 
@@ -288,9 +287,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                         {b}
                       </span>
                     ))}
-                  </div>
-                  <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-surface-container-lowest/90 text-secondary font-label-data text-xs uppercase">
-                    {art.slotsRemaining} Slots Remaining
                   </div>
                 </div>
 
