@@ -99,7 +99,7 @@ export const SERVICES_DATA: ServiceItem[] = [
 
 export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
-    id: 'piece-opus-01',
+    id: 'piece-01',
     title: 'Honor To Mothers: Matriarch Portrait',
     category: 'dark-realism',
     categoryLabel: 'Memorial Realism & Mother Tribute',
@@ -114,22 +114,6 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
     pigment: 'Dynamic Carbon Deep & Greywash',
     morphology: 'Inner Forearm',
     featured: true
-  },
-  {
-    id: 'piece-01',
-    title: 'Matriarch Realism Portrait',
-    category: 'dark-realism',
-    categoryLabel: 'Dark Realism & Mother Tribute',
-    artist: 'Marvin',
-    healingState: 'Fresh Ink',
-    cycle: 'fresh',
-    zone: 'Forearm',
-    flashId: '#701-MP',
-    image: '/images/portfolio/portrait-elder-woman.png',
-    description: 'High-detail black-and-grey realism tribute portrait executed with smooth gradient shading and fine headwrap texturing honoring mothers.',
-    duration: '6 Hours Single Session',
-    pigment: 'Dynamic Carbon Deep',
-    morphology: 'Inner Forearm'
   },
   {
     id: 'piece-02',
