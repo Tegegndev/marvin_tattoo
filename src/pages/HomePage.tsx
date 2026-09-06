@@ -120,42 +120,42 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
               </div>
 
-              {/* Bold Title */}
+              {/* Bold Real Title */}
               <h1 className="font-headline-xl text-4xl sm:text-5xl md:text-6xl text-bone leading-[1.05] tracking-tight font-bold uppercase">
-                Anatomy-First Body Art &amp; Sterile Piercing
+                Clean Lines. Heavy Blackwork. Made to Age Well.
               </h1>
 
-              {/* Pitch */}
+              {/* Real Studio Pitch */}
               <p className="font-body-md text-sm sm:text-base text-bone-muted max-w-2xl leading-relaxed">
-                Dark realism, heavy blackwork, and precision jewelry curation. Drawn freehand to align with your body’s natural musculature and executed with hospital-grade sterility protocols.
+                Specializing in dark realism, solid blackwork, and custom tattoo design in SoHo NYC. Every piece is drawn to fit your body and tattooed to heal solid for life.
               </p>
 
               {/* Core Features List */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
                   <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <ShieldCheck className="w-3.5 h-3.5 text-gold" /> Sterile Protocol
+                    <Sparkles className="w-3.5 h-3.5 text-crimson-light" /> Custom Placement
                   </span>
                   <p className="font-body-sm text-[11px] text-bone-dim">
-                    Class-B steam autoclave &amp; 100% single-use cartridges.
+                    Drawn directly on your body so it moves naturally with your skin.
                   </p>
                 </div>
 
                 <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
                   <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <Sparkles className="w-3.5 h-3.5 text-gold" /> Anatomical Flow
+                    <ShieldCheck className="w-3.5 h-3.5 text-crimson-light" /> Sterile Setup
                   </span>
                   <p className="font-body-sm text-[11px] text-bone-dim">
-                    Freehand placement mapped to your muscles and joints.
+                    100% single-use cartridges &amp; hospital-level sanitation.
                   </p>
                 </div>
 
                 <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
                   <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-gold" /> Implant Grade
+                    <CheckCircle2 className="w-3.5 h-3.5 text-crimson-light" /> Healed Longevity
                   </span>
                   <p className="font-body-sm text-[11px] text-bone-dim">
-                    ASTM-F136 titanium and solid 14k gold piercing suites.
+                    Deep blacks and smooth greywash built to hold up over decades.
                   </p>
                 </div>
               </div>
