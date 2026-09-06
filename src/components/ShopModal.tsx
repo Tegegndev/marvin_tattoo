@@ -74,7 +74,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-screen max-w-md bg-noir-900 border-l border-noir-700 shadow-2xl flex flex-col justify-between"
+              className="w-screen max-w-md bg-noir-900 border-l border-noir-700 flex flex-col justify-between"
             >
               {/* Header */}
               <div className="p-6 border-b border-noir-700 flex items-center justify-between bg-noir-850">

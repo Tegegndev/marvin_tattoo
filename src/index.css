@@ -32,48 +32,30 @@
   }
 }
 
-/* Interactive hover states */
+/* Clean interactive states */
 .btn-gothic-glow {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
 }
 .btn-gothic-glow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(143, 19, 29, 0.5), 0 10px 20px -10px rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
 }
 
 .btn-secondary-glow {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
 }
 .btn-secondary-glow:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .gothic-card {
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.gothic-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1px solid transparent;
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-.gothic-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 16px rgba(143, 19, 29, 0.18);
-}
-.gothic-card:hover::after {
-  border-color: rgba(255, 107, 114, 0.25);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .interactive-img-zoom {
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 .group:hover .interactive-img-zoom {
-  transform: scale(1.05);
-  filter: brightness(1.06);
+  transform: scale(1.03);
 }
 
 /* Reduced motion accessibility */

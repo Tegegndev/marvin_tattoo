@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
-import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA } from '../data/atelierData';
 import { 
   Calendar, 
@@ -61,10 +61,10 @@ const HERO_SLIDES = [
 
 // Page sections for in-page navigation
 const PAGE_SECTIONS = [
-  { id: 'hero-sanctum', index: '01', label: 'Welcome' },
+  { id: 'hero-section', index: '01', label: 'Welcome' },
   { id: 'services-section', index: '02', label: 'Services' },
-  { id: 'relics-section', index: '03', label: 'Portfolio' },
-  { id: 'apothecary-section', index: '04', label: 'Shop' },
+  { id: 'portfolio-section', index: '03', label: 'Portfolio' },
+  { id: 'shop-section', index: '04', label: 'Shop' },
   { id: 'testimonials-section', index: '05', label: 'Reviews' },
   { id: 'location-section', index: '06', label: 'Location' }
 ];
@@ -122,16 +122,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parallax scroll hooks
-  const { scrollY, scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
-  // Hero parallax transformations
-  const heroBgY = useTransform(scrollY, [0, 800], [0, 260]);
-  const heroOpacity = useTransform(scrollY, [0, 650], [0.85, 0.1]);
-  const heroScale = useTransform(scrollY, [0, 800], [1.05, 1.25]);
-  const heroTextY = useTransform(scrollY, [0, 600], [0, 110]);
-
   // Auto-advance hero slides
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -154,7 +144,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     ? PORTFOLIO_DATA.slice(0, 3)
     : PORTFOLIO_DATA.filter(item => {
         if (selectedPortfolioCategory === 'blackwork') return item.category === 'dark-realism';
-        if (selectedPortfolioCategory === 'portraits') return item.category === 'dark-realism' || item.category === 'neo-arcane';
+        if (selectedPortfolioCategory === 'portraits') return item.category === 'dark-realism' || item.category === 'neo-traditional';
         if (selectedPortfolioCategory === 'piercings') return item.category === 'piercing';
         return true;
       });
@@ -175,44 +165,33 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div ref={containerRef} className="w-full flex flex-col bg-noir-950 relative">
-      {/* Top Scroll Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-crimson via-crimson to-gold z-50 origin-left"
-        style={{ scaleX: smoothProgress }}
-      />
-
-      {/* HERO SECTION: Editorial Carousel */}
+      {/* HERO SECTION */}
       <section
-        id="hero-sanctum"
-        className="relative w-full min-h-[96vh] flex items-center justify-center overflow-hidden pt-28 pb-20 bg-noir-950"
+        id="hero-section"
+        className="relative w-full min-h-[92vh] flex items-center justify-center overflow-hidden pt-28 pb-20 bg-noir-950"
       >
-        {/* Cinematic Visual Backdrop with Framer Motion Transition & Parallax */}
+        {/* Visual Backdrop */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeHero.num}
-            initial={{ opacity: 0, scale: 1.15 }}
-            animate={{ opacity: 0.75, scale: 1.05 }}
-            exit={{ opacity: 0, scale: 1.02 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0 w-full h-full bg-cover bg-center mix-blend-luminosity will-change-transform"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.65 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7 }}
+            className="absolute inset-0 w-full h-full bg-cover bg-center mix-blend-luminosity"
             style={{
               backgroundImage: `url('${activeHero.image}')`,
               backgroundPosition: 'center 30%',
-              y: heroBgY,
-              opacity: heroOpacity
             }}
           />
         </AnimatePresence>
 
-        {/* Radial Dark Vignette & Crimson Mist Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-noir-950/60 to-noir-950/80 pointer-events-none" />
+        {/* Clean Dark Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-noir-950/70 to-noir-950/80 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-r from-noir-950 via-transparent to-noir-950 pointer-events-none" />
-        <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-crimson/20 rounded-full blur-[120px] pointer-events-none"
-        />
 
         {/* Hero Flank: Slide indicators */}
-        <div className="hidden xl:flex flex-col items-center gap-3 absolute right-16 top-1/2 -translate-y-1/2 z-30 bg-noir-950/70 backdrop-blur-md p-4 border border-noir-700/60 shadow-2xl">
+        <div className="hidden xl:flex flex-col items-center gap-3 absolute right-16 top-1/2 -translate-y-1/2 z-30 bg-noir-950/90 p-4 border border-noir-700/60">
           <div className="flex flex-col items-center gap-3">
             {HERO_SLIDES.map((slide, idx) => {
               const isHeroActive = currentHeroIndex === idx;
@@ -259,81 +238,50 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
 
         {/* Hero Content Container */}
-        <motion.div
-          style={{ y: heroTextY }}
-          className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center"
-        >
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
           {/* Atelier Provenance Pill */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeHero.num + '-pill'}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-noir-850/80 backdrop-blur-md rounded-full mb-4 shadow-xl border border-noir-700/30"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson" />
-              <span className="font-label-caps text-[10px] sm:text-xs text-bone-muted uppercase tracking-[0.25em]">
-                {activeHero.pill}
-              </span>
-            </motion.div>
-          </AnimatePresence>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-noir-850 rounded-full mb-4 border border-noir-700/60">
+            <span className="w-1.5 h-1.5 rounded-full bg-crimson" />
+            <span className="font-label-caps text-[10px] sm:text-xs text-bone-muted uppercase tracking-[0.25em]">
+              {activeHero.pill}
+            </span>
+          </div>
 
           {/* Editorial Headline */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeHero.num + '-headline'}
-              initial={{ opacity: 0, scale: 0.96, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: -12 }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center"
-            >
-              <h1 className="font-display-hero font-title-editorial text-5xl sm:text-6xl md:text-7xl text-bone mb-4 leading-tight">
-                {activeHero.title}
-              </h1>
+          <div className="flex flex-col items-center">
+            <h1 className="font-display-hero font-title-editorial text-5xl sm:text-6xl md:text-7xl text-bone mb-4 leading-tight">
+              {activeHero.title}
+            </h1>
 
-              <div className={`text-xl sm:text-2xl md:text-3xl ${activeHero.accentColor} mb-6 font-headline-md`}>
-                {activeHero.subtitle}
-              </div>
+            <div className={`text-xl sm:text-2xl md:text-3xl ${activeHero.accentColor} mb-6 font-headline-md`}>
+              {activeHero.subtitle}
+            </div>
 
-              <p className="font-body-lg text-base sm:text-lg text-bone-muted max-w-2xl mx-auto mb-8 leading-relaxed">
-                {activeHero.desc}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+            <p className="font-body-lg text-base sm:text-lg text-bone-muted max-w-2xl mx-auto mb-8 leading-relaxed">
+              {activeHero.desc}
+            </p>
+          </div>
 
           {/* Action CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.35 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mb-12"
-          >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mb-12">
             <button
               onClick={() => onNavigate('booking')}
-              className="group w-full sm:w-auto px-8 py-3.5 bg-crimson text-bone font-label-caps text-xs uppercase tracking-[0.2em] shadow-xl btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30 hover:shadow-[0_0_30px_rgba(138,11,20,0.8)]"
+              className="group w-full sm:w-auto px-8 py-3.5 bg-crimson text-bone font-label-caps text-xs uppercase tracking-[0.2em] btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30 hover:bg-crimson-hover"
             >
-              <Calendar className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12" />
+              <Calendar className="w-4 h-4" />
               <span>Book a Session</span>
             </button>
             <button
               onClick={onOpenWhatsApp}
-              className="group w-full sm:w-auto px-8 py-3.5 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-[0.2em] shadow-md btn-secondary-glow flex items-center justify-center gap-2 border border-noir-700/30"
+              className="group w-full sm:w-auto px-8 py-3.5 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-[0.2em] btn-secondary-glow flex items-center justify-center gap-2 border border-noir-700 hover:bg-noir-700"
             >
               <span className="w-2 h-2 rounded-full bg-gold" />
               <span>WhatsApp Direct</span>
             </button>
-          </motion.div>
+          </div>
 
           {/* Quick Stats Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.45 }}
-            className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 bg-noir-850/80 backdrop-blur-xl p-5 shadow-2xl border border-noir-700/40"
-          >
+          <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 bg-noir-850 p-5 border border-noir-700">
             <div className="flex items-center gap-4 px-4 py-2">
               <span className="font-headline-md text-3xl sm:text-4xl text-bone font-title-editorial font-bold">
                 <AnimatedCounter value={500} suffix="+" />
@@ -364,7 +312,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <span className="font-body-sm text-xs text-bone-muted">Across reviews</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Scroll Down Trigger */}
           <button
@@ -376,23 +324,17 @@ export const HomePage: React.FC<HomePageProps> = ({
             </span>
             <ChevronDown className="w-4 h-4 text-crimson-light" />
           </button>
-        </motion.div>
+        </div>
       </section>
 
       {/* SECTION 02: MASTER SERVICES & DISCIPLINES */}
       <section
         id="services-section"
-        className="w-full py-24 px-4 md:px-8 lg:px-12 bg-noir-900 relative"
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
       >
         <div className="max-w-7xl mx-auto">
-          {/* Section Header with Scroll Reveal */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16"
-          >
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="space-y-2 max-w-xl">
               <div className="flex items-center gap-2">
                 <span className="w-8 h-[2px] bg-crimson" />
@@ -407,26 +349,22 @@ export const HomePage: React.FC<HomePageProps> = ({
             <p className="font-body-md text-sm text-bone-muted max-w-sm leading-relaxed">
               Designs are drawn to fit your body, not stamped on flat. Every appointment is fully sterile, from the work surface to the single-use cartridges.
             </p>
-          </motion.div>
+          </div>
 
-          {/* 4-Column Service Matrix with Staggered Scroll Animation */}
+          {/* 4-Column Service Matrix */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SERVICES_DATA.map((service, idx) => (
-              <motion.div
+            {SERVICES_DATA.map((service) => (
+              <div
                 key={service.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
-                className="group flex flex-col bg-noir-850 p-6 shadow-xl hover:bg-noir-800 transition-all duration-400 gothic-card border border-noir-700/60 hover:border-crimson/40"
+                className="group flex flex-col bg-noir-850 p-6 hover:bg-noir-800 transition-colors gothic-card border border-noir-700/60 hover:border-crimson/40"
               >
-                <div className="w-full h-48 mb-4 overflow-hidden bg-noir-950 relative">
+                <div className="w-full h-48 mb-4 overflow-hidden bg-noir-950 relative border border-noir-700/40">
                   <img
                     src={service.image}
                     alt={service.title}
                     className="w-full h-full object-cover interactive-img-zoom"
                   />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-noir-950/80 backdrop-blur-sm text-[10px] font-label-data uppercase text-bone-dim border border-noir-700">
+                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-noir-950/90 text-[10px] font-label-data uppercase text-bone-dim border border-noir-700">
                     {service.subtitle}
                   </div>
                 </div>
@@ -465,25 +403,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <span>Book This Service</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
                 </button>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION 03: FEATURED PORTFOLIO MONOGRAPH SHOWCASE */}
+      {/* SECTION 03: FEATURED PORTFOLIO SHOWCASE */}
       <section
-        id="relics-section"
-        className="w-full py-24 px-4 md:px-8 lg:px-12 bg-noir-950 border-t border-noir-700/40"
+        id="portfolio-section"
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-t border-noir-700/40"
       >
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
-            className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12"
-          >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div>
               <div className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] mb-1">
                 PORTFOLIO
@@ -506,7 +438,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => setSelectedPortfolioCategory(tab.id)}
                   className={`px-4 py-2 font-label-caps text-xs uppercase tracking-wider transition-all border ${
                     selectedPortfolioCategory === tab.id
-                      ? 'bg-crimson text-bone border-crimson shadow-md'
+                      ? 'bg-crimson text-bone border-crimson'
                       : 'bg-noir-850 text-bone-muted hover:text-bone hover:bg-noir-800 border-noir-700'
                   }`}
                 >
@@ -514,18 +446,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </button>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          {/* Mosaic Grid with Scroll Reveal */}
+          {/* Mosaic Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPortfolio.map((piece, idx) => (
-              <motion.div
+            {filteredPortfolio.map((piece) => (
+              <div
                 key={piece.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.6, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
-                className="group relative bg-noir-850 overflow-hidden shadow-2xl flex flex-col gothic-card border border-noir-700 hover:border-crimson/30"
+                className="group relative bg-noir-850 overflow-hidden flex flex-col gothic-card border border-noir-700 hover:border-crimson/30"
               >
                 <div
                   onClick={() => onSelectPiece(piece)}
@@ -536,7 +464,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     alt={piece.title}
                     className="w-full h-full object-cover interactive-img-zoom"
                   />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/85 backdrop-blur-sm text-bone-muted font-label-caps text-[10px] uppercase tracking-widest border border-noir-700">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 text-bone-muted font-label-caps text-[10px] uppercase tracking-widest border border-noir-700">
                     {piece.healingState}
                   </div>
                   <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-noir-950/90 text-bone font-label-data text-[10px] uppercase">
@@ -562,47 +490,36 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </span>
                     <button
                       onClick={() => onSelectPiece(piece)}
-                      className="px-3.5 py-1.5 bg-noir-800 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-wider transition-all duration-300"
+                      className="px-3.5 py-1.5 bg-noir-800 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-wider transition-colors"
                     >
                       View Piece
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
+          <div className="mt-12 text-center">
             <button
               onClick={() => onNavigate('portfolio')}
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-widest border border-noir-700 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-widest border border-noir-700 transition-colors"
             >
               <span>View Full Portfolio</span>
               <ArrowRight className="w-4 h-4 text-crimson-light" />
             </button>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* SECTION 04: SHOP SPOTLIGHT */}
       <section
-        id="apothecary-section"
-        className="w-full py-24 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
+        id="shop-section"
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.7 }}
-              className="lg:col-span-5 space-y-6"
-            >
+            <div className="lg:col-span-5 space-y-6">
               <div className="inline-flex items-center gap-2">
                 <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
                   SHOP
@@ -618,7 +535,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </p>
 
               {/* Studio standards */}
-              <div className="p-5 bg-noir-850 space-y-4 shadow-xl border border-noir-700/30">
+              <div className="p-5 bg-noir-850 space-y-4 border border-noir-700/60">
                 <div className="flex items-start gap-3">
                   <Verified className="w-5 h-5 text-crimson-light shrink-0 mt-0.5" />
                   <div>
@@ -646,26 +563,22 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="pt-2">
                 <button
                   onClick={() => onNavigate('equipment')}
-                  className="group inline-flex items-center gap-2 px-6 py-3 bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-crimson transition-all duration-300 btn-gothic-glow border border-noir-700/40"
+                  className="group inline-flex items-center gap-2 px-6 py-3 bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-crimson transition-colors border border-noir-700/60"
                 >
                   <span>Shop Equipment &amp; Aftercare</span>
-                  <ShoppingBag className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
+                  <ShoppingBag className="w-4 h-4" />
                 </button>
               </div>
-            </motion.div>
+            </div>
 
             {/* Equipment Showcase */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {PRODUCTS_DATA.slice(0, 2).map((prod, idx) => (
-                <motion.div
+              {PRODUCTS_DATA.slice(0, 2).map((prod) => (
+                <div
                   key={prod.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.6, delay: idx * 0.15 }}
-                  className="group bg-noir-850 p-5 shadow-xl flex flex-col justify-between gothic-card border border-noir-700/70 hover:border-crimson/25"
+                  className="group bg-noir-850 p-5 flex flex-col justify-between gothic-card border border-noir-700/70 hover:border-crimson/30"
                 >
-                  <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative">
+                  <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700/40">
                     <img
                       src={prod.image}
                       alt={prod.name}
@@ -688,33 +601,27 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </span>
                       <button
                         onClick={() => onAddToCart(prod)}
-                        className="px-3.5 py-1.5 bg-noir-800 hover:bg-bone hover:text-noir-950 font-label-caps text-xs uppercase transition-all duration-300 flex items-center gap-1"
+                        className="px-3.5 py-1.5 bg-noir-800 hover:bg-bone hover:text-noir-950 font-label-caps text-xs uppercase transition-colors flex items-center gap-1 border border-noir-700"
                       >
                         <ShoppingBag className="w-3 h-3" />
-                        <span>Acquire</span>
+                        <span>Add to Bag</span>
                       </button>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 05: COLLECTOR TESTIMONIALS */}
+      {/* SECTION 05: CLIENT TESTIMONIALS */}
       <section
         id="testimonials-section"
-        className="w-full py-24 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
       >
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
-            className="text-center max-w-2xl mx-auto mb-16 space-y-2"
-          >
+          <div className="text-center max-w-2xl mx-auto mb-14 space-y-2">
             <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
               CLIENT REVIEWS
             </span>
@@ -724,17 +631,13 @@ export const HomePage: React.FC<HomePageProps> = ({
             <p className="font-body-md text-sm text-bone-muted">
               Unedited feedback from people who've sat in our chair.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS_DATA.map((t, idx) => (
-              <motion.div
+            {TESTIMONIALS_DATA.map((t) => (
+              <div
                 key={t.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6, delay: idx * 0.12 }}
-                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between shadow-xl gothic-card border border-noir-700 hover:border-crimson/20"
+                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between gothic-card border border-noir-700 hover:border-crimson/20"
               >
                 <div>
                   <div className="flex items-center gap-1 text-gold mb-4">
@@ -761,7 +664,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -770,18 +673,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* SECTION 06: LOCATION, HOURS & SECURITY ADVISORY */}
       <section
         id="location-section"
-        className="w-full py-24 px-4 md:px-8 lg:px-12 bg-noir-950 border-t border-noir-700/40"
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-t border-noir-700/40"
       >
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Security Notice Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="w-full p-5 sm:p-6 bg-red-950/40/20 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl border border-red-500/40/30"
-          >
+          <div className="w-full p-5 sm:p-6 bg-noir-900 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-red-500/30">
             <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-red-950/40 text-red-200 shrink-0 mt-0.5">
+              <div className="p-2.5 bg-red-950/40 text-red-200 shrink-0 mt-0.5 border border-red-500/20">
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <div>
@@ -795,32 +693,26 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
             <button
               onClick={onOpenVerify}
-              className="shrink-0 px-4 py-2 bg-red-950/40 text-red-200 font-label-caps text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all"
+              className="shrink-0 px-4 py-2 bg-red-950/40 text-red-200 font-label-caps text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-colors border border-red-500/30"
             >
               Verify Channel
             </button>
-          </motion.div>
+          </div>
 
           {/* Location & Operating Schedule */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Atelier Address View */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="lg:col-span-7 flex flex-col bg-noir-850 overflow-hidden shadow-2xl gothic-card border border-noir-700 hover:border-crimson/20"
-            >
+            <div className="lg:col-span-7 flex flex-col bg-noir-850 overflow-hidden gothic-card border border-noir-700">
               <div
                 className="w-full h-80 sm:h-96 relative bg-cover bg-center"
                 style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDREC5pLTdXJO9fp7vuWhpIAppPWmY4qSTJFCXzqlUcHi3fZn0gVE-noAZzaS8SEDDLh1lZ4oFoupXQ5NuT2OZdFMFRBi9bf1rXRgjL5JVQDM5eOljrx_syn6Z_sjQ5Q3bz0ZjyL8BL1VfcSpTQSddMSSp_sHB62jK0ST79vxxgbvglq3jteejwFoma9kAsCXzziKmSSyrh11T-SMQQ4TL_pVcDo1x_MBWIVx9omsFuPYnfkoalDF-y7g')` }}
               >
                 <div className="absolute inset-0 bg-noir-950/40" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                  <div className="p-3.5 bg-crimson text-bone rounded-full shadow-2xl border border-crimson/40">
+                  <div className="p-3.5 bg-crimson text-bone rounded-full border border-crimson/40">
                     <MapPin className="w-6 h-6" />
                   </div>
-                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3 py-1 text-bone mt-2 shadow-xl border border-noir-700/40">
+                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3 py-1 text-bone mt-2 border border-noir-700/60">
                     Marvin Tattoos — New York
                   </span>
                 </div>
@@ -831,7 +723,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     Studio Address
                   </div>
                   <div className="font-body-sm text-xs text-bone-muted">
-                    04 Obsidian Alley, Floor 03 — Cultural Quarter, New York
+                    142 Mercer Street, Suite 3B — SoHo, New York, NY 10012
                   </div>
                 </div>
                 <button
@@ -842,16 +734,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <span>Directions</span>
                 </button>
               </div>
-            </motion.div>
+            </div>
 
             {/* Operating Hours Sidebar */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 shadow-2xl gothic-card border border-noir-700 hover:border-crimson/20"
-            >
+            <div className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 gothic-card border border-noir-700">
               <div className="space-y-6">
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
@@ -899,13 +785,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="pt-6">
                 <button
                   onClick={() => onNavigate('booking')}
-                  className="w-full py-3.5 bg-crimson text-bone font-label-caps text-xs uppercase tracking-[0.2em] shadow-xl btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30"
+                  className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30 transition-colors"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>Book a Consultation</span>
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

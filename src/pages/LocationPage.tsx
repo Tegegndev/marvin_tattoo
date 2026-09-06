@@ -25,10 +25,10 @@ export const LocationPage: React.FC<LocationPageProps> = ({
             </span>
           </div>
           <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-            04 Obsidian Alley, Floor 03 — New York
+            142 Mercer Street, Suite 3B — SoHo, New York
           </h1>
           <p className="font-body-md text-sm text-bone-muted max-w-2xl leading-relaxed">
-            Tucked in the historic Cultural Quarter. Private consultation rooms, a clean piercing studio, and strict hygiene protocols throughout.
+            Located in the heart of SoHo. Private consultation rooms, a dedicated sterile piercing suite, and medical-grade hygiene protocols throughout.
           </p>
         </div>
       </section>
@@ -38,15 +38,15 @@ export const LocationPage: React.FC<LocationPageProps> = ({
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Map Visual (7 Cols) */}
-            <div className="lg:col-span-7 bg-noir-850 overflow-hidden shadow-2xl border border-noir-700 flex flex-col justify-between">
+            <div className="lg:col-span-7 bg-noir-850 overflow-hidden border border-noir-700 flex flex-col justify-between">
               <div className="w-full h-96 relative bg-cover bg-center" style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDREC5pLTdXJO9fp7vuWhpIAppPWmY4qSTJFCXzqlUcHi3fZn0gVE-noAZzaS8SEDDLh1lZ4oFoupXQ5NuT2OZdFMFRBi9bf1rXRgjL5JVQDM5eOljrx_syn6Z_sjQ5Q3bz0ZjyL8BL1VfcSpTQSddMSSp_sHB62jK0ST79vxxgbvglq3jteejwFoma9kAsCXzziKmSSyrh11T-SMQQ4TL_pVcDo1x_MBWIVx9omsFuPYnfkoalDF-y7g')` }}>
                 <div className="absolute inset-0 bg-noir-950/40" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                  <div className="p-3.5 bg-crimson text-bone rounded-full shadow-2xl border border-crimson/40">
+                  <div className="p-3.5 bg-crimson text-bone rounded-full border border-crimson/40">
                     <MapPin className="w-8 h-8 text-crimson-light" />
                   </div>
-                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 shadow-xl border border-noir-700/40">
-                    Marvin Tattoos · Obsidian Alley
+                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 border border-noir-700/40">
+                    Marvin Tattoos · SoHo Atelier
                   </span>
                 </div>
               </div>
@@ -58,7 +58,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                       Find Us
                     </h3>
                     <p className="font-body-sm text-xs text-bone-dim">
-                      04 Obsidian Alley, Floor 03, Cultural Quarter, New York, NY 10013
+                      142 Mercer Street, Suite 3B, SoHo, New York, NY 10012
                     </p>
                   </div>
                   <a
@@ -79,17 +79,17 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                       <span>Subway &amp; Transit</span>
                     </div>
                     <p className="text-bone-dim">
-                      Canal St / Broadway Subway Station (Lines N, Q, R, W, 6, J, Z) — 3 minutes walking.
+                      Prince St (Lines N, Q, R, W) or Spring St (Lines 6, C, E) — 3 minutes walking.
                     </p>
                   </div>
 
                   <div className="p-3 bg-noir-900 border border-noir-700 space-y-1">
                     <div className="flex items-center gap-1.5 font-label-caps text-xs text-crimson-light uppercase">
                       <Car className="w-4 h-4" />
-                      <span>Private Parking</span>
+                      <span>Garage Parking</span>
                     </div>
                     <p className="text-bone-dim">
-                      Secure valet parking available at Obsidian Garage (Corner of Mercer &amp; Howard).
+                      Parking available at Mercer &amp; Howard Garage (Corner of Mercer &amp; Howard St).
                     </p>
                   </div>
                 </div>
@@ -97,7 +97,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
             </div>
 
             {/* Operating Schedule & Protocols (5 Cols) */}
-            <div className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 shadow-2xl border border-noir-700 space-y-6">
+            <div className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 border border-noir-700 space-y-6">
               <div className="space-y-6">
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">

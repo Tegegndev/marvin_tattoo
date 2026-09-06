@@ -18,7 +18,7 @@ export interface ServiceItem {
 export interface PortfolioPiece {
   id: string;
   title: string;
-  category: 'dark-realism' | 'neo-arcane' | 'micro-detail' | 'piercing' | 'coverup';
+  category: 'dark-realism' | 'neo-traditional' | 'micro-detail' | 'piercing' | 'coverup';
   categoryLabel: string;
   artist: string;
   healingState: 'Healed 8 Months' | 'Healed 1 Year' | 'Healed 18 Months' | 'Fresh Ink' | 'Custom Titanium';
@@ -82,8 +82,8 @@ export interface BookingFormData {
   artist: string;
   date: string;
   timeSlot: string;
-  patronName: string;
-  patronPhone: string;
-  patronEmail: string;
+  clientName: string;
+  clientPhone: string;
+  clientEmail: string;
   termsAccepted: boolean;
 }

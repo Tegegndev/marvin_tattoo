@@ -46,8 +46,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
               <span>Studio Location</span>
             </div>
             <div className="font-body-sm text-body-sm text-bone-muted space-y-1">
-              <p className="text-bone font-semibold">04 Obsidian Alley, Floor 03</p>
-              <p className="text-bone-dim">Cultural Quarter, New York</p>
+              <p className="text-bone font-semibold">142 Mercer Street, Suite 3B</p>
+              <p className="text-bone-dim">SoHo, New York, NY 10012</p>
               <p className="font-label-data text-label-data text-crimson-light pt-1">
                 Call: +1 (800) 555-MARK
               </p>

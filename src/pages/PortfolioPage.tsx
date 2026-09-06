@@ -23,7 +23,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   const categories = [
     { id: 'all', label: 'All' },
     { id: 'dark-realism', label: 'Dark Realism' },
-    { id: 'neo-arcane', label: 'Neo-Traditional' },
+    { id: 'neo-traditional', label: 'Neo-Traditional' },
     { id: 'micro-detail', label: 'Micro & Single-Needle' },
     { id: 'piercing', label: 'Piercings' },
     { id: 'coverup', label: 'Cover-Ups' },
@@ -40,7 +40,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
   const artists = [
     { id: 'all', label: 'All Artists' },
-    { id: 'Master Marvin', label: 'Marvin' },
+    { id: 'Marvin', label: 'Marvin' },
     { id: 'Elena Kostas', label: 'Elena Kostas' },
     { id: 'S. Choi', label: 'S. Choi' }
   ];
@@ -166,7 +166,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 bg-noir-900 border border-noir-700 shadow-2xl overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 bg-noir-900 border border-noir-700 overflow-hidden">
             {/* Visual Column */}
             <div
               onClick={() => onSelectPiece(featuredPiece)}
@@ -178,7 +178,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700"
               />
               <div className="absolute top-4 left-4 flex flex-col gap-2">
-                <span className="bg-crimson text-bone font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest shadow-lg">
+                <span className="bg-crimson text-bone font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest border border-crimson/30">
                   Featured
                 </span>
                 <span className="bg-noir-950/90 backdrop-blur-sm text-gold font-label-caps text-[10px] px-3 py-1 uppercase border border-gold/30">
@@ -276,13 +276,12 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPieces.map((piece, idx) => (
+            {filteredPieces.map((piece) => (
               <motion.div
                 key={piece.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="group relative bg-noir-850 overflow-hidden shadow-xl flex flex-col gothic-card border border-noir-700/60 hover:border-crimson/30"
+                className="group relative bg-noir-850 overflow-hidden flex flex-col gothic-card border border-noir-700/60 hover:border-crimson/30"
               >
                 <div
                   onClick={() => onSelectPiece(piece)}

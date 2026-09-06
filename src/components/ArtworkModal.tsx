@@ -33,7 +33,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-5xl bg-noir-900 border border-noir-700/80 shadow-2xl overflow-hidden z-10 my-8"
+            className="relative w-full max-w-5xl bg-noir-900 border border-noir-700/80 overflow-hidden z-10 my-8"
           >
             {/* Close Button */}
             <button
@@ -56,10 +56,10 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
                 
                 {/* Badges on image */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
-                  <span className="px-3 py-1 bg-crimson/90 text-bone font-label-caps text-[10px] uppercase tracking-widest backdrop-blur-sm border border-crimson/30 shadow-lg">
+                  <span className="px-3 py-1 bg-crimson/90 text-bone font-label-caps text-[10px] uppercase tracking-widest backdrop-blur-sm border border-crimson/30">
                     {piece.categoryLabel}
                   </span>
-                  <span className="px-3 py-1 bg-noir-950/90 text-gold font-label-caps text-[10px] uppercase tracking-wider backdrop-blur-sm border border-gold/30 shadow-lg">
+                  <span className="px-3 py-1 bg-noir-950/90 text-gold font-label-caps text-[10px] uppercase tracking-wider backdrop-blur-sm border border-gold/30">
                     {piece.healingState}
                   </span>
                 </div>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { PageView } from '../types';
 import { ARTISTS_DATA } from '../data/atelierData';
-import { motion } from 'framer-motion';
 import { ShieldCheck, Award, HeartHandshake, Syringe, Sparkles, MessageCircle } from 'lucide-react';
 
 interface AboutPageProps {
@@ -14,18 +13,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
 
   return (
     <div className="w-full pt-20 bg-noir-950 min-h-screen">
-      {/* Hero Codex Banner */}
+      {/* Hero Banner */}
       <section className="relative w-full overflow-hidden bg-noir-950 py-16 md:py-24 border-b border-noir-700/40">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-crimson/10 rounded-full blur-[140px] pointer-events-none" />
-
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           {/* Section Tag */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center justify-between mb-8 pb-4 border-b border-noir-700/40"
-          >
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-noir-700/40">
             <div className="flex items-center gap-3">
               <span className="font-label-caps text-xs text-crimson-light tracking-[0.25em]">
                 ABOUT THE STUDIO
@@ -33,20 +25,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               <span className="w-1.5 h-1.5 rounded-full bg-noir-600" />
               <span className="font-label-data text-xs text-bone-dim">EST. 2014</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Asymmetric Split Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Master Portrait Card (7 Cols) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7 flex flex-col justify-between bg-noir-900 rounded-xl overflow-hidden shadow-2xl relative group border border-noir-700/80"
-            >
+            <div className="lg:col-span-7 flex flex-col justify-between bg-noir-900 rounded-xl overflow-hidden relative group border border-noir-700/80">
               <div className="relative h-[480px] md:h-[580px] w-full overflow-hidden">
                 <img
-                  alt="Master Marvin in leather apron holding tattoo machine"
+                  alt="Marvin in studio holding tattoo machine"
                   className="w-full h-full object-cover object-center filter grayscale contrast-125 brightness-90 group-hover:scale-105 transition-transform duration-700"
                   src={masterMarvin.avatar}
                 />
@@ -54,10 +41,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
 
                 {/* Floating Top Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-noir-950/80 backdrop-blur-md text-gold font-label-caps text-xs flex items-center gap-1.5 shadow border border-gold/30">
-                    <Award className="w-3.5 h-3.5" /> FOUNDER &amp; MASTER TATTOOIST
+                  <span className="px-3 py-1 bg-noir-950/80 backdrop-blur-md text-gold font-label-caps text-xs flex items-center gap-1.5 border border-gold/30">
+                    <Award className="w-3.5 h-3.5" /> FOUNDER &amp; RESIDENT ARTIST
                   </span>
-                  <span className="px-3 py-1 bg-crimson/90 text-bone font-label-caps text-xs shadow border border-crimson/30">
+                  <span className="px-3 py-1 bg-crimson/90 text-bone font-label-caps text-xs border border-crimson/30">
                     STERILE PROTOCOL CERTIFIED
                   </span>
                 </div>
@@ -77,16 +64,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Master Marvin Specs & Story (5 Cols) */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="lg:col-span-5 flex flex-col justify-between gap-6"
-            >
-              <div className="bg-noir-850 p-6 md:p-8 rounded-xl flex flex-col justify-between h-full shadow-lg border border-noir-700">
+            {/* Marvin Specs & Story (5 Cols) */}
+            <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+              <div className="bg-noir-850 p-6 md:p-8 rounded-xl flex flex-col justify-between h-full border border-noir-700">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Syringe className="w-4 h-4 text-crimson-light" />
@@ -155,7 +137,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   Inquire
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -163,13 +145,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
       {/* Studio Values */}
       <section className="w-full bg-noir-950 py-20 px-4 md:px-8 lg:px-12 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto space-y-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
-            className="flex flex-col md:flex-row md:items-end justify-between"
-          >
+          <div className="flex flex-col md:flex-row md:items-end justify-between">
             <div>
               <span className="font-label-caps text-xs text-crimson-light tracking-[0.2em] block mb-2">
                 HOW WE WORK
@@ -181,7 +157,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             <p className="font-body-sm text-sm text-bone-muted max-w-md mt-4 md:mt-0 leading-relaxed">
               Three standards every appointment follows — no exceptions.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -209,14 +185,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                 tag: 'Proper Aftercare',
                 accent: 'primary'
               }
-            ].map((codex, idx) => (
-              <motion.div
+            ].map((codex) => (
+              <div
                 key={codex.num}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6, delay: idx * 0.15 }}
-                className="bg-noir-850 p-8 rounded-xl flex flex-col justify-between shadow-lg relative overflow-hidden group border border-noir-700 hover:border-crimson/30 transition-all"
+                className="bg-noir-850 p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group border border-noir-700 hover:border-crimson/30 transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">
@@ -235,7 +207,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                 <div className="pt-4 border-t border-noir-700 text-xs font-label-data text-bone-dim uppercase">
                   {codex.tag}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -244,13 +216,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
       {/* Resident Master Artists Roster */}
       <section className="w-full bg-noir-950 py-20 px-4 md:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto space-y-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
-            className="text-center max-w-2xl mx-auto space-y-2"
-          >
+          <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
               THE ARTISTS
             </span>
@@ -260,17 +226,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             <p className="font-body-md text-sm text-bone-muted">
               Each artist has their own style and specialties. Pick the one that fits your idea.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {ARTISTS_DATA.map((art, idx) => (
-              <motion.div
+            {ARTISTS_DATA.map((art) => (
+              <div
                 key={art.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6, delay: idx * 0.15 }}
-                className="bg-noir-850 rounded-xl overflow-hidden shadow-xl border border-noir-700 flex flex-col justify-between gothic-card"
+                className="bg-noir-850 rounded-xl overflow-hidden border border-noir-700 flex flex-col justify-between gothic-card"
               >
                 <div className="relative h-72 overflow-hidden bg-noir-950">
                   <img
@@ -315,7 +277,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

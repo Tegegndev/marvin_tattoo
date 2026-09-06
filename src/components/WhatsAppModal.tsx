@@ -81,7 +81,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   type="button"
                   onClick={() => {
                     setTopic('consultation');
-                    setMessage('Greetings. I would like to schedule a custom dark realism tattoo consultation with Master Marvin.');
+                    setMessage('Hi! I would like to schedule a consultation with Marvin for a custom dark realism piece.');
                   }}
                   className={`p-2.5 text-left border transition-all ${
                     topic === 'consultation'
