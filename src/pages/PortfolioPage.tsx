@@ -173,16 +173,17 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             {/* Visual Column */}
             <div
               onClick={() => onSelectPiece(featuredPiece)}
-              className="lg:col-span-7 relative min-h-[420px] lg:min-h-[520px] bg-noir-950 cursor-pointer group"
+              className="lg:col-span-7 relative min-h-[460px] lg:min-h-[560px] max-h-[620px] bg-noir-950 cursor-pointer group flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-noir-700"
             >
               <img
                 src={featuredPiece.image}
                 alt={featuredPiece.title}
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700"
+                className="w-full h-full object-cover object-[center_20%] filter grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
               />
-              <div className="absolute top-4 left-4 flex flex-col gap-2">
-                <span className="bg-crimson text-bone font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest border border-crimson/30">
-                  Featured
+              <div className="absolute inset-0 bg-gradient-to-t from-noir-950/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+                <span className="bg-crimson text-bone font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest border border-crimson/30 shadow-md">
+                  Featured Masterpiece
                 </span>
                 <span className="bg-noir-950/90 backdrop-blur-sm text-gold font-label-caps text-[10px] px-3 py-1 uppercase border border-gold/30">
                   {featuredPiece.healingState}
