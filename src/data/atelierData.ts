@@ -189,7 +189,7 @@ export const ARTISTS_DATA: ArtistProfile[] = [
     name: 'Marvin',
     title: 'Founder & Resident Artist',
     role: 'Former surgical tech, tattooist since 2014',
-    avatar: 'https://lh3.googleusercontent.com/aida/AEtjO1VzT8R0tPFsRpbz8PCKkFS6IBQEie1yCoFU_FapDi-0K76n3pZ8A6YvsLLpXnv-_voOB_W8jyNCiQ-9xSglYEWvVfCKgAv_Kdi5G1h4PKS46g8IQ4IK3ixGaNV1NhA_e_CMCUpskRv0DEJuv3JVYq_f1qzpUwkJ1pCRzZHAtjEF0EXF6O9wKweCr4Yt8t8aeMSQn8nUMnf2i50A9ehKqUI_W9zcJXfCoHHPEg4jQdvYIuCoNzOukrQ4ZjU',
+    avatar: '/images/marvin-founder.png',
     experience: '14+ Years',
     specialty: 'Dark Realism, Backpieces & Heavy Script',
     slotsRemaining: 4,

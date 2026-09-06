@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA } from '../data/atelierData';
 import { 
   Calendar, 
   ArrowRight, 
-  Verified, 
+  ShieldCheck, 
   Star, 
   ShoppingBag, 
   MapPin, 
@@ -14,7 +13,10 @@ import {
   FileText, 
   Syringe, 
   Layers, 
-  ChevronDown
+  MessageCircle,
+  Sparkles,
+  CheckCircle2,
+  Navigation
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -25,88 +27,97 @@ interface HomePageProps {
   onOpenVerify: () => void;
 }
 
-// Hero showcase slides
-const HERO_SLIDES = [
-  {
-    num: '01',
-    subtitle: 'Tattoo & Piercing Studio',
-    title: 'Marvin Tattoos',
-    pill: 'Master Crafted Body Art & Precision Piercings',
-    desc: 'Dark realism, blackwork, and precision piercings — worked to your body and drawn by hand. Fully sterile and fully bespoke since 2014.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1WxJneVTTiW5FtUrPA-UR2MCffuWJAbObh5_9W0vlQKxC_piV154sBLGppN0_wQIIb2QAx1s4TtQItttuHFTtoKW_9vpl7OcIRzDT0xXw5czitVp0NkmhS7cZ-MzVz0skE9_yEGcoDFgvZQdsHHM1rv32xYstg6XDqLe5pD0LijkVhE9CY4QoesFaarKdffwvL8_6aJVdyy4-7wR0JXMwckNFfjtX61dr9yRUqlYQSOHZ-DHbaO_bE-a2E',
-    tag: 'Est. 2014 — New York',
-    accentColor: 'text-crimson-light'
-  },
-  {
-    num: '02',
-    subtitle: 'Dark Realism',
-    title: 'About The Ink',
-    pill: 'Renaissance Style & Heavy Blackwork',
-    desc: 'High-contrast portraits and carved-stone shading engineered to flex naturally across muscle as your body moves.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1W5qpd7K4UaUYPpmpSFlbAnuN6x4jf7s6OcAT5sniJGrkhQoEkB_QM2WDxL1jPzCJGM1rHClXCaLX5bsOGf3RInjCFE9fQKFK5smcbpwfdabvSaDRJX2o6f_GqfMsKNxuNuRO-NrOP4uorf8AeE1DNFH2WHsW-k2zqt0SdJvyPUD-LAgMJkg8SV8gRzSvUW7kvF-6arQ-AvQT5lJ3XvuW8ybTjQRblOpZIqa77N_U6knpis5X_c1js71sWe',
-    tag: 'Portfolio — Dark Realism',
-    accentColor: 'text-crimson-light'
-  },
-  {
-    num: '03',
-    subtitle: 'Precision Piercing',
-    title: 'Titanium & Gold',
-    pill: 'Implant-Grade Materials, Placed To Fit You',
-    desc: 'Curated ear projects in titanium and solid 14k gold — measured against your anatomy and sterilized every single time.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbHXWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv',
-    tag: 'Piercing — Implant Grade',
-    accentColor: 'text-crimson-light'
-  }
-];
+// Interactive Founder Portrait with Black & White to Color Spotlight Lens on Hover
+const MarvinPortraitLens: React.FC = () => {
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-// Page sections for in-page navigation
-const PAGE_SECTIONS = [
-  { id: 'hero-section', index: '01', label: 'Welcome' },
-  { id: 'services-section', index: '02', label: 'Services' },
-  { id: 'portfolio-section', index: '03', label: 'Portfolio' },
-  { id: 'shop-section', index: '04', label: 'Shop' },
-  { id: 'testimonials-section', index: '05', label: 'Reviews' },
-  { id: 'location-section', index: '06', label: 'Location' }
-];
-
-// Animated numeric counter component for scroll-triggered stats
-const AnimatedCounter: React.FC<{ value: number; suffix?: string; decimals?: number }> = ({
-  value,
-  suffix = '',
-  decimals = 0
-}) => {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    if (!isInView) return;
-    let start = 0;
-    const duration = 1800;
-    const startTime = performance.now();
-
-    const update = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      const current = start + (value - start) * ease;
-      setDisplayValue(current);
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
-        setDisplayValue(value);
-      }
-    };
-
-    requestAnimationFrame(update);
-  }, [isInView, value]);
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    setMousePos({ x, y });
+  };
 
   return (
-    <span ref={ref}>
-      {decimals > 0 ? displayValue.toFixed(decimals) : Math.floor(displayValue).toLocaleString()}
-      {suffix}
-    </span>
+    <div 
+      ref={containerRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      className="relative w-full h-[480px] sm:h-[540px] lg:h-[600px] bg-noir-900 border border-noir-700 overflow-hidden group select-none cursor-crosshair"
+    >
+      {/* Base Layer: High-Contrast Black & White Portrait */}
+      <img
+        src="/images/marvin-founder.png"
+        alt="Marvin - Founder & Resident Tattooist"
+        className="absolute inset-0 w-full h-full object-cover object-top filter grayscale contrast-125 brightness-90 transition-transform duration-700 group-hover:scale-[1.02]"
+      />
+      <div className="absolute inset-0 bg-noir-950/20 pointer-events-none" />
+
+      {/* Top Layer: Color Reveal Mask following mouse cursor */}
+      <div
+        className="absolute inset-0 transition-opacity duration-300 pointer-events-none"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          WebkitMaskImage: `radial-gradient(circle 200px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`,
+          maskImage: `radial-gradient(circle 200px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`
+        }}
+      >
+        <img
+          src="/images/marvin-founder.png"
+          alt="Marvin in Color"
+          className="w-full h-full object-cover object-top filter contrast-110 saturate-125 transition-transform duration-700 group-hover:scale-[1.02]"
+        />
+      </div>
+
+      {/* Badges Overlay */}
+      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
+        <span className="px-3 py-1 bg-noir-950/90 backdrop-blur-sm text-bone font-label-caps text-[10px] uppercase tracking-widest border border-noir-700 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          Founder &amp; Resident Artist
+        </span>
+        <span className="px-2.5 py-0.5 bg-noir-900/90 text-gold font-label-caps text-[9px] uppercase tracking-wider border border-noir-700">
+          Trauma Tech Hygiene Protocol
+        </span>
+      </div>
+
+      {/* Lens Status Pill */}
+      <div className="absolute top-4 right-4 z-20 pointer-events-none transition-opacity duration-200">
+        <span className={`px-2.5 py-1 bg-noir-950/90 backdrop-blur-sm font-label-caps text-[9px] uppercase tracking-wider border transition-colors ${
+          isHovered ? 'border-slate-400 text-bone' : 'border-noir-700 text-bone-dim'
+        }`}>
+          {isHovered ? 'Color Lens Active' : 'Hover to Reveal Color'}
+        </span>
+      </div>
+
+      {/* Bottom Name & Story Overlay */}
+      <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-noir-950 via-noir-950/85 to-transparent z-20 space-y-2 pointer-events-none">
+        <div className="flex items-end justify-between">
+          <div>
+            <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-widest block">
+              142 Mercer St · SoHo NYC
+            </span>
+            <h3 className="font-headline-sm text-2xl sm:text-3xl text-bone uppercase font-bold tracking-tight">
+              Marvin
+            </h3>
+            <p className="font-body-sm text-xs text-bone-muted leading-tight">
+              Tattooist &amp; Former Surgical Trauma Technician
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="font-label-data text-base font-bold text-bone block">
+              14+ Yrs
+            </span>
+            <span className="font-label-caps text-[9px] text-bone-dim uppercase">
+              Experience
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -117,34 +128,13 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenWhatsApp,
   onOpenVerify
 }) => {
-  const [currentHeroIndex, setCurrentHeroIndex] = useState<number>(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Auto-advance hero slides
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    const timer = setInterval(() => {
-      setCurrentHeroIndex((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 6500);
-    return () => clearInterval(timer);
-  }, [isAutoPlaying]);
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const activeHero = HERO_SLIDES[currentHeroIndex];
 
   const filteredPortfolio = selectedPortfolioCategory === 'all'
-    ? PORTFOLIO_DATA.slice(0, 3)
+    ? PORTFOLIO_DATA.slice(0, 6)
     : PORTFOLIO_DATA.filter(item => {
         if (selectedPortfolioCategory === 'blackwork') return item.category === 'dark-realism';
-        if (selectedPortfolioCategory === 'portraits') return item.category === 'dark-realism' || item.category === 'neo-traditional';
+        if (selectedPortfolioCategory === 'neo-traditional') return item.category === 'neo-traditional';
         if (selectedPortfolioCategory === 'piercings') return item.category === 'piercing';
         return true;
       });
@@ -164,190 +154,122 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   return (
-    <div ref={containerRef} className="w-full flex flex-col bg-noir-950 relative">
-      {/* HERO SECTION */}
-      <section
-        id="hero-section"
-        className="relative w-full min-h-[92vh] flex items-center justify-center overflow-hidden pt-28 pb-20 bg-noir-950"
-      >
-        {/* Visual Backdrop */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeHero.num}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.65 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-            className="absolute inset-0 w-full h-full bg-cover bg-center mix-blend-luminosity"
-            style={{
-              backgroundImage: `url('${activeHero.image}')`,
-              backgroundPosition: 'center 30%',
-            }}
-          />
-        </AnimatePresence>
-
-        {/* Clean Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-noir-950/70 to-noir-950/80 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-noir-950 via-transparent to-noir-950 pointer-events-none" />
-
-        {/* Hero Flank: Slide indicators */}
-        <div className="hidden xl:flex flex-col items-center gap-3 absolute right-16 top-1/2 -translate-y-1/2 z-30 bg-noir-950/90 p-4 border border-noir-700/60">
-          <div className="flex flex-col items-center gap-3">
-            {HERO_SLIDES.map((slide, idx) => {
-              const isHeroActive = currentHeroIndex === idx;
-              return (
-                <button
-                  key={slide.num}
-                  onClick={() => {
-                    setCurrentHeroIndex(idx);
-                    setIsAutoPlaying(false);
-                  }}
-                  className="group relative flex items-center gap-3 focus:outline-none py-1"
-                  aria-label={`Show slide ${slide.title}`}
-                >
-                  <span
-                    className={`font-label-data text-sm transition-all duration-300 ${
-                      isHeroActive
-                        ? 'text-crimson-light font-bold'
-                        : 'text-bone-dim/50 hover:text-bone'
-                    }`}
-                  >
-                    {slide.num}
-                  </span>
-
-                  <div className="relative w-6 h-[2px] bg-noir-700 flex items-center">
-                    {isHeroActive && (
-                      <motion.div
-                        layoutId="activeHeroIndicator"
-                        className="absolute inset-0 bg-crimson"
-                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Vertical Accent Label */}
-        <div className="hidden xl:block absolute left-12 bottom-16 z-20 [writing-mode:vertical-rl] rotate-180">
-          <span className="font-label-caps text-[10px] tracking-[0.3em] uppercase text-bone-dim/70">
-            {activeHero.tag}
-          </span>
-        </div>
-
-        {/* Hero Content Container */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
-          {/* Atelier Provenance Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-noir-850 rounded-full mb-4 border border-noir-700/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-crimson" />
-            <span className="font-label-caps text-[10px] sm:text-xs text-bone-muted uppercase tracking-[0.25em]">
-              {activeHero.pill}
-            </span>
-          </div>
-
-          {/* Editorial Headline */}
-          <div className="flex flex-col items-center">
-            <h1 className="font-display-hero font-title-editorial text-5xl sm:text-6xl md:text-7xl text-bone mb-4 leading-tight">
-              {activeHero.title}
-            </h1>
-
-            <div className={`text-xl sm:text-2xl md:text-3xl ${activeHero.accentColor} mb-6 font-headline-md`}>
-              {activeHero.subtitle}
-            </div>
-
-            <p className="font-body-lg text-base sm:text-lg text-bone-muted max-w-2xl mx-auto mb-8 leading-relaxed">
-              {activeHero.desc}
-            </p>
-          </div>
-
-          {/* Action CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mb-12">
-            <button
-              onClick={() => onNavigate('booking')}
-              className="group w-full sm:w-auto px-8 py-3.5 bg-crimson text-bone font-label-caps text-xs uppercase tracking-[0.2em] btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30 hover:bg-crimson-hover"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Book a Session</span>
-            </button>
-            <button
-              onClick={onOpenWhatsApp}
-              className="group w-full sm:w-auto px-8 py-3.5 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-[0.2em] btn-secondary-glow flex items-center justify-center gap-2 border border-noir-700 hover:bg-noir-700"
-            >
-              <span className="w-2 h-2 rounded-full bg-gold" />
-              <span>WhatsApp Direct</span>
-            </button>
-          </div>
-
-          {/* Quick Stats Bar */}
-          <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 bg-noir-850 p-5 border border-noir-700">
-            <div className="flex items-center gap-4 px-4 py-2">
-              <span className="font-headline-md text-3xl sm:text-4xl text-bone font-title-editorial font-bold">
-                <AnimatedCounter value={500} suffix="+" />
-              </span>
-              <div className="text-left flex flex-col">
-                <span className="font-label-caps text-[10px] uppercase text-bone-dim font-semibold">Pieces Done</span>
-                <span className="font-body-sm text-xs text-bone-muted">Since 2014</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 px-4 py-2 bg-noir-900/50 border-y md:border-y-0 md:border-x border-noir-700/60">
-              <Verified className="w-8 h-8 text-crimson-light shrink-0" />
-              <div className="text-left flex flex-col">
-                <span className="font-label-caps text-[10px] uppercase text-bone-dim font-semibold">Fully Sterile</span>
-                <span className="font-body-sm text-xs text-bone-muted">Class-B autoclave, every time</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 px-4 py-2">
-              <div className="flex items-center gap-1.5 text-gold">
-                <span className="font-title-editorial text-3xl sm:text-4xl text-bone font-bold">
-                  <AnimatedCounter value={4.9} decimals={1} />
+    <div className="w-full flex flex-col bg-noir-950 relative">
+      {/* 01. EDITORIAL HERO SECTION */}
+      <section className="relative w-full min-h-[92vh] flex items-center overflow-hidden pt-28 pb-16 bg-noir-950 border-b border-noir-700/40">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* Left Column: Studio Editorial Copy & CTAs (7 Cols) */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              {/* Provenance Badge */}
+              <div className="inline-flex items-center gap-3 px-3.5 py-1.5 bg-noir-850 border border-noir-700">
+                <span className="font-label-caps text-xs text-bone tracking-[0.25em] uppercase">
+                  MARVIN TATTOOS
                 </span>
-                <Star className="w-5 h-5 fill-secondary text-gold" />
+                <span className="w-1 h-1 rounded-full bg-noir-600" />
+                <span className="font-label-data text-xs text-gold uppercase tracking-wider">
+                  SOHO, NEW YORK · EST. 2014
+                </span>
               </div>
-              <div className="text-left flex flex-col">
-                <span className="font-label-caps text-[10px] uppercase text-bone-dim font-semibold">Average Rating</span>
-                <span className="font-body-sm text-xs text-bone-muted">Across reviews</span>
+
+              {/* Bold Title */}
+              <h1 className="font-headline-xl text-4xl sm:text-5xl md:text-6xl text-bone leading-[1.05] tracking-tight font-bold uppercase">
+                Anatomy-First Body Art &amp; Sterile Piercing
+              </h1>
+
+              {/* Pitch */}
+              <p className="font-body-md text-sm sm:text-base text-bone-muted max-w-2xl leading-relaxed">
+                Dark realism, heavy blackwork, and precision jewelry curation. Drawn freehand to align with your body’s natural musculature and executed with hospital-grade sterility protocols.
+              </p>
+
+              {/* Core Features List */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
+                  <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5 text-gold" /> Sterile Protocol
+                  </span>
+                  <p className="font-body-sm text-[11px] text-bone-dim">
+                    Class-B steam autoclave &amp; 100% single-use cartridges.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
+                  <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
+                    <Sparkles className="w-3.5 h-3.5 text-gold" /> Anatomical Flow
+                  </span>
+                  <p className="font-body-sm text-[11px] text-bone-dim">
+                    Freehand placement mapped to your muscles and joints.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
+                  <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-gold" /> Implant Grade
+                  </span>
+                  <p className="font-body-sm text-[11px] text-bone-dim">
+                    ASTM-F136 titanium and solid 14k gold piercing suites.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                <button
+                  onClick={() => onNavigate('booking')}
+                  className="w-full sm:w-auto px-8 py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-colors font-bold border border-crimson/30 flex items-center justify-center gap-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Book Consultation</span>
+                </button>
+
+                <button
+                  onClick={onOpenWhatsApp}
+                  className="w-full sm:w-auto px-7 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4 text-gold" />
+                  <span>WhatsApp Inquiries</span>
+                </button>
+              </div>
+
+              {/* Quick Metrics */}
+              <div className="pt-4 border-t border-noir-700/60 flex items-center gap-6 text-xs font-label-data text-bone-dim">
+                <div>
+                  <strong className="text-bone text-sm">500+</strong> Pieces Inked
+                </div>
+                <div className="w-1 h-1 rounded-full bg-noir-700" />
+                <div>
+                  <strong className="text-bone text-sm">4.9/5.0</strong> Client Satisfaction
+                </div>
+                <div className="w-1 h-1 rounded-full bg-noir-700" />
+                <div>
+                  <strong className="text-gold text-sm">Saturday</strong> Walk-Ins
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Scroll Down Trigger */}
-          <button
-            onClick={() => scrollToSection('services-section')}
-            className="mt-10 flex flex-col items-center gap-1 text-bone-dim hover:text-crimson-light transition-colors cursor-pointer group"
-          >
-            <span className="font-label-caps text-[9px] uppercase tracking-[0.25em] group-hover:text-bone transition-colors">
-              Browse Services
-            </span>
-            <ChevronDown className="w-4 h-4 text-crimson-light" />
-          </button>
+            {/* Right Column: Marvin's Portrait Interactive Lens (5 Cols) */}
+            <div className="lg:col-span-5 flex justify-center">
+              <MarvinPortraitLens />
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* SECTION 02: MASTER SERVICES & DISCIPLINES */}
-      <section
-        id="services-section"
-        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
-      >
-        <div className="max-w-7xl mx-auto">
+      {/* 02. SERVICES & DISCIPLINES */}
+      <section id="services-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-b border-noir-700/40">
+        <div className="max-w-7xl mx-auto space-y-12">
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-noir-700/40">
             <div className="space-y-2 max-w-xl">
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-[2px] bg-crimson" />
-                <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-                  WHAT WE DO
-                </span>
-              </div>
+              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
+                STUDIO DISCIPLINES
+              </span>
               <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold tracking-tight">
-                Tattoos &amp; Piercings, Done Right
+                Our Core Services
               </h2>
             </div>
-            <p className="font-body-md text-sm text-bone-muted max-w-sm leading-relaxed">
-              Designs are drawn to fit your body, not stamped on flat. Every appointment is fully sterile, from the work surface to the single-use cartridges.
+            <p className="font-body-md text-sm text-bone-muted max-w-md leading-relaxed">
+              Every design is calibrated to how skin heals and moves over time. Transparent pricing, private consultation rooms, and strict sterile protocols.
             </p>
           </div>
 
@@ -356,72 +278,73 @@ export const HomePage: React.FC<HomePageProps> = ({
             {SERVICES_DATA.map((service) => (
               <div
                 key={service.id}
-                className="group flex flex-col bg-noir-850 p-6 hover:bg-noir-800 transition-colors gothic-card border border-noir-700/60 hover:border-crimson/40"
+                className="group flex flex-col bg-noir-850 p-6 transition-colors border border-noir-700 hover:border-slate-500 justify-between"
               >
-                <div className="w-full h-48 mb-4 overflow-hidden bg-noir-950 relative border border-noir-700/40">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover interactive-img-zoom"
-                  />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-noir-950/90 text-[10px] font-label-data uppercase text-bone-dim border border-noir-700">
-                    {service.subtitle}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-bone-dim mb-2">
-                  <span className="font-label-data text-xs uppercase font-semibold">
-                    Service // {service.disciplineNumber}
-                  </span>
-                  <div className="text-bone-dim group-hover:text-crimson-light transition-colors">
-                    {getServiceIcon(service.iconName)}
-                  </div>
-                </div>
-
-                <h3 className="font-headline-sm text-xl text-bone uppercase mb-2 transition-colors duration-300 group-hover:text-crimson-light font-bold">
-                  {service.title}
-                </h3>
-
-                <p className="font-body-sm text-xs text-bone-muted mb-6 flex-1 leading-relaxed">
-                  {service.description}
-                </p>
-
-                {/* Service Specs */}
-                <div className="space-y-1 mb-4 pt-3 border-t border-noir-700/60">
-                  {service.specs.map((spec, i) => (
-                    <div key={i} className="flex justify-between text-[11px] font-label-data">
-                      <span className="text-bone-dim">{spec.label}:</span>
-                      <span className="text-bone font-semibold">{spec.value}</span>
+                <div>
+                  <div className="w-full h-48 mb-4 overflow-hidden bg-noir-950 relative border border-noir-700">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover interactive-img-zoom"
+                    />
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-noir-950/90 text-[10px] font-label-data uppercase text-bone-dim border border-noir-700">
+                      {service.subtitle}
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="flex items-center justify-between text-bone-dim mb-2">
+                    <span className="font-label-data text-xs uppercase font-semibold">
+                      Discipline // {service.disciplineNumber}
+                    </span>
+                    <div className="text-gold">
+                      {getServiceIcon(service.iconName)}
+                    </div>
+                  </div>
+
+                  <h3 className="font-headline-sm text-xl text-bone uppercase mb-2 group-hover:text-white font-bold">
+                    {service.title}
+                  </h3>
+
+                  <p className="font-body-sm text-xs text-bone-muted mb-6 leading-relaxed">
+                    {service.description}
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => onNavigate('booking')}
-                  className="inline-flex items-center justify-between w-full pt-3 border-t border-noir-700/60 font-label-caps text-xs uppercase tracking-wider text-crimson-light group-hover:text-bone transition-colors"
-                >
-                  <span>Book This Service</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
-                </button>
+                <div>
+                  {/* Service Specs */}
+                  <div className="space-y-1 mb-4 pt-3 border-t border-noir-700">
+                    {service.specs.map((spec, i) => (
+                      <div key={i} className="flex justify-between text-[11px] font-label-data">
+                        <span className="text-bone-dim">{spec.label}:</span>
+                        <span className="text-bone font-semibold">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => onNavigate('booking')}
+                    className="inline-flex items-center justify-between w-full pt-3 border-t border-noir-700 font-label-caps text-xs uppercase tracking-wider text-bone-muted hover:text-bone transition-colors"
+                  >
+                    <span>Schedule Session</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION 03: FEATURED PORTFOLIO SHOWCASE */}
-      <section
-        id="portfolio-section"
-        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-t border-noir-700/40"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+      {/* 03. PORTFOLIO SHOWCASE */}
+      <section id="portfolio-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-noir-700">
             <div>
-              <div className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] mb-1">
-                PORTFOLIO
-              </div>
+              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] block mb-1">
+                HEALED GALLERY
+              </span>
               <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-                Recent Work
+                Featured Portfolio
               </h2>
             </div>
 
@@ -429,17 +352,17 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               {[
                 { id: 'all', label: 'All Works' },
-                { id: 'blackwork', label: 'Blackwork' },
-                { id: 'portraits', label: 'Portraits' },
-                { id: 'piercings', label: 'Titanium Piercings' }
+                { id: 'blackwork', label: 'Dark Realism' },
+                { id: 'neo-traditional', label: 'Neo-Traditional' },
+                { id: 'piercings', label: 'Piercings' }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedPortfolioCategory(tab.id)}
-                  className={`px-4 py-2 font-label-caps text-xs uppercase tracking-wider transition-all border ${
+                  className={`px-4 py-2 font-label-caps text-xs uppercase tracking-wider transition-colors border ${
                     selectedPortfolioCategory === tab.id
-                      ? 'bg-crimson text-bone border-crimson'
-                      : 'bg-noir-850 text-bone-muted hover:text-bone hover:bg-noir-800 border-noir-700'
+                      ? 'bg-noir-800 text-bone border-slate-400 font-bold'
+                      : 'bg-noir-850 text-bone-muted hover:text-bone border-noir-700'
                   }`}
                 >
                   {tab.label}
@@ -448,51 +371,54 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          {/* Mosaic Grid */}
+          {/* Portfolio Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPortfolio.map((piece) => (
               <div
                 key={piece.id}
-                className="group relative bg-noir-850 overflow-hidden flex flex-col gothic-card border border-noir-700 hover:border-crimson/30"
+                className="group relative bg-noir-850 overflow-hidden flex flex-col border border-noir-700 hover:border-slate-500 transition-colors"
               >
                 <div
                   onClick={() => onSelectPiece(piece)}
-                  className="relative w-full h-80 overflow-hidden cursor-pointer"
+                  className="relative w-full h-80 overflow-hidden cursor-pointer bg-noir-950"
                 >
                   <img
                     src={piece.image}
                     alt={piece.title}
                     className="w-full h-full object-cover interactive-img-zoom"
                   />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 text-bone-muted font-label-caps text-[10px] uppercase tracking-widest border border-noir-700">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 text-bone font-label-caps text-[10px] uppercase tracking-widest border border-noir-700">
                     {piece.healingState}
                   </div>
-                  <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-noir-950/90 text-bone font-label-data text-[10px] uppercase">
-                    View
+                  <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-noir-950/90 text-bone font-label-data text-[10px] uppercase border border-noir-700">
+                    {piece.zone}
                   </div>
                 </div>
 
-                <div className="p-5 flex flex-col justify-between bg-noir-850">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-title-editorial text-lg uppercase text-bone group-hover:text-crimson-light transition-colors font-bold">
-                      {piece.title}
-                    </span>
-                    <span className="font-label-data text-xs text-bone-dim">
-                      {piece.artist}
-                    </span>
+                <div className="p-5 flex flex-col justify-between flex-1 bg-noir-850 space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-title-editorial text-lg uppercase text-bone font-bold group-hover:text-white">
+                        {piece.title}
+                      </h4>
+                      <span className="font-label-data text-xs text-bone-dim">
+                        {piece.artist}
+                      </span>
+                    </div>
+                    <p className="font-body-sm text-xs text-bone-muted line-clamp-2 leading-relaxed">
+                      {piece.description}
+                    </p>
                   </div>
-                  <p className="font-body-sm text-xs text-bone-muted mb-4 line-clamp-2 leading-relaxed">
-                    {piece.description}
-                  </p>
-                  <div className="flex items-center justify-between pt-3 border-t border-noir-700/60">
-                    <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
-                      {piece.zone}
+
+                  <div className="flex items-center justify-between pt-3 border-t border-noir-700">
+                    <span className="font-label-data text-[11px] text-gold uppercase">
+                      {piece.categoryLabel.split('&')[0]}
                     </span>
                     <button
                       onClick={() => onSelectPiece(piece)}
-                      className="px-3.5 py-1.5 bg-noir-800 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-wider transition-colors"
+                      className="px-3.5 py-1.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700"
                     >
-                      View Piece
+                      View Specs
                     </button>
                   </div>
                 </div>
@@ -500,61 +426,56 @@ export const HomePage: React.FC<HomePageProps> = ({
             ))}
           </div>
 
-          <div className="mt-12 text-center">
+          <div className="text-center pt-4">
             <button
               onClick={() => onNavigate('portfolio')}
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-widest border border-noir-700 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest border border-noir-700 transition-colors"
             >
-              <span>View Full Portfolio</span>
-              <ArrowRight className="w-4 h-4 text-crimson-light" />
+              <span>Explore Complete Archives</span>
+              <ArrowRight className="w-4 h-4 text-gold" />
             </button>
           </div>
         </div>
       </section>
 
-      {/* SECTION 04: SHOP SPOTLIGHT */}
-      <section
-        id="shop-section"
-        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
-      >
+      {/* 04. EQUIPMENT & AFTERCARE SUPPLIES */}
+      <section id="shop-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2">
-                <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-                  SHOP
-                </span>
-              </div>
+              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] block">
+                STUDIO SUPPLIES
+              </span>
 
               <h2 className="font-headline-xl text-3xl sm:text-4xl text-bone uppercase leading-tight font-bold">
-                Supplies &amp; Aftercare
+                Equipment &amp; Aftercare
               </h2>
 
               <p className="font-body-md text-sm text-bone-muted leading-relaxed">
-                The same equipment and aftercare we use in the studio, available to take home — cartridges, machines, and balm made for proper healing.
+                The exact gear, medical supplies, and soothing aftercare products we utilize on client sessions in SoHo. Available for studio pickup and shipping.
               </p>
 
-              {/* Studio standards */}
-              <div className="p-5 bg-noir-850 space-y-4 border border-noir-700/60">
+              {/* Standards List */}
+              <div className="p-5 bg-noir-850 space-y-4 border border-noir-700">
                 <div className="flex items-start gap-3">
-                  <Verified className="w-5 h-5 text-crimson-light shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-5 h-5 text-gold shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-label-caps text-xs uppercase text-bone block">
-                      Full Sterility, Every Appointment
+                    <span className="font-label-caps text-xs uppercase text-bone block font-bold">
+                      Strict Sterilization Standards
                     </span>
                     <span className="font-body-sm text-xs text-bone-muted">
-                      Class-B autoclave, single-use cartridges, and fresh barriers on all surfaces.
+                      Every tool tested with biological spore tests and sealed before deployment.
                     </span>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <ShieldAlert className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+                  <Sparkles className="w-5 h-5 text-gold shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-label-caps text-xs uppercase text-bone block">
-                      Implant-Grade Materials Only
+                    <span className="font-label-caps text-xs uppercase text-bone block font-bold">
+                      Implant-Grade Certified Jewelry
                     </span>
                     <span className="font-body-sm text-xs text-bone-muted">
-                      Titanium and solid gold for piercings — nothing less, nothing reactive.
+                      Hypoallergenic ASTM-F136 titanium and solid 14k gold.
                     </span>
                   </div>
                 </div>
@@ -563,22 +484,22 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="pt-2">
                 <button
                   onClick={() => onNavigate('equipment')}
-                  className="group inline-flex items-center gap-2 px-6 py-3 bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-crimson transition-colors border border-noir-700/60"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-noir-700 transition-colors border border-noir-700"
                 >
-                  <span>Shop Equipment &amp; Aftercare</span>
-                  <ShoppingBag className="w-4 h-4" />
+                  <span>Browse Equipment Catalog</span>
+                  <ShoppingBag className="w-4 h-4 text-gold" />
                 </button>
               </div>
             </div>
 
-            {/* Equipment Showcase */}
+            {/* Equipment Grid */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
               {PRODUCTS_DATA.slice(0, 2).map((prod) => (
                 <div
                   key={prod.id}
-                  className="group bg-noir-850 p-5 flex flex-col justify-between gothic-card border border-noir-700/70 hover:border-crimson/30"
+                  className="bg-noir-850 p-5 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
                 >
-                  <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700/40">
+                  <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700">
                     <img
                       src={prod.image}
                       alt={prod.name}
@@ -586,25 +507,24 @@ export const HomePage: React.FC<HomePageProps> = ({
                     />
                   </div>
                   <div>
-                    <span className="font-label-caps text-[10px] text-crimson-light uppercase block">
+                    <span className="font-label-caps text-[10px] text-gold uppercase block">
                       {prod.category}
                     </span>
-                    <h4 className="font-title-editorial text-base text-bone uppercase mb-1 group-hover:text-crimson-light transition-colors truncate font-bold">
+                    <h4 className="font-title-editorial text-base text-bone uppercase mb-1 font-bold truncate">
                       {prod.name}
                     </h4>
                     <p className="font-body-sm text-xs text-bone-dim mb-4 line-clamp-2">
                       {prod.description}
                     </p>
-                    <div className="flex items-center justify-between pt-3 border-t border-noir-700/60">
+                    <div className="flex items-center justify-between pt-3 border-t border-noir-700">
                       <span className="font-label-data text-sm text-bone font-bold">
                         ${prod.price.toFixed(2)}
                       </span>
                       <button
                         onClick={() => onAddToCart(prod)}
-                        className="px-3.5 py-1.5 bg-noir-800 hover:bg-bone hover:text-noir-950 font-label-caps text-xs uppercase transition-colors flex items-center gap-1 border border-noir-700"
+                        className="px-3.5 py-1.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase transition-colors border border-noir-700"
                       >
-                        <ShoppingBag className="w-3 h-3" />
-                        <span>Add to Bag</span>
+                        Add to Bag
                       </button>
                     </div>
                   </div>
@@ -615,21 +535,18 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 05: CLIENT TESTIMONIALS */}
-      <section
-        id="testimonials-section"
-        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-t border-noir-700/40"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-14 space-y-2">
+      {/* 05. CLIENT REVIEWS */}
+      <section id="testimonials-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-              CLIENT REVIEWS
+              VERIFIED EXPERIENCES
             </span>
             <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-              What Clients Say
+              Client Feedback
             </h2>
             <p className="font-body-md text-sm text-bone-muted">
-              Unedited feedback from people who've sat in our chair.
+              Direct reviews from healed tattoo appointments and piercing curations.
             </p>
           </div>
 
@@ -637,7 +554,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {TESTIMONIALS_DATA.map((t) => (
               <div
                 key={t.id}
-                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between gothic-card border border-noir-700 hover:border-crimson/20"
+                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
               >
                 <div>
                   <div className="flex items-center gap-1 text-gold mb-4">
@@ -649,7 +566,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     "{t.quote}"
                   </p>
                 </div>
-                <div className="flex items-center gap-3 pt-4 border-t border-noir-700/60">
+                <div className="flex items-center gap-3 pt-4 border-t border-noir-700">
                   <img
                     src={t.avatar}
                     alt={t.name}
@@ -670,14 +587,11 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 06: LOCATION, HOURS & SECURITY ADVISORY */}
-      <section
-        id="location-section"
-        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-t border-noir-700/40"
-      >
+      {/* 06. LOCATION & APPOINTMENT DESK */}
+      <section id="location-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900">
         <div className="max-w-7xl mx-auto space-y-10">
-          {/* Security Notice Banner */}
-          <div className="w-full p-5 sm:p-6 bg-noir-900 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-noir-700">
+          {/* Security Advisory */}
+          <div className="w-full p-5 sm:p-6 bg-noir-850 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-noir-700">
             <div className="flex items-start gap-3">
               <div className="p-2.5 bg-noir-800 text-gold shrink-0 mt-0.5 border border-noir-700">
                 <ShieldAlert className="w-6 h-6" />
@@ -687,7 +601,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   Anti-Scam Notice — Official Channels Only
                 </div>
                 <p className="font-body-sm text-xs text-bone-muted max-w-3xl leading-relaxed">
-                  Scammers sometimes impersonate Marvin Tattoos on Instagram to collect fake booking deposits. We never request payment through direct messages. Bookings are made only through this site or our official studio WhatsApp.
+                  We never request payments through direct social media messages. Deposits are processed only through this website or our verified WhatsApp desk.
                 </p>
               </div>
             </div>
@@ -695,100 +609,107 @@ export const HomePage: React.FC<HomePageProps> = ({
               onClick={onOpenVerify}
               className="shrink-0 px-4 py-2 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-noir-750 transition-colors border border-noir-700"
             >
-              Verify Channel
+              Verify Channels
             </button>
           </div>
 
-          {/* Location & Operating Schedule */}
+          {/* Location Details Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Atelier Address View */}
-            <div className="lg:col-span-7 flex flex-col bg-noir-850 overflow-hidden gothic-card border border-noir-700">
+            <div className="lg:col-span-7 flex flex-col bg-noir-850 overflow-hidden border border-noir-700">
               <div
                 className="w-full h-80 sm:h-96 relative bg-cover bg-center"
                 style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDREC5pLTdXJO9fp7vuWhpIAppPWmY4qSTJFCXzqlUcHi3fZn0gVE-noAZzaS8SEDDLh1lZ4oFoupXQ5NuT2OZdFMFRBi9bf1rXRgjL5JVQDM5eOljrx_syn6Z_sjQ5Q3bz0ZjyL8BL1VfcSpTQSddMSSp_sHB62jK0ST79vxxgbvglq3jteejwFoma9kAsCXzziKmSSyrh11T-SMQQ4TL_pVcDo1x_MBWIVx9omsFuPYnfkoalDF-y7g')` }}
               >
                 <div className="absolute inset-0 bg-noir-950/40" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                  <div className="p-3.5 bg-crimson text-bone rounded-full border border-crimson/40">
-                    <MapPin className="w-6 h-6" />
+                  <div className="p-3.5 bg-noir-900 text-gold rounded-full border border-noir-700">
+                    <MapPin className="w-7 h-7" />
                   </div>
-                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3 py-1 text-bone mt-2 border border-noir-700/60">
-                    Marvin Tattoos — New York
+                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 border border-noir-700">
+                    Marvin Tattoos · SoHo Atelier
                   </span>
                 </div>
               </div>
               <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-noir-850">
                 <div>
                   <div className="font-title-editorial text-base uppercase text-bone font-bold">
-                    Studio Address
+                    142 Mercer Street, Suite 3B
                   </div>
                   <div className="font-body-sm text-xs text-bone-muted">
-                    142 Mercer Street, Suite 3B — SoHo, New York, NY 10012
+                    SoHo, New York, NY 10012 · 3 min from Prince St &amp; Spring St
                   </div>
                 </div>
                 <button
                   onClick={() => onNavigate('location')}
-                  className="px-4 py-2 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-all flex items-center gap-2 border border-noir-700"
+                  className="px-4 py-2 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 border border-noir-700"
                 >
-                  <MapPin className="w-4 h-4 text-gold" />
-                  <span>Directions</span>
+                  <Navigation className="w-4 h-4 text-gold" />
+                  <span>Get Directions</span>
                 </button>
               </div>
             </div>
 
-            {/* Operating Hours Sidebar */}
-            <div className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 gothic-card border border-noir-700">
+            {/* Operating Schedule */}
+            <div className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 border border-noir-700 space-y-6">
               <div className="space-y-6">
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-                    HOURS
+                    APPOINTMENTS &amp; WALK-INS
                   </span>
                   <h3 className="font-headline-lg text-2xl text-bone uppercase font-bold">
-                    Operating Hours
+                    Studio Schedule
                   </h3>
                 </div>
 
                 <div className="space-y-2 font-label-data text-xs">
-                  <div className="flex justify-between items-center py-2.5 bg-noir-900/50 px-3 border border-noir-700/60">
+                  <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
                     <span className="text-bone">Tuesday — Friday</span>
                     <span className="text-bone-muted font-bold">11:00 — 21:00</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 bg-noir-800 px-3 border border-noir-700/60">
+                  <div className="flex justify-between items-center py-2.5 bg-noir-800 px-3 border border-slate-500">
                     <div className="flex items-center gap-2">
-                      <span className="text-gold font-bold">Saturday</span>
-                      <span className="px-1.5 py-0.5 bg-gold text-noir-950 font-label-caps text-[9px] uppercase">
-                        Walk-Ins
+                      <span className="text-bone font-bold">Saturday</span>
+                      <span className="px-1.5 py-0.5 bg-gold text-noir-950 font-label-caps text-[9px] uppercase font-bold">
+                        Walk-Ins Open
                       </span>
                     </div>
                     <span className="text-gold font-bold">11:00 — 21:00</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700/60">
+                  <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
                     <span className="text-bone">Sunday</span>
-                    <span className="text-bone-muted">12:00 — 18:00 (Private)</span>
+                    <span className="text-bone-muted">12:00 — 18:00 (Private Sessions)</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 bg-noir-950 px-3 text-bone-dim border border-noir-700/40">
+                  <div className="flex justify-between items-center py-2.5 bg-noir-950 px-3 text-bone-dim border border-noir-700">
                     <span>Monday</span>
-                    <span className="uppercase font-label-caps text-[10px]">Closed</span>
+                    <span className="uppercase font-label-caps text-[10px]">Closed for Sterilization</span>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-noir-900 space-y-1 border-l-2 border-gold">
+                <div className="p-3 bg-noir-900 border-l-2 border-gold space-y-1">
                   <div className="font-label-caps text-xs uppercase text-gold font-bold">
-                    Walk-In Policy
+                    Saturday Walk-In Protocol
                   </div>
-                  <p className="font-body-sm text-xs text-bone-muted leading-relaxed">
-                    Walk-ins are welcome on Saturdays. Flash sheets go up at 10:45 AM and slots fill on a first-come basis.
+                  <p className="font-body-sm text-xs text-bone-dim leading-relaxed">
+                    Flash designs available on first-come basis every Saturday from 10:45 AM. Larger custom pieces require booked consultation.
                   </p>
                 </div>
               </div>
 
-              <div className="pt-6">
+              <div className="pt-4 flex flex-col gap-3">
                 <button
                   onClick={() => onNavigate('booking')}
-                  className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30 transition-colors"
+                  className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 border border-crimson/30 font-bold"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>Book a Consultation</span>
+                </button>
+                <button
+                  onClick={onOpenWhatsApp}
+                  className="w-full py-3 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4 text-gold" />
+                  <span>Chat With Marvin on WhatsApp</span>
                 </button>
               </div>
             </div>
