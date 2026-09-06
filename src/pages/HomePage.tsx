@@ -121,8 +121,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
               </div>
 
-              {/* Bold UnifrakturCook Gothic Tattoo Title */}
-              <h1 className="font-cook text-4xl sm:text-5xl md:text-6xl lg:text-[70px] text-bone leading-[1.15] tracking-wide uppercase font-bold">
+              {/* Festive Script Title */}
+              <h1 className="font-festive text-5xl sm:text-6xl md:text-7xl lg:text-[84px] text-bone leading-[1.05] tracking-wide font-normal">
                 Clean Lines. Heavy Blackwork. Made to Age Well.
               </h1>
 
