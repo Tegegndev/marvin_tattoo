@@ -711,13 +711,15 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </a>
                   </div>
                 </div>
-                <button
-                  onClick={() => onNavigate('location')}
-                  className="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 border border-noir-700 shrink-0"
+                <a
+                  href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 border border-noir-700 shrink-0 group"
                 >
-                  <Navigation className="w-4 h-4 text-gold" />
+                  <Navigation className="w-4 h-4 text-gold group-hover:text-crimson-light transition-colors" />
                   <span>Get Directions</span>
-                </button>
+                </a>
               </div>
             </div>
 

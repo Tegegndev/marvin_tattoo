@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageView } from '../types';
 import { LOGO_URL } from '../data/atelierData';
-import { Camera, Video, PlayCircle, ShieldCheck, Clock, MapPin, ExternalLink, Phone } from 'lucide-react';
+import { Camera, Video, PlayCircle, ShieldCheck, Clock, MapPin, ExternalLink, Phone, Navigation } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (page: PageView) => void;
@@ -46,16 +46,32 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
               <span>Studio Location</span>
             </div>
             <div className="font-body-sm text-body-sm text-bone-muted space-y-1">
-              <p className="text-bone font-semibold">New Pioneer Mall, Burton St</p>
+              <a
+                href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-bone font-semibold hover:text-crimson-light transition-colors block"
+              >
+                New Pioneer Mall, Burton St
+              </a>
               <p className="text-bone-muted text-xs">Level 5, Shop No. Pi55</p>
               <p className="text-bone-dim text-xs">Kampala, Uganda</p>
-              <div className="pt-2">
+              <div className="pt-2 flex flex-col gap-1.5">
                 <a
                   href="tel:+256705748774"
                   className="font-label-data text-xs text-crimson-light hover:underline flex items-center gap-1.5 font-bold"
                 >
                   <Phone className="w-3.5 h-3.5" />
                   <span>+256 705 748774</span>
+                </a>
+                <a
+                  href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-label-caps text-[10px] text-gold hover:underline flex items-center gap-1 uppercase tracking-wider"
+                >
+                  <Navigation className="w-3 h-3" />
+                  <span>Open in Google Maps</span>
                 </a>
               </div>
             </div>

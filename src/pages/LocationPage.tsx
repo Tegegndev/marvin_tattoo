@@ -70,7 +70,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                     </div>
                   </div>
                   <a
-                    href="https://share.google/bUeThSgYN2di6xy2G"
+                    href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2.5 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 shrink-0 border border-noir-700"
