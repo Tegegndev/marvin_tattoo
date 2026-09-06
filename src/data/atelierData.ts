@@ -10,8 +10,8 @@ export const SERVICES_DATA: ServiceItem[] = [
     disciplineNumber: '01',
     title: 'Realism & Portraits',
     subtitle: 'Photo-Realistic Artistry',
-    description: 'High-detail black-and-grey and photo-realistic face, animal, or object pieces executed with surgical smooth tonal transitions and deep contrast.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1VRMTxwNcUrz_Rss-qZc3E5RnE38-tSlJ4efYJkYzOUKo2ZN9ys9JnjZeiDZXZbrF7HgG9OK9BGTtgBFnoyPt6ac9u4OtqM4qYPNumvWLiNzA5v5D3J0qQk8dLF3CjJI8kr150no4Xm0tS79r_Jj9ovdPDtAI1v6Xq6ld4EphFcsclWD5C6MossDCf5mgjAeRUbi48xxrS5Wa-8taGXyGBttf4agd_gLKd7RIEZNci961NDrm9-H_dE0IR_',
+    description: 'High-detail black-and-grey and photo-realistic face, memorial, animal, or object pieces executed with smooth tonal transitions and deep contrast.',
+    image: '/images/portfolio/portrait-elder-woman.png',
     iconName: 'skull',
     accentColor: 'primary',
     specs: [
@@ -26,7 +26,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Minimalist & Fine-Line',
     subtitle: 'Delicate Precision Marking',
     description: 'Delicate geometric shapes, continuous line art, micro-tattoos, and clean subtle markings tailored to anatomical curves.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1X6wlJFnSfwjjK1t1rory9O60Sg-Za-xZ0KtUNagkCf6JzyXTzndPK_r_Ik8FidX2Ol8Toz88COxQ6mtaMLKx62QfFFa7WGUT6TjXgP4d9A_pdzVJipjUm8tOpMEa2OJ8KukhUh0d1SoOC7AVfMu0-TBzsD325rDKe1PVYbuefOuDzvXCg4AXMWOglIwkCis3ynY6JYLQLDZWm-N60sWNjW7xs-RkLFGEeygAoVkeA870M_SMZ8ERwrvQ8f',
+    image: '/images/portfolio/script-abdul-collarbone.png',
     iconName: 'edit_note',
     accentColor: 'primary',
     specs: [
@@ -41,7 +41,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Lettering & Script',
     subtitle: 'Custom Typography & Calligraphy',
     description: 'Custom typography, freehand calligraphy, names, meaningful quotes, and dates drawn to flow naturally across the skin.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1XNohxnOuUyiuRH81bDZ-UO8NfUNRWjsUcNf17CRapKv9vqwRHRvs3ImL_JXOm2FvDj6HykULWGcCWZgYx9hVcVCLxqzHuv1hF1ialW4869cGWPNTHer5TvmOtY_nxwDKw6nQDMXi3mq1XDnV16QhONJg9c1lC6tE19Ss8zvWLgg3iC8edIVpUsZahYztL6uWO1QlydX2_bGpDx5xF0AII2u44j6IKQa1Bcw-3gRSQPd0R3M512GxMVb3KS',
+    image: '/images/portfolio/script-abdul-collarbone.png',
     iconName: 'edit_note',
     accentColor: 'primary',
     specs: [
@@ -56,7 +56,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Traditional & Tribal',
     subtitle: 'Bold Blackwork & Flash',
     description: 'Bold blackwork, Polynesian and African tribal patterns, bold geometric armor, and classic timeless flash art.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1VRMTxwNcUrz_Rss-qZc3E5RnE38-tSlJ4efYJkYzOUKo2ZN9ys9JnjZeiDZXZbrF7HgG9OK9BGTtgBFnoyPt6ac9u4OtqM4qYPNumvWLiNzA5v5D3J0qQk8dLF3CjJI8kr150no4Xm0tS79r_Jj9ovdPDtAI1v6Xq6ld4EphFcsclWD5C6MossDCf5mgjAeRUbi48xxrS5Wa-8taGXyGBttf4agd_gLKd7RIEZNci961NDrm9-H_dE0IR_',
+    image: '/images/portfolio/back-portrait-man.png',
     iconName: 'layers',
     accentColor: 'primary',
     specs: [
@@ -71,7 +71,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Cover-Ups & Restorations',
     subtitle: 'Reworking & Concealing Old Ink',
     description: 'Reworking, blending, or fully concealing faded, poorly done, or unwanted old tattoos with strategic custom cover designs.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1XNohxnOuUyiuRH81bDZ-UO8NfUNRWjsUcNf17CRapKv9vqwRHRvs3ImL_JXOm2FvDj6HykULWGcCWZgYx9hVcVCLxqzHuv1hF1ialW4869cGWPNTHer5TvmOtY_nxwDKw6nQDMXi3mq1XDnV16QhONJg9c1lC6tE19Ss8zvWLgg3iC8edIVpUsZahYztL6uWO1QlydX2_bGpDx5xF0AII2u44j6IKQa1Bcw-3gRSQPd0R3M512GxMVb3KS',
+    image: '/images/portfolio/portrait-elder-woman.png',
     iconName: 'layers',
     accentColor: 'primary',
     specs: [
@@ -86,7 +86,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Laser Removal & Piercings',
     subtitle: 'Safe Fading & Titanium Piercing',
     description: 'Advanced laser tattoo removal to lighten ink for cover-ups or complete clearance, plus sterile body piercings in implant-grade titanium.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbXHWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv',
+    image: '/images/portfolio/spider-navel-piercing.png',
     iconName: 'colorize',
     accentColor: 'primary',
     specs: [
@@ -201,14 +201,14 @@ export const ARTISTS_DATA: ArtistProfile[] = [
   {
     id: 'marvin',
     name: 'Marvin',
-    title: 'Founder & Resident Artist',
-    role: 'Former surgical tech, tattooist since 2014',
+    title: 'Founder & Master Tattoo Artist',
+    role: 'Master Tattoo Artist & Piercing Specialist since 2014',
     avatar: '/images/marvin-founder.png',
     experience: '14+ Years',
-    specialty: 'Dark Realism, Backpieces & Heavy Script',
+    specialty: 'Dark Realism, Memorial Portraits & Heavy Script',
     slotsRemaining: 4,
-    bio: 'Trained as a surgical technician before tattooing. Marvin founded the studio in 2014 and still brings the same sterilization discipline to every appointment — clean, precise, and consistent.',
-    badges: ['FOUNDER', 'SURGICAL TRAUMA CERTIFIED']
+    bio: 'With over 14 years of professional tattooing and piercing mastery, Marvin founded the studio in 2014 with an unwavering standard of hospital-grade sterilization, clean single-needle execution, and bespoke custom artwork.',
+    badges: ['FOUNDER', 'MASTER TATTOO ARTIST', 'STERILE PROTOCOL CERTIFIED']
   },
   {
     id: 'elena-kostas',
@@ -294,7 +294,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
     category: 'Hard Goods',
     price: 740.00,
     description: 'Wireless, cordless rotary pen with a 4.0mm stroke — reliable for dense blackwork and clean lining.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAEH8HyVGDUmyNIYB_ozfjZC3d_Snybt1fw4elc5WrsWjCK7ruPDVXY1033SzVeC5ziQox58N5K7_pawWks4y0GlyDEqTNRg2LCEWlAZwn6falcTEsjGTeJwL8D3VPvHWd1KTejeG-ypst5FsqwTaE9DQKDkuCm2onFL80aaXOUt_Z1476nCjQbyTTnmbS0ZagPdyRh2KLpI9AvMxL2ts4Mj7-jm5NNPN_1dAg9y9R5wnR5pU17SvXehw',
+    image: 'https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=600&q=80',
     accentColor: 'primary',
     inStock: true,
     specs: ['Aircraft Aluminum', '4.0mm Stroke', '10hr Battery', 'RCA Adapter Included']
@@ -305,7 +305,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
     category: 'Aftercare',
     price: 28.00,
     description: 'Cold-pressed calendula and shea butter. No petroleum — a simple barrier that keeps new ink protected.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ3BR6lxY9HGmiiaJwYhonKL0kFpQ-pr6OIFA1ddhzlKNAEYKkS_laFJLgVPyMFqNoKIpMZjb7lp4yILotsaCwiZOTqHWAPq0t1Xd6LSOHamN2KjSOxqssgImwqUdSocVTb78LSGQQMXfUmKuGK5vKYZYBYt-XrCbCjVWAfXA8Z_qveN_-hXXdMRMihRUXc5CwLH4IknwB3MYUEsApWB42-YGWEKFvm7ZdZijYUBy0ZmQ_jqgnV7PTkQ',
+    image: 'https://images.unsplash.com/photo-1608248597359-24757c917fb2?auto=format&fit=crop&w=600&q=80',
     accentColor: 'primary',
     inStock: true,
     specs: ['100ml Glass Bottle', 'Organic Calendula', 'No Mineral Oils', 'Use From Day 1']
@@ -316,7 +316,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
     category: 'Needles',
     price: 46.00,
     description: '316L stainless steel, pre-sterilized with a safety membrane to prevent ink backflow.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1VRMTxwNcUrz_Rss-qZc3E5RnE38-tSlJ4efJYkYzOUKo2ZN9ys9JnjZeiDZXZbrF7HgG9OK9BGTtgBFnoyPt6ac9u4OtqM4qYPNumvWLiNzA5v5D3J0qQk8dLF3CjJI8kr150no4Xm0tS79r_Jj9ovdPDtAI1v6Xq6ld4EphFcsclWD5C6MossDCf5mgjAeRUbi48xxrS5Wa-8taGXyGBttf4agd_gLKd7RIEZNci961NDrm9-H_dE0IR_',
+    image: 'https://images.unsplash.com/photo-1562962230-16e4623d36e6?auto=format&fit=crop&w=600&q=80',
     accentColor: 'primary',
     inStock: true,
     specs: ['EO Gas Sterilized', '0.30mm Bugpin', 'Safety Membrane', 'Clear Tip']
@@ -327,7 +327,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
     category: 'Titanium Jewelry',
     price: 85.00,
     description: 'Mirror-polished implant-grade titanium with black onyx accents and a secure hinge closure.',
-    image: 'https://lh3.googleusercontent.com/aida/AEtjO1UKxCrKf8AiwCBwkQ0y1UMs_JKbByxBZorm3NnTNxcM3ZUiLIEHKRttY1oxTIY8tXi2TfHbHXWEaxX8iCKE7Y9FA5upzEFzSwWIrWxnqAp6eUBMp5xJerdVTc2IyoTZfxksnLUQ3B73pCPmD5mGa1RK-1m3yRqf9WF7mvUATlR7wt3huzzGTWReAc75DBvmAszA-6D1iZXVAevDKv4cizXRfWRXlo0W4XMBRecGsmQe8cPXL1fmD1xw0hhv',
+    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80',
     accentColor: 'primary',
     inStock: true,
     specs: ['16G (1.2mm) x 8mm', 'ASTM F-136 Titanium', 'Black Onyx', 'Autoclave Safe']

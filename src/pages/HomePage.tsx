@@ -56,7 +56,7 @@ const MarvinPortraitLens: React.FC = () => {
               Marvin
             </h3>
             <p className="font-body-sm text-xs text-bone-muted leading-tight">
-              Tattooist &amp; Former Surgical Trauma Technician
+              Master Tattoo Artist &amp; Piercing Specialist
             </p>
           </div>
           <div className="text-right">

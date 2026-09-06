@@ -87,14 +87,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                     The Hand Behind The Ink: Marvin
                   </h1>
                   <p className="font-title-editorial text-base italic text-gold mb-5">
-                    Tattooist &amp; former surgical technician
+                    Founder, Master Tattoo Artist &amp; Piercing Specialist
                   </p>
                   <div className="space-y-4 font-body-md text-sm text-bone-muted leading-relaxed">
                     <p>
-                      Before tattooing, Marvin spent four years working as a surgical trauma technician. It taught him a standard of hygiene and precision that still shapes how the studio runs today — every surface, every cartridge, every piece of equipment.
+                      With over 14 years of professional tattoo and body piercing experience in Kampala, Marvin has built a reputation for high-detail black-and-grey realism, custom typography, clean fine-line work, and complete cover-up transformations.
                     </p>
                     <p>
-                      He opened Marvin Tattoos in 2014 with one rule: permanent work deserves to be clean, well-planned, and made to fit the person wearing it. That's still how every appointment works.
+                      He founded Marvin Tattoos in 2014 with one core standard: every tattoo must flow naturally with the body's anatomy, heal solid for life, and be executed under strict hospital-grade sterilization protocols.
                     </p>
                   </div>
                 </div>
@@ -104,19 +104,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                   <div className="flex flex-col">
                     <span className="font-label-data text-2xl font-bold text-crimson-light">14+</span>
                     <span className="font-label-caps text-[10px] text-bone-muted uppercase">
-                      Years
+                      Years Experience
                     </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-label-data text-2xl font-bold text-bone">500+</span>
+                    <span className="font-label-data text-2xl font-bold text-bone">1,000+</span>
                     <span className="font-label-caps text-[10px] text-bone-muted uppercase">
-                      Pieces Done
+                      Tattoos Done
                     </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-label-data text-2xl font-bold text-gold">App</span>
+                    <span className="font-label-data text-2xl font-bold text-gold">4.9★</span>
                     <span className="font-label-caps text-[10px] text-bone-muted uppercase">
-                      Piercing Certified
+                      Google Rating
                     </span>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                 num: '01',
                 icon: <ShieldCheck className="w-6 h-6 text-bone-muted" />,
                 title: 'Clean, Every Time',
-                desc: "Class B autoclave sterilization, single-use cartridges, and fresh barriers on every surface. The standard comes from Marvin's years as a surgical technician and it never slips.",
+                desc: 'Class B autoclave sterilization, single-use needle cartridges, and fresh protective barriers on every station. Hospital-grade cleanliness is standard on every session.',
                 tag: 'Sterile & Certified',
                 accent: 'primary'
               },
