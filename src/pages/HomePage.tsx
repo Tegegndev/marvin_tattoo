@@ -172,11 +172,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </button>
 
                 <button
-                  onClick={onOpenWhatsApp}
-                  className="w-full sm:w-auto px-7 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2"
+                  onClick={() => onNavigate('portfolio')}
+                  className="w-full sm:w-auto px-7 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2 group"
                 >
-                  <MessageCircle className="w-4 h-4 text-gold" />
-                  <span>WhatsApp Inquiries</span>
+                  <ArrowRight className="w-4 h-4 text-crimson-light transition-transform group-hover:translate-x-1" />
+                  <span>See My Works</span>
                 </button>
               </div>
 
