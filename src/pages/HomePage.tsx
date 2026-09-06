@@ -17,7 +17,10 @@ import {
   Sparkles,
   CheckCircle2,
   Navigation,
-  ExternalLink
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Phone
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -78,6 +81,20 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenVerify
 }) => {
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
+  const [reviewIndex, setReviewIndex] = useState<number>(0);
+
+  const nextReview = () => {
+    setReviewIndex((prev) => (prev + 1) % TESTIMONIALS_DATA.length);
+  };
+
+  const prevReview = () => {
+    setReviewIndex((prev) => (prev - 1 + TESTIMONIALS_DATA.length) % TESTIMONIALS_DATA.length);
+  };
+
+  // Get 3 consecutive reviews for carousel window
+  const visibleTestimonials = [0, 1, 2].map(
+    (offset) => TESTIMONIALS_DATA[(reviewIndex + offset) % TESTIMONIALS_DATA.length]
+  );
 
   const filteredPortfolio = selectedPortfolioCategory === 'all'
     ? PORTFOLIO_DATA.slice(0, 6)
@@ -496,53 +513,97 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 05. CLIENT REVIEWS */}
+      {/* 05. CLIENT REVIEWS CAROUSEL */}
       <section id="testimonials-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-              VERIFIED EXPERIENCES
-            </span>
-            <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-              Client Feedback
-            </h2>
-            <p className="font-body-md text-sm text-bone-muted">
-              Direct reviews from healed tattoo appointments and piercing curations.
-            </p>
+        <div className="max-w-7xl mx-auto space-y-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-noir-700/40">
+            <div className="space-y-2">
+              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] font-bold">
+                VERIFIED GOOGLE REVIEWS
+              </span>
+              <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
+                Client Feedback &amp; Stories
+              </h2>
+              <p className="font-body-md text-sm text-bone-muted max-w-xl">
+                Real experiences from clients in Kampala — healed custom tattoos, fine-line ink, cover-ups, and sterile piercings.
+              </p>
+            </div>
+
+            {/* Carousel Controls & Google Review CTA */}
+            <div className="flex items-center gap-4 self-start md:self-end">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={prevReview}
+                  aria-label="Previous reviews"
+                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm"
+                >
+                  <ChevronLeft className="w-5 h-5 text-bone" />
+                </button>
+                <button
+                  onClick={nextReview}
+                  aria-label="Next reviews"
+                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm"
+                >
+                  <ChevronRight className="w-5 h-5 text-bone" />
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS_DATA.map((t) => (
+          {/* Testimonial Cards Carousel View */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleTestimonials.map((t, idx) => (
               <div
-                key={t.id}
-                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
+                key={`${t.id}-${reviewIndex}-${idx}`}
+                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group"
               >
                 <div>
-                  <div className="flex items-center gap-1 text-gold mb-4">
-                    {Array.from({ length: t.stars }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-secondary text-gold" />
-                    ))}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-1 text-gold">
+                      {Array.from({ length: t.stars }).map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                    <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
+                      Verified Review
+                    </span>
                   </div>
                   <p className="font-body-md text-sm text-bone leading-relaxed mb-6 italic">
                     "{t.quote}"
                   </p>
                 </div>
-                <div className="flex items-center gap-3 pt-4 border-t border-noir-700">
+                <div className="flex items-center gap-3 pt-4 border-t border-noir-700/80">
                   <img
                     src={t.avatar}
                     alt={t.name}
-                    className="w-12 h-12 rounded-full object-cover shrink-0 border border-noir-700"
+                    className="w-11 h-11 rounded-full object-cover shrink-0 border border-noir-700 group-hover:border-crimson/50 transition-colors"
                   />
-                  <div className="flex flex-col">
-                    <span className="font-title-editorial text-sm text-bone font-bold">
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-title-editorial text-sm text-bone font-bold truncate">
                       {t.name}
                     </span>
-                    <span className="font-label-caps text-[10px] text-bone-dim uppercase">
+                    <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider truncate">
                       {t.role}
                     </span>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Carousel Pagination Dots */}
+          <div className="flex items-center justify-center gap-2 pt-2">
+            {TESTIMONIALS_DATA.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setReviewIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-1.5 transition-all duration-300 rounded-full ${
+                  reviewIndex === idx
+                    ? 'w-8 bg-crimson'
+                    : 'w-2 bg-noir-700 hover:bg-noir-600'
+                }`}
+              />
             ))}
           </div>
 
@@ -552,7 +613,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               href="https://share.google/bUeThSgYN2di6xy2G"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-6 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone border border-noir-700 hover:border-slate-500 transition-all font-label-caps text-xs uppercase tracking-wider group rounded-sm"
+              className="inline-flex items-center gap-3 px-6 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone border border-noir-700 hover:border-slate-500 transition-all font-label-caps text-xs uppercase tracking-wider group rounded-sm shadow-lg"
             >
               <div className="flex items-center text-amber-400">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
@@ -567,7 +628,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* 06. LOCATION & APPOINTMENT DESK */}
-      <section id="location-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900">
+      <section id="location-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Security Advisory */}
           <div className="w-full p-5 sm:p-6 bg-noir-850 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-noir-700">
@@ -580,7 +641,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   Anti-Scam Notice — Official Channels Only
                 </div>
                 <p className="font-body-sm text-xs text-bone-muted max-w-3xl leading-relaxed">
-                  We never request payments through direct social media messages. Deposits are processed only through this website or our verified WhatsApp desk.
+                  We never request payments through unofficial social media channels. Consultations and deposits are arranged only through this website, our official phone, or verified WhatsApp desk.
                 </p>
               </div>
             </div>
@@ -602,26 +663,35 @@ export const HomePage: React.FC<HomePageProps> = ({
               >
                 <div className="absolute inset-0 bg-noir-950/40" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                  <div className="p-3.5 bg-noir-900 text-gold rounded-full border border-noir-700">
-                    <MapPin className="w-7 h-7" />
+                  <div className="p-3.5 bg-crimson text-bone rounded-full border border-crimson/40 shadow-xl">
+                    <MapPin className="w-7 h-7 text-bone" />
                   </div>
                   <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 border border-noir-700">
                     Marvin Tattoos · Kampala Studio
                   </span>
                 </div>
               </div>
-              <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-noir-850">
-                <div>
+              <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-noir-850 border-t border-noir-700">
+                <div className="space-y-1">
                   <div className="font-title-editorial text-base uppercase text-bone font-bold">
-                    Kampala, Uganda
+                    New Pioneer Mall, Burton St
                   </div>
                   <div className="font-body-sm text-xs text-bone-muted">
-                    Tattoo and Piercing Shop in Kampala, Uganda · Appointments &amp; Walk-Ins
+                    Level 5, Shop No. Pi55 · Kampala, Uganda
+                  </div>
+                  <div className="pt-1">
+                    <a
+                      href="tel:+256705748774"
+                      className="inline-flex items-center gap-1.5 font-label-data text-xs text-crimson-light hover:underline font-bold"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Studio Line: +256 705 748774</span>
+                    </a>
                   </div>
                 </div>
                 <button
                   onClick={() => onNavigate('location')}
-                  className="px-4 py-2 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 border border-noir-700"
+                  className="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 border border-noir-700 shrink-0"
                 >
                   <Navigation className="w-4 h-4 text-gold" />
                   <span>Get Directions</span>
@@ -633,44 +703,42 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-5 flex flex-col justify-between bg-noir-850 p-6 sm:p-8 border border-noir-700 space-y-6">
               <div className="space-y-6">
                 <div className="space-y-1">
-                  <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-                    APPOINTMENTS &amp; WALK-INS
+                  <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] font-bold">
+                    STUDIO HOURS &amp; SESSIONS
                   </span>
                   <h3 className="font-headline-lg text-2xl text-bone uppercase font-bold">
-                    Studio Schedule
+                    Operating Schedule
                   </h3>
                 </div>
 
                 <div className="space-y-2 font-label-data text-xs">
                   <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
-                    <span className="text-bone">Tuesday — Friday</span>
-                    <span className="text-bone-muted font-bold">11:00 — 21:00</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2.5 bg-noir-800 px-3 border border-slate-500">
-                    <div className="flex items-center gap-2">
-                      <span className="text-bone font-bold">Saturday</span>
-                      <span className="px-1.5 py-0.5 bg-gold text-noir-950 font-label-caps text-[9px] uppercase font-bold">
-                        Walk-Ins Open
-                      </span>
-                    </div>
-                    <span className="text-gold font-bold">11:00 — 21:00</span>
+                    <span className="text-bone">Monday — Saturday</span>
+                    <span className="text-bone font-bold">8:00 AM — 11:00 PM</span>
                   </div>
                   <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
                     <span className="text-bone">Sunday</span>
-                    <span className="text-bone-muted">12:00 — 18:00 (Private Sessions)</span>
+                    <span className="text-bone-muted font-bold">8:00 AM — 10:00 PM</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 bg-noir-950 px-3 text-bone-dim border border-noir-700">
-                    <span>Monday</span>
-                    <span className="uppercase font-label-caps text-[10px]">Closed for Sterilization</span>
+                  <div className="flex justify-between items-center py-2.5 bg-noir-800 px-3 border border-slate-500">
+                    <div className="flex items-center gap-2">
+                      <span className="text-bone font-bold">Direct Call Line</span>
+                      <span className="px-1.5 py-0.5 bg-crimson text-bone font-label-caps text-[9px] uppercase font-bold">
+                        Open Now
+                      </span>
+                    </div>
+                    <a href="tel:+256705748774" className="text-crimson-light font-bold hover:underline">
+                      +256 705 748774
+                    </a>
                   </div>
                 </div>
 
-                <div className="p-3 bg-noir-900 border-l-2 border-gold space-y-1">
+                <div className="p-3.5 bg-noir-900 border-l-2 border-gold space-y-1">
                   <div className="font-label-caps text-xs uppercase text-gold font-bold">
-                    Saturday Walk-In Protocol
+                    Walk-Ins &amp; Same-Day Piercings
                   </div>
                   <p className="font-body-sm text-xs text-bone-dim leading-relaxed">
-                    Flash designs available on first-come basis every Saturday from 10:45 AM. Larger custom pieces require booked consultation.
+                    Walk-in piercings and small custom flash tattoos accepted daily. Large blackwork sleeves, portraits, and cover-ups require a booked consultation.
                   </p>
                 </div>
               </div>

@@ -255,27 +255,51 @@ export const ARTISTS_DATA: ArtistProfile[] = [
 export const TESTIMONIALS_DATA: Testimonial[] = [
   {
     id: 't-1',
-    name: 'Christian Moreau',
-    role: 'Custom Sleeve',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA_Ac-e7bEVS-36L39MbRDP7s7PJdpwFjaB0CEZkHJfjp55tfDpRNJIIKe3B7c35yrDKlJ8wbmNV33qNH4SvOA6dZDsUgftKuwzW0mMYIdWJoXEbRkV14nNJO7iIC8zbtVWh-xWotDxJI0BJJzWrMLCtObIvE-iLwnctOaKqLUZVN_t9Hvv_HAXFVywfjU9XpuWY9vnknmh3SoXTacvHfSjGmnUYOcD_rmPGw2VFiBGA29wF5d4LLKE-w',
+    name: 'Brian K.',
+    role: 'Dark Realism & Sleeve',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     stars: 5,
-    quote: 'Marvin spent almost two hours getting the placement right before a needle even touched skin. The healed result is clean and exactly what we planned.'
+    quote: 'Marvin is hands down the best tattoo artist in Kampala. His attention to detail on my portrait sleeve was unmatched. The hygiene standard at New Pioneer Mall is top tier!'
   },
   {
     id: 't-2',
-    name: 'Valeria Danvers',
-    role: 'Curated Piercings',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACl5TDYhkHxDnUNAqLaqOA72iCaB1_fj_vVRrzFcyMzZ-x6zNZ4Y_9pBBPgFer7xLnSePNYY5_6LUcEVQthy6ArgkCJhpMz9mcsluBLjEPt9SihUheS-XFAyio-kXj9KBGkCHmW0heMxUoB3cBoKU18eBU_YaKlL587Ejf0A3zjglTbM0t19euF1ekZx4OkbrAXT0yYNeNdOiGtFIP5d6E1ARTCtJMfzkVeWbZClRH0G25nT2kXmbFqQ',
+    name: 'Patricia N.',
+    role: 'Fine-Line & Script',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80',
     stars: 5,
-    quote: 'They measured my ear properly and custom-fit the bars so nothing sits crooked. Two pieces healed with no issues.'
+    quote: 'Got a delicate fine-line floral piece on my collarbone. The lines are super crisp and sharp, healed completely flat with zero blowouts. Highly recommend Marvin Tattoos!'
   },
   {
     id: 't-3',
-    name: 'Marcus Thorne',
-    role: 'Cover-Up',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDcSTxYZcRELvyPhHyC0rXzHgFYO1bfzU4qCw5yr6tpwiYR75X8H48LGh-d-tucDipwwpOSCMS-lrt_lrkNU_c-v6W0W2ig3CivuYBnwg7hgoLm5eGw9Hztu0n0Om5gbsAihcJqCt5cDRluupnEovckw_UVx5OIrcEV7dlyz62L1mxTJlv_d66aqAvlWIEBOxkRq3JfWESpIcW01R3GBe9dyidVSWPxVG3eZUjhgZk4iZywF1-nX6ii1Q',
+    name: 'Denis M.',
+    role: 'Tattoo Cover-Up',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
     stars: 5,
-    quote: 'Two other shops turned me away for a cover-up. They planned it honestly and the result is a completely fresh piece.'
+    quote: 'I had an old faded tattoo that two other places said was impossible to fix. Marvin redesigned it into an incredible blackwork piece. You can not even see the old ink underneath.'
+  },
+  {
+    id: 't-4',
+    name: 'Sandra A.',
+    role: 'Titanium Ear Piercing',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
+    stars: 5,
+    quote: 'Super sterile setup with single-use needles and high-grade titanium jewelry. No pain, quick healing, and the team explained the aftercare thoroughly.'
+  },
+  {
+    id: 't-5',
+    name: 'Joshua T.',
+    role: 'Custom Script & Lettering',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+    stars: 5,
+    quote: 'Marvin drew the lettering freehand on my forearm first to make sure it aligned with my wrist bone. 100% custom craft and great hospitality at the studio.'
+  },
+  {
+    id: 't-6',
+    name: 'Ritah K.',
+    role: 'Minimalist Micro-Tattoo',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
+    stars: 5,
+    quote: 'Friendly vibes, clean equipment, and very professional. The studio on Level 5 of Pioneer Mall is welcoming and relaxed. 5 stars all the way!'
   }
 ];
 

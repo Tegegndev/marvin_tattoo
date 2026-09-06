@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageView } from '../types';
 import { LOGO_URL } from '../data/atelierData';
-import { Camera, Video, PlayCircle, ShieldCheck, Clock, MapPin, ExternalLink } from 'lucide-react';
+import { Camera, Video, PlayCircle, ShieldCheck, Clock, MapPin, ExternalLink, Phone } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (page: PageView) => void;
@@ -34,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             <div className="flex items-center gap-2 pt-2">
               <span className="w-2 h-2 rounded-full bg-gold shrink-0" />
               <span className="font-label-data text-label-data text-bone-muted uppercase">
-                OSHA-Approved Sterilization
+                Hospital-Grade Sterilization
               </span>
             </div>
           </div>
@@ -46,19 +46,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
               <span>Studio Location</span>
             </div>
             <div className="font-body-sm text-body-sm text-bone-muted space-y-1">
-              <p className="text-bone font-semibold">Kampala, Uganda</p>
-              <p className="text-bone-dim">Tattoo &amp; Piercing Shop</p>
+              <p className="text-bone font-semibold">New Pioneer Mall, Burton St</p>
+              <p className="text-bone-muted text-xs">Level 5, Shop No. Pi55</p>
+              <p className="text-bone-dim text-xs">Kampala, Uganda</p>
+              <div className="pt-2">
+                <a
+                  href="tel:+256705748774"
+                  className="font-label-data text-xs text-crimson-light hover:underline flex items-center gap-1.5 font-bold"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>+256 705 748774</span>
+                </a>
+              </div>
             </div>
             <div className="pt-2">
               <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone mb-1 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-gold" />
-                <span>Hours</span>
+                <span>Operating Hours</span>
               </div>
-              <p className="font-body-sm text-body-sm text-bone-muted">
-                Tue – Sat: 11:00 — 21:00
+              <p className="font-body-sm text-xs text-bone-muted">
+                Mon – Sat: 8:00 AM — 11:00 PM
               </p>
-              <p className="font-body-sm text-body-sm text-bone-dim">
-                Sun – Mon: By appointment
+              <p className="font-body-sm text-xs text-bone-dim">
+                Sun: 8:00 AM — 10:00 PM
               </p>
             </div>
           </div>
