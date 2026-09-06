@@ -18,12 +18,13 @@ export default {
           700: "#2d3442", // Standard borders & dividers
           600: "#414b5d", // Highlight borders
         },
-        // Muted Warm Slate / Titanium Steel (replaces bright crimson red)
+        // Refined Deep Oxblood / Wine Crimson (sophisticated dark studio red, not overly saturated)
         crimson: {
-          DEFAULT: "#334155", // Slate-700 / Titanium steel for buttons
-          hover: "#475569",   // Slate-600
-          light: "#94a3b8",   // Slate-400 / Light zinc for highlighted labels & icons
-          dark: "#1e293b",    // Slate-800
+          DEFAULT: "#881337", // Deep wine / oxblood for primary buttons & key highlights
+          hover: "#9f1239",   // Refined rose-wine hover
+          light: "#be123c",   // Muted crimson for highlighted tags & active accents
+          dark: "#4c0519",    // Deep velvet noir crimson
+          subtle: "#88133725" // Translucent wine tint for badges
         },
         // Muted Zinc / Pewter / Titanium (replaces saturated gold)
         gold: {

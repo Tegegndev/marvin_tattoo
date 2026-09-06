@@ -125,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onNavigate('booking');
               setMobileMenuOpen(false);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-white text-noir-950 font-label-caps text-[11px] font-bold uppercase tracking-widest transition-all duration-200 shadow-sm rounded-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] font-bold uppercase tracking-widest transition-all duration-200 border border-crimson-light/30 shadow-sm rounded-sm"
           >
             <Calendar className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Book Session</span>
