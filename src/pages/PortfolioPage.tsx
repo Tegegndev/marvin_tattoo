@@ -31,9 +31,12 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
   const zones = [
     'All Zones',
-    'Full Sleeve',
+    'Forearm',
     'Backpiece',
+    'Collarbone',
     'Chest',
+    'Face & Brow',
+    'Abdomen / Navel',
     'Hands',
     'Ear Stack'
   ];

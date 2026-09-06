@@ -122,8 +122,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     ? PORTFOLIO_DATA.slice(0, 6)
     : PORTFOLIO_DATA.filter(item => {
         if (selectedPortfolioCategory === 'blackwork') return item.category === 'dark-realism';
-        if (selectedPortfolioCategory === 'neo-traditional') return item.category === 'neo-traditional';
-        if (selectedPortfolioCategory === 'piercings') return item.category === 'piercing';
+        if (selectedPortfolioCategory === 'neo-traditional') return item.category === 'neo-traditional' || item.category === 'micro-detail';
+        if (selectedPortfolioCategory === 'piercings') return item.category === 'piercing' || item.category === 'micro-detail';
         return true;
       });
 
@@ -360,9 +360,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               {[
                 { id: 'all', label: 'All Works' },
-                { id: 'blackwork', label: 'Dark Realism' },
-                { id: 'neo-traditional', label: 'Neo-Traditional' },
-                { id: 'piercings', label: 'Piercings' }
+                { id: 'blackwork', label: 'Realism & Portraits' },
+                { id: 'neo-traditional', label: 'Lettering & Script' },
+                { id: 'piercings', label: 'Piercings & PMU' }
               ].map((tab) => (
                 <button
                   key={tab.id}

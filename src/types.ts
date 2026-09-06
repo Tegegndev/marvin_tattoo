@@ -21,9 +21,9 @@ export interface PortfolioPiece {
   category: 'dark-realism' | 'neo-traditional' | 'micro-detail' | 'piercing' | 'coverup';
   categoryLabel: string;
   artist: string;
-  healingState: 'Healed 8 Months' | 'Healed 1 Year' | 'Healed 18 Months' | 'Fresh Ink' | 'Custom Titanium';
+  healingState: string;
   cycle: 'all' | 'healed' | 'fresh';
-  zone: 'Full Sleeve' | 'Backpiece' | 'Chest' | 'Hands' | 'Ear Stack';
+  zone: string;
   flashId: string;
   image: string;
   description: string;
