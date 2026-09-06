@@ -14,26 +14,23 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
       <div className="w-full px-4 md:px-8 lg:px-12 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
           {/* Column 1: Brand & Certification */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
+          <div className="space-y-5">
+            <div className="space-y-3">
               <img
                 alt="Marvin Tattoos Wordmark Logo"
-                className="h-6 w-auto object-contain"
+                className="h-16 sm:h-20 md:h-24 w-auto object-contain filter drop-shadow-lg select-none"
                 src={LOGO_URL}
               />
-              <span className="font-title-editorial text-title-editorial uppercase text-bone">
-                Marvin
-              </span>
+              <div className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold">
+                Tattoo &amp; Piercing Studio · Kampala
+              </div>
             </div>
-            <div className="font-label-caps text-label-caps text-crimson-light uppercase tracking-wider">
-              Tattoos &amp; Piercings
-            </div>
-            <p className="font-body-sm text-body-sm text-bone-dim leading-relaxed">
-              Custom tattoos and piercing work done in a clean, professional studio with hospital-grade sterilization.
+            <p className="font-body-sm text-sm text-bone-muted leading-relaxed">
+              Custom dark realism, heavy script, cover-ups, and titanium body piercing in Kampala, Uganda with hospital-grade sterilization.
             </p>
-            <div className="flex items-center gap-2 pt-2">
-              <span className="w-2 h-2 rounded-full bg-gold shrink-0" />
-              <span className="font-label-data text-label-data text-bone-muted uppercase">
+            <div className="flex items-center gap-2 pt-1">
+              <span className="w-2 h-2 rounded-full bg-gold shrink-0 animate-pulse" />
+              <span className="font-label-data text-xs text-bone font-semibold uppercase tracking-wider">
                 Hospital-Grade Sterilization
               </span>
             </div>
