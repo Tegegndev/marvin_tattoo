@@ -53,7 +53,7 @@ const MarvinPortraitLens: React.FC = () => {
       <img
         src="/images/marvin-founder.png"
         alt="Marvin - Founder & Resident Tattooist"
-        className="absolute inset-0 w-full h-full object-cover object-top filter grayscale contrast-125 brightness-90 transition-transform duration-700 group-hover:scale-[1.02]"
+        className="absolute inset-0 w-full h-full object-cover object-[center_15%] scale-110 filter grayscale contrast-125 brightness-95 transition-transform duration-700 group-hover:scale-[1.13]"
       />
       <div className="absolute inset-0 bg-noir-950/20 pointer-events-none" />
 
@@ -62,35 +62,15 @@ const MarvinPortraitLens: React.FC = () => {
         className="absolute inset-0 transition-opacity duration-300 pointer-events-none"
         style={{
           opacity: isHovered ? 1 : 0,
-          WebkitMaskImage: `radial-gradient(circle 200px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`,
-          maskImage: `radial-gradient(circle 200px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`
+          WebkitMaskImage: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`,
+          maskImage: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, black 25%, rgba(0,0,0,0.5) 65%, transparent 100%)`
         }}
       >
         <img
           src="/images/marvin-founder.png"
           alt="Marvin in Color"
-          className="w-full h-full object-cover object-top filter contrast-110 saturate-125 transition-transform duration-700 group-hover:scale-[1.02]"
+          className="w-full h-full object-cover object-[center_15%] scale-110 filter contrast-110 saturate-125 transition-transform duration-700 group-hover:scale-[1.13]"
         />
-      </div>
-
-      {/* Badges Overlay */}
-      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
-        <span className="px-3 py-1 bg-noir-950/90 backdrop-blur-sm text-bone font-label-caps text-[10px] uppercase tracking-widest border border-noir-700 flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          Founder &amp; Resident Artist
-        </span>
-        <span className="px-2.5 py-0.5 bg-noir-900/90 text-gold font-label-caps text-[9px] uppercase tracking-wider border border-noir-700">
-          Trauma Tech Hygiene Protocol
-        </span>
-      </div>
-
-      {/* Lens Status Pill */}
-      <div className="absolute top-4 right-4 z-20 pointer-events-none transition-opacity duration-200">
-        <span className={`px-2.5 py-1 bg-noir-950/90 backdrop-blur-sm font-label-caps text-[9px] uppercase tracking-wider border transition-colors ${
-          isHovered ? 'border-slate-400 text-bone' : 'border-noir-700 text-bone-dim'
-        }`}>
-          {isHovered ? 'Color Lens Active' : 'Hover to Reveal Color'}
-        </span>
       </div>
 
       {/* Bottom Name & Story Overlay */}
