@@ -33,8 +33,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             <div className="lg:col-span-7 flex flex-col justify-between bg-noir-900 rounded-xl overflow-hidden relative group border border-noir-700/80">
               <div className="relative h-[480px] md:h-[580px] w-full overflow-hidden">
                 <img
-                  alt="Marvin in studio holding tattoo machine"
-                  className="w-full h-full object-cover object-center filter grayscale contrast-125 brightness-90 group-hover:scale-105 transition-transform duration-700"
+                  alt="Marvin - Founder & Resident Tattooist"
+                  className="w-full h-full object-cover object-[center_15%] scale-105 filter grayscale contrast-125 brightness-95 group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:scale-110 transition-all duration-700 ease-out"
                   src={masterMarvin.avatar}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-noir-900 via-noir-900/25 to-transparent" />
