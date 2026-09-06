@@ -73,7 +73,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-container-lowest text-on-surface flex flex-col selection:bg-primary-container selection:text-on-surface">
+    <div className="min-h-screen bg-noir-950 text-bone flex flex-col selection:bg-crimson selection:text-bone">
       {/* Editorial Navbar */}
       <Navbar
         currentPage={currentPage}

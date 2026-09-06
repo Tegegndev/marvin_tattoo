@@ -6,8 +6,8 @@
   html, body {
     margin: 0;
     padding: 0;
-    background-color: #0e0e0e;
-    color: #e5e2e1;
+    background-color: #0a0a0c;
+    color: #f4f4f5;
     font-family: 'Geist', sans-serif;
   }
 
@@ -21,14 +21,14 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0e0e0e;
+    background: #0a0a0c;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
+    background: #272730;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #8a0b14;
+    background: #8f131d;
   }
 }
 
@@ -38,7 +38,7 @@
 }
 .btn-gothic-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(138, 11, 20, 0.5), 0 10px 20px -10px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 20px rgba(143, 19, 29, 0.5), 0 10px 20px -10px rgba(0, 0, 0, 0.8);
 }
 
 .btn-secondary-glow {
@@ -62,10 +62,10 @@
 }
 .gothic-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 16px rgba(138, 11, 20, 0.18);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 16px rgba(143, 19, 29, 0.18);
 }
 .gothic-card:hover::after {
-  border-color: rgba(255, 179, 173, 0.25);
+  border-color: rgba(255, 107, 114, 0.25);
 }
 
 .interactive-img-zoom {

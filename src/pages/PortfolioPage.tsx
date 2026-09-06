@@ -64,9 +64,9 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   const featuredPiece = PORTFOLIO_DATA.find((p) => p.featured) || PORTFOLIO_DATA[0];
 
   return (
-    <div className="w-full pt-20 bg-surface-container-lowest min-h-screen">
+    <div className="w-full pt-20 bg-noir-950 min-h-screen">
       {/* Top Taxonomy & Refinement Header */}
-      <section className="w-full bg-surface-container-low px-4 md:px-8 lg:px-12 py-6 border-b border-surface-container-highest/60 sticky top-20 z-30 shadow-md">
+      <section className="w-full bg-noir-900 px-4 md:px-8 lg:px-12 py-6 border-b border-noir-700/60 sticky top-20 z-30 shadow-md">
         <div className="max-w-7xl mx-auto flex flex-col gap-4">
           {/* Primary Style Tabs */}
           <div className="flex items-center justify-between overflow-x-auto no-scrollbar gap-2 pb-1">
@@ -77,8 +77,8 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-3.5 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-all ${
                     selectedCategory === cat.id
-                      ? 'bg-primary-container text-on-surface shadow-md'
-                      : 'bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+                      ? 'bg-crimson text-bone shadow-md'
+                      : 'bg-noir-850 text-bone-muted hover:text-bone hover:bg-noir-800'
                   }`}
                 >
                   {cat.label}
@@ -87,11 +87,11 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             </div>
 
             {/* Healing State Toggle */}
-            <div className="flex items-center bg-surface-container p-1 shrink-0 ml-4 border border-surface-container-highest">
+            <div className="flex items-center bg-noir-850 p-1 shrink-0 ml-4 border border-noir-700">
               <button
                 onClick={() => setSelectedCycle('all')}
                 className={`px-3 py-1 font-label-caps text-[10px] uppercase transition-colors ${
-                  selectedCycle === 'all' ? 'bg-surface-bright text-on-surface' : 'text-outline hover:text-on-surface'
+                  selectedCycle === 'all' ? 'bg-noir-700 text-bone' : 'text-bone-dim hover:text-bone'
                 }`}
               >
                 All
@@ -99,7 +99,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               <button
                 onClick={() => setSelectedCycle('healed')}
                 className={`px-3 py-1 font-label-caps text-[10px] uppercase transition-colors ${
-                  selectedCycle === 'healed' ? 'bg-surface-bright text-on-surface' : 'text-outline hover:text-on-surface'
+                  selectedCycle === 'healed' ? 'bg-noir-700 text-bone' : 'text-bone-dim hover:text-bone'
                 }`}
               >
                 Healed
@@ -107,7 +107,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               <button
                 onClick={() => setSelectedCycle('fresh')}
                 className={`px-3 py-1 font-label-caps text-[10px] uppercase transition-colors ${
-                  selectedCycle === 'fresh' ? 'bg-surface-bright text-on-surface' : 'text-outline hover:text-on-surface'
+                  selectedCycle === 'fresh' ? 'bg-noir-700 text-bone' : 'text-bone-dim hover:text-bone'
                 }`}
               >
                 Fresh
@@ -116,10 +116,10 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           </div>
 
           {/* Secondary Refinement Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 text-outline pt-2 border-t border-surface-container-highest/40 text-xs font-label-data">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-bone-dim pt-2 border-t border-noir-700/40 text-xs font-label-data">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-on-surface font-semibold uppercase flex items-center gap-1">
-                <Filter className="w-3.5 h-3.5 text-primary" />
+              <span className="text-bone font-semibold uppercase flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5 text-crimson-light" />
                 <span>Placement:</span>
               </span>
               {zones.map((z) => (
@@ -128,8 +128,8 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   onClick={() => setSelectedZone(z)}
                   className={`px-2 py-0.5 uppercase transition-colors ${
                     selectedZone === z || (selectedZone === 'all' && z === 'All Zones')
-                      ? 'bg-surface-bright text-primary border border-primary/30'
-                      : 'bg-surface-container text-outline hover:text-on-surface'
+                      ? 'bg-noir-700 text-crimson-light border border-crimson/30'
+                      : 'bg-noir-850 text-bone-dim hover:text-bone'
                   }`}
                 >
                   {z}
@@ -138,14 +138,14 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             </div>
 
             <div className="flex items-center gap-2 font-label-caps text-[11px] uppercase">
-              <span className="text-outline">Artist:</span>
+              <span className="text-bone-dim">Artist:</span>
               {artists.map((art, i) => (
                 <React.Fragment key={art.id}>
-                  {i > 0 && <span className="text-surface-variant">/</span>}
+                  {i > 0 && <span className="text-bone-muted">/</span>}
                   <button
                     onClick={() => setSelectedArtist(art.id)}
                     className={`transition-colors ${
-                      selectedArtist === art.id ? 'text-primary font-bold underline' : 'text-outline hover:text-on-surface'
+                      selectedArtist === art.id ? 'text-crimson-light font-bold underline' : 'text-bone-dim hover:text-bone'
                     }`}
                   >
                     {art.label}
@@ -158,19 +158,19 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
       </section>
 
       {/* Featured Masterpiece Spotlight: The Luciferian Seraph */}
-      <section className="w-full bg-surface-container-lowest px-4 md:px-8 lg:px-12 py-12 border-b border-surface-container-highest/40">
+      <section className="w-full bg-noir-950 px-4 md:px-8 lg:px-12 py-12 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <span className="font-label-caps text-xs text-secondary uppercase tracking-[0.25em]">
+            <span className="font-label-caps text-xs text-gold uppercase tracking-[0.25em]">
               Featured Work
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 bg-surface-container-low border border-surface-container-highest shadow-2xl overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 bg-noir-900 border border-noir-700 shadow-2xl overflow-hidden">
             {/* Visual Column */}
             <div
               onClick={() => onSelectPiece(featuredPiece)}
-              className="lg:col-span-7 relative min-h-[420px] lg:min-h-[520px] bg-surface-container-lowest cursor-pointer group"
+              className="lg:col-span-7 relative min-h-[420px] lg:min-h-[520px] bg-noir-950 cursor-pointer group"
             >
               <img
                 src={featuredPiece.image}
@@ -178,82 +178,82 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700"
               />
               <div className="absolute top-4 left-4 flex flex-col gap-2">
-                <span className="bg-primary-container text-on-surface font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest shadow-lg">
+                <span className="bg-crimson text-bone font-label-caps text-[10px] px-3 py-1 uppercase tracking-widest shadow-lg">
                   Featured
                 </span>
-                <span className="bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-caps text-[10px] px-3 py-1 uppercase border border-secondary/30">
+                <span className="bg-noir-950/90 backdrop-blur-sm text-gold font-label-caps text-[10px] px-3 py-1 uppercase border border-gold/30">
                   {featuredPiece.healingState}
                 </span>
               </div>
             </div>
 
             {/* Spec Sheet Column */}
-            <div className="lg:col-span-5 p-6 lg:p-8 flex flex-col justify-between space-y-6 bg-surface-container-low">
+            <div className="lg:col-span-5 p-6 lg:p-8 flex flex-col justify-between space-y-6 bg-noir-900">
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <span className="font-label-caps text-xs text-primary uppercase tracking-widest">
+                  <span className="font-label-caps text-xs text-crimson-light uppercase tracking-widest">
                     {featuredPiece.categoryLabel}
                   </span>
-                  <h2 className="font-headline-lg text-2xl lg:text-3xl text-on-surface uppercase tracking-tight font-bold">
+                  <h2 className="font-headline-lg text-2xl lg:text-3xl text-bone uppercase tracking-tight font-bold">
                     {featuredPiece.title}
                   </h2>
                 </div>
 
-                <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                <p className="font-body-md text-sm text-bone-muted leading-relaxed">
                   {featuredPiece.description}
                 </p>
 
                 {/* Spec List */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
-                    <span className="font-label-caps text-[9px] text-outline uppercase block">
+                  <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
+                    <span className="font-label-caps text-[9px] text-bone-dim uppercase block">
                       Artist
                     </span>
-                    <span className="font-label-data text-xs text-on-surface uppercase font-bold">
+                    <span className="font-label-data text-xs text-bone uppercase font-bold">
                       {featuredPiece.artist}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
-                    <span className="font-label-caps text-[9px] text-outline uppercase block">
+                  <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
+                    <span className="font-label-caps text-[9px] text-bone-dim uppercase block">
                       Duration
                     </span>
-                    <span className="font-label-data text-xs text-secondary uppercase font-bold">
+                    <span className="font-label-data text-xs text-gold uppercase font-bold">
                       {featuredPiece.duration}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
-                    <span className="font-label-caps text-[9px] text-outline uppercase block">
+                  <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
+                    <span className="font-label-caps text-[9px] text-bone-dim uppercase block">
                       Pigment
                     </span>
-                    <span className="font-label-data text-xs text-on-surface uppercase font-bold">
+                    <span className="font-label-data text-xs text-bone uppercase font-bold">
                       {featuredPiece.pigment}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-surface-container border border-surface-container-highest/60 space-y-1">
-                    <span className="font-label-caps text-[9px] text-outline uppercase block">
+                  <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
+                    <span className="font-label-caps text-[9px] text-bone-dim uppercase block">
                       Placement
                     </span>
-                    <span className="font-label-data text-xs text-on-surface uppercase font-bold">
+                    <span className="font-label-data text-xs text-bone uppercase font-bold">
                       {featuredPiece.morphology}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-surface-container-highest/60 flex items-center justify-between gap-4">
+              <div className="pt-4 border-t border-noir-700/60 flex items-center justify-between gap-4">
                 <button
                   onClick={() => onSelectPiece(featuredPiece)}
-                  className="px-4 py-2.5 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5"
                 >
-                  <Eye className="w-4 h-4 text-primary" />
+                  <Eye className="w-4 h-4 text-crimson-light" />
                   <span>View Piece</span>
                 </button>
                 <button
                   onClick={() => onBookSimilar(featuredPiece)}
-                  className="flex-1 py-2.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow text-center border border-primary/30"
+                  className="flex-1 py-2.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow text-center border border-crimson/30"
                 >
                   Book Similar
                 </button>
@@ -264,13 +264,13 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
       </section>
 
       {/* Main Portfolio Masonry Grid */}
-      <section className="w-full px-4 md:px-8 lg:px-12 py-16 bg-surface-container-lowest">
+      <section className="w-full px-4 md:px-8 lg:px-12 py-16 bg-noir-950">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
-            <h3 className="font-headline-md text-2xl uppercase text-on-surface font-bold">
+            <h3 className="font-headline-md text-2xl uppercase text-bone font-bold">
               Portfolio ({filteredPieces.length})
             </h3>
-            <span className="font-label-data text-xs text-outline">
+            <span className="font-label-data text-xs text-bone-dim">
               {filteredPieces.length} of {PORTFOLIO_DATA.length}
             </span>
           </div>
@@ -282,7 +282,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="group relative bg-surface-container overflow-hidden shadow-xl flex flex-col gothic-card border border-surface-container-highest/60 hover:border-primary/30"
+                className="group relative bg-noir-850 overflow-hidden shadow-xl flex flex-col gothic-card border border-noir-700/60 hover:border-crimson/30"
               >
                 <div
                   onClick={() => onSelectPiece(piece)}
@@ -293,44 +293,44 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                     alt={piece.title}
                     className="w-full h-full object-cover interactive-img-zoom"
                   />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-surface-container-lowest/85 backdrop-blur-sm text-secondary font-label-caps text-[10px] uppercase tracking-widest border border-secondary/30">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/85 backdrop-blur-sm text-gold font-label-caps text-[10px] uppercase tracking-widest border border-gold/30">
                     {piece.healingState}
                   </div>
-                  <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-surface-container-lowest/90 text-on-surface font-label-data text-[10px] uppercase">
+                  <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-noir-950/90 text-bone font-label-data text-[10px] uppercase">
                     {piece.zone}
                   </div>
                 </div>
 
-                <div className="p-5 flex flex-col justify-between flex-1 bg-surface-container">
+                <div className="p-5 flex flex-col justify-between flex-1 bg-noir-850">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-title-editorial text-lg uppercase text-on-surface group-hover:text-primary transition-colors">
+                      <span className="font-title-editorial text-lg uppercase text-bone group-hover:text-crimson-light transition-colors">
                         {piece.title}
                       </span>
-                      <span className="font-label-data text-xs text-outline">
+                      <span className="font-label-data text-xs text-bone-dim">
                         {piece.artist}
                       </span>
                     </div>
 
-                    <p className="font-body-sm text-xs text-on-surface-variant line-clamp-2 leading-relaxed">
+                    <p className="font-body-sm text-xs text-bone-muted line-clamp-2 leading-relaxed">
                       {piece.description}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 mt-4 border-t border-surface-container-highest/60">
-                    <span className="font-label-caps text-[10px] text-outline uppercase tracking-wider">
+                  <div className="flex items-center justify-between pt-4 mt-4 border-t border-noir-700/60">
+                    <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
                       {piece.flashId}
                     </span>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onSelectPiece(piece)}
-                        className="px-3 py-1.5 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-caps text-xs uppercase tracking-wider transition-colors"
+                        className="px-3 py-1.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors"
                       >
                         View
                       </button>
                       <button
                         onClick={() => onBookSimilar(piece)}
-                        className="px-3 py-1.5 bg-primary-container hover:bg-on-primary-fixed-variant text-on-surface font-label-caps text-xs uppercase tracking-wider transition-all duration-300"
+                        className="px-3 py-1.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-wider transition-all duration-300"
                       >
                         Book
                       </button>
@@ -342,8 +342,8 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           </div>
 
           {filteredPieces.length === 0 && (
-            <div className="text-center py-20 bg-surface-container p-8 space-y-4 border border-surface-container-highest">
-              <p className="font-title-editorial text-lg text-on-surface">
+            <div className="text-center py-20 bg-noir-850 p-8 space-y-4 border border-noir-700">
+              <p className="font-title-editorial text-lg text-bone">
                 No pieces match your filters.
               </p>
               <button
@@ -353,7 +353,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   setSelectedZone('all');
                   setSelectedArtist('all');
                 }}
-                className="px-6 py-2 bg-primary-container text-on-surface font-label-caps text-xs uppercase tracking-widest"
+                className="px-6 py-2 bg-crimson text-bone font-label-caps text-xs uppercase tracking-widest"
               >
                 Clear Filters
               </button>

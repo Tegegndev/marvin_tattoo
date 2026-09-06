@@ -8,53 +8,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        "on-primary": "#680009",
-        "surface-container-low": "#1c1b1b",
-        "secondary-container": "#af8d11",
-        "outline-variant": "#59413f",
-        "surface-bright": "#3a3939",
-        "surface-dim": "#131313",
-        "on-error-container": "#ffdad6",
-        "on-tertiary-fixed": "#001c39",
-        "surface-container": "#201f1f",
-        "on-tertiary": "#00315d",
-        "secondary-fixed": "#ffe088",
-        "secondary-fixed-dim": "#e9c349",
-        "primary-container": "#8a0b14",
-        "on-secondary-fixed-variant": "#574500",
-        "tertiary": "#a4c9ff",
-        "on-primary-fixed-variant": "#8f1017",
-        "surface-container-high": "#2a2a2a",
-        "primary-fixed": "#ffdad6",
-        "on-tertiary-fixed-variant": "#084882",
-        "background": "#131313",
-        "on-surface": "#e5e2e1",
-        "secondary": "#e9c349",
-        "tertiary-fixed": "#d4e3ff",
-        "on-primary-container": "#ff928a",
-        "surface-container-lowest": "#0e0e0e",
-        "on-primary-fixed": "#410003",
-        "error": "#ffb4ab",
-        "outline": "#a88a87",
-        "tertiary-container": "#00447e",
-        "primary": "#ffb3ad",
-        "surface": "#131313",
-        "on-secondary-fixed": "#241a00",
-        "inverse-surface": "#e5e2e1",
-        "on-tertiary-container": "#85b3f3",
-        "inverse-on-surface": "#313030",
-        "error-container": "#93000a",
-        "surface-tint": "#ffb3ad",
-        "tertiary-fixed-dim": "#a4c9ff",
-        "on-secondary": "#3c2f00",
-        "on-secondary-container": "#342800",
-        "on-surface-variant": "#e1bfbb",
-        "surface-container-highest": "#353534",
-        "on-background": "#e5e2e1",
-        "on-error": "#690005",
-        "surface-variant": "#353534",
-        "primary-fixed-dim": "#ffb3ad",
-        "inverse-primary": "#b12c2b",
+        noir: {
+          DEFAULT: "#0a0a0c",
+          950: "#0a0a0c", // Deepest canvas black
+          900: "#111114", // Main background & cards
+          850: "#16161b", // Containers & sub-cards
+          800: "#1c1c22", // Elevated surfaces & active states
+          700: "#272730", // Standard borders & dividers
+          600: "#363642", // Highlight borders
+        },
+        crimson: {
+          DEFAULT: "#8f131d", // Signature atelier gothic red
+          hover: "#a61723",
+          light: "#ff6b72",
+          dark: "#570a10",
+        },
+        gold: {
+          DEFAULT: "#c5a059", // Luxury piercing & antique brass
+          hover: "#d9b369",
+          light: "#f3d999",
+          dark: "#7c622e",
+        },
+        bone: {
+          DEFAULT: "#f4f4f5", // High-contrast primary text
+          muted: "#a1a1aa",   // Secondary descriptive text
+          dim: "#71717a",     // Tertiary captions & metadata
+        },
       },
       borderRadius: {
         "DEFAULT": "0.25rem",
