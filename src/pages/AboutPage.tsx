@@ -17,10 +17,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
       <section className="relative w-full overflow-hidden bg-noir-950 py-16 md:py-24 border-b border-noir-700/40">
         {/* Ambient Hero Background */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20 filter grayscale contrast-125 scale-105 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-30 filter grayscale contrast-125 scale-105 pointer-events-none"
           style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-noir-950/80 via-noir-950/60 to-noir-950 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-noir-950/75 via-noir-950/50 to-noir-950 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           {/* Section Tag */}
