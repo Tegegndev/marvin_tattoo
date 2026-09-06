@@ -27,19 +27,19 @@ interface HomePageProps {
   onOpenVerify: () => void;
 }
 
-// Founder Portrait with Black & White to Full Color on Hover
+// Founder Portrait in Original Full Color
 const MarvinPortraitLens: React.FC = () => {
   return (
     <div 
       className="relative w-full h-[480px] sm:h-[540px] lg:h-[600px] bg-noir-900 border border-noir-700 overflow-hidden group select-none"
     >
-      {/* Marvin's Portrait: High-Contrast Black & White by default, Full Original Color on hover */}
+      {/* Marvin's Portrait: Original Full Color */}
       <img
         src="/images/marvin-founder.png"
         alt="Marvin - Founder & Resident Tattooist"
-        className="absolute inset-0 w-full h-full object-cover object-[center_15%] scale-110 filter grayscale contrast-125 brightness-95 transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:scale-[1.14]"
+        className="absolute inset-0 w-full h-full object-cover object-[center_15%] scale-110 transition-transform duration-700 ease-out group-hover:scale-[1.14]"
       />
-      <div className="absolute inset-0 bg-noir-950/20 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/10 pointer-events-none" />
 
       {/* Bottom Name & Story Overlay */}
       <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-noir-950 via-noir-950/85 to-transparent z-20 space-y-2 pointer-events-none">
