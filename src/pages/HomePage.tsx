@@ -46,7 +46,7 @@ const MarvinPortraitLens: React.FC = () => {
         <div className="flex items-end justify-between">
           <div>
             <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-widest block">
-              142 Mercer St · SoHo NYC
+              Tattoo &amp; Piercing Shop · Kampala, Uganda
             </span>
             <h3 className="font-headline-sm text-2xl sm:text-3xl text-bone uppercase font-bold tracking-tight">
               Marvin
@@ -116,7 +116,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-crimson-light" />
                 <span className="font-label-data text-xs text-bone-muted uppercase tracking-wider">
-                  SOHO, NEW YORK · EST. 2014
+                  Tattoo and piercing shop in Kampala, Uganda · EST. 2014
                 </span>
               </div>
 
@@ -127,7 +127,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
               {/* Real Studio Pitch */}
               <p className="font-body-md text-sm sm:text-base text-bone-muted max-w-2xl leading-relaxed">
-                Specializing in dark realism, solid blackwork, and custom tattoo design in SoHo NYC. Every piece is drawn to fit your body and tattooed to heal solid for life.
+                Specializing in dark realism, solid blackwork, and custom tattoo design in Kampala, Uganda. Every piece is drawn to fit your body and tattooed to heal solid for life.
               </p>
 
               {/* Core Features List */}
@@ -575,17 +575,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <MapPin className="w-7 h-7" />
                   </div>
                   <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 border border-noir-700">
-                    Marvin Tattoos · SoHo Atelier
+                    Marvin Tattoos · Kampala Studio
                   </span>
                 </div>
               </div>
               <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-noir-850">
                 <div>
                   <div className="font-title-editorial text-base uppercase text-bone font-bold">
-                    142 Mercer Street, Suite 3B
+                    Kampala, Uganda
                   </div>
                   <div className="font-body-sm text-xs text-bone-muted">
-                    SoHo, New York, NY 10012 · 3 min from Prince St &amp; Spring St
+                    Tattoo and Piercing Shop in Kampala, Uganda · Appointments &amp; Walk-Ins
                   </div>
                 </div>
                 <button

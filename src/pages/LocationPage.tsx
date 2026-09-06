@@ -25,10 +25,10 @@ export const LocationPage: React.FC<LocationPageProps> = ({
             </span>
           </div>
           <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-            142 Mercer Street, Suite 3B — SoHo, New York
+            Tattoo and Piercing Shop in Kampala, Uganda
           </h1>
           <p className="font-body-md text-sm text-bone-muted max-w-2xl leading-relaxed">
-            Located in the heart of SoHo. Private consultation rooms, a dedicated sterile piercing suite, and medical-grade hygiene protocols throughout.
+            Private consultation rooms, dedicated sterile piercing suites, and medical-grade hygiene protocols throughout.
           </p>
         </div>
       </section>
@@ -46,7 +46,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                     <MapPin className="w-8 h-8 text-crimson-light" />
                   </div>
                   <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 border border-noir-700/40">
-                    Marvin Tattoos · SoHo Atelier
+                    Marvin Tattoos · Kampala Studio
                   </span>
                 </div>
               </div>
@@ -58,7 +58,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                       Find Us
                     </h3>
                     <p className="font-body-sm text-xs text-bone-dim">
-                      142 Mercer Street, Suite 3B, SoHo, New York, NY 10012
+                      Kampala, Uganda
                     </p>
                   </div>
                   <a

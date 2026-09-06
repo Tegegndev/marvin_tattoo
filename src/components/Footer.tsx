@@ -46,11 +46,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
               <span>Studio Location</span>
             </div>
             <div className="font-body-sm text-body-sm text-bone-muted space-y-1">
-              <p className="text-bone font-semibold">142 Mercer Street, Suite 3B</p>
-              <p className="text-bone-dim">SoHo, New York, NY 10012</p>
-              <p className="font-label-data text-label-data text-crimson-light pt-1">
-                Call: +1 (800) 555-MARK
-              </p>
+              <p className="text-bone font-semibold">Kampala, Uganda</p>
+              <p className="text-bone-dim">Tattoo &amp; Piercing Shop</p>
             </div>
             <div className="pt-2">
               <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone mb-1 flex items-center gap-1.5">

@@ -175,7 +175,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                 </span>
                 <span className="text-bone-dim font-label-data text-xs uppercase tracking-widest flex items-center gap-1.5">
                   <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-                  Marvin Tattoos SoHo
+                  Marvin Tattoos Kampala
                 </span>
               </div>
               <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone tracking-tight leading-none font-bold">
@@ -762,7 +762,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
                       </h2>
                     </div>
                     <span className="font-label-caps text-[9px] text-gold uppercase tracking-wider border border-gold/30 px-2 py-0.5">
-                      SoHo Studio
+                      Kampala Studio
                     </span>
                   </div>
 
