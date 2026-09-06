@@ -4,6 +4,9 @@ export const HERO_IMAGE = "https://lh3.googleusercontent.com/aida/AEtjO1WxJneVTT
 
 export const LOGO_URL = "/logo.svg";
 
+export const MARVIN_DIRECT_PHONE = "+256705748774";
+export const WHATSAPP_NUMBER = "256705748774";
+
 export const SERVICES_DATA: ServiceItem[] = [
   {
     id: 'realism-portraits',

@@ -12,6 +12,7 @@ import { AboutPage } from './pages/AboutPage';
 import { BookingPage } from './pages/BookingPage';
 import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
+import { AftercarePage } from './pages/AftercarePage';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function App() {
@@ -140,6 +141,13 @@ export function App() {
                 onNavigate={setCurrentPage}
                 onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
                 onOpenVerify={() => setIsVerifyOpen(true)}
+              />
+            )}
+
+            {currentPage === 'aftercare' && (
+              <AftercarePage
+                onNavigate={setCurrentPage}
+                onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
               />
             )}
           </motion.div>

@@ -182,10 +182,22 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   Portfolio
                 </button>
                 <button
+                  onClick={() => onNavigate('aftercare')}
+                  className="text-left hover:text-bone transition-colors py-1 text-gold font-semibold"
+                >
+                  Aftercare
+                </button>
+                <button
                   onClick={() => onNavigate('equipment')}
                   className="text-left hover:text-bone transition-colors py-1"
                 >
                   Shop
+                </button>
+                <button
+                  onClick={() => onNavigate('location')}
+                  className="text-left hover:text-bone transition-colors py-1"
+                >
+                  Location
                 </button>
                 <button
                   onClick={() => onNavigate('booking')}
@@ -204,6 +216,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             © 2026 MARVIN TATTOOS &amp; PIERCINGS. ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-bone-dim">
+            <button onClick={() => onNavigate('aftercare')} className="hover:text-bone text-gold font-semibold transition-colors">
+              Aftercare Guide
+            </button>
             <button onClick={() => onNavigate('location')} className="hover:text-bone transition-colors">
               Studio Location
             </button>

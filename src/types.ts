@@ -1,4 +1,4 @@
-export type PageView = 'home' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials';
+export type PageView = 'home' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare';
 
 export interface ServiceItem {
   id: string;
