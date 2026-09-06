@@ -677,18 +677,19 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Location Details Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Atelier Address View */}
+            {/* Atelier Address View with Real Kampala Google Map */}
             <div className="lg:col-span-7 flex flex-col bg-noir-850 overflow-hidden border border-noir-700">
-              <div
-                className="w-full h-80 sm:h-96 relative bg-cover bg-center"
-                style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDREC5pLTdXJO9fp7vuWhpIAppPWmY4qSTJFCXzqlUcHi3fZn0gVE-noAZzaS8SEDDLh1lZ4oFoupXQ5NuT2OZdFMFRBi9bf1rXRgjL5JVQDM5eOljrx_syn6Z_sjQ5Q3bz0ZjyL8BL1VfcSpTQSddMSSp_sHB62jK0ST79vxxgbvglq3jteejwFoma9kAsCXzziKmSSyrh11T-SMQQ4TL_pVcDo1x_MBWIVx9omsFuPYnfkoalDF-y7g')` }}
-              >
-                <div className="absolute inset-0 bg-noir-950/40" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                  <div className="p-3.5 bg-crimson text-bone rounded-full border border-crimson/40 shadow-xl">
-                    <MapPin className="w-7 h-7 text-bone" />
-                  </div>
-                  <span className="font-label-caps text-xs uppercase bg-noir-950 px-3.5 py-1.5 text-bone mt-2 border border-noir-700">
+              <div className="w-full h-80 sm:h-96 relative bg-noir-950 overflow-hidden">
+                <iframe
+                  title="Marvin Tattoos Kampala Google Map"
+                  src="https://maps.google.com/maps?q=New%20Pioneer%20Mall,%20Burton%20St,%20Kampala,%20Uganda&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                  allowFullScreen
+                />
+                <div className="absolute top-3 left-3 pointer-events-none z-10">
+                  <span className="font-label-caps text-[11px] uppercase bg-noir-950/90 backdrop-blur-md px-3 py-1.5 text-bone border border-noir-700/80 flex items-center gap-1.5 shadow-lg font-bold">
+                    <span className="w-2 h-2 rounded-full bg-crimson animate-pulse" />
                     Marvin Tattoos · Kampala Studio
                   </span>
                 </div>
