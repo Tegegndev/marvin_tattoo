@@ -147,11 +147,11 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="relative w-full min-h-[92vh] flex items-center overflow-hidden pt-28 pb-16 bg-noir-950 border-b border-noir-700/40">
         {/* Ambient Hero Background */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-30 filter grayscale contrast-125 scale-105 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-45 filter grayscale contrast-125 scale-105 pointer-events-none"
           style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-noir-950 via-noir-950/80 to-noir-950/65 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-noir-950/75 via-transparent to-noir-950 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-noir-950 via-noir-950/75 to-noir-950/55 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-noir-950/70 via-transparent to-noir-950 pointer-events-none" />
 
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
