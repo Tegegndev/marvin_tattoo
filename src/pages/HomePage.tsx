@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
-import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA } from '../data/atelierData';
+import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA, HERO_IMAGE } from '../data/atelierData';
 import { 
   Calendar, 
   ArrowRight, 
@@ -145,6 +145,14 @@ export const HomePage: React.FC<HomePageProps> = ({
     <div className="w-full flex flex-col bg-noir-950 relative">
       {/* 01. EDITORIAL HERO SECTION */}
       <section className="relative w-full min-h-[92vh] flex items-center overflow-hidden pt-28 pb-16 bg-noir-950 border-b border-noir-700/40">
+        {/* Ambient Hero Background */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale contrast-125 scale-105 pointer-events-none"
+          style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-noir-950 via-noir-950/85 to-noir-950/75 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-noir-950/80 via-transparent to-noir-950 pointer-events-none" />
+
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Left Column: Studio Editorial Copy & CTAs (7 Cols) */}
