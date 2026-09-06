@@ -131,32 +131,32 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Specializing in dark realism, solid blackwork, and custom tattoo design in Kampala, Uganda. Every piece is drawn to fit your body and tattooed to heal solid for life.
               </p>
 
-              {/* Core Features List */}
+              {/* Signature Services Pills */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
-                  <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <Sparkles className="w-3.5 h-3.5 text-crimson-light" /> Custom Placement
+                <div className="p-3.5 bg-noir-900 border border-noir-700/80 space-y-1 hover:border-slate-500 transition-colors">
+                  <span className="font-label-caps text-[11px] text-bone uppercase flex items-center gap-1.5 font-bold">
+                    <Sparkles className="w-3.5 h-3.5 text-crimson-light shrink-0" /> Realism &amp; Portraits
                   </span>
-                  <p className="font-body-sm text-[11px] text-bone-dim">
-                    Drawn directly on your body so it moves naturally with your skin.
+                  <p className="font-body-sm text-[11px] text-bone-muted leading-relaxed">
+                    High-detail black-and-grey and photo-realistic face, animal, or object pieces.
                   </p>
                 </div>
 
-                <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
-                  <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <ShieldCheck className="w-3.5 h-3.5 text-crimson-light" /> Sterile Setup
+                <div className="p-3.5 bg-noir-900 border border-noir-700/80 space-y-1 hover:border-slate-500 transition-colors">
+                  <span className="font-label-caps text-[11px] text-bone uppercase flex items-center gap-1.5 font-bold">
+                    <FileText className="w-3.5 h-3.5 text-crimson-light shrink-0" /> Minimalist &amp; Script
                   </span>
-                  <p className="font-body-sm text-[11px] text-bone-dim">
-                    100% single-use cartridges &amp; hospital-level sanitation.
+                  <p className="font-body-sm text-[11px] text-bone-muted leading-relaxed">
+                    Fine-line micro-tattoos, geometric continuous line art, and custom calligraphy.
                   </p>
                 </div>
 
-                <div className="p-3 bg-noir-900 border border-noir-700/70 space-y-1">
-                  <span className="font-label-caps text-[10px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-crimson-light" /> Healed Longevity
+                <div className="p-3.5 bg-noir-900 border border-noir-700/80 space-y-1 hover:border-slate-500 transition-colors">
+                  <span className="font-label-caps text-[11px] text-bone uppercase flex items-center gap-1.5 font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5 text-crimson-light shrink-0" /> Cover-Ups &amp; Removal
                   </span>
-                  <p className="font-body-sm text-[11px] text-bone-dim">
-                    Deep blacks and smooth greywash built to hold up over decades.
+                  <p className="font-body-sm text-[11px] text-bone-muted leading-relaxed">
+                    Bold tribal patterns, full restorations, and safe laser tattoo removal.
                   </p>
                 </div>
               </div>
