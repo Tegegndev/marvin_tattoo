@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA } from '../data/atelierData';
 import { 
@@ -82,6 +83,16 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const [reviewIndex, setReviewIndex] = useState<number>(0);
+  const [isCarouselPaused, setIsCarouselPaused] = useState<boolean>(false);
+
+  // Auto-animate reviews every 4.5 seconds (pauses on user hover)
+  useEffect(() => {
+    if (isCarouselPaused) return;
+    const interval = setInterval(() => {
+      setReviewIndex((prev) => (prev + 1) % TESTIMONIALS_DATA.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isCarouselPaused]);
 
   const nextReview = () => {
     setReviewIndex((prev) => (prev + 1) % TESTIMONIALS_DATA.length);
@@ -95,6 +106,18 @@ export const HomePage: React.FC<HomePageProps> = ({
   const visibleTestimonials = [0, 1, 2].map(
     (offset) => TESTIMONIALS_DATA[(reviewIndex + offset) % TESTIMONIALS_DATA.length]
   );
+
+  const getInitialAvatarStyle = (name: string) => {
+    const code = name.charCodeAt(0) || 0;
+    const styles = [
+      'bg-crimson/20 border-crimson/60 text-crimson-light group-hover:bg-crimson group-hover:text-bone',
+      'bg-gold/20 border-gold/60 text-gold group-hover:bg-gold group-hover:text-noir-950',
+      'bg-amber-500/20 border-amber-500/60 text-amber-300 group-hover:bg-amber-500 group-hover:text-noir-950',
+      'bg-rose-900/30 border-rose-600/60 text-rose-300 group-hover:bg-rose-700 group-hover:text-bone',
+      'bg-noir-800 border-bone/40 text-bone group-hover:bg-bone group-hover:text-noir-950'
+    ];
+    return styles[code % styles.length];
+  };
 
   const filteredPortfolio = selectedPortfolioCategory === 'all'
     ? PORTFOLIO_DATA.slice(0, 6)
@@ -514,13 +537,24 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* 05. CLIENT REVIEWS CAROUSEL */}
-      <section id="testimonials-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40">
+      <section 
+        id="testimonials-section" 
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40"
+        onMouseEnter={() => setIsCarouselPaused(true)}
+        onMouseLeave={() => setIsCarouselPaused(false)}
+      >
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-noir-700/40">
             <div className="space-y-2">
-              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] font-bold">
-                VERIFIED GOOGLE REVIEWS
-              </span>
+              <div className="inline-flex items-center gap-2">
+                <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] font-bold">
+                  VERIFIED GOOGLE REVIEWS
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-crimson animate-pulse" />
+                <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
+                  Auto-playing
+                </span>
+              </div>
               <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
                 Client Feedback &amp; Stories
               </h2>
@@ -535,14 +569,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   onClick={prevReview}
                   aria-label="Previous reviews"
-                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm"
+                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
                 >
                   <ChevronLeft className="w-5 h-5 text-bone" />
                 </button>
                 <button
                   onClick={nextReview}
                   aria-label="Next reviews"
-                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm"
+                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
                 >
                   <ChevronRight className="w-5 h-5 text-bone" />
                 </button>
@@ -550,45 +584,57 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          {/* Testimonial Cards Carousel View */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleTestimonials.map((t, idx) => (
-              <div
-                key={`${t.id}-${reviewIndex}-${idx}`}
-                className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group"
+          {/* Testimonial Cards Carousel View with Framer Motion Transition */}
+          <div className="relative overflow-hidden min-h-[300px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={reviewIndex}
+                initial={{ opacity: 0, x: 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -28 }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1 text-gold">
-                      {Array.from({ length: t.stars }).map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      ))}
+                {visibleTestimonials.map((t, idx) => (
+                  <div
+                    key={`${t.id}-${reviewIndex}-${idx}`}
+                    className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group rounded-sm shadow-xl"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1 text-amber-400">
+                          {Array.from({ length: t.stars }).map((_, i) => (
+                            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                          ))}
+                        </div>
+                        <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
+                          Verified Review
+                        </span>
+                      </div>
+                      <p className="font-body-md text-sm text-bone leading-relaxed mb-6 italic">
+                        "{t.quote}"
+                      </p>
                     </div>
-                    <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
-                      Verified Review
-                    </span>
+                    <div className="flex items-center gap-3 pt-4 border-t border-noir-700/80">
+                      {/* Initial Letter Avatar Profile */}
+                      <div
+                        className={`w-11 h-11 rounded-full border flex items-center justify-center shrink-0 font-headline-sm text-lg font-bold transition-all duration-300 shadow-inner select-none ${getInitialAvatarStyle(t.name)}`}
+                      >
+                        <span>{t.name.trim().charAt(0).toUpperCase()}</span>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-title-editorial text-sm text-bone font-bold truncate group-hover:text-gold transition-colors">
+                          {t.name}
+                        </span>
+                        <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider truncate">
+                          {t.role}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="font-body-md text-sm text-bone leading-relaxed mb-6 italic">
-                    "{t.quote}"
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 pt-4 border-t border-noir-700/80">
-                  <img
-                    src={t.avatar}
-                    alt={t.name}
-                    className="w-11 h-11 rounded-full object-cover shrink-0 border border-noir-700 group-hover:border-crimson/50 transition-colors"
-                  />
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-title-editorial text-sm text-bone font-bold truncate">
-                      {t.name}
-                    </span>
-                    <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider truncate">
-                      {t.role}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Carousel Pagination Dots */}
@@ -600,7 +646,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`h-1.5 transition-all duration-300 rounded-full ${
                   reviewIndex === idx
-                    ? 'w-8 bg-crimson'
+                    ? 'w-8 bg-crimson shadow-sm shadow-crimson/50'
                     : 'w-2 bg-noir-700 hover:bg-noir-600'
                 }`}
               />
