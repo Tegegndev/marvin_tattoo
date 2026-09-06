@@ -18,13 +18,13 @@ export default {
           700: "#2d3442", // Standard borders & dividers
           600: "#414b5d", // Highlight borders
         },
-        // Refined Deep Oxblood / Wine Crimson (sophisticated dark studio red, not overly saturated)
+        // Signature Studio Crimson Red (rich, visible, high-end gothic punch)
         crimson: {
-          DEFAULT: "#881337", // Deep wine / oxblood for primary buttons & key highlights
-          hover: "#9f1239",   // Refined rose-wine hover
-          light: "#be123c",   // Muted crimson for highlighted tags & active accents
-          dark: "#4c0519",    // Deep velvet noir crimson
-          subtle: "#88133725" // Translucent wine tint for badges
+          DEFAULT: "#991b1b", // Rich deep crimson red for primary buttons & highlights
+          hover: "#b91c1c",   // Bright crimson hover
+          light: "#ef4444",   // High-contrast vivid red for tags, badges & icons
+          dark: "#7f1d1d",    // Deep blood red
+          subtle: "rgba(153, 27, 27, 0.2)"
         },
         // Muted Zinc / Pewter / Titanium (replaces saturated gold)
         gold: {

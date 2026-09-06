@@ -110,12 +110,12 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Left Column: Studio Editorial Copy & CTAs (7 Cols) */}
             <div className="lg:col-span-7 space-y-6 text-left">
               {/* Provenance Badge */}
-              <div className="inline-flex items-center gap-3 px-3.5 py-1.5 bg-noir-850 border border-noir-700">
-                <span className="font-label-caps text-xs text-bone tracking-[0.25em] uppercase">
+              <div className="inline-flex items-center gap-3 px-3.5 py-1.5 bg-noir-850 border border-crimson/40">
+                <span className="font-label-caps text-xs text-crimson-light tracking-[0.25em] uppercase font-bold">
                   MARVIN TATTOOS
                 </span>
-                <span className="w-1 h-1 rounded-full bg-noir-600" />
-                <span className="font-label-data text-xs text-gold uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-crimson-light" />
+                <span className="font-label-data text-xs text-bone-muted uppercase tracking-wider">
                   SOHO, NEW YORK · EST. 2014
                 </span>
               </div>
