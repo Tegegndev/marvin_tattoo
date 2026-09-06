@@ -183,7 +183,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onOpenVerify();
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-2 text-red-400 text-xs font-label-caps uppercase"
+                className="flex items-center gap-2 text-gold hover:text-bone text-xs font-label-caps uppercase transition-colors"
               >
                 <ShieldAlert className="w-4 h-4" />
                 <span>Verify Official Channel</span>

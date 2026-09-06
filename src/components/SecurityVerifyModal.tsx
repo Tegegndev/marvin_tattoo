@@ -53,19 +53,19 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-noir-900 border border-red-500/40/30 shadow-2xl p-6 sm:p-8 space-y-6 z-10"
+            className="relative w-full max-w-lg bg-noir-900 border border-noir-700 p-6 sm:p-8 space-y-6 z-10"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-noir-700">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-950/40 text-red-200 border border-red-500/40/40">
-                  <ShieldAlert className="w-5 h-5" />
+                <div className="p-2 bg-noir-800 text-bone border border-noir-700">
+                  <ShieldAlert className="w-5 h-5 text-gold" />
                 </div>
                 <div>
                   <h3 className="font-title-editorial text-title-editorial uppercase text-bone">
                     Scam Check
                   </h3>
-                  <span className="font-label-caps text-[10px] text-red-400 uppercase tracking-wider">
+                  <span className="font-label-caps text-[10px] text-bone-muted uppercase tracking-wider">
                     Verify our official accounts
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
             </div>
 
             {/* Advisory Info */}
-            <div className="p-4 bg-red-950/40/20 border border-red-500/40/20 space-y-2">
+            <div className="p-4 bg-noir-850 border border-noir-700 space-y-2">
               <p className="font-body-sm text-xs text-bone leading-relaxed">
                 Scammers sometimes impersonate our artists to collect fake booking deposits. Check any handle or phone number here before you pay.
               </p>
@@ -96,7 +96,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                     setVerifyResult(null);
                   }}
                   placeholder="e.g. @marvin_atelier or +1 800 555-MARK"
-                  className="flex-1 px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-red-500/40"
+                  className="flex-1 px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-noir-600"
                 />
                 <button
                   type="submit"

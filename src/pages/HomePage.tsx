@@ -677,23 +677,23 @@ export const HomePage: React.FC<HomePageProps> = ({
       >
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Security Notice Banner */}
-          <div className="w-full p-5 sm:p-6 bg-noir-900 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-red-500/30">
+          <div className="w-full p-5 sm:p-6 bg-noir-900 text-bone flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-noir-700">
             <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-red-950/40 text-red-200 shrink-0 mt-0.5 border border-red-500/20">
+              <div className="p-2.5 bg-noir-800 text-gold shrink-0 mt-0.5 border border-noir-700">
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <div>
-                <div className="font-label-caps text-xs uppercase text-red-400 tracking-wider mb-1 font-bold">
-                  Anti-Scam Notice — Please Read
+                <div className="font-label-caps text-xs uppercase text-bone tracking-wider mb-1 font-bold">
+                  Anti-Scam Notice — Official Channels Only
                 </div>
                 <p className="font-body-sm text-xs text-bone-muted max-w-3xl leading-relaxed">
-                  Scammers sometimes impersonate Marvin Tattoos on Instagram and try to collect deposits. We never request payment through direct messages. Bookings are made only through this site or our official WhatsApp.
+                  Scammers sometimes impersonate Marvin Tattoos on Instagram to collect fake booking deposits. We never request payment through direct messages. Bookings are made only through this site or our official studio WhatsApp.
                 </p>
               </div>
             </div>
             <button
               onClick={onOpenVerify}
-              className="shrink-0 px-4 py-2 bg-red-950/40 text-red-200 font-label-caps text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-colors border border-red-500/30"
+              className="shrink-0 px-4 py-2 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-noir-750 transition-colors border border-noir-700"
             >
               Verify Channel
             </button>

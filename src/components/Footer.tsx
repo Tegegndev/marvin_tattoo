@@ -74,13 +74,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             <p className="font-body-sm text-body-sm text-bone-muted leading-relaxed">
               Saturday walk-in flash spots open at 10:45 AM, first come first served. Custom sleeves and cover-ups require a booked consultation.
             </p>
-            <div className="p-3 bg-noir-850 space-y-1 border border-red-500/40/20">
+            <div className="p-3 bg-noir-850 space-y-1 border border-noir-700">
               <button
                 onClick={onOpenVerify}
-                className="flex items-center gap-1.5 text-red-400 font-label-caps text-label-caps uppercase tracking-wider hover:underline"
+                className="flex items-center gap-1.5 text-gold font-label-caps text-label-caps uppercase tracking-wider hover:underline"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Report a Fake Account</span>
+                <span>Verify Official Accounts</span>
               </button>
               <p className="font-body-sm text-body-sm text-bone-dim leading-tight">
                 Beware of imposters asking for wire transfers. We only accept confirmed bookings through this site.

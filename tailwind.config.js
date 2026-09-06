@@ -9,31 +9,46 @@ export default {
     extend: {
       colors: {
         noir: {
-          DEFAULT: "#0a0a0c",
-          950: "#0a0a0c", // Deepest canvas black
-          900: "#111114", // Main background & cards
-          850: "#16161b", // Containers & sub-cards
-          800: "#1c1c22", // Elevated surfaces & active states
-          700: "#272730", // Standard borders & dividers
-          600: "#363642", // Highlight borders
+          DEFAULT: "#090a0c",
+          950: "#090a0c", // Deepest canvas black
+          900: "#101216", // Main background & cards
+          850: "#16191f", // Containers & sub-cards
+          800: "#1e222b", // Elevated surfaces & active states
+          750: "#252b36",
+          700: "#2d3442", // Standard borders & dividers
+          600: "#414b5d", // Highlight borders
         },
+        // Muted Warm Slate / Titanium Steel (replaces bright crimson red)
         crimson: {
-          DEFAULT: "#8f131d", // Signature atelier gothic red
-          hover: "#a61723",
-          light: "#ff6b72",
-          dark: "#570a10",
+          DEFAULT: "#334155", // Slate-700 / Titanium steel for buttons
+          hover: "#475569",   // Slate-600
+          light: "#94a3b8",   // Slate-400 / Light zinc for highlighted labels & icons
+          dark: "#1e293b",    // Slate-800
         },
+        // Muted Zinc / Pewter / Titanium (replaces saturated gold)
         gold: {
-          DEFAULT: "#c5a059", // Luxury piercing & antique brass
-          hover: "#d9b369",
-          light: "#f3d999",
-          dark: "#7c622e",
+          DEFAULT: "#94a3b8", // Muted titanium slate
+          hover: "#cbd5e1",   // Light silver
+          light: "#e2e8f0",   // Crisp titanium highlight
+          dark: "#475569",    // Dark pewter
         },
         bone: {
-          DEFAULT: "#f4f4f5", // High-contrast primary text
-          muted: "#a1a1aa",   // Secondary descriptive text
-          dim: "#71717a",     // Tertiary captions & metadata
+          DEFAULT: "#f8fafc", // High-contrast clean off-white
+          muted: "#94a3b8",   // Slate-400 secondary text
+          dim: "#64748b",     // Slate-500 tertiary text & subtle labels
         },
+        slate: {
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+        }
       },
       borderRadius: {
         "DEFAULT": "0.25rem",
