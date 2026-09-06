@@ -53,6 +53,17 @@
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
+/* Typography Helpers */
+.font-festive {
+  font-family: 'Festive', cursive, sans-serif !important;
+}
+.font-cook {
+  font-family: 'UnifrakturCook', cursive, serif !important;
+}
+.font-gothic {
+  font-family: 'UnifrakturCook', 'Pirata One', serif !important;
+}
+
 .interactive-img-zoom {
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
