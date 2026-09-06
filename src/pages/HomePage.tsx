@@ -16,7 +16,8 @@ import {
   MessageCircle,
   Sparkles,
   CheckCircle2,
-  Navigation
+  Navigation,
+  ExternalLink
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -120,8 +121,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
               </div>
 
-              {/* Bold Real Title */}
-              <h1 className="font-headline-xl text-4xl sm:text-5xl md:text-6xl text-bone leading-[1.05] tracking-tight font-bold uppercase">
+              {/* Bold Gothic Tattoo Title */}
+              <h1 className="font-gothic text-4xl sm:text-5xl md:text-6xl lg:text-[68px] text-bone leading-[1.1] tracking-wide uppercase font-normal">
                 Clean Lines. Heavy Blackwork. Made to Age Well.
               </h1>
 
@@ -179,15 +180,27 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </button>
               </div>
 
-              {/* Quick Metrics */}
-              <div className="pt-4 border-t border-noir-700/60 flex items-center gap-6 text-xs font-label-data text-bone-dim">
+              {/* Quick Metrics with Google Reviews Link */}
+              <div className="pt-4 border-t border-noir-700/60 flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-label-data text-bone-dim">
                 <div>
                   <strong className="text-bone text-sm">500+</strong> Pieces Inked
                 </div>
                 <div className="w-1 h-1 rounded-full bg-noir-700" />
-                <div>
-                  <strong className="text-bone text-sm">4.9/5.0</strong> Client Satisfaction
-                </div>
+                <a
+                  href="https://share.google/bUeThSgYN2di6xy2G"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-noir-900 hover:bg-noir-850 border border-noir-700 hover:border-slate-500 rounded transition-all text-bone hover:text-white group"
+                  title="View verified reviews on Google"
+                >
+                  <div className="flex items-center text-amber-400">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                  </div>
+                  <span>
+                    <strong className="text-bone font-bold">4.9/5.0</strong> on Google Reviews
+                  </span>
+                  <ExternalLink className="w-3 h-3 text-bone-dim group-hover:text-bone transition-colors" />
+                </a>
                 <div className="w-1 h-1 rounded-full bg-noir-700" />
                 <div>
                   <strong className="text-gold text-sm">Saturday</strong> Walk-Ins
@@ -531,6 +544,24 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Google Reviews Direct Link */}
+          <div className="flex justify-center pt-2">
+            <a
+              href="https://share.google/bUeThSgYN2di6xy2G"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-6 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone border border-noir-700 hover:border-slate-500 transition-all font-label-caps text-xs uppercase tracking-wider group rounded-sm"
+            >
+              <div className="flex items-center text-amber-400">
+                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+              </div>
+              <span>
+                Rated <strong className="text-bone font-bold">4.9 / 5.0</strong> on Google — Read All Verified Reviews
+              </span>
+              <ExternalLink className="w-4 h-4 text-bone-dim group-hover:text-bone transition-colors" />
+            </a>
           </div>
         </div>
       </section>
