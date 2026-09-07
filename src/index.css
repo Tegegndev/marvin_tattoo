@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Limelight&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Festive&family=Geist:wght@300;400;500;600;700&family=Limelight&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -56,6 +56,10 @@
 /* Typography Helpers */
 .font-limelight {
   font-family: 'Limelight', cursive, serif !important;
+}
+
+.font-festive {
+  font-family: 'Festive', cursive !important;
 }
 
 .interactive-img-zoom {

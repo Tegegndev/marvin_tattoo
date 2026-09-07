@@ -86,6 +86,7 @@ export default {
         "headline-xl-mobile": ["'Limelight'", "cursive", "serif"],
         "headline-xl": ["'Limelight'", "cursive", "serif"],
         "limelight": ["'Limelight'", "cursive", "serif"],
+        "festive": ["'Festive'", "cursive"],
         "label-data": ["'Geist'", "sans-serif"],
         "headline-lg-mobile": ["'Limelight'", "cursive", "serif"],
         "headline-sm": ["'Limelight'", "cursive", "serif"],
