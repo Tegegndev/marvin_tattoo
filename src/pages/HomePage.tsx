@@ -8,6 +8,7 @@ import {
   fetchPortfolioPieces,
   fetchServices,
   fetchTestimonials,
+  fetchProducts,
   DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
 
@@ -71,6 +72,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
   const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
   const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>(TESTIMONIALS_DATA);
+  const [productsList, setProductsList] = useState<ProductItem[]>(PRODUCTS_DATA);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +81,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
     fetchServices().then(setServicesList).catch(() => {});
     fetchTestimonials().then(setTestimonialsList).catch(() => {});
+    fetchProducts().then(setProductsList).catch(() => {});
   }, []);
 
   const scrollLeft = () => {
@@ -494,7 +497,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Equipment Grid */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {PRODUCTS_DATA.slice(0, 2).map((prod) => (
+              {productsList.slice(0, 2).map((prod) => (
                 <div
                   key={prod.id}
                   className="bg-noir-850 p-5 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
@@ -518,7 +521,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </p>
                     <div className="flex items-center justify-between pt-3 border-t border-noir-700">
                       <span className="font-label-data text-sm text-bone font-bold">
-                        ${prod.price.toFixed(2)}
+                        {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
                       </span>
                       <button
                         onClick={() => onAddToCart(prod)}
