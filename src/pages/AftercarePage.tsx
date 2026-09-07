@@ -250,7 +250,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate }) => {
               </div>
 
               <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-bone font-bold tracking-tight leading-[1.1]">
-                Aftercare <span className="text-crimson-light italic font-serif">Guide</span>
+                Aftercare <span className="text-crimson-light">Guide</span>
               </h1>
 
               <p className="font-body-md text-base md:text-lg text-bone-muted leading-relaxed max-w-2xl">
@@ -403,7 +403,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate }) => {
                     <h3 className="text-2xl md:text-3xl font-bold text-bone">
                       {activeStage.title}
                     </h3>
-                    <p className="text-sm text-bone-muted mt-1 font-serif italic">
+                    <p className="text-sm text-bone-muted mt-1">
                       {activeStage.subtitle}
                     </p>
                   </div>
@@ -737,7 +737,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate }) => {
           </div>
 
           <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-bone font-bold tracking-tight">
-            Ready to Embrace the <span className="text-crimson-light italic font-serif">Darkness?</span>
+            Ready to Embrace the <span className="text-crimson-light">Darkness?</span>
           </h2>
 
           <p className="font-body-md text-base md:text-lg text-bone-muted leading-relaxed max-w-2xl mx-auto">
