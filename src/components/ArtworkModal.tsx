@@ -1,7 +1,7 @@
 import React from 'react';
 import { PortfolioPiece } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Clock, Palette, Layers, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Icons8 } from './Icons8';
 
 interface ArtworkModalProps {
   piece: PortfolioPiece | null;
@@ -41,7 +41,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
               className="absolute top-4 right-4 z-20 p-2 bg-noir-950/80 hover:bg-crimson text-bone hover:text-white transition-colors border border-noir-700/60"
               aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <Icons8 name="times" size={18} />
             </button>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[550px]">
@@ -65,7 +65,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
                 </div>
 
                 <div className="absolute bottom-4 left-4 hidden lg:flex items-center gap-2 px-3 py-1.5 bg-noir-950/90 text-bone font-label-data text-xs uppercase border border-noir-700">
-                  <ShieldCheck className="w-3.5 h-3.5 text-crimson-light" />
+                  <Icons8 name="shield-alt" size={14} className="text-crimson-light" />
                   <span>Authenticated Studio Work</span>
                 </div>
               </div>
@@ -90,7 +90,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-bone-dim uppercase flex items-center gap-1">
-                        <User className="w-3 h-3 text-crimson-light" /> Artist
+                        <Icons8 name="user" size={12} className="text-crimson-light" /> Artist
                       </span>
                       <span className="font-label-data text-xs text-bone uppercase block font-semibold">
                         {piece.artist}
@@ -99,7 +99,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
 
                     <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-bone-dim uppercase flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-gold" /> Duration
+                        <Icons8 name="clock" size={12} className="text-gold" /> Duration
                       </span>
                       <span className="font-label-data text-xs text-gold uppercase block font-semibold">
                         {piece.duration || 'Custom Sessions'}
@@ -108,7 +108,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
 
                     <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-bone-dim uppercase flex items-center gap-1">
-                        <Palette className="w-3 h-3 text-crimson-light" /> Pigment
+                        <Icons8 name="paint-brush" size={12} className="text-crimson-light" /> Pigment
                       </span>
                       <span className="font-label-data text-xs text-bone uppercase block font-semibold">
                         {piece.pigment || 'Dynamic Carbon Deep'}
@@ -117,7 +117,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
 
                     <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1">
                       <span className="font-label-caps text-[9px] text-bone-dim uppercase flex items-center gap-1">
-                        <Layers className="w-3 h-3 text-gold" /> Placement
+                        <Icons8 name="layer-group" size={12} className="text-gold" /> Placement
                       </span>
                       <span className="font-label-data text-xs text-bone uppercase block font-semibold truncate">
                         {piece.morphology || piece.zone}
@@ -136,7 +136,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({
                     className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30"
                   >
                     <span>Book Similar Piece</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <Icons8 name="arrow-right" size={14} />
                   </button>
 
                   <div className="text-center">

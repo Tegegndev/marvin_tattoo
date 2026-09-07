@@ -2,28 +2,7 @@ import React, { useState } from 'react';
 import { PageView } from '../types';
 import { HERO_IMAGE, MARVIN_DIRECT_PHONE, WHATSAPP_NUMBER } from '../data/atelierData';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ShieldCheck,
-  Droplets,
-  Sun,
-  Waves,
-  Sparkles,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Calendar,
-  MessageCircle,
-  Phone,
-  Flame,
-  Bandage,
-  Hand,
-  Eye,
-  Check,
-  ArrowRight,
-  Award,
-  PackageCheck
-} from 'lucide-react';
+import { Icons8 } from '../components/Icons8';
 
 interface AftercarePageProps {
   onNavigate: (page: PageView) => void;
@@ -39,7 +18,7 @@ interface TimelineStage {
   feel: string;
   ritual: string[];
   warning: string;
-  icon: React.ElementType;
+  icon: string;
 }
 
 const TIMELINE_STAGES: TimelineStage[] = [
@@ -58,7 +37,7 @@ const TIMELINE_STAGES: TimelineStage[] = [
       'Let breathe unbandaged unless instructed otherwise.'
     ],
     warning: 'Do not re-wrap with plastic cling film once removed unless specifically directed.',
-    icon: Bandage
+    icon: 'first-aid'
   },
   {
     dayRange: 'Days 2 – 4',
@@ -74,7 +53,7 @@ const TIMELINE_STAGES: TimelineStage[] = [
       'Wear loose-fitting, soft cotton clothing that does not rub against the piece.'
     ],
     warning: 'Never apply petroleum jelly or thick ointments that suffocate the pores.',
-    icon: Droplets
+    icon: 'tint'
   },
   {
     dayRange: 'Days 5 – 14',
@@ -90,7 +69,7 @@ const TIMELINE_STAGES: TimelineStage[] = [
       'Take quick showers only; avoid hot steam directly on the piece.'
     ],
     warning: 'Picking scabs or peeling flakes pulls pigment out of the dermis, creating permanent light patches.',
-    icon: Hand
+    icon: 'hand-paper'
   },
   {
     dayRange: 'Weeks 3 – 12',
@@ -106,7 +85,7 @@ const TIMELINE_STAGES: TimelineStage[] = [
       'Inspect your piece — claim your free 1-year touch-up if any detail needs balancing.'
     ],
     warning: 'Unprotected UV exposure breaks down dark pigment particles permanently.',
-    icon: Sun
+    icon: 'sun'
   }
 ];
 
@@ -117,7 +96,7 @@ const STEPS_DATA = [
     tagline: 'Initial Protection',
     description: "Leave the initial wrap in place for 2–4 hours. I'll specify the exact duration based on your piece.",
     details: 'The wrap creates a sterile barrier while the fresh micro-punctures begin coagulation. If medical adhesive film (SecondSkin) was applied, Marvin will advise leaving it on for 3 to 5 days.',
-    icon: Bandage,
+    icon: 'first-aid',
     color: 'crimson'
   },
   {
@@ -126,7 +105,7 @@ const STEPS_DATA = [
     tagline: 'Lukewarm & Fragrance-Free',
     description: 'Wash with lukewarm water and fragrance-free antibacterial soap. Pat dry with a clean paper towel.',
     details: 'Use only your clean fingertips in gentle circular motions to remove residual lymph and dried blood. Never use sponges, loofahs, or bath towels which harbor bacteria.',
-    icon: Droplets,
+    icon: 'tint',
     color: 'gold'
   },
   {
@@ -135,7 +114,7 @@ const STEPS_DATA = [
     tagline: 'Thin & Breathable',
     description: "Apply a thin layer of recommended aftercare balm 2–3 times daily. Don't oversaturate.",
     details: 'Less is more: the skin needs oxygen to heal properly. A pea-sized dab warmed between clean fingers is enough for a large forearm or collarbone piece.',
-    icon: Sparkles,
+    icon: 'magic',
     color: 'emerald'
   },
   {
@@ -144,7 +123,7 @@ const STEPS_DATA = [
     tagline: 'Zero Scratching or Picking',
     description: 'Peeling and flaking is normal healing. Do not pick, scratch, or pull at anything.',
     details: 'As old epidermal cells shed, pieces of dark flaking skin will detach on their own. Pulling flakes forcibly pulls embedded ink out of the dermis and creates scar tissue.',
-    icon: Hand,
+    icon: 'hand-paper',
     color: 'crimson'
   },
   {
@@ -153,7 +132,7 @@ const STEPS_DATA = [
     tagline: '3 Weeks Minimum & SPF 30+',
     description: 'Keep your tattoo out of direct sunlight for at least 3 weeks. Once healed, always apply SPF 30+.',
     details: 'UV rays break down organic and carbon black pigments. Direct sunlight on healing skin can cause intense burning, blistering, and immediate fading.',
-    icon: Sun,
+    icon: 'sun',
     color: 'gold'
   },
   {
@@ -162,7 +141,7 @@ const STEPS_DATA = [
     tagline: 'Showers Only — No Soaking',
     description: 'No pools, ocean, hot tubs, baths, or saunas for at least 3 weeks. Showers are fine.',
     details: 'Stagnant water in pools, hot tubs, or lakes contains bacteria that enter fresh wounds. Submersion also softens scabs prematurely, leading to ink loss.',
-    icon: Waves,
+    icon: 'water',
     color: 'crimson'
   }
 ];
@@ -222,7 +201,7 @@ const RED_FLAGS = [
   }
 ];
 
-export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpenWhatsApp }) => {
+export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate }) => {
   const [activeStageIndex, setActiveStageIndex] = useState<number>(0);
   const [checkedDos, setCheckedDos] = useState<Record<number, boolean>>({});
 
@@ -238,13 +217,12 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
       <section className="relative w-full overflow-hidden bg-noir-950 py-16 md:py-24 border-b border-noir-700/40">
         {/* Background Ambient Imagery */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-30 filter grayscale contrast-125 scale-105 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-30 filter grayscale contrast-125 pointer-events-none scale-105"
           style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-noir-950/80 via-noir-950/60 to-noir-950 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-          {/* Section Breadcrumb Tag */}
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-noir-700/40">
             <div className="flex items-center gap-3">
               <span className="font-label-caps text-xs text-crimson-light tracking-[0.25em] uppercase font-bold">
@@ -265,17 +243,17 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
             {/* Hero Left Column */}
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-noir-900 border border-crimson/30 rounded-sm">
-                <Flame className="w-4 h-4 text-crimson-light animate-pulse" />
+                <Icons8 name="fire" size={16} className="text-crimson-light animate-pulse" />
                 <span className="font-label-caps text-xs text-bone uppercase tracking-widest">
                   Proper Care for Dark Art
                 </span>
               </div>
 
-              <h1 className="font-heading-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-bone font-bold tracking-tight leading-[1.1]">
+              <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-bone font-bold tracking-tight leading-[1.1]">
                 Aftercare <span className="text-crimson-light italic font-serif">Guide</span>
               </h1>
 
-              <p className="font-body text-base md:text-lg text-bone-muted leading-relaxed max-w-2xl">
+              <p className="font-body-md text-base md:text-lg text-bone-muted leading-relaxed max-w-2xl">
                 Your skin is a living canvas. The permanence, deep black values, and razor-sharp linework
                 of your tattoo depend heavily on your discipline during the next few weeks. Follow this exact ritual.
               </p>
@@ -288,14 +266,14 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-3 bg-noir-900 hover:bg-noir-850 text-bone border border-noir-700 font-label-caps text-xs uppercase tracking-wider transition-all rounded-sm"
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
                   <span>Aftercare SOS WhatsApp</span>
                 </a>
                 <button
                   onClick={() => onNavigate('booking')}
                   className="inline-flex items-center gap-2 px-5 py-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs font-bold uppercase tracking-widest transition-all rounded-sm shadow-md"
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Icons8 name="calendar-check" size={16} />
                   <span>Book Consultation</span>
                 </button>
               </div>
@@ -308,7 +286,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                 
                 <div className="flex items-center justify-between pb-5 border-b border-noir-700/60 mb-6">
                   <div className="flex items-center gap-2.5">
-                    <Clock className="w-5 h-5 text-gold" />
+                    <Icons8 name="clock" size={20} className="text-gold" />
                     <span className="font-label-caps text-xs uppercase tracking-widest text-bone font-bold">
                       Healing Timeline
                     </span>
@@ -318,50 +296,31 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                   </span>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-noir-800 border border-slate-700 flex items-center justify-center shrink-0 text-crimson-light font-bold text-sm">
-                      01
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-bone font-label-caps uppercase tracking-wide">
-                        Surface Healing
-                      </div>
-                      <div className="text-xl font-bold text-bone mt-0.5">
-                        2 – 4 <span className="text-crimson-light text-sm font-normal">Weeks</span>
-                      </div>
-                      <p className="text-xs text-bone-muted mt-1 leading-relaxed">
-                        Epidermal layer closes, flaking subsides, and risk of superficial infection drops dramatically.
-                      </p>
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between text-xs font-label-data p-3 bg-noir-950 rounded border border-noir-800">
+                    <span className="text-bone-muted uppercase">Initial Wrap Duration:</span>
+                    <span className="text-crimson-light font-bold">2 — 4 Hours</span>
                   </div>
+                  <div className="flex items-center justify-between text-xs font-label-data p-3 bg-noir-950 rounded border border-noir-800">
+                    <span className="text-bone-muted uppercase">Active Flaking Phase:</span>
+                    <span className="text-gold font-bold">Days 5 — 14</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs font-label-data p-3 bg-noir-950 rounded border border-noir-800">
+                    <span className="text-bone-muted uppercase">Deep Dermal Healing:</span>
+                    <span className="text-emerald-400 font-bold">Weeks 3 — 12</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs font-label-data p-3 bg-noir-950 rounded border border-noir-800">
+                    <span className="text-bone-muted uppercase">Touch-Up Warranty:</span>
+                    <span className="text-bone font-bold">1 Full Year Free</span>
+                  </div>
+                </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-noir-800 border border-slate-700 flex items-center justify-center shrink-0 text-gold font-bold text-sm">
-                      02
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-bone font-label-caps uppercase tracking-wide">
-                        Full Dermal Recovery
-                      </div>
-                      <div className="text-xl font-bold text-bone mt-0.5">
-                        2 – 3 <span className="text-gold text-sm font-normal">Months</span>
-                      </div>
-                      <p className="text-xs text-bone-muted mt-1 leading-relaxed">
-                        Deep skin collagen reforms and pigment stabilizes completely into its true dark depth.
-                      </p>
-                    </div>
+                <div className="mt-6 pt-5 border-t border-noir-700/60 flex items-center justify-between text-xs text-bone-muted font-body-sm">
+                  <div className="flex items-center gap-1.5">
+                    <Icons8 name="award" size={16} className="text-gold shrink-0" />
+                    <span>Kampala Atelier Standard</span>
                   </div>
-
-                  <div className="p-4 bg-noir-950/80 border border-noir-700/80 rounded-lg space-y-2">
-                    <div className="flex items-center gap-2 text-gold font-label-caps text-xs uppercase tracking-wider font-bold">
-                      <Award className="w-4 h-4 text-gold shrink-0" />
-                      <span>The Atelier Promise</span>
-                    </div>
-                    <p className="text-xs text-bone-muted leading-relaxed">
-                      I stand behind my dark art. <strong className="text-bone">Free touch-ups within the first year</strong> once your tattoo is fully healed.
-                    </p>
-                  </div>
+                  <span className="text-bone font-bold font-label-data">EST. 2014</span>
                 </div>
               </div>
             </div>
@@ -369,15 +328,15 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
         </div>
       </section>
 
-      {/* 2. Interactive Healing Timeline & Stage Explorer */}
-      <section className="w-full py-16 md:py-20 bg-noir-900 border-b border-noir-700/40">
+      {/* 2. Interactive 4-Phase Recovery Timeline */}
+      <section className="w-full py-16 md:py-24 bg-noir-900 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-noir-700/40">
             <div>
-              <div className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold mb-2">
-                DAY-BY-DAY STAGES
-              </div>
-              <h2 className="font-heading-lg text-2xl md:text-4xl text-bone font-bold">
+              <span className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold block mb-2">
+                FOUR-PHASE TIMELINE
+              </span>
+              <h2 className="font-headline-lg text-2xl md:text-4xl text-bone font-bold">
                 Healing Stage Explorer
               </h2>
             </div>
@@ -389,7 +348,6 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
           {/* Milestone Tabs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
             {TIMELINE_STAGES.map((stage, idx) => {
-              const Icon = stage.icon;
               const isActive = activeStageIndex === idx;
               return (
                 <button
@@ -403,7 +361,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className={`p-2 rounded-lg ${isActive ? 'bg-crimson/20 text-crimson-light' : 'bg-noir-800 text-bone-dim'}`}>
-                      <Icon className="w-4 h-4" />
+                      <Icons8 name={stage.icon} size={16} />
                     </div>
                     <span className={`text-[10px] font-label-data uppercase tracking-wider ${isActive ? 'text-crimson-light font-bold' : 'text-bone-dim'}`}>
                       Stage 0{idx + 1}
@@ -453,7 +411,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                   <div className="space-y-4">
                     <div className="p-4 bg-noir-900 rounded-lg border border-noir-800 space-y-1.5">
                       <div className="flex items-center gap-2 text-xs font-label-caps uppercase tracking-wider text-slate-300 font-bold">
-                        <Eye className="w-3.5 h-3.5 text-gold" />
+                        <Icons8 name="eye" size={14} className="text-gold" />
                         <span>Visual Appearance</span>
                       </div>
                       <p className="text-xs text-bone-muted leading-relaxed">
@@ -463,7 +421,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
 
                     <div className="p-4 bg-noir-900 rounded-lg border border-noir-800 space-y-1.5">
                       <div className="flex items-center gap-2 text-xs font-label-caps uppercase tracking-wider text-slate-300 font-bold">
-                        <Hand className="w-3.5 h-3.5 text-crimson-light" />
+                        <Icons8 name="hand-paper" size={14} className="text-crimson-light" />
                         <span>Tactile Sensation</span>
                       </div>
                       <p className="text-xs text-bone-muted leading-relaxed">
@@ -477,7 +435,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                 <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
                   <div>
                     <h4 className="font-label-caps text-xs text-bone uppercase tracking-widest mb-4 flex items-center gap-2 font-bold">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      <Icons8 name="shield-alt" size={16} className="text-emerald-400" />
                       <span>Mandatory Care Ritual for this Phase</span>
                     </h4>
 
@@ -500,7 +458,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
 
                   {/* Warning Notice */}
                   <div className="p-4 bg-crimson/10 border border-crimson/30 rounded-lg flex items-start gap-3">
-                    <AlertTriangle className="w-4 h-4 text-crimson-light shrink-0 mt-0.5" />
+                    <Icons8 name="exclamation-triangle" size={16} className="text-crimson-light shrink-0 mt-0.5" />
                     <div className="text-xs text-bone-dim leading-relaxed">
                       <strong className="text-crimson-light font-label-caps uppercase tracking-wider block mb-0.5">
                         Crucial Warning:
@@ -522,55 +480,52 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
             <div className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold">
               STEP-BY-STEP INSTRUCTIONS
             </div>
-            <h2 className="font-heading-xl text-3xl md:text-4xl lg:text-5xl text-bone font-bold">
+            <h2 className="font-headline-xl text-3xl md:text-4xl lg:text-5xl text-bone font-bold">
               Proper Care for Dark Art
             </h2>
-            <p className="font-body text-sm md:text-base text-bone-muted">
+            <p className="font-body-md text-sm md:text-base text-bone-muted">
               Six immutable rules designed specifically to preserve rich black saturation, micro-detail linework, and sterile skin restoration.
             </p>
           </div>
 
           {/* 6 Step Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {STEPS_DATA.map((step) => {
-              const Icon = step.icon;
-              return (
-                <div
-                  key={step.number}
-                  className="bg-noir-900 border border-noir-700/80 hover:border-slate-600 rounded-xl p-6 md:p-7 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group relative overflow-hidden"
-                >
-                  {/* Step Accent Glow */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-noir-800/60 rounded-full blur-xl pointer-events-none group-hover:bg-crimson/10 transition-colors" />
+            {STEPS_DATA.map((step) => (
+              <div
+                key={step.number}
+                className="bg-noir-900 border border-noir-700/80 hover:border-slate-600 rounded-xl p-6 md:p-7 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group relative overflow-hidden"
+              >
+                {/* Step Accent Glow */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-noir-800/60 rounded-full blur-xl pointer-events-none group-hover:bg-crimson/10 transition-colors" />
 
-                  <div>
-                    <div className="flex items-center justify-between mb-5">
-                      <span className="font-label-data text-2xl font-bold text-slate-500 group-hover:text-crimson-light transition-colors">
-                        {step.number}
-                      </span>
-                      <div className="p-3 bg-noir-950 rounded-lg border border-noir-800 text-bone group-hover:border-slate-600 transition-colors">
-                        <Icon className="w-5 h-5" />
-                      </div>
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="font-label-data text-2xl font-bold text-slate-500 group-hover:text-crimson-light transition-colors">
+                      {step.number}
+                    </span>
+                    <div className="p-3 bg-noir-950 rounded-lg border border-noir-800 text-bone group-hover:border-slate-600 transition-colors">
+                      <Icons8 name={step.icon} size={20} />
                     </div>
-
-                    <div className="font-label-caps text-[11px] text-crimson-light uppercase tracking-wider font-bold mb-1">
-                      {step.tagline}
-                    </div>
-                    <h3 className="text-xl font-bold text-bone mb-3">
-                      {step.title}
-                    </h3>
-                    <p className="text-xs md:text-sm text-bone-muted leading-relaxed mb-4">
-                      {step.description}
-                    </p>
                   </div>
 
-                  <div className="pt-4 border-t border-noir-800/80">
-                    <p className="text-[11px] text-bone-dim leading-relaxed italic">
-                      {step.details}
-                    </p>
+                  <div className="font-label-caps text-[11px] text-crimson-light uppercase tracking-wider font-bold mb-1">
+                    {step.tagline}
                   </div>
+                  <h3 className="text-xl font-bold text-bone mb-3">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-bone-muted leading-relaxed mb-4">
+                    {step.description}
+                  </p>
                 </div>
-              );
-            })}
+
+                <div className="pt-4 border-t border-noir-800/80">
+                  <p className="text-[11px] text-bone-dim leading-relaxed italic">
+                    {step.details}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -582,7 +537,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
             <div className="font-label-caps text-xs text-gold uppercase tracking-[0.25em] font-bold">
               QUICK REFERENCE
             </div>
-            <h2 className="font-heading-lg text-3xl md:text-4xl text-bone font-bold">
+            <h2 className="font-headline-lg text-3xl md:text-4xl text-bone font-bold">
               Do&apos;s &amp; Don&apos;ts
             </h2>
             <p className="text-sm text-bone-muted">
@@ -598,7 +553,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
               <div className="flex items-center justify-between pb-4 border-b border-emerald-500/20 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-emerald-950 border border-emerald-500/40 rounded-lg text-emerald-400">
-                    <CheckCircle2 className="w-5 h-5" />
+                    <Icons8 name="check-circle" size={20} />
                   </div>
                   <div>
                     <h3 className="font-label-caps text-sm uppercase tracking-widest text-emerald-400 font-bold">
@@ -624,7 +579,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                         ? 'bg-emerald-500 border-emerald-500 text-noir-950'
                         : 'border-emerald-500/40 text-transparent group-hover:border-emerald-400'
                     }`}>
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      <Icons8 name="check" size={14} className="stroke-[3]" />
                     </div>
                     <span className={`text-xs md:text-sm leading-relaxed transition-colors ${
                       checkedDos[idx] ? 'text-bone-muted line-through' : 'text-bone'
@@ -643,7 +598,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
               <div className="flex items-center justify-between pb-4 border-b border-crimson/20 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-crimson/20 border border-crimson/40 rounded-lg text-crimson-light">
-                    <XCircle className="w-5 h-5" />
+                    <Icons8 name="times-circle" size={20} />
                   </div>
                   <div>
                     <h3 className="font-label-caps text-sm uppercase tracking-widest text-crimson-light font-bold">
@@ -664,7 +619,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                     className="flex items-start gap-3 p-3.5 bg-noir-900/80 rounded-lg border border-noir-800"
                   >
                     <div className="w-5 h-5 rounded-full bg-crimson/20 border border-crimson/40 text-crimson-light flex items-center justify-center shrink-0 mt-0.5">
-                      <XCircle className="w-3.5 h-3.5" />
+                      <Icons8 name="times" size={14} />
                     </div>
                     <span className="text-xs md:text-sm text-bone-dim leading-relaxed">
                       {item}
@@ -686,10 +641,10 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
               <div className="lg:col-span-8 space-y-3">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-crimson/20 border border-crimson/40 text-crimson-light font-label-caps text-xs uppercase tracking-wider rounded">
-                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <Icons8 name="exclamation-triangle" size={14} />
                   <span>Clinical Safety Standard</span>
                 </div>
-                <h2 className="font-heading-lg text-2xl md:text-4xl text-bone font-bold">
+                <h2 className="font-headline-lg text-2xl md:text-4xl text-bone font-bold">
                   When to Contact Me
                 </h2>
                 <p className="text-sm md:text-base text-bone-muted leading-relaxed">
@@ -702,7 +657,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                   href={`tel:${MARVIN_DIRECT_PHONE}`}
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-noir-950 hover:bg-noir-850 text-bone border border-noir-700 font-label-caps text-xs uppercase tracking-wider rounded-sm transition-colors"
                 >
-                  <Phone className="w-4 h-4 text-crimson-light" />
+                  <Icons8 name="phone" size={16} className="text-crimson-light" />
                   <span>Call {MARVIN_DIRECT_PHONE}</span>
                 </a>
                 <a
@@ -711,7 +666,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-600/40 font-label-caps text-xs uppercase tracking-wider rounded-sm transition-colors"
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
                   <span>Urgent WhatsApp Alert</span>
                 </a>
               </div>
@@ -728,7 +683,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                     <span className="text-[10px] font-label-caps uppercase tracking-wider px-2 py-0.5 bg-crimson/10 text-crimson-light rounded border border-crimson/30">
                       {flag.severity}
                     </span>
-                    <AlertTriangle className="w-4 h-4 text-crimson-light" />
+                    <Icons8 name="exclamation-triangle" size={16} className="text-crimson-light" />
                   </div>
                   <h4 className="text-sm font-bold text-bone font-label-caps uppercase tracking-wide">
                     {flag.title}
@@ -737,7 +692,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                     {flag.description}
                   </p>
                   <div className="pt-2 text-[11px] text-slate-300 font-semibold flex items-center gap-1">
-                    <ArrowRight className="w-3 h-3 text-crimson-light" />
+                    <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
                     <span>{flag.action}</span>
                   </div>
                 </div>
@@ -750,7 +705,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
                     <span className="text-[10px] font-label-caps uppercase tracking-wider px-2 py-0.5 bg-gold/10 text-gold rounded border border-gold/30">
                       Artist Guarantee
                     </span>
-                    <Award className="w-4 h-4 text-gold" />
+                    <Icons8 name="award" size={16} className="text-gold" />
                   </div>
                   <h4 className="text-sm font-bold text-bone font-label-caps uppercase tracking-wide">
                     Free 1-Year Touch-Ups
@@ -775,17 +730,17 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
 
         <div className="max-w-4xl mx-auto px-4 md:px-8 relative z-10 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-noir-900 border border-crimson/40 rounded-full shadow-lg">
-            <Flame className="w-4 h-4 text-crimson-light animate-pulse" />
+            <Icons8 name="fire" size={16} className="text-crimson-light animate-pulse" />
             <span className="font-label-caps text-xs text-bone uppercase tracking-widest font-bold">
               BESPOKE DARK ARTISTRY · KAMPALA
             </span>
           </div>
 
-          <h2 className="font-heading-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-bone font-bold tracking-tight">
+          <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-bone font-bold tracking-tight">
             Ready to Embrace the <span className="text-crimson-light italic font-serif">Darkness?</span>
           </h2>
 
-          <p className="font-body text-base md:text-lg text-bone-muted leading-relaxed max-w-2xl mx-auto">
+          <p className="font-body-md text-base md:text-lg text-bone-muted leading-relaxed max-w-2xl mx-auto">
             Book a consultation and let&apos;s create something beautifully twisted. I work exclusively with dark, Gothic, and macabre themes.
           </p>
 
@@ -794,7 +749,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
               onClick={() => onNavigate('booking')}
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs font-bold uppercase tracking-widest transition-all rounded-sm shadow-xl hover:shadow-crimson/30 hover:-translate-y-0.5"
             >
-              <Calendar className="w-4 h-4" />
+              <Icons8 name="calendar-check" size={16} />
               <span>Book Your Consultation</span>
             </button>
 
@@ -803,14 +758,14 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate, onOpen
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-noir-900 hover:bg-noir-850 text-bone border border-noir-700 font-label-caps text-xs uppercase tracking-wider transition-all rounded-sm hover:-translate-y-0.5"
             >
               <span>Explore Portfolio</span>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
+              <Icons8 name="arrow-right" size={16} className="text-slate-400" />
             </button>
 
             <button
               onClick={() => onNavigate('equipment')}
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-noir-900 hover:bg-noir-850 text-gold border border-gold/40 font-label-caps text-xs uppercase tracking-wider transition-all rounded-sm hover:-translate-y-0.5"
             >
-              <PackageCheck className="w-4 h-4" />
+              <Icons8 name="box-open" size={16} />
               <span>Shop Aftercare Balm</span>
             </button>
           </div>

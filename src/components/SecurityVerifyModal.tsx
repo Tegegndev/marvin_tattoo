@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShieldAlert, CheckCircle2, XCircle, Search } from 'lucide-react';
+import { Icons8 } from './Icons8';
 
 interface SecurityVerifyModalProps {
   isOpen: boolean;
@@ -19,10 +19,10 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
     'marvin_atelier',
     '@marvintattoos.official',
     'marvintattoos.official',
-    '+18005556275',
-    '18005556275',
-    '+1 800 555-MARK',
-    '8005556275',
+    '+256705748774',
+    '256705748774',
+    '+256 705 748774',
+    '0705748774',
     'marvintattoos.com',
     'marvin_tattoo'
   ];
@@ -59,7 +59,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-noir-700">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-noir-800 text-bone border border-noir-700">
-                  <ShieldAlert className="w-5 h-5 text-gold" />
+                  <Icons8 name="shield-alt" size={20} className="text-gold" />
                 </div>
                 <div>
                   <h3 className="font-title-editorial text-title-editorial uppercase text-bone">
@@ -71,7 +71,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                 </div>
               </div>
               <button onClick={onClose} className="p-1 text-bone-dim hover:text-bone">
-                <X className="w-5 h-5" />
+                <Icons8 name="times" size={18} />
               </button>
             </div>
 
@@ -95,14 +95,14 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                     setInputHandle(e.target.value);
                     setVerifyResult(null);
                   }}
-                  placeholder="e.g. @marvin_atelier or +1 800 555-MARK"
+                  placeholder="e.g. @marvin_atelier or +256 705 748774"
                   className="flex-1 px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-noir-600"
                 />
                 <button
                   type="submit"
                   className="px-4 py-2 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider flex items-center gap-1.5 border border-noir-700"
                 >
-                  <Search className="w-4 h-4" />
+                  <Icons8 name="search" size={14} />
                   <span>Verify</span>
                 </button>
               </div>
@@ -115,7 +115,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="p-4 bg-emerald-950/40 border border-emerald-500/40 flex items-start gap-3"
               >
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <Icons8 name="check-circle" size={20} className="text-emerald-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs text-emerald-400 uppercase tracking-wider font-bold block">
                     Verified — Official Account
@@ -131,9 +131,9 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-red-950/40/40 border border-red-500/40/50 flex items-start gap-3"
+                className="p-4 bg-red-950/40 border border-red-500/40 flex items-start gap-3"
               >
-                <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                <Icons8 name="times-circle" size={20} className="text-red-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <span className="font-label-caps text-xs text-red-400 uppercase tracking-wider font-bold block">
                     Warning — Not an Official Account
@@ -161,7 +161,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                 </div>
                 <div className="flex justify-between p-2 bg-noir-850">
                   <span className="text-bone">WhatsApp / Phone:</span>
-                  <span className="text-gold font-bold">+1 (800) 555-MARK</span>
+                  <span className="text-gold font-bold">+256 705 748774</span>
                 </div>
               </div>
             </div>

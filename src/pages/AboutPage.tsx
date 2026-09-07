@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageView } from '../types';
 import { ARTISTS_DATA, HERO_IMAGE } from '../data/atelierData';
-import { ShieldCheck, Award, HeartHandshake, Syringe, Sparkles, MessageCircle } from 'lucide-react';
+import { Icons8 } from '../components/Icons8';
 
 interface AboutPageProps {
   onNavigate: (page: PageView) => void;
@@ -49,7 +49,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                 {/* Floating Top Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                   <span className="px-3 py-1 bg-noir-950/80 backdrop-blur-md text-gold font-label-caps text-xs flex items-center gap-1.5 border border-gold/30">
-                    <Award className="w-3.5 h-3.5" /> FOUNDER &amp; RESIDENT ARTIST
+                    <Icons8 name="award" size={14} /> FOUNDER &amp; RESIDENT ARTIST
                   </span>
                   <span className="px-3 py-1 bg-crimson/90 text-bone font-label-caps text-xs border border-crimson/30">
                     STERILE PROTOCOL CERTIFIED
@@ -78,7 +78,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               <div className="bg-noir-850 p-6 md:p-8 rounded-xl flex flex-col justify-between h-full border border-noir-700">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Syringe className="w-4 h-4 text-crimson-light" />
+                    <Icons8 name="syringe" size={16} className="text-crimson-light" />
                     <span className="font-label-caps text-xs text-crimson-light tracking-wider uppercase">
                       THE FOUNDER
                     </span>
@@ -126,7 +126,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               <div className="bg-noir-800 p-5 rounded-xl flex items-center justify-between gap-4 border border-noir-700">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold flex items-center justify-center text-gold shrink-0">
-                    <MessageCircle className="w-5 h-5" />
+                    <Icons8 name="whatsapp" size={20} className="text-emerald-400" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-title-editorial text-sm uppercase text-bone font-bold">
@@ -170,7 +170,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
             {[
               {
                 num: '01',
-                icon: <ShieldCheck className="w-6 h-6 text-bone-muted" />,
+                icon: <Icons8 name="shield-alt" size={24} className="text-bone-muted" />,
                 title: 'Clean, Every Time',
                 desc: 'Class B autoclave sterilization, single-use needle cartridges, and fresh protective barriers on every station. Hospital-grade cleanliness is standard on every session.',
                 tag: 'Sterile & Certified',
@@ -178,7 +178,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               },
               {
                 num: '02',
-                icon: <Sparkles className="w-6 h-6 text-bone-muted" />,
+                icon: <Icons8 name="magic" size={24} className="text-bone-muted" />,
                 title: 'Made For Your Body',
                 desc: 'Designs are drawn freehand and placed to flow with your muscles and joints — never stamped flat. What looks good in a photo has to work in real life.',
                 tag: 'Freehand & Anatomical',
@@ -186,7 +186,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               },
               {
                 num: '03',
-                icon: <HeartHandshake className="w-6 h-6 text-bone-muted" />,
+                icon: <Icons8 name="hand-holding-heart" size={24} className="text-bone-muted" />,
                 title: 'Right The First Time',
                 desc: 'We plan carefully and go at the right pace for you. You get clear aftercare and we check in to make sure it heals the way it should.',
                 tag: 'Proper Aftercare',

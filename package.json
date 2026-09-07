@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@iconify-json/la": "^1.2.1",
+    "@iconify-json/simple-icons": "^1.2.94",
+    "@iconify/react": "^6.0.2",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.7",

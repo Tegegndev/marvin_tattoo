@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, MessageCircle, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Icons8 } from './Icons8';
 
 interface WhatsAppModalProps {
   isOpen: boolean;
@@ -15,12 +15,12 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
 }) => {
   const [topic, setTopic] = useState<'consultation' | 'piercing' | 'aftercare' | 'walkin'>('consultation');
   const [message, setMessage] = useState(
-    prefilledMessage || "Hi, I'd like to ask about booking a dark realism tattoo."
+    prefilledMessage || "Hi, I'd like to ask about booking a custom tattoo session at Marvin Tattoos Atelier."
   );
   const [copied, setCopied] = useState(false);
 
-  const phone = '+1 (800) 555-MARK';
-  const cleanPhone = '18005556275';
+  const phone = '+256 705 748774';
+  const cleanPhone = '256705748774';
 
   const handleLaunchWhatsApp = () => {
     const encoded = encodeURIComponent(message);
@@ -54,7 +54,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-noir-700">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-gold/20 border border-gold text-gold flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5" />
+                  <Icons8 name="whatsapp" size={18} className="text-emerald-400" />
                 </div>
                 <div>
                   <h3 className="font-title-editorial text-title-editorial uppercase text-bone">
@@ -67,7 +67,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                 </div>
               </div>
               <button onClick={onClose} className="p-1 text-bone-dim hover:text-bone">
-                <X className="w-5 h-5" />
+                <Icons8 name="times" size={18} />
               </button>
             </div>
 
@@ -95,7 +95,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   type="button"
                   onClick={() => {
                     setTopic('piercing');
-                    setMessage("Hi, I'd like to book an ear piercing appointment.");
+                    setMessage("Hi, I'd like to book a titanium piercing appointment.");
                   }}
                   className={`p-2.5 text-left border transition-all ${
                     topic === 'piercing'
@@ -146,7 +146,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                   onClick={handleCopy}
                   className="font-label-caps text-[10px] text-gold uppercase hover:underline flex items-center gap-1"
                 >
-                  {copied ? <CheckCircle2 className="w-3 h-3 text-gold" /> : null}
+                  {copied ? <Icons8 name="check-circle" size={12} className="text-gold" /> : null}
                   {copied ? 'Copied to Clipboard' : 'Copy Text'}
                 </button>
               </div>
@@ -159,9 +159,9 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
             </div>
 
             <div className="p-3 bg-noir-850 border border-noir-700 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-gold shrink-0" />
+              <Icons8 name="shield-alt" size={16} className="text-gold shrink-0" />
               <p className="font-body-sm text-[11px] text-bone-dim">
-                We never ask for deposits through personal cash apps or unverified phone numbers.
+                We never ask for deposits through unverified personal accounts or third parties.
               </p>
             </div>
 
@@ -171,7 +171,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
                 onClick={handleLaunchWhatsApp}
                 className="flex-1 py-3 bg-gold text-noir-950 font-label-caps text-xs uppercase tracking-widest transition-all hover:bg-gold-light flex items-center justify-center gap-2 font-bold shadow-lg"
               >
-                <Send className="w-4 h-4" />
+                <Icons8 name="paper-plane" size={14} />
                 <span>Open WhatsApp</span>
               </button>
               <button

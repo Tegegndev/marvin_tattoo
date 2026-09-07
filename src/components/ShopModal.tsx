@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CartItem } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Icons8 } from './Icons8';
 import confetti from 'canvas-confetti';
 
 interface ShopModalProps {
@@ -27,7 +27,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
     email: '',
     address: '',
     city: '',
-    country: 'United States'
+    country: 'Uganda'
   });
 
   const subtotal = cart.reduce(
@@ -80,7 +80,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
               <div className="p-6 border-b border-noir-700 flex items-center justify-between bg-noir-850">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-crimson/30 text-crimson-light border border-crimson/30">
-                    <ShoppingBag className="w-5 h-5" />
+                    <Icons8 name="shopping-bag" size={20} />
                   </div>
                   <div>
                     <h3 className="font-title-editorial text-title-editorial uppercase text-bone">
@@ -96,7 +96,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                   className="p-2 text-bone-dim hover:text-bone transition-colors"
                   aria-label="Close cart"
                 >
-                  <X className="w-5 h-5" />
+                  <Icons8 name="times" size={18} />
                 </button>
               </div>
 
@@ -106,7 +106,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                   <>
                     {cart.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center text-center py-16 space-y-4">
-                        <ShoppingBag className="w-16 h-16 text-bone-dim/60 stroke-1" />
+                        <Icons8 name="shopping-bag" size={56} className="text-bone-dim/40" />
                         <div className="space-y-1">
                           <p className="font-title-editorial text-lg text-bone">
                             Your Bag is Empty
@@ -142,7 +142,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                                 {item.product.name}
                               </h4>
                               <div className="font-label-data text-xs text-gold font-bold">
-                                ${(item.product.price * item.quantity).toFixed(2)}
+                                ${item.product.price.toFixed(2)}
                               </div>
                             </div>
                             <div className="flex flex-col items-end gap-2">
@@ -151,14 +151,14 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                                 className="text-bone-dim hover:text-red-400 transition-colors p-1"
                                 title="Remove item"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Icons8 name="trash-alt" size={14} />
                               </button>
                               <div className="flex items-center border border-noir-700 bg-noir-950">
                                 <button
                                   onClick={() => onUpdateQuantity(item.product.id, -1)}
                                   className="p-1 hover:bg-noir-850 text-bone-dim hover:text-bone"
                                 >
-                                  <Minus className="w-3 h-3" />
+                                  <Icons8 name="minus" size={12} />
                                 </button>
                                 <span className="px-2 font-label-data text-xs text-bone">
                                   {item.quantity}
@@ -167,7 +167,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                                   onClick={() => onUpdateQuantity(item.product.id, 1)}
                                   className="p-1 hover:bg-noir-850 text-bone-dim hover:text-bone"
                                 >
-                                  <Plus className="w-3 h-3" />
+                                  <Icons8 name="plus" size={12} />
                                 </button>
                               </div>
                             </div>
@@ -276,7 +276,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                               setShippingData({ ...shippingData, city: e.target.value })
                             }
                             className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson"
-                            placeholder="New York"
+                            placeholder="Kampala"
                           />
                         </div>
                         <div>
@@ -290,10 +290,11 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             }
                             className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson"
                           >
+                            <option value="Uganda">Uganda</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="Tanzania">Tanzania</option>
                             <option value="United States">United States</option>
-                            <option value="Canada">Canada</option>
                             <option value="United Kingdom">United Kingdom</option>
-                            <option value="Germany">Germany</option>
                             <option value="International">International</option>
                           </select>
                         </div>
@@ -302,7 +303,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
 
                     <div className="p-3 bg-noir-850 border border-noir-700 space-y-1">
                       <div className="flex items-center gap-1.5 text-xs text-gold font-label-caps uppercase">
-                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <Icons8 name="shield-alt" size={14} />
                         <span>Sealed Sterile Packaging</span>
                       </div>
                       <p className="text-[11px] text-bone-dim">
@@ -322,7 +323,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                 {checkoutStep === 'confirmed' && (
                   <div className="text-center py-12 space-y-4">
                     <div className="w-16 h-16 rounded-full bg-crimson/30 border border-crimson text-crimson-light flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-8 h-8" />
+                      <Icons8 name="check-circle" size={32} />
                     </div>
                     <div className="space-y-1">
                       <span className="font-label-caps text-[10px] text-gold uppercase tracking-widest block">
@@ -347,7 +348,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                       </div>
                       <div className="flex justify-between text-bone-dim">
                         <span>Delivery:</span>
-                        <span className="text-gold">Standard Shipping</span>
+                        <span className="text-gold">Standard Delivery</span>
                       </div>
                     </div>
 
@@ -369,7 +370,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                     className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30"
                   >
                     <span>Checkout</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <Icons8 name="arrow-right" size={14} />
                   </button>
                   <p className="text-center font-label-data text-[10px] text-bone-dim uppercase">
                     Ships in sealed, sterile packaging

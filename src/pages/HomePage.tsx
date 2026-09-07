@@ -2,26 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA, HERO_IMAGE } from '../data/atelierData';
-import { 
-  Calendar, 
-  ArrowRight, 
-  ShieldCheck, 
-  Star, 
-  ShoppingBag, 
-  MapPin, 
-  Skull, 
-  FileText, 
-  Syringe, 
-  Layers, 
-  MessageCircle,
-  Sparkles,
-  CheckCircle2,
-  Navigation,
-  ExternalLink,
-  ChevronLeft,
-  ChevronRight,
-  Phone
-} from 'lucide-react';
+import { Icons8 } from '../components/Icons8';
 
 interface HomePageProps {
   onNavigate: (page: PageView) => void;
@@ -78,7 +59,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectPiece,
   onAddToCart,
   onOpenWhatsApp,
-  onOpenVerify
 }) => {
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const [reviewIndex, setReviewIndex] = useState<number>(0);
@@ -130,14 +110,14 @@ export const HomePage: React.FC<HomePageProps> = ({
   const getServiceIcon = (iconName: string) => {
     switch (iconName) {
       case 'skull':
-        return <Skull className="w-5 h-5" />;
+        return <Icons8 name="skull" size={20} />;
       case 'edit_note':
-        return <FileText className="w-5 h-5" />;
+        return <Icons8 name="pen-fancy" size={20} />;
       case 'colorize':
-        return <Syringe className="w-5 h-5" />;
+        return <Icons8 name="syringe" size={20} />;
       case 'layers':
       default:
-        return <Layers className="w-5 h-5" />;
+        return <Icons8 name="layer-group" size={20} />;
     }
   };
 
@@ -182,7 +162,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <div className="p-3.5 bg-noir-900 border border-noir-700/80 space-y-1 hover:border-slate-500 transition-colors">
                   <span className="font-label-caps text-[11px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <Sparkles className="w-3.5 h-3.5 text-crimson-light shrink-0" /> Realism &amp; Portraits
+                    <Icons8 name="magic" size={14} className="text-crimson-light shrink-0" /> Realism &amp; Portraits
                   </span>
                   <p className="font-body-sm text-[11px] text-bone-muted leading-relaxed">
                     High-detail black-and-grey and photo-realistic face, animal, or object pieces.
@@ -191,7 +171,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 <div className="p-3.5 bg-noir-900 border border-noir-700/80 space-y-1 hover:border-slate-500 transition-colors">
                   <span className="font-label-caps text-[11px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <FileText className="w-3.5 h-3.5 text-crimson-light shrink-0" /> Minimalist &amp; Script
+                    <Icons8 name="pen-fancy" size={14} className="text-crimson-light shrink-0" /> Minimalist &amp; Script
                   </span>
                   <p className="font-body-sm text-[11px] text-bone-muted leading-relaxed">
                     Fine-line micro-tattoos, geometric continuous line art, and custom calligraphy.
@@ -200,7 +180,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 <div className="p-3.5 bg-noir-900 border border-noir-700/80 space-y-1 hover:border-slate-500 transition-colors">
                   <span className="font-label-caps text-[11px] text-bone uppercase flex items-center gap-1.5 font-bold">
-                    <ShieldCheck className="w-3.5 h-3.5 text-crimson-light shrink-0" /> Cover-Ups &amp; Removal
+                    <Icons8 name="shield-alt" size={14} className="text-crimson-light shrink-0" /> Cover-Ups &amp; Removal
                   </span>
                   <p className="font-body-sm text-[11px] text-bone-muted leading-relaxed">
                     Bold tribal patterns, full restorations, and safe laser tattoo removal.
@@ -214,7 +194,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onNavigate('booking')}
                   className="w-full sm:w-auto px-8 py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-colors font-bold border border-crimson/30 flex items-center justify-center gap-2"
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Icons8 name="calendar-check" size={16} />
                   <span>Book Consultation</span>
                 </button>
 
@@ -222,7 +202,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onNavigate('portfolio')}
                   className="w-full sm:w-auto px-7 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2 group"
                 >
-                  <ArrowRight className="w-4 h-4 text-crimson-light transition-transform group-hover:translate-x-1" />
+                  <Icons8 name="arrow-right" size={16} className="text-crimson-light transition-transform group-hover:translate-x-1" />
                   <span>See My Works</span>
                 </button>
               </div>
@@ -241,12 +221,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                   title="View verified reviews on Google"
                 >
                   <div className="flex items-center text-amber-400">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <Icons8 name="star" size={14} className="text-amber-400" />
                   </div>
                   <span>
                     <strong className="text-bone font-bold">4.9/5.0</strong> on Google Reviews
                   </span>
-                  <ExternalLink className="w-3 h-3 text-bone-dim group-hover:text-bone transition-colors" />
+                  <Icons8 name="external-link-alt" size={12} className="text-bone-dim group-hover:text-bone transition-colors" />
                 </a>
                 <div className="w-1 h-1 rounded-full bg-noir-700" />
                 <div>
@@ -334,7 +314,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     className="inline-flex items-center justify-between w-full pt-3 border-t border-noir-700 font-label-caps text-xs uppercase tracking-wider text-bone-muted hover:text-bone transition-colors"
                   >
                     <span>Schedule Session</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <Icons8 name="arrow-right" size={16} />
                   </button>
                 </div>
               </div>
@@ -440,7 +420,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest border border-noir-700 transition-colors"
             >
               <span>Explore Complete Archives</span>
-              <ArrowRight className="w-4 h-4 text-gold" />
+              <Icons8 name="arrow-right" size={16} className="text-gold" />
             </button>
           </div>
         </div>
@@ -460,13 +440,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               </h2>
 
               <p className="font-body-md text-sm text-bone-muted leading-relaxed">
-                The exact gear, medical supplies, and soothing aftercare products we utilize on client sessions in SoHo. Available for studio pickup and shipping.
+                The exact gear, medical supplies, and soothing aftercare products we utilize on client sessions in Kampala. Available for studio pickup and shipping.
               </p>
 
               {/* Standards List */}
               <div className="p-5 bg-noir-850 space-y-4 border border-noir-700">
                 <div className="flex items-start gap-3">
-                  <ShieldCheck className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+                  <Icons8 name="shield-alt" size={20} className="text-gold shrink-0 mt-0.5" />
                   <div>
                     <span className="font-label-caps text-xs uppercase text-bone block font-bold">
                       Strict Sterilization Standards
@@ -477,7 +457,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Sparkles className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+                  <Icons8 name="magic" size={20} className="text-gold shrink-0 mt-0.5" />
                   <div>
                     <span className="font-label-caps text-xs uppercase text-bone block font-bold">
                       Implant-Grade Certified Jewelry
@@ -495,7 +475,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   className="inline-flex items-center gap-2 px-6 py-3 bg-noir-800 text-bone font-label-caps text-xs uppercase tracking-widest hover:bg-noir-700 transition-colors border border-noir-700"
                 >
                   <span>Browse Equipment Catalog</span>
-                  <ShoppingBag className="w-4 h-4 text-gold" />
+                  <Icons8 name="shopping-bag" size={16} className="text-gold" />
                 </button>
               </div>
             </div>
@@ -578,14 +558,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                   aria-label="Previous reviews"
                   className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
                 >
-                  <ChevronLeft className="w-5 h-5 text-bone" />
+                  <Icons8 name="arrow-left" size={20} className="text-bone" />
                 </button>
                 <button
                   onClick={nextReview}
                   aria-label="Next reviews"
                   className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
                 >
-                  <ChevronRight className="w-5 h-5 text-bone" />
+                  <Icons8 name="arrow-right" size={20} className="text-bone" />
                 </button>
               </div>
             </div>
@@ -611,7 +591,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1 text-amber-400">
                           {Array.from({ length: t.stars }).map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                            <Icons8 key={i} name="star" size={16} className="text-amber-400" />
                           ))}
                         </div>
                         <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
@@ -669,12 +649,12 @@ export const HomePage: React.FC<HomePageProps> = ({
               className="inline-flex items-center gap-3 px-6 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone border border-noir-700 hover:border-slate-500 transition-all font-label-caps text-xs uppercase tracking-wider group rounded-sm shadow-lg"
             >
               <div className="flex items-center text-amber-400">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                <Icons8 name="star" size={16} className="text-amber-400" />
               </div>
               <span>
                 Rated <strong className="text-bone font-bold">4.9 / 5.0</strong> on Google — Read All Verified Reviews
               </span>
-              <ExternalLink className="w-4 h-4 text-bone-dim group-hover:text-bone transition-colors" />
+              <Icons8 name="external-link-alt" size={16} className="text-bone-dim group-hover:text-bone transition-colors" />
             </a>
           </div>
         </div>
@@ -715,7 +695,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       href="tel:+256705748774"
                       className="inline-flex items-center gap-1.5 font-label-data text-xs text-crimson-light hover:underline font-bold"
                     >
-                      <Phone className="w-3.5 h-3.5" />
+                      <Icons8 name="phone" size={14} />
                       <span>Studio Line: +256 705 748774</span>
                     </a>
                   </div>
@@ -726,7 +706,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   rel="noopener noreferrer"
                   className="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 border border-noir-700 shrink-0 group"
                 >
-                  <Navigation className="w-4 h-4 text-gold group-hover:text-crimson-light transition-colors" />
+                  <Icons8 name="location-arrow" size={16} className="text-gold group-hover:text-crimson-light transition-colors" />
                   <span>Get Directions</span>
                 </a>
               </div>
@@ -781,14 +761,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onNavigate('booking')}
                   className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 border border-crimson/30 font-bold"
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Icons8 name="calendar-check" size={16} />
                   <span>Book a Consultation</span>
                 </button>
                 <button
                   onClick={onOpenWhatsApp}
                   className="w-full py-3 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2"
                 >
-                  <MessageCircle className="w-4 h-4 text-gold" />
+                  <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
                   <span>Chat With Marvin on WhatsApp</span>
                 </button>
               </div>

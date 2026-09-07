@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageView } from '../types';
 import { LOGO_URL } from '../data/atelierData';
-import { Camera, Video, PlayCircle, ShieldCheck, Clock, MapPin, ExternalLink, Phone, Navigation } from 'lucide-react';
+import { Icons8 } from './Icons8';
 
 interface FooterProps {
   onNavigate: (page: PageView) => void;
@@ -39,7 +39,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
           {/* Column 2: Atelier Coordinates */}
           <div className="space-y-4">
             <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-crimson-light" />
+              <Icons8 name="map-marker-alt" size={16} className="text-crimson-light" />
               <span>Studio Location</span>
             </div>
             <div className="font-body-sm text-body-sm text-bone-muted space-y-1">
@@ -58,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   href="tel:+256705748774"
                   className="font-label-data text-xs text-crimson-light hover:underline flex items-center gap-1.5 font-bold"
                 >
-                  <Phone className="w-3.5 h-3.5" />
+                  <Icons8 name="phone" size={14} />
                   <span>+256 705 748774</span>
                 </a>
                 <a
@@ -67,14 +67,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   rel="noopener noreferrer"
                   className="font-label-caps text-[10px] text-gold hover:underline flex items-center gap-1 uppercase tracking-wider"
                 >
-                  <Navigation className="w-3 h-3" />
+                  <Icons8 name="location-arrow" size={12} />
                   <span>Open in Google Maps</span>
                 </a>
               </div>
             </div>
             <div className="pt-2">
               <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone mb-1 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-gold" />
+                <Icons8 name="clock" size={14} className="text-gold" />
                 <span>Operating Hours</span>
               </div>
               <p className="font-body-sm text-xs text-bone-muted">
@@ -96,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             </p>
             <div className="p-3.5 bg-noir-850 space-y-1.5 border border-noir-700">
               <div className="flex items-center gap-1.5 text-gold font-label-caps text-label-caps uppercase tracking-wider font-bold">
-                <ShieldCheck className="w-4 h-4" />
+                <Icons8 name="shield-alt" size={16} />
                 <span>Sterilization Guarantee</span>
               </div>
               <p className="font-body-sm text-body-sm text-bone-dim leading-relaxed">
@@ -119,12 +119,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
                 >
                   <span className="flex items-center gap-2">
-                    <Camera className="w-4 h-4 group-hover:text-crimson-light transition-colors" />
+                    <Icons8 name="instagram" size={16} className="group-hover:text-crimson-light transition-colors" />
                     <span>Instagram</span>
                   </span>
                   <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
                     @marvin_atelier
-                    <ExternalLink className="w-3 h-3" />
+                    <Icons8 name="external-link-alt" size={12} />
                   </span>
                 </a>
               </li>
@@ -136,12 +136,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
                 >
                   <span className="flex items-center gap-2">
-                    <Video className="w-4 h-4 group-hover:text-crimson-light transition-colors" />
+                    <Icons8 name="simple-icons:tiktok" size={14} className="group-hover:text-crimson-light transition-colors" />
                     <span>TikTok</span>
                   </span>
                   <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
                     @marvintattoos.official
-                    <ExternalLink className="w-3 h-3" />
+                    <Icons8 name="external-link-alt" size={12} />
                   </span>
                 </a>
               </li>
@@ -153,12 +153,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                   className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
                 >
                   <span className="flex items-center gap-2">
-                    <PlayCircle className="w-4 h-4 group-hover:text-crimson-light transition-colors" />
+                    <Icons8 name="youtube" size={16} className="group-hover:text-crimson-light transition-colors" />
                     <span>YouTube</span>
                   </span>
                   <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
                     /marvintattoostudio
-                    <ExternalLink className="w-3 h-3" />
+                    <Icons8 name="external-link-alt" size={12} />
                   </span>
                 </a>
               </li>

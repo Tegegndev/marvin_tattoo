@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageView, ProductItem } from '../types';
 import { PRODUCTS_DATA } from '../data/atelierData';
 import { motion } from 'framer-motion';
-import { ShoppingBag, ShieldCheck, Check } from 'lucide-react';
+import { Icons8 } from '../components/Icons8';
 
 interface EquipmentPageProps {
   onAddToCart: (product: ProductItem) => void;
@@ -13,7 +13,6 @@ interface EquipmentPageProps {
 export const EquipmentPage: React.FC<EquipmentPageProps> = ({
   onAddToCart,
   onOpenCart,
-  onNavigate
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [addedItemIds, setAddedItemIds] = useState<string[]>([]);
@@ -132,12 +131,12 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                     >
                       {isAdded ? (
                         <>
-                          <Check className="w-3.5 h-3.5" />
+                          <Icons8 name="check" size={14} />
                           <span>Added</span>
                         </>
                       ) : (
                         <>
-                          <ShoppingBag className="w-3.5 h-3.5" />
+                          <Icons8 name="shopping-bag" size={14} />
                           <span>Add to Bag</span>
                         </>
                       )}
@@ -151,7 +150,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
           {/* Floating Cart Notice Banner */}
           <div className="p-6 bg-noir-850 border border-gold/30 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <ShieldCheck className="w-8 h-8 text-gold shrink-0" />
+              <Icons8 name="shield-alt" size={32} className="text-gold shrink-0" />
               <div>
                 <h4 className="font-title-editorial text-sm uppercase text-bone">
                   Sterilized and Sealed

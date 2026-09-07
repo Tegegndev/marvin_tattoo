@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageView } from '../types';
-import { MapPin, Navigation, Train, Car, Calendar, MessageCircle } from 'lucide-react';
+import { Icons8 } from '../components/Icons8';
 
 interface LocationPageProps {
   onNavigate: (page: PageView) => void;
@@ -11,7 +11,6 @@ interface LocationPageProps {
 export const LocationPage: React.FC<LocationPageProps> = ({
   onNavigate,
   onOpenWhatsApp,
-  onOpenVerify
 }) => {
   return (
     <div className="w-full pt-20 bg-noir-950 min-h-screen">
@@ -79,7 +78,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                     rel="noopener noreferrer"
                     className="px-4 py-2.5 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 shrink-0 border border-noir-700"
                   >
-                    <Navigation className="w-3.5 h-3.5 text-crimson-light" />
+                    <Icons8 name="location-arrow" size={14} className="text-crimson-light" />
                     <span>View on Google Maps</span>
                   </a>
                 </div>
@@ -87,7 +86,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-body-sm">
                   <div className="p-3.5 bg-noir-900 border border-noir-700 space-y-1">
                     <div className="flex items-center gap-1.5 font-label-caps text-xs text-gold uppercase font-bold">
-                      <Train className="w-4 h-4" />
+                      <Icons8 name="map-marked-alt" size={16} />
                       <span>Burton St / Pioneer Mall</span>
                     </div>
                     <p className="text-bone-dim leading-relaxed">
@@ -97,7 +96,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
 
                   <div className="p-3.5 bg-noir-900 border border-noir-700 space-y-1">
                     <div className="flex items-center gap-1.5 font-label-caps text-xs text-crimson-light uppercase font-bold">
-                      <Car className="w-4 h-4" />
+                      <Icons8 name="car" size={16} />
                       <span>Parking &amp; Access</span>
                     </div>
                     <p className="text-bone-dim leading-relaxed">
@@ -157,14 +156,14 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                   onClick={() => onNavigate('booking')}
                   className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30"
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Icons8 name="calendar-check" size={16} />
                   <span>Book a Consultation</span>
                 </button>
                 <button
                   onClick={onOpenWhatsApp}
                   className="w-full py-3 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 flex items-center justify-center gap-2"
                 >
-                  <MessageCircle className="w-4 h-4 text-gold" />
+                  <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
                   <span>Message Us on WhatsApp</span>
                 </button>
               </div>

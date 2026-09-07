@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageView, PortfolioPiece } from '../types';
 import { PORTFOLIO_DATA } from '../data/atelierData';
 import { motion } from 'framer-motion';
-import { Filter, Eye } from 'lucide-react';
+import { Icons8 } from '../components/Icons8';
 
 interface PortfolioPageProps {
   onNavigate: (page: PageView) => void;
@@ -11,7 +11,6 @@ interface PortfolioPageProps {
 }
 
 export const PortfolioPage: React.FC<PortfolioPageProps> = ({
-  onNavigate,
   onSelectPiece,
   onBookSimilar
 }) => {
@@ -122,7 +121,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-4 text-bone-dim pt-2 border-t border-noir-700/40 text-xs font-label-data">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-bone font-semibold uppercase flex items-center gap-1">
-                <Filter className="w-3.5 h-3.5 text-crimson-light" />
+                <Icons8 name="filter" size={14} className="text-crimson-light" />
                 <span>Placement:</span>
               </span>
               {zones.map((z) => (
@@ -160,7 +159,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
         </div>
       </section>
 
-      {/* Featured Masterpiece Spotlight: The Luciferian Seraph */}
+      {/* Featured Masterpiece Spotlight */}
       <section className="w-full bg-noir-950 px-4 md:px-8 lg:px-12 py-12 border-b border-noir-700/40">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
@@ -252,7 +251,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   onClick={() => onSelectPiece(featuredPiece)}
                   className="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5"
                 >
-                  <Eye className="w-4 h-4 text-crimson-light" />
+                  <Icons8 name="eye" size={16} className="text-crimson-light" />
                   <span>View Piece</span>
                 </button>
                 <button

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageView } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, ShoppingBag, Menu, X, MessageCircle } from 'lucide-react';
+import { Icons8 } from './Icons8';
 import { LOGO_URL } from '../data/atelierData';
 
 interface NavbarProps {
@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       }`}
     >
       <div className="h-20 max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
-        {/* Brand Logo Only (No text) */}
+        {/* Brand Logo Only */}
         <button
           onClick={() => {
             onNavigate('home');
@@ -102,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="hidden sm:inline-flex items-center gap-2 px-3 py-2 bg-noir-900 hover:bg-noir-850 text-bone-dim hover:text-bone font-label-caps text-[11px] uppercase tracking-wider transition-all duration-200 border border-noir-700 rounded-sm"
             title="Chat on WhatsApp"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <Icons8 name="whatsapp" size={14} className="text-emerald-400" />
             <span>WhatsApp</span>
           </button>
 
@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="relative p-2.5 bg-noir-900 hover:bg-noir-850 text-bone transition-all duration-200 border border-noir-700 rounded-sm flex items-center justify-center"
             aria-label="Open Equipment Cart"
           >
-            <ShoppingBag className="w-4 h-4 text-slate-300" />
+            <Icons8 name="shopping-bag" size={16} className="text-slate-300" />
             {cartCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-200 text-noir-950 text-[10px] font-bold rounded-full flex items-center justify-center shadow-md">
                 {cartCount}
@@ -128,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] font-bold uppercase tracking-widest transition-all duration-200 border border-crimson-light/30 shadow-sm rounded-sm"
           >
-            <Calendar className="w-3.5 h-3.5" />
+            <Icons8 name="calendar-check" size={14} />
             <span className="hidden sm:inline">Book Session</span>
             <span className="sm:hidden">Book</span>
           </button>
@@ -139,7 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="md:hidden p-2 text-bone hover:text-white transition-colors focus:outline-none"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <Icons8 name="times" size={22} /> : <Icons8 name="bars" size={22} />}
           </button>
         </div>
       </div>
@@ -182,7 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 className="w-full flex items-center justify-center gap-2 py-2.5 bg-noir-900 hover:bg-noir-850 text-bone border border-noir-700 text-xs font-label-caps uppercase tracking-wider transition-colors"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
                 <span>WhatsApp Studio Consult</span>
               </button>
             </div>
