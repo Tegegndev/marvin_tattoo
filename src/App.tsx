@@ -13,9 +13,11 @@ import { BookingPage } from './pages/BookingPage';
 import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
 import { AftercarePage } from './pages/AftercarePage';
+import { Preloader } from './components/Preloader';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function App() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<PageView>('home');
   const [selectedArtwork, setSelectedArtwork] = useState<PortfolioPiece | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -75,6 +77,9 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-noir-950 text-bone flex flex-col selection:bg-crimson selection:text-bone">
+      {/* Studio Preloader with Gothic M & Crimson Dot */}
+      {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
+
       {/* Editorial Navbar */}
       <Navbar
         currentPage={currentPage}

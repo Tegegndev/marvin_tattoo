@@ -2,11 +2,19 @@
   <defs>
     <linearGradient id="gothGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#cccccc"/>
+      <stop offset="60%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
     </linearGradient>
+    <filter id="crimsonDotGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#ef4444" flood-opacity="0.9"/>
+    </filter>
   </defs>
+  <!-- Gothic 'M' Monogram -->
   <path d="M 12 8 L 22 25 L 32 8 L 40 42 L 32 42 L 27 24 L 22 34 L 17 24 L 12 42 L 4 42 Z" fill="url(#gothGrad)"/>
-  <circle cx="22" cy="5" r="2.5" fill="#e11d48"/>
-  <text x="50" y="32" font-family="'Cinzel', 'Playfair Display', 'Bodoni Moda', serif" font-weight="900" font-size="22" letter-spacing="4" fill="#ffffff">MARVIN</text>
-  <text x="52" y="44" font-family="'Space Grotesk', sans-serif" font-weight="600" font-size="7.5" letter-spacing="6" fill="#8e8e93">TATTOOS &amp; PIERCING</text>
+  <!-- Signature Crimson Red Dot Above Central Apex -->
+  <circle cx="22" cy="4.5" r="2.8" fill="#ef4444" filter="url(#crimsonDotGlow)"/>
+  <!-- MARVIN Title -->
+  <text x="50" y="32" font-family="'Bodoni Moda', 'Cinzel', serif" font-weight="900" font-size="22" letter-spacing="4" fill="#f8fafc">MARVIN</text>
+  <!-- TATTOOS & PIERCING Subtitle -->
+  <text x="52" y="44" font-family="'Geist', sans-serif" font-weight="600" font-size="7.5" letter-spacing="6" fill="#94a3b8">TATTOOS &amp; PIERCING</text>
 </svg>
