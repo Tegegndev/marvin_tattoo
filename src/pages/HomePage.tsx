@@ -570,11 +570,11 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-noir-900 to-transparent z-10 pointer-events-none" />
 
             {/* Infinite Looping Track */}
-            <div className="animate-infinite-loop flex gap-6">
+            <div className="animate-infinite-loop flex gap-8">
               {[...TESTIMONIALS_DATA, ...TESTIMONIALS_DATA].map((t, idx) => (
                 <div
                   key={`${t.id}-${idx}`}
-                  className="w-[300px] sm:w-[380px] md:w-[420px] shrink-0 bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group rounded-sm shadow-xl cursor-default"
+                  className="w-[340px] sm:w-[420px] md:w-[460px] lg:w-[480px] shrink-0 bg-noir-850 p-7 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group rounded-sm shadow-xl cursor-default"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">

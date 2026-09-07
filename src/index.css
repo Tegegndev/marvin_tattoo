@@ -86,7 +86,7 @@
 .animate-infinite-loop {
   display: flex;
   width: max-content;
-  animation: infinite-marquee 35s linear infinite;
+  animation: infinite-marquee 60s linear infinite;
   will-change: transform;
 }
 
