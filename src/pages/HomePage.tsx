@@ -125,13 +125,17 @@ export const HomePage: React.FC<HomePageProps> = ({
     <div className="w-full flex flex-col bg-noir-950 relative">
       {/* 01. EDITORIAL HERO SECTION */}
       <section className="relative w-full min-h-[92vh] flex items-center overflow-hidden pt-28 pb-16 bg-noir-950 border-b border-noir-700/40">
-        {/* Ambient Hero Background */}
+        {/* Cinematic Studio Visual Backdrop */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-45 filter grayscale contrast-125 scale-105 pointer-events-none"
-          style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
+          className="absolute inset-0 w-full h-full bg-cover opacity-70 mix-blend-luminosity scale-105 pointer-events-none transition-transform duration-1000 ease-out"
+          style={{
+            backgroundImage: `url('${HERO_IMAGE}')`,
+            backgroundPosition: 'center 30%'
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-noir-950 via-noir-950/75 to-noir-950/55 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-noir-950/70 via-transparent to-noir-950 pointer-events-none" />
+        {/* Dark Vignettes for high contrast and readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-noir-950/90 via-noir-950/70 to-noir-950/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/60 pointer-events-none" />
 
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
