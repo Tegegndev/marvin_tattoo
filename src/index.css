@@ -73,6 +73,28 @@
   transform: scale(1.03);
 }
 
+/* Infinite Carousel Slider */
+@keyframes infinite-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-infinite-loop {
+  display: flex;
+  width: max-content;
+  animation: infinite-marquee 35s linear infinite;
+  will-change: transform;
+}
+
+.pause-on-hover:hover .animate-infinite-loop,
+.animate-infinite-loop:hover {
+  animation-play-state: paused !important;
+}
+
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   .gothic-card:hover,

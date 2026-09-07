@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageView, PortfolioPiece, ProductItem } from '../types';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA, HERO_IMAGE } from '../data/atelierData';
@@ -61,30 +61,19 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenWhatsApp,
 }) => {
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
-  const [reviewIndex, setReviewIndex] = useState<number>(0);
-  const [isCarouselPaused, setIsCarouselPaused] = useState<boolean>(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
-  // Auto-animate reviews every 4.5 seconds (pauses on user hover)
-  useEffect(() => {
-    if (isCarouselPaused) return;
-    const interval = setInterval(() => {
-      setReviewIndex((prev) => (prev + 1) % TESTIMONIALS_DATA.length);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [isCarouselPaused]);
-
-  const nextReview = () => {
-    setReviewIndex((prev) => (prev + 1) % TESTIMONIALS_DATA.length);
+  const scrollLeft = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: -400, behavior: 'smooth' });
+    }
   };
 
-  const prevReview = () => {
-    setReviewIndex((prev) => (prev - 1 + TESTIMONIALS_DATA.length) % TESTIMONIALS_DATA.length);
+  const scrollRight = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+    }
   };
-
-  // Get 3 consecutive reviews for carousel window
-  const visibleTestimonials = [0, 1, 2].map(
-    (offset) => TESTIMONIALS_DATA[(reviewIndex + offset) % TESTIMONIALS_DATA.length]
-  );
 
   const getInitialAvatarStyle = (name: string) => {
     const code = name.charCodeAt(0) || 0;
@@ -527,12 +516,10 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 05. CLIENT REVIEWS CAROUSEL */}
+      {/* 05. CLIENT REVIEWS INFINITE SLIDER */}
       <section 
         id="testimonials-section" 
-        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40"
-        onMouseEnter={() => setIsCarouselPaused(true)}
-        onMouseLeave={() => setIsCarouselPaused(false)}
+        className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40 overflow-hidden"
       >
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-noir-700/40">
@@ -543,7 +530,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-crimson animate-pulse" />
                 <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
-                  Auto-playing
+                  Hover to pause
                 </span>
               </div>
               <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
@@ -554,94 +541,75 @@ export const HomePage: React.FC<HomePageProps> = ({
               </p>
             </div>
 
-            {/* Carousel Controls & Google Review CTA */}
-            <div className="flex items-center gap-4 self-start md:self-end">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={prevReview}
-                  aria-label="Previous reviews"
-                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
-                >
-                  <Icons8 name="arrow-left" size={20} className="text-bone" />
-                </button>
-                <button
-                  onClick={nextReview}
-                  aria-label="Next reviews"
-                  className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
-                >
-                  <Icons8 name="arrow-right" size={20} className="text-bone" />
-                </button>
-              </div>
+            {/* Slider Controls & Directional Nav */}
+            <div className="flex items-center gap-3 self-start md:self-end">
+              <button
+                onClick={scrollLeft}
+                aria-label="Scroll left"
+                className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
+              >
+                <Icons8 name="arrow-left" size={20} className="text-bone" />
+              </button>
+              <button
+                onClick={scrollRight}
+                aria-label="Scroll right"
+                className="p-3 bg-noir-850 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-500 transition-all rounded-sm shadow-md"
+              >
+                <Icons8 name="arrow-right" size={20} className="text-bone" />
+              </button>
             </div>
           </div>
 
-          {/* Testimonial Cards Carousel View with Framer Motion Transition */}
-          <div className="relative overflow-hidden min-h-[300px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={reviewIndex}
-                initial={{ opacity: 0, x: 28 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -28 }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {visibleTestimonials.map((t, idx) => (
-                  <div
-                    key={`${t.id}-${reviewIndex}-${idx}`}
-                    className="bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group rounded-sm shadow-xl"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-1 text-amber-400">
-                          {Array.from({ length: t.stars }).map((_, i) => (
-                            <Icons8 key={i} name="star" size={16} className="text-amber-400" />
-                          ))}
-                        </div>
-                        <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
-                          Verified Review
-                        </span>
+          {/* Testimonials Infinite Loop Slider with Pause on Hover */}
+          <div 
+            ref={sliderRef}
+            className="relative w-full overflow-hidden pause-on-hover py-2"
+          >
+            {/* Left & Right Smooth Edge Fade Masks */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-noir-900 to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-noir-900 to-transparent z-10 pointer-events-none" />
+
+            {/* Infinite Looping Track */}
+            <div className="animate-infinite-loop flex gap-6">
+              {[...TESTIMONIALS_DATA, ...TESTIMONIALS_DATA].map((t, idx) => (
+                <div
+                  key={`${t.id}-${idx}`}
+                  className="w-[300px] sm:w-[380px] md:w-[420px] shrink-0 bg-noir-850 p-6 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group rounded-sm shadow-xl cursor-default"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-1 text-amber-400">
+                        {Array.from({ length: t.stars }).map((_, i) => (
+                          <Icons8 key={i} name="star" size={16} className="text-amber-400" />
+                        ))}
                       </div>
-                      <p className="font-body-md text-sm text-bone leading-relaxed mb-6 italic">
-                        "{t.quote}"
-                      </p>
+                      <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">
+                        Verified Review
+                      </span>
                     </div>
-                    <div className="flex items-center gap-3 pt-4 border-t border-noir-700/80">
-                      {/* Initial Letter Avatar Profile */}
-                      <div
-                        className={`w-11 h-11 rounded-full border flex items-center justify-center shrink-0 font-headline-sm text-lg font-bold transition-all duration-300 shadow-inner select-none ${getInitialAvatarStyle(t.name)}`}
-                      >
-                        <span>{t.name.trim().charAt(0).toUpperCase()}</span>
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-title-editorial text-sm text-bone font-bold truncate group-hover:text-gold transition-colors">
-                          {t.name}
-                        </span>
-                        <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider truncate">
-                          {t.role}
-                        </span>
-                      </div>
+                    <p className="font-body-md text-sm text-bone leading-relaxed mb-6 italic line-clamp-4">
+                      "{t.quote}"
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 pt-4 border-t border-noir-700/80">
+                    {/* Initial Letter Avatar Profile */}
+                    <div
+                      className={`w-11 h-11 rounded-full border flex items-center justify-center shrink-0 font-headline-sm text-lg font-bold transition-all duration-300 shadow-inner select-none ${getInitialAvatarStyle(t.name)}`}
+                    >
+                      <span>{t.name.trim().charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-title-editorial text-sm text-bone font-bold truncate group-hover:text-gold transition-colors">
+                        {t.name}
+                      </span>
+                      <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider truncate">
+                        {t.role}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Carousel Pagination Dots */}
-          <div className="flex items-center justify-center gap-2 pt-2">
-            {TESTIMONIALS_DATA.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setReviewIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={`h-1.5 transition-all duration-300 rounded-full ${
-                  reviewIndex === idx
-                    ? 'w-8 bg-crimson shadow-sm shadow-crimson/50'
-                    : 'w-2 bg-noir-700 hover:bg-noir-600'
-                }`}
-              />
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Google Reviews Direct Link */}
