@@ -1,0 +1,171 @@
+datasource db {
+  provider = "sqlite" // Change to "postgresql" or "mysql" for production/cPanel
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. Studio Admin
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Hashed password (bcrypt)
+  name      String   @default("Marvin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 2. Client Booking Intake
+model Booking {
+  id             String         @id @default(uuid())
+  referenceCode  String         @unique // e.g. "MRT-2026-8492"
+  serviceType    String         // custom_tattoo, realism_portrait, fine_line, lettering_script, tribal_traditional, cover_up, pmu_makeup, body_piercing, laser_removal, keloid_removal
+  placement      String         // e.g. "Forearm / Wrist", "Ear (Helix, Tragus)"
+  size           String         // small, medium, large, full_day, piercing_std
+  description    String
+  referenceImage String?        // URL of uploaded client photo
+  preferredDate  DateTime
+  timeSlot       String         // morning, afternoon, evening
+  status         String         @default("PENDING_REVIEW") // PENDING_REVIEW, CONFIRMED, COMPLETED, CANCELLED
+  clientName     String
+  clientPhone    String         // WhatsApp number with country code
+  clientEmail    String
+  notes          String?        // Client allergies, questions, etc.
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+// 3. Portfolio & Artwork Gallery
+model PortfolioPiece {
+  id            String   @id @default(uuid())
+  title         String
+  category      String   // dark-realism, neo-traditional, micro-detail, piercing, coverup, pmu
+  categoryLabel String   // e.g. "Memorial Realism & Mother Tribute"
+  zone          String   // e.g. "Forearm", "Chest", "Collarbone"
+  flashId       String?  // e.g. "#MOM-701"
+  imageUrl      String
+  description   String
+  duration      String?  // e.g. "4 Hours (1 Session)"
+  pigment       String?  // e.g. "Dynamic Triple Black"
+  featured      Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// 4. Studio Services Catalog
+model Service {
+  id               String   @id @default(uuid())
+  disciplineNumber String   // "01", "02", "03", etc.
+  title            String
+  subtitle         String
+  description      String
+  category         String   // TATTOO, PMU, PIERCING, REMOVAL
+  imageUrl         String
+  iconName         String   // skull, pen-fancy, edit_note, layers, colorize, syringe, shield-alt
+  specs            String   // JSON string of specs array { label, value }
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// 5. Studio Shop Products & Merchandise
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  category    String      // Hard Goods, Aftercare, Needles, Titanium Jewelry
+  price       Float
+  currency    String      @default("UGX")
+  description String
+  imageUrl    String
+  inStock     Boolean     @default(true)
+  stockCount  Int         @default(10)
+  specs       String      // JSON string of specs array
+  sortOrder   Int         @default(0)
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// 6. Shop Customer Orders (Guest Checkout)
+model Order {
+  id              String               @id @default(uuid())
+  orderNumber     String               @unique // e.g. "ORD-2026-8941"
+  clientName      String
+  clientPhone     String               // WhatsApp / MoMo phone number
+  clientEmail     String
+  deliveryMethod  String               @default("STUDIO_PICKUP") // STUDIO_PICKUP, KAMPALA_DISPATCH
+  deliveryAddress String?              // Kampala dispatch location
+  deliveryNotes   String?
+  totalAmount     Float                // Total in UGX
+  currency        String               @default("UGX")
+  orderStatus     String               @default("PENDING_PAYMENT") // PENDING_PAYMENT, PROCESSING, READY_FOR_PICKUP, DISPATCHED, COMPLETED, CANCELLED
+  paymentStatus   String               @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  paymentMethod   String               @default("MTN_MOMO") // MTN_MOMO, AIRTEL_MONEY, CARD, CASH
+  items           OrderItem[]
+  transactions    PaymentTransaction[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  unitPrice Float
+}
+
+// 7. Payment Transactions & Gateway Audit Log
+model PaymentTransaction {
+  id                 String    @id @default(uuid())
+  orderId            String
+  order              Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  gateway            String    // FLUTTERWAVE, PAYSTACK, PESAPAL, CASH_ON_PICKUP
+  gatewayRef         String?   @unique // Gateway Transaction ID
+  merchantTxRef      String    @unique // Internal tracking ref: "TX-MRT-ORD-XXXXX"
+  amount             Float
+  currency           String    @default("UGX")
+  paymentMethod      String    // MTN_MOMO, AIRTEL_MONEY, CARD, CASH
+  status             String    @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  rawWebhookPayload  String?   // JSON audit log
+  paidAt             DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+// 8. Verified Client Testimonials
+model Testimonial {
+  id               String   @id @default(uuid())
+  name             String
+  role             String   // e.g. "Dark Realism & Sleeve", "Titanium Ear Piercing"
+  stars            Int      @default(5)
+  quote            String
+  isGoogleVerified Boolean  @default(true)
+  approved         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+}
+
+// 9. Dynamic Site Configuration & Studio Settings (Singleton)
+model SiteSetting {
+  id                 String   @id @default("studio_config") // Singleton primary key
+  studioName         String   @default("Marvin Tattoos & Piercing Atelier")
+  heroStatement      String   @default("Clean Lines. Heavy Blackwork. Made to Age Well.")
+  heroSubtext        String   @default("Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.")
+  heroBannerUrl      String   @default("/images/hero-banner.png")
+  heroOpacity        Float    @default(0.45) // 0.0 to 1.0 overlay opacity
+  announcementActive Boolean  @default(false)
+  announcementText   String?
+  primaryPhone       String   @default("+256705748774")
+  whatsappNumber     String   @default("+256705748774")
+  contactEmail       String   @default("info@marvintattoos.com")
+  physicalAddress    String   @default("Level 5, New Pioneer Mall, Burton St, Kampala, Uganda")
+  googleMapsUrl      String   @default("https://maps.google.com/?q=New+Pioneer+Mall+Kampala")
+  openingHours       String   // JSON string of opening hours array
+  socialLinks        String   // JSON string of social media links array
+  updatedAt          DateTime @updatedAt
+}
