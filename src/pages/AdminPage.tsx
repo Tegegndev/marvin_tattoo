@@ -30,6 +30,8 @@ interface AdminPageProps {
   onNavigate: (page: PageView) => void;
 }
 
+type TabType = 'bookings' | 'orders' | 'portfolio' | 'inventory' | 'reviews' | 'settings';
+
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -39,10 +41,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string>('');
 
-  // Dashboard Tabs
-  const [activeTab, setActiveTab] = useState<
-    'bookings' | 'orders' | 'settings' | 'portfolio' | 'inventory' | 'testimonials'
-  >('bookings');
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<TabType>('bookings');
 
   // Toast System
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -51,19 +51,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Bookings CRM State
+  // Drawer / Inspection Modals
+  const [inspectBooking, setInspectBooking] = useState<any | null>(null);
+  const [inspectOrder, setInspectOrder] = useState<any | null>(null);
+  const [showAddArtworkModal, setShowAddArtworkModal] = useState<boolean>(false);
+  const [showAddProductModal, setShowAddProductModal] = useState<boolean>(false);
+  const [showAddReviewModal, setShowAddReviewModal] = useState<boolean>(false);
+
+  // Bookings State
   const [bookings, setBookings] = useState<any[]>([]);
   const [bookingFilterStatus, setBookingFilterStatus] = useState<string>('ALL');
   const [bookingSearch, setBookingSearch] = useState<string>('');
   const [loadingBookings, setLoadingBookings] = useState<boolean>(false);
-  const [selectedBookingForModal, setSelectedBookingForModal] = useState<any | null>(null);
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
   const [orderFilterStatus, setOrderFilterStatus] = useState<string>('ALL');
   const [orderSearch, setOrderSearch] = useState<string>('');
   const [loadingOrders, setLoadingOrders] = useState<boolean>(false);
-  const [selectedOrderForModal, setSelectedOrderForModal] = useState<any | null>(null);
 
   // Settings State
   const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
@@ -84,7 +89,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [newPieceImageFile, setNewPieceImageFile] = useState<File | null>(null);
   const [creatingPiece, setCreatingPiece] = useState(false);
 
-  // Inventory / Products State
+  // Products State
   const [productsList, setProductsList] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [newProdName, setNewProdName] = useState('');
@@ -105,7 +110,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [newReviewQuote, setNewReviewQuote] = useState('');
   const [creatingReview, setCreatingReview] = useState(false);
 
-  // Check auth session on mount
   useEffect(() => {
     checkAuth();
   }, []);
@@ -144,9 +148,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setIsAuthenticated(true);
       setAdminUser(data.admin);
       loadDashboardData();
-      showToast('Welcome back, Marvin! Studio CMS authenticated.');
+      showToast('Authenticated as Marvin Studio Admin');
     } catch (err: any) {
-      setAuthError(err.message || 'Invalid email or password');
+      setAuthError(err.message || 'Invalid email or master password');
     } finally {
       setAuthLoading(false);
     }
@@ -160,7 +164,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setAdminUser(null);
   };
 
-  // Data Loaders
+  // Data Fetchers
   const loadBookings = async () => {
     setLoadingBookings(true);
     try {
@@ -230,28 +234,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
-  // Actions
+  // CRUD Actions
   const handleUpdateBookingStatus = async (id: string, newStatus: string) => {
     try {
       await adminUpdateBooking(id, { status: newStatus });
       setBookings((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b))
       );
-      if (selectedBookingForModal?.id === id) {
-        setSelectedBookingForModal((prev: any) => ({ ...prev, status: newStatus }));
+      if (inspectBooking?.id === id) {
+        setInspectBooking((prev: any) => ({ ...prev, status: newStatus }));
       }
-      showToast(`Booking updated to ${newStatus.replace('_', ' ')}`);
+      showToast(`Booking marked as ${newStatus.replace('_', ' ')}`);
     } catch {
-      alert('Failed to update booking status');
+      alert('Failed to update status');
     }
   };
 
   const handleDeleteBooking = async (id: string) => {
-    if (!confirm('Are you sure you want to permanently delete this booking?')) return;
+    if (!confirm('Permanently delete this booking inquiry?')) return;
     try {
       await adminDeleteBooking(id);
       setBookings((prev) => prev.filter((b) => b.id !== id));
-      if (selectedBookingForModal?.id === id) setSelectedBookingForModal(null);
+      if (inspectBooking?.id === id) setInspectBooking(null);
       showToast('Booking record deleted');
     } catch {
       alert('Failed to delete booking');
@@ -260,16 +264,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   const handleUpdateOrderStatus = async (id: string, orderStatus: string, paymentStatus?: string) => {
     try {
-      const updatePayload: any = { orderStatus };
-      if (paymentStatus) updatePayload.paymentStatus = paymentStatus;
-      await adminUpdateOrder(id, updatePayload);
+      const payload: any = { orderStatus };
+      if (paymentStatus) payload.paymentStatus = paymentStatus;
+      await adminUpdateOrder(id, payload);
       setOrders((prev) =>
         prev.map((o) =>
           o.id === id ? { ...o, orderStatus, ...(paymentStatus && { paymentStatus }) } : o
         )
       );
-      if (selectedOrderForModal?.id === id) {
-        setSelectedOrderForModal((prev: any) => ({
+      if (inspectOrder?.id === id) {
+        setInspectOrder((prev: any) => ({
           ...prev,
           orderStatus,
           ...(paymentStatus && { paymentStatus }),
@@ -282,11 +286,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   const handleDeleteOrder = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this order?')) return;
+    if (!confirm('Permanently delete this order record?')) return;
     try {
       await adminDeleteOrder(id);
       setOrders((prev) => prev.filter((o) => o.id !== id));
-      if (selectedOrderForModal?.id === id) setSelectedOrderForModal(null);
+      if (inspectOrder?.id === id) setInspectOrder(null);
       showToast('Order record removed');
     } catch {
       alert('Failed to delete order');
@@ -310,19 +314,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setSettings(updated);
       setHeroImageFile(null);
       setHeroImagePreview('');
-      showToast('Studio settings and hero banner saved & published live!');
+      showToast('Settings & hero banner deployed live');
     } catch (err: any) {
       alert(err.message || 'Failed to save settings');
     } finally {
       setSavingSettings(false);
-    }
-  };
-
-  const handleHeroFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setHeroImageFile(file);
-      setHeroImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -350,8 +346,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setNewPieceTitle('');
       setNewPieceDescription('');
       setNewPieceImageFile(null);
+      setShowAddArtworkModal(false);
       loadPortfolio();
-      showToast('New artwork masterpiece published to portfolio gallery!');
+      showToast('Artwork published to gallery');
     } catch (err: any) {
       alert(err.message || 'Failed to upload artwork');
     } finally {
@@ -360,11 +357,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   const handleDeletePortfolioPiece = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this piece?')) return;
+    if (!confirm('Remove this artwork from the portfolio?')) return;
     try {
       await adminDeletePortfolioPiece(id);
       setPortfolioPieces((prev) => prev.filter((p) => p.id !== id));
-      showToast('Artwork piece deleted from portfolio');
+      showToast('Artwork deleted');
     } catch {
       alert('Failed to delete piece');
     }
@@ -389,8 +386,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setNewProdName('');
       setNewProdDesc('');
       setNewProdImageFile(null);
+      setShowAddProductModal(false);
       loadProducts();
-      showToast('Product added to studio inventory & shop!');
+      showToast('Item added to inventory');
     } catch (err: any) {
       alert(err.message || 'Failed to add product');
     } finally {
@@ -399,11 +397,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!confirm('Remove this item from the shop?')) return;
     try {
       await adminDeleteProduct(id);
       setProductsList((prev) => prev.filter((p) => p.id !== id));
-      showToast('Product removed from shop catalog');
+      showToast('Product removed');
     } catch {
       alert('Failed to delete product');
     }
@@ -423,8 +421,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       });
       setNewReviewName('');
       setNewReviewQuote('');
+      setShowAddReviewModal(false);
       loadTestimonials();
-      showToast('Client review published to homepage slider!');
+      showToast('Review published');
     } catch (err: any) {
       alert(err.message || 'Failed to add review');
     } finally {
@@ -433,7 +432,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   const handleDeleteTestimonial = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this review?')) return;
+    if (!confirm('Delete this client testimonial?')) return;
     try {
       await adminDeleteTestimonial(id);
       setTestimonialsList((prev) => prev.filter((t) => t.id !== id));
@@ -443,52 +442,46 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
-  // WhatsApp quick launcher
-  const openWhatsAppToClient = (phone: string, text: string) => {
-    const cleanPhone = phone.replace(/[^0-9]/g, '');
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+  const openWhatsApp = (phone: string, message: string) => {
+    const clean = phone.replace(/[^0-9]/g, '');
+    window.open(`https://wa.me/${clean}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  // Computed stat metrics
+  // Counts
   const pendingBookingsCount = bookings.filter((b) => b.status === 'PENDING_REVIEW').length;
   const pendingOrdersCount = orders.filter((o) => o.orderStatus === 'PENDING_PAYMENT' || o.orderStatus === 'PROCESSING').length;
-  const totalRevenueUGX = orders
+  const totalRevenue = orders
     .filter((o) => o.paymentStatus === 'SUCCESS')
     .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
-  // ================= RENDER LOGIN SCREEN ================= //
+  // ================= MINIMAL RED LOGIN SCREEN ================= //
   if (!isAuthenticated && !authLoading) {
     return (
-      <div className="w-full min-h-screen pt-28 pb-16 bg-noir-950 flex items-center justify-center px-4 relative overflow-hidden">
-        {/* Background ambient glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-crimson/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="w-full max-w-md bg-noir-900 border border-noir-700/80 p-8 gothic-card shadow-2xl space-y-6 relative z-10 rounded-sm">
-          <div className="text-center space-y-2">
-            <div className="w-14 h-14 rounded-full bg-crimson/20 border border-crimson/50 text-crimson-light flex items-center justify-center mx-auto mb-2 shadow-inner">
-              <Icons8 name="lock" size={28} />
+      <div className="w-full min-h-screen bg-[#07080b] flex items-center justify-center px-4 font-sans text-slate-100 selection:bg-red-600 selection:text-white">
+        <div className="w-full max-w-sm p-8 bg-[#0c0d12] border border-[#1a1d26] rounded-lg shadow-2xl space-y-6">
+          <div className="flex items-center gap-3 pb-2 border-b border-[#1a1d26]">
+            <div className="w-8 h-8 rounded-md bg-red-600/15 border border-red-600/40 flex items-center justify-center font-mono font-bold text-red-400 text-sm">
+              M
             </div>
-            <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-[0.3em] font-bold block">
-              MARVIN TATTOOS &amp; PIERCINGS
-            </span>
-            <h2 className="font-headline-lg text-2xl text-bone uppercase font-bold">
-              Atelier CMS Portal
-            </h2>
-            <p className="font-body-sm text-xs text-bone-dim">
-              Master control panel for bookings, shop orders, portfolio, and live site settings.
-            </p>
+            <div>
+              <h2 className="text-sm font-semibold tracking-tight text-white">
+                Marvin Atelier Admin
+              </h2>
+              <p className="text-[11px] text-slate-400 font-mono">
+                Kampala, Uganda · CMS v2.4
+              </p>
+            </div>
           </div>
 
           {authError && (
-            <div className="p-3.5 bg-red-950/60 border border-red-800 text-red-300 text-xs font-body-sm">
+            <div className="p-3 bg-red-950/40 border border-red-800/60 rounded text-red-300 text-xs font-mono">
               {authError}
             </div>
           )}
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
                 Admin Email
               </label>
               <input
@@ -496,13 +489,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson"
+                className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500 transition-colors"
                 placeholder="admin@marvintattoos.com"
               />
             </div>
 
             <div>
-              <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
                 Master Password
               </label>
               <input
@@ -510,7 +503,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson"
+                className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500 transition-colors"
                 placeholder="••••••••••••"
               />
             </div>
@@ -518,73 +511,87 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-crimson/40 flex items-center justify-center gap-2 font-bold"
+              className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-lg shadow-red-950/40 flex items-center justify-center gap-2"
             >
-              <Icons8 name="shield-alt" size={16} />
-              <span>Authenticate &amp; Enter CMS</span>
+              <span>Sign In to Dashboard</span>
+              <span>→</span>
             </button>
           </form>
 
-          <div className="pt-4 border-t border-noir-700/60 flex items-center justify-between text-xs text-bone-dim font-label-data">
+          <div className="pt-2 flex items-center justify-between text-[11px] text-slate-500 font-mono">
             <button
               onClick={() => onNavigate('home')}
-              className="hover:text-bone transition-colors underline"
+              className="hover:text-slate-300 transition-colors"
             >
-              ← Back to Live Site
+              ← Back to Site
             </button>
-            <span className="text-[10px] text-bone-dim/60 font-mono">v2.0.26 · Kampala</span>
+            <span>Auth v2.4</span>
           </div>
         </div>
       </div>
     );
   }
 
-  // ================= RENDER MAIN DASHBOARD ================= //
+  // ================= MINIMAL RED SAAS DASHBOARD ================= //
   return (
-    <div className="w-full min-h-screen pt-20 bg-noir-950 text-bone">
-      {/* Toast Notification Alert */}
+    <div className="min-h-screen bg-[#07080b] text-slate-200 font-sans flex flex-col md:flex-row selection:bg-red-600 selection:text-white antialiased">
+      {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 bg-noir-850 border border-gold/60 text-bone shadow-2xl flex items-center gap-3 animate-fade-in gothic-card max-w-md">
-          <div className="w-3 h-3 rounded-full bg-gold shrink-0 animate-pulse" />
-          <span className="font-label-caps text-xs uppercase tracking-wider text-bone font-bold">
-            {toastMessage}
-          </span>
+        <div className="fixed bottom-5 right-5 z-50 px-4 py-2.5 bg-[#12141c] border border-red-500/40 text-slate-100 rounded-md shadow-2xl flex items-center gap-2.5 text-xs font-mono animate-fade-in">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Admin Sticky Navigation Bar */}
-      <header className="w-full bg-noir-900 border-b border-noir-700/80 px-4 md:px-8 py-3.5 sticky top-20 z-40 shadow-xl">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+      {/* LEFT SIDEBAR RAIL */}
+      <aside className="w-full md:w-64 bg-[#0c0d12] border-r border-[#1a1d26] flex flex-col shrink-0">
+        {/* Workspace Brand Header */}
+        <div className="p-4 border-b border-[#1a1d26] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded bg-red-600/15 border border-red-600/40 flex items-center justify-center font-mono font-bold text-red-400 text-xs">
+              M
+            </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-title-editorial text-lg text-bone uppercase font-bold tracking-wider">
-                  Marvin Studio CMS
-                </h1>
-                <span className="px-1.5 py-0.5 bg-crimson/20 border border-crimson/40 text-crimson-light font-label-caps text-[9px] uppercase font-bold">
-                  Live
-                </span>
+              <div className="text-xs font-semibold text-white tracking-tight flex items-center gap-1.5">
+                <span>Marvin Atelier</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               </div>
-              <span className="font-label-caps text-[10px] text-bone-dim uppercase">
-                Admin: {adminUser?.name || 'Marvin'} ({adminUser?.email})
+              <span className="text-[10px] font-mono text-slate-500 block">
+                Pioneer Mall L5 · Kampala
               </span>
             </div>
           </div>
+          <button
+            onClick={() => onNavigate('home')}
+            className="text-[11px] font-mono text-slate-400 hover:text-white p-1 rounded hover:bg-[#161822] transition-colors"
+            title="Open Live Website"
+          >
+            ↗
+          </button>
+        </div>
 
-          {/* Navigation Tabs with Badges */}
-          <div className="flex items-center overflow-x-auto no-scrollbar gap-1 bg-noir-950 p-1 border border-noir-700/80 rounded-sm">
+        {/* Navigation Items */}
+        <nav className="flex-1 p-3 space-y-6 overflow-y-auto font-mono text-xs">
+          {/* Section: Operational */}
+          <div className="space-y-1">
+            <div className="px-2 py-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              Operations
+            </div>
+
             <button
               onClick={() => setActiveTab('bookings')}
-              className={`px-3 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-all ${
                 activeTab === 'bookings'
-                  ? 'bg-crimson text-bone font-bold shadow'
-                  : 'text-bone-dim hover:text-bone'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#13151f]'
               }`}
             >
-              <span>Bookings CRM</span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">📋</span>
+                <span>Inquiries</span>
+              </div>
               {pendingBookingsCount > 0 && (
-                <span className="px-1.5 py-0.2 bg-amber-500 text-noir-950 font-bold text-[9px] rounded-full">
+                <span className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">
                   {pendingBookingsCount}
                 </span>
               )}
@@ -592,687 +599,795 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
             <button
               onClick={() => setActiveTab('orders')}
-              className={`px-3 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-all ${
                 activeTab === 'orders'
-                  ? 'bg-crimson text-bone font-bold shadow'
-                  : 'text-bone-dim hover:text-bone'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#13151f]'
               }`}
             >
-              <span>Shop Orders</span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">📦</span>
+                <span>Shop Orders</span>
+              </div>
               {pendingOrdersCount > 0 && (
-                <span className="px-1.5 py-0.2 bg-gold text-noir-950 font-bold text-[9px] rounded-full">
+                <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px]">
                   {pendingOrdersCount}
                 </span>
               )}
             </button>
+          </div>
 
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`px-3 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-colors ${
-                activeTab === 'settings'
-                  ? 'bg-crimson text-bone font-bold shadow'
-                  : 'text-bone-dim hover:text-bone'
-              }`}
-            >
-              Hero &amp; Settings
-            </button>
+          {/* Section: Content & Catalog */}
+          <div className="space-y-1">
+            <div className="px-2 py-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              Catalog &amp; Media
+            </div>
 
             <button
               onClick={() => setActiveTab('portfolio')}
-              className={`px-3 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-colors ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-all ${
                 activeTab === 'portfolio'
-                  ? 'bg-crimson text-bone font-bold shadow'
-                  : 'text-bone-dim hover:text-bone'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#13151f]'
               }`}
             >
-              Portfolio CMS
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">🎨</span>
+                <span>Portfolio</span>
+              </div>
+              <span className="text-[10px] text-slate-500">{portfolioPieces.length}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('inventory')}
-              className={`px-3 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-colors ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-all ${
                 activeTab === 'inventory'
-                  ? 'bg-crimson text-bone font-bold shadow'
-                  : 'text-bone-dim hover:text-bone'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#13151f]'
               }`}
             >
-              Inventory
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">🏷️</span>
+                <span>Inventory</span>
+              </div>
+              <span className="text-[10px] text-slate-500">{productsList.length}</span>
             </button>
 
             <button
-              onClick={() => setActiveTab('testimonials')}
-              className={`px-3 py-1.5 font-label-caps text-xs uppercase tracking-wider transition-colors ${
-                activeTab === 'testimonials'
-                  ? 'bg-crimson text-bone font-bold shadow'
-                  : 'text-bone-dim hover:text-bone'
+              onClick={() => setActiveTab('reviews')}
+              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-all ${
+                activeTab === 'reviews'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#13151f]'
               }`}
             >
-              Reviews
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">⭐</span>
+                <span>Reviews</span>
+              </div>
+              <span className="text-[10px] text-slate-500">{testimonialsList.length}</span>
             </button>
           </div>
 
+          {/* Section: Configuration */}
+          <div className="space-y-1">
+            <div className="px-2 py-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              System
+            </div>
+
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-all ${
+                activeTab === 'settings'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#13151f]'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">⚙️</span>
+                <span>Hero &amp; Settings</span>
+              </div>
+            </button>
+          </div>
+        </nav>
+
+        {/* Sidebar Footer User Card */}
+        <div className="p-3 border-t border-[#1a1d26] bg-[#090a0f] flex items-center justify-between text-xs font-mono">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <div className="w-6 h-6 rounded-full bg-[#1a1d26] border border-[#2a2e3d] flex items-center justify-center text-[10px] font-bold text-slate-300">
+              M
+            </div>
+            <div className="truncate">
+              <span className="text-white text-[11px] block truncate font-semibold">Marvin</span>
+              <span className="text-[9px] text-slate-500 block truncate">admin@marvintattoos.com</span>
+            </div>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"
+            title="Sign Out"
+          >
+            ⎋
+          </button>
+        </div>
+      </aside>
+
+      {/* MAIN WORKSPACE CONTENT */}
+      <main className="flex-1 flex flex-col min-w-0 bg-[#07080b]">
+        {/* Top Minimal Header */}
+        <header className="h-14 px-6 border-b border-[#1a1d26] bg-[#0a0b10] flex items-center justify-between shrink-0">
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+            <span>Marvin Atelier</span>
+            <span>/</span>
+            <span className="text-white font-semibold capitalize">{activeTab}</span>
+          </div>
+
+          {/* Quick Metrics Bar */}
+          <div className="hidden lg:flex items-center gap-6 text-xs font-mono">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500">Pending Intake:</span>
+              <span className="text-red-400 font-bold">{pendingBookingsCount}</span>
+            </div>
+            <div className="w-px h-3 bg-[#1a1d26]" />
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500">Active Orders:</span>
+              <span className="text-amber-400 font-bold">{pendingOrdersCount}</span>
+            </div>
+            <div className="w-px h-3 bg-[#1a1d26]" />
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500">MoMo Revenue:</span>
+              <span className="text-emerald-400 font-bold">UGX {totalRevenue.toLocaleString()}</span>
+            </div>
+          </div>
+
+          {/* Right Action */}
           <div className="flex items-center gap-2">
+            {activeTab === 'portfolio' && (
+              <button
+                onClick={() => setShowAddArtworkModal(true)}
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <span>+ Upload Piece</span>
+              </button>
+            )}
+            {activeTab === 'inventory' && (
+              <button
+                onClick={() => setShowAddProductModal(true)}
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <span>+ Add Item</span>
+              </button>
+            )}
+            {activeTab === 'reviews' && (
+              <button
+                onClick={() => setShowAddReviewModal(true)}
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <span>+ Add Review</span>
+              </button>
+            )}
             <button
               onClick={() => onNavigate('home')}
-              className="px-3 py-1.5 bg-noir-850 hover:bg-noir-800 border border-noir-700 text-bone-dim hover:text-bone font-label-caps text-[11px] uppercase transition-colors"
+              className="px-3 py-1.5 bg-[#12141c] hover:bg-[#1a1d26] border border-[#222736] text-slate-300 rounded text-xs font-mono transition-colors"
             >
-              Live Site ↗
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900 border border-red-800 text-red-300 font-label-caps text-[11px] uppercase transition-colors"
-            >
-              Sign Out
+              Live Site
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Admin Content */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
-        {/* Quick Stats Metric Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 bg-noir-900 border border-noir-700/80 gothic-card space-y-1">
-            <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider block">
-              Total Inquiries
-            </span>
-            <div className="font-headline-lg text-2xl text-bone font-bold">
-              {bookings.length}
-            </div>
-            <span className="font-label-data text-[11px] text-amber-400">
-              {pendingBookingsCount} Pending Review
-            </span>
-          </div>
+        {/* Viewport Content */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          {/* ================= 1. BOOKINGS CRM TABLE ================= */}
+          {activeTab === 'bookings' && (
+            <div className="space-y-4">
+              {/* Filter & Search Toolbar */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                {/* Status Pills */}
+                <div className="flex items-center gap-1 bg-[#0c0d12] p-1 rounded-md border border-[#1a1d26] font-mono text-xs">
+                  {['ALL', 'PENDING_REVIEW', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => {
+                        setBookingFilterStatus(st);
+                        setTimeout(loadBookings, 50);
+                      }}
+                      className={`px-2.5 py-1 rounded transition-colors text-[11px] ${
+                        bookingFilterStatus === st
+                          ? 'bg-red-600/20 text-red-400 border border-red-600/40 font-semibold'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {st === 'ALL' ? 'All' : st.replace('_', ' ')}
+                    </button>
+                  ))}
+                </div>
 
-          <div className="p-4 bg-noir-900 border border-noir-700/80 gothic-card space-y-1">
-            <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider block">
-              Shop Orders
-            </span>
-            <div className="font-headline-lg text-2xl text-bone font-bold">
-              {orders.length}
-            </div>
-            <span className="font-label-data text-[11px] text-gold">
-              {pendingOrdersCount} In Fulfillment
-            </span>
-          </div>
-
-          <div className="p-4 bg-noir-900 border border-noir-700/80 gothic-card space-y-1">
-            <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider block">
-              Collected Revenue
-            </span>
-            <div className="font-headline-lg text-2xl text-crimson-light font-bold">
-              UGX {totalRevenueUGX.toLocaleString()}
-            </div>
-            <span className="font-label-data text-[11px] text-emerald-400">
-              Verified Payments
-            </span>
-          </div>
-
-          <div className="p-4 bg-noir-900 border border-noir-700/80 gothic-card space-y-1">
-            <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider block">
-              Portfolio &amp; Shop
-            </span>
-            <div className="font-headline-lg text-2xl text-bone font-bold">
-              {portfolioPieces.length} / {productsList.length}
-            </div>
-            <span className="font-label-data text-[11px] text-bone-muted">
-              Art Pieces / Items
-            </span>
-          </div>
-        </div>
-
-        {/* ================= TAB 1: BOOKINGS CRM ================= */}
-        {activeTab === 'bookings' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-              <div>
-                <h2 className="font-headline-lg text-2xl uppercase font-bold text-bone">
-                  Client Consultations &amp; Booking Intake
-                </h2>
-                <p className="font-body-sm text-xs text-bone-dim">
-                  Review project descriptions, inspect reference photos, update status, and message clients on WhatsApp.
-                </p>
-              </div>
-
-              {/* Status Filters & Search */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={bookingSearch}
-                  onChange={(e) => setBookingSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && loadBookings()}
-                  placeholder="Search name, phone, ref..."
-                  className="px-3 py-1.5 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                />
-                <button
-                  onClick={loadBookings}
-                  className="px-3 py-1.5 bg-noir-800 hover:bg-noir-700 border border-noir-700 text-bone font-label-caps text-xs uppercase"
-                >
-                  Search
-                </button>
-              </div>
-            </div>
-
-            {/* Status Pills */}
-            <div className="flex flex-wrap items-center gap-2">
-              {['ALL', 'PENDING_REVIEW', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map((st) => (
-                <button
-                  key={st}
-                  onClick={() => {
-                    setBookingFilterStatus(st);
-                    setTimeout(loadBookings, 50);
-                  }}
-                  className={`px-3 py-1 font-label-caps text-[11px] uppercase transition-colors border ${
-                    bookingFilterStatus === st
-                      ? 'bg-crimson text-bone border-crimson font-bold'
-                      : 'bg-noir-850 text-bone-dim hover:text-bone border-noir-700'
-                  }`}
-                >
-                  {st.replace('_', ' ')}
-                </button>
-              ))}
-            </div>
-
-            {/* Bookings List */}
-            {loadingBookings ? (
-              <div className="py-16 text-center text-bone-dim text-sm">
-                Loading bookings...
-              </div>
-            ) : bookings.length === 0 ? (
-              <div className="py-16 text-center bg-noir-900 border border-noir-700/60 p-8 space-y-2">
-                <Icons8 name="calendar-check" size={40} className="text-bone-dim/40 mx-auto" />
-                <p className="font-title-editorial text-bone uppercase text-base">
-                  No bookings found
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {bookings.map((b) => (
-                  <div
-                    key={b.id}
-                    className="p-5 bg-noir-900 border border-noir-700/80 gothic-card flex flex-col lg:flex-row justify-between gap-6"
+                {/* Search Bar */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="text"
+                    value={bookingSearch}
+                    onChange={(e) => setBookingSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && loadBookings()}
+                    placeholder="Search client, phone, ref..."
+                    className="w-full sm:w-64 px-3 py-1.5 bg-[#0c0d12] border border-[#1a1d26] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  />
+                  <button
+                    onClick={loadBookings}
+                    className="px-3 py-1.5 bg-[#141722] hover:bg-[#1c2030] border border-[#222736] rounded text-xs font-mono text-slate-200"
                   >
-                    <div className="space-y-3 flex-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-label-data text-xs font-bold text-crimson-light bg-crimson/10 px-2.5 py-1 border border-crimson/30">
-                          {b.referenceCode}
-                        </span>
-                        <span
-                          className={`font-label-caps text-[10px] uppercase px-2 py-0.5 font-bold ${
-                            b.status === 'CONFIRMED'
-                              ? 'bg-emerald-950/60 border border-emerald-500 text-emerald-300'
-                              : b.status === 'COMPLETED'
-                              ? 'bg-blue-950/60 border border-blue-500 text-blue-300'
-                              : b.status === 'CANCELLED'
-                              ? 'bg-red-950/60 border border-red-500 text-red-300'
-                              : 'bg-amber-950/60 border border-amber-500 text-amber-300'
-                          }`}
+                    Filter
+                  </button>
+                </div>
+              </div>
+
+              {/* High Density Table */}
+              <div className="bg-[#0c0d12] border border-[#1a1d26] rounded-lg overflow-hidden">
+                <table className="w-full text-left font-mono text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#1a1d26] bg-[#090a0f] text-slate-500 text-[10px] uppercase tracking-wider">
+                      <th className="p-3 pl-4">Ref Code</th>
+                      <th className="p-3">Client</th>
+                      <th className="p-3">Discipline &amp; Placement</th>
+                      <th className="p-3">Preferred Slot</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right pr-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#1a1d26]">
+                    {loadingBookings ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-slate-500">
+                          Loading consultations...
+                        </td>
+                      </tr>
+                    ) : bookings.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-slate-500">
+                          No inquiries found.
+                        </td>
+                      </tr>
+                    ) : (
+                      bookings.map((b) => (
+                        <tr
+                          key={b.id}
+                          onClick={() => setInspectBooking(b)}
+                          className="hover:bg-[#11131a] cursor-pointer transition-colors group"
                         >
-                          {b.status.replace('_', ' ')}
-                        </span>
-                        <span className="font-label-data text-[11px] text-bone-dim">
-                          Date: {new Date(b.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-1 font-body-sm text-xs">
-                        <div>
-                          <span className="text-bone-dim block font-label-caps text-[10px] uppercase">
-                            Client Details
-                          </span>
-                          <span className="text-bone font-bold text-sm">{b.clientName}</span>
-                          <div className="text-bone-dim text-[11px]">{b.clientPhone}</div>
-                          <div className="text-bone-dim text-[11px]">{b.clientEmail}</div>
-                        </div>
-
-                        <div>
-                          <span className="text-bone-dim block font-label-caps text-[10px] uppercase">
-                            Discipline &amp; Placement
-                          </span>
-                          <span className="text-bone font-bold capitalize">
-                            {b.serviceType.replace('_', ' ')}
-                          </span>
-                          <div className="text-gold font-bold">{b.placement} ({b.size})</div>
-                        </div>
-
-                        <div>
-                          <span className="text-bone-dim block font-label-caps text-[10px] uppercase">
-                            Preferred Session Slot
-                          </span>
-                          <span className="text-bone font-bold">
-                            {new Date(b.preferredDate).toLocaleDateString()}
-                          </span>
-                          <div className="text-bone-dim capitalize">{b.timeSlot} Session</div>
-                        </div>
-                      </div>
-
-                      {/* Description & Reference Photo */}
-                      <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-2 text-xs">
-                        <div className="font-label-caps text-[10px] text-gold uppercase font-bold">
-                          Client Project Brief:
-                        </div>
-                        <p className="text-bone leading-relaxed">{b.description}</p>
-
-                        {b.referenceImage && (
-                          <div className="pt-2 border-t border-noir-700/40 flex items-center gap-3">
-                            <img
-                              src={b.referenceImage}
-                              alt="Client Reference"
-                              className="w-16 h-16 object-cover border border-noir-700 cursor-pointer hover:opacity-90"
-                              onClick={() => setSelectedBookingForModal(b)}
-                            />
-                            <div>
-                              <span className="font-label-caps text-[10px] text-crimson-light uppercase block font-bold">
-                                Uploaded Photo Attached
-                              </span>
+                          <td className="p-3 pl-4">
+                            <span className="font-semibold text-red-400 bg-red-950/40 px-1.5 py-0.5 rounded border border-red-800/40 text-[11px]">
+                              {b.referenceCode}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <div className="font-semibold text-white group-hover:text-red-300 transition-colors">
+                              {b.clientName}
+                            </div>
+                            <div className="text-[11px] text-slate-500">{b.clientPhone}</div>
+                          </td>
+                          <td className="p-3">
+                            <span className="text-slate-300 capitalize block font-semibold">
+                              {b.serviceType.replace('_', ' ')}
+                            </span>
+                            <span className="text-[11px] text-slate-500">
+                              {b.placement} ({b.size})
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <div className="text-slate-300">
+                              {new Date(b.preferredDate).toLocaleDateString()}
+                            </div>
+                            <div className="text-[11px] text-slate-500 capitalize">{b.timeSlot}</div>
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                b.status === 'CONFIRMED'
+                                  ? 'bg-emerald-950/50 text-emerald-300 border border-emerald-800/60'
+                                  : b.status === 'COMPLETED'
+                                  ? 'bg-blue-950/50 text-blue-300 border border-blue-800/60'
+                                  : b.status === 'CANCELLED'
+                                  ? 'bg-red-950/50 text-red-300 border border-red-800/60'
+                                  : 'bg-amber-950/50 text-amber-300 border border-amber-800/60'
+                              }`}
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  b.status === 'CONFIRMED'
+                                    ? 'bg-emerald-400'
+                                    : b.status === 'COMPLETED'
+                                    ? 'bg-blue-400'
+                                    : b.status === 'CANCELLED'
+                                    ? 'bg-red-400'
+                                    : 'bg-amber-400'
+                                }`}
+                              />
+                              <span>{b.status.replace('_', ' ')}</span>
+                            </span>
+                          </td>
+                          <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => setSelectedBookingForModal(b)}
-                                className="text-xs text-gold underline font-label-caps uppercase"
+                                onClick={() =>
+                                  openWhatsApp(
+                                    b.clientPhone,
+                                    `Hello ${b.clientName}! This is Marvin from Marvin Tattoos Atelier regarding your booking request [${b.referenceCode}]. We are pleased to confirm your session at New Pioneer Mall, Level 5.`
+                                  )
+                                }
+                                className="px-2.5 py-1 bg-emerald-950/40 hover:bg-emerald-900 border border-emerald-800/60 text-emerald-300 rounded text-[11px] transition-colors"
                               >
-                                View Full Image
+                                WhatsApp
+                              </button>
+                              <button
+                                onClick={() => setInspectBooking(b)}
+                                className="px-2.5 py-1 bg-[#161822] hover:bg-[#202332] border border-[#262a3c] text-slate-300 rounded text-[11px] transition-colors"
+                              >
+                                Details →
                               </button>
                             </div>
-                          </div>
-                        )}
-
-                        {b.notes && (
-                          <div className="pt-2 border-t border-noir-700/40 text-bone-dim">
-                            <span className="text-crimson-light font-bold">Client Allergies/Notes: </span>
-                            {b.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Actions & WhatsApp Templates */}
-                    <div className="flex flex-col justify-between items-end gap-3 min-w-[210px] shrink-0 border-t lg:border-t-0 lg:border-l border-noir-700/60 pt-4 lg:pt-0 lg:pl-6">
-                      <div className="w-full space-y-1.5">
-                        <span className="font-label-caps text-[10px] text-bone-dim uppercase block font-bold">
-                          Status Workflow
-                        </span>
-                        <select
-                          value={b.status}
-                          onChange={(e) => handleUpdateBookingStatus(b.id, e.target.value)}
-                          className="w-full px-3 py-1.5 bg-noir-850 border border-noir-700 text-bone font-label-caps text-xs uppercase focus:outline-none focus:border-crimson"
-                        >
-                          <option value="PENDING_REVIEW">Pending Review</option>
-                          <option value="CONFIRMED">Confirmed</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="CANCELLED">Cancelled</option>
-                        </select>
-                      </div>
-
-                      <div className="w-full flex flex-col gap-2">
-                        <button
-                          onClick={() =>
-                            openWhatsAppToClient(
-                              b.clientPhone,
-                              `Hello ${b.clientName}! This is Marvin from Marvin Tattoos Atelier regarding your booking request [${b.referenceCode}] for ${b.serviceType}. Your consultation has been reviewed and confirmed. We look forward to welcoming you at Level 5, New Pioneer Mall!`
-                            )
-                          }
-                          className="w-full py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow"
-                        >
-                          <Icons8 name="whatsapp" size={14} />
-                          <span>WhatsApp Client</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleDeleteBooking(b.id)}
-                          className="w-full py-1.5 bg-noir-850 hover:bg-red-950/60 hover:text-red-300 text-bone-dim font-label-caps text-[10px] uppercase transition-colors border border-noir-700"
-                        >
-                          Delete Inquiry
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* ================= TAB 2: SHOP ORDERS ================= */}
-        {activeTab === 'orders' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-              <div>
-                <h2 className="font-headline-lg text-2xl uppercase font-bold text-bone">
-                  Customer Orders &amp; Fulfillment
-                </h2>
-                <p className="font-body-sm text-xs text-bone-dim">
-                  Manage aftercare supplies, needles, and titanium jewelry purchases with Uganda payment rails.
-                </p>
+          {/* ================= 2. SHOP ORDERS TABLE ================= */}
+          {activeTab === 'orders' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                {/* Status Filter */}
+                <div className="flex items-center gap-1 bg-[#0c0d12] p-1 rounded-md border border-[#1a1d26] font-mono text-xs">
+                  {['ALL', 'PENDING_PAYMENT', 'PROCESSING', 'READY_FOR_PICKUP', 'DISPATCHED', 'COMPLETED'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => {
+                        setOrderFilterStatus(st);
+                        setTimeout(loadOrders, 50);
+                      }}
+                      className={`px-2.5 py-1 rounded transition-colors text-[11px] ${
+                        orderFilterStatus === st
+                          ? 'bg-red-600/20 text-red-400 border border-red-600/40 font-semibold'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {st === 'ALL' ? 'All' : st.replace('_', ' ')}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="text"
+                    value={orderSearch}
+                    onChange={(e) => setOrderSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && loadOrders()}
+                    placeholder="Search order #, client..."
+                    className="w-full sm:w-64 px-3 py-1.5 bg-[#0c0d12] border border-[#1a1d26] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  />
+                  <button
+                    onClick={loadOrders}
+                    className="px-3 py-1.5 bg-[#141722] hover:bg-[#1c2030] border border-[#222736] rounded text-xs font-mono text-slate-200"
+                  >
+                    Filter
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={orderSearch}
-                  onChange={(e) => setOrderSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && loadOrders()}
-                  placeholder="Search order #, phone..."
-                  className="px-3 py-1.5 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                />
+              {/* Orders Table */}
+              <div className="bg-[#0c0d12] border border-[#1a1d26] rounded-lg overflow-hidden">
+                <table className="w-full text-left font-mono text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#1a1d26] bg-[#090a0f] text-slate-500 text-[10px] uppercase tracking-wider">
+                      <th className="p-3 pl-4">Order #</th>
+                      <th className="p-3">Customer</th>
+                      <th className="p-3">Fulfillment</th>
+                      <th className="p-3">Payment</th>
+                      <th className="p-3">Amount</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right pr-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#1a1d26]">
+                    {loadingOrders ? (
+                      <tr>
+                        <td colSpan={7} className="p-8 text-center text-slate-500">
+                          Loading shop orders...
+                        </td>
+                      </tr>
+                    ) : orders.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="p-8 text-center text-slate-500">
+                          No orders placed yet.
+                        </td>
+                      </tr>
+                    ) : (
+                      orders.map((o) => (
+                        <tr
+                          key={o.id}
+                          onClick={() => setInspectOrder(o)}
+                          className="hover:bg-[#11131a] cursor-pointer transition-colors group"
+                        >
+                          <td className="p-3 pl-4 font-semibold text-white">
+                            {o.orderNumber}
+                          </td>
+                          <td className="p-3">
+                            <div className="font-semibold text-slate-200">{o.clientName}</div>
+                            <div className="text-[11px] text-slate-500">{o.clientPhone}</div>
+                          </td>
+                          <td className="p-3">
+                            <span className="text-slate-300">
+                              {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
+                            </span>
+                            {o.deliveryAddress && (
+                              <span className="text-[10px] text-slate-500 block truncate max-w-xs">
+                                {o.deliveryAddress}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                                o.paymentStatus === 'SUCCESS'
+                                  ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-800/60'
+                                  : 'bg-amber-950/40 text-amber-300 border border-amber-800/60'
+                              }`}
+                            >
+                              {o.paymentMethod} ({o.paymentStatus})
+                            </span>
+                          </td>
+                          <td className="p-3 font-semibold text-red-400">
+                            UGX {o.totalAmount?.toLocaleString()}
+                          </td>
+                          <td className="p-3">
+                            <span className="text-slate-300 text-[11px]">
+                              {o.orderStatus.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() =>
+                                  openWhatsApp(
+                                    o.clientPhone,
+                                    `Hello ${o.clientName}! This is Marvin Tattoos Atelier regarding Order #${o.orderNumber}. Your items are prepared.`
+                                  )
+                                }
+                                className="px-2.5 py-1 bg-emerald-950/40 hover:bg-emerald-900 border border-emerald-800/60 text-emerald-300 rounded text-[11px]"
+                              >
+                                WhatsApp
+                              </button>
+                              <button
+                                onClick={() => setInspectOrder(o)}
+                                className="px-2.5 py-1 bg-[#161822] hover:bg-[#202332] border border-[#262a3c] text-slate-300 rounded text-[11px]"
+                              >
+                                View →
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ================= 3. PORTFOLIO CMS ================= */}
+          {activeTab === 'portfolio' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <div className="font-mono text-xs text-slate-400">
+                  Total Artworks: <span className="text-white font-bold">{portfolioPieces.length}</span>
+                </div>
                 <button
-                  onClick={loadOrders}
-                  className="px-3 py-1.5 bg-noir-800 hover:bg-noir-700 border border-noir-700 text-bone font-label-caps text-xs uppercase"
+                  onClick={() => setShowAddArtworkModal(true)}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors"
                 >
-                  Search
+                  + Add Masterpiece
                 </button>
               </div>
-            </div>
 
-            {loadingOrders ? (
-              <div className="py-16 text-center text-bone-dim text-sm">
-                Loading orders...
-              </div>
-            ) : orders.length === 0 ? (
-              <div className="py-16 text-center bg-noir-900 border border-noir-700/60 p-8 space-y-2">
-                <Icons8 name="shopping-bag" size={40} className="text-bone-dim/40 mx-auto" />
-                <p className="font-title-editorial text-bone uppercase text-base">
-                  No orders found
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {orders.map((o) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {portfolioPieces.map((p) => (
                   <div
-                    key={o.id}
-                    className="p-5 bg-noir-900 border border-noir-700/80 gothic-card flex flex-col lg:flex-row justify-between gap-6"
+                    key={p.id}
+                    className="bg-[#0c0d12] border border-[#1a1d26] rounded-lg overflow-hidden flex flex-col justify-between group"
                   >
-                    <div className="space-y-3 flex-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-label-data text-xs font-bold text-bone bg-noir-800 px-2.5 py-1 border border-noir-700">
-                          {o.orderNumber}
-                        </span>
-                        <span
-                          className={`font-label-caps text-[10px] uppercase px-2 py-0.5 font-bold ${
-                            o.paymentStatus === 'SUCCESS'
-                              ? 'bg-emerald-950/60 border border-emerald-500 text-emerald-300'
-                              : 'bg-amber-950/60 border border-amber-500 text-amber-300'
-                          }`}
-                        >
-                          Payment: {o.paymentStatus}
-                        </span>
-                        <span className="font-label-caps text-[10px] uppercase px-2 py-0.5 bg-noir-850 border border-noir-700 text-bone-dim">
-                          {o.orderStatus.replace('_', ' ')}
-                        </span>
-                        <span className="font-label-data text-[11px] text-bone-dim">
-                          {new Date(o.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-1 font-body-sm text-xs">
-                        <div>
-                          <span className="text-bone-dim block font-label-caps text-[10px] uppercase">
-                            Customer
-                          </span>
-                          <span className="text-bone font-bold text-sm">{o.clientName}</span>
-                          <div className="text-bone-dim">{o.clientPhone}</div>
-                          <div className="text-bone-dim">{o.clientEmail}</div>
-                        </div>
-
-                        <div>
-                          <span className="text-bone-dim block font-label-caps text-[10px] uppercase">
-                            Fulfillment
-                          </span>
-                          <span className="text-gold font-bold">
-                            {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup (Level 5)' : 'Kampala Dispatch'}
-                          </span>
-                          <div className="text-bone-dim">Method: {o.paymentMethod}</div>
-                          {o.deliveryAddress && (
-                            <div className="text-bone-dim text-[11px] truncate">
-                              Address: {o.deliveryAddress}
-                            </div>
-                          )}
-                        </div>
-
-                        <div>
-                          <span className="text-bone-dim block font-label-caps text-[10px] uppercase">
-                            Total Due
-                          </span>
-                          <span className="text-crimson-light font-bold text-base">
-                            UGX {o.totalAmount.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Items Breakdown */}
-                      <div className="p-3 bg-noir-850 border border-noir-700/60 space-y-1 text-xs">
-                        <span className="font-label-caps text-[10px] text-bone-dim uppercase block font-bold">
-                          Line Items:
-                        </span>
-                        {(o.items || []).map((item: any, idx: number) => (
-                          <div key={idx} className="flex justify-between text-bone-dim">
-                            <span>
-                              {item.quantity}x {item.product?.name || 'Supply Item'}
-                            </span>
-                            <span>UGX {(item.unitPrice * item.quantity).toLocaleString()}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="h-44 bg-[#07080b] relative overflow-hidden">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#0c0d12]/90 border border-[#222736] text-[10px] font-mono text-red-400 rounded">
+                        {p.category}
+                      </span>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex flex-col justify-between items-end gap-3 min-w-[210px] shrink-0 border-t lg:border-t-0 lg:border-l border-noir-700/60 pt-4 lg:pt-0 lg:pl-6">
-                      <div className="w-full space-y-1.5">
-                        <span className="font-label-caps text-[10px] text-bone-dim uppercase block font-bold">
-                          Order Progress
-                        </span>
-                        <select
-                          value={o.orderStatus}
-                          onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                          className="w-full px-3 py-1.5 bg-noir-850 border border-noir-700 text-bone font-label-caps text-xs uppercase focus:outline-none focus:border-crimson"
-                        >
-                          <option value="PENDING_PAYMENT">Pending Payment</option>
-                          <option value="PROCESSING">Processing</option>
-                          <option value="READY_FOR_PICKUP">Ready for Pickup</option>
-                          <option value="DISPATCHED">Dispatched with Rider</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="CANCELLED">Cancelled</option>
-                        </select>
+                    <div className="p-3.5 space-y-2 font-mono text-xs">
+                      <h4 className="font-semibold text-white truncate">{p.title}</h4>
+                      <div className="text-[11px] text-slate-400 flex justify-between">
+                        <span>{p.zone}</span>
+                        <span className="text-slate-500">{p.duration || 'Session'}</span>
                       </div>
+                      <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                        {p.description}
+                      </p>
 
-                      <div className="w-full flex flex-col gap-2">
+                      <div className="pt-2 border-t border-[#1a1d26] flex justify-between items-center">
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {p.pigment || 'Triple Black'}
+                        </span>
                         <button
-                          onClick={() =>
-                            openWhatsAppToClient(
-                              o.clientPhone,
-                              `Hello ${o.clientName}! This is Marvin Tattoos Atelier with an update on Order #${o.orderNumber}. Your items are prepared and ready for ${o.deliveryMethod === 'STUDIO_PICKUP' ? 'pickup at Pioneer Mall Level 5' : 'dispatch to your address'}.`
-                            )
-                          }
-                          className="w-full py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+                          onClick={() => handleDeletePortfolioPiece(p.id)}
+                          className="text-[10px] text-red-400 hover:text-red-300 transition-colors"
                         >
-                          <Icons8 name="whatsapp" size={14} />
-                          <span>WhatsApp Update</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleDeleteOrder(o.id)}
-                          className="w-full py-1.5 bg-noir-850 hover:bg-red-950/60 hover:text-red-300 text-bone-dim font-label-caps text-[10px] uppercase transition-colors border border-noir-700"
-                        >
-                          Delete Order
+                          Delete
                         </button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* ================= TAB 3: HERO & SITE SETTINGS ================= */}
-        {activeTab === 'settings' && (
-          <form onSubmit={handleSaveSettings} className="space-y-8 max-w-4xl">
-            <div>
-              <h2 className="font-headline-lg text-2xl uppercase font-bold text-bone">
-                Hero Banner, Statements &amp; Studio Info
-              </h2>
-              <p className="font-body-sm text-xs text-bone-dim">
-                Real-time visual editor with Sharp WebP image compression, dark overlay simulator, and social links.
-              </p>
             </div>
+          )}
 
-            {/* Hero Image Studio */}
-            <div className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                1. Hero Banner Visual &amp; Darkness Filter
-              </h3>
+          {/* ================= 4. INVENTORY CMS ================= */}
+          {activeTab === 'inventory' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <div className="font-mono text-xs text-slate-400">
+                  Shop Catalog: <span className="text-white font-bold">{productsList.length}</span> items
+                </div>
+                <button
+                  onClick={() => setShowAddProductModal(true)}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors"
+                >
+                  + Add Product
+                </button>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                <div className="md:col-span-5 h-52 bg-noir-950 border border-noir-700 overflow-hidden relative shadow-inner">
-                  <img
-                    src={heroImagePreview || settings.heroBannerUrl}
-                    alt="Hero Banner Preview"
-                    className="w-full h-full object-cover"
-                  />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {productsList.map((prod) => (
                   <div
-                    className="absolute inset-0 bg-noir-950 pointer-events-none transition-opacity duration-300"
-                    style={{ opacity: settings.heroOpacity }}
-                  />
-                  <span className="absolute bottom-2 left-2 px-2 py-1 bg-noir-950/90 text-[10px] font-label-caps text-bone uppercase border border-noir-700 font-bold">
-                    Live Banner Preview
-                  </span>
+                    key={prod.id}
+                    className="bg-[#0c0d12] border border-[#1a1d26] rounded-lg overflow-hidden flex flex-col justify-between"
+                  >
+                    <div className="h-36 bg-[#07080b] relative overflow-hidden">
+                      <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#0c0d12]/90 border border-[#222736] text-[10px] font-mono text-red-400 rounded">
+                        {prod.category}
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 space-y-2 font-mono text-xs">
+                      <h4 className="font-semibold text-white truncate">{prod.name}</h4>
+                      <div className="text-sm font-bold text-red-400">
+                        UGX {prod.price.toLocaleString()}
+                      </div>
+                      <p className="text-[11px] text-slate-500 line-clamp-2">
+                        {prod.description}
+                      </p>
+
+                      <div className="pt-2 border-t border-[#1a1d26] flex justify-between items-center">
+                        <span className="text-[10px] text-emerald-400">In Stock</span>
+                        <button
+                          onClick={() => handleDeleteProduct(prod.id)}
+                          className="text-[10px] text-red-400 hover:text-red-300 transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ================= 5. REVIEWS CMS ================= */}
+          {activeTab === 'reviews' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <div className="font-mono text-xs text-slate-400">
+                  Published Reviews: <span className="text-white font-bold">{testimonialsList.length}</span>
+                </div>
+                <button
+                  onClick={() => setShowAddReviewModal(true)}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors"
+                >
+                  + Add Review
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {testimonialsList.map((t) => (
+                  <div
+                    key={t.id}
+                    className="p-4 bg-[#0c0d12] border border-[#1a1d26] rounded-lg space-y-3 font-mono text-xs flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-semibold text-white">{t.name}</span>
+                        <span className="text-amber-400">{'★'.repeat(t.stars)}</span>
+                      </div>
+                      <span className="text-[10px] text-red-400 block mb-2">{t.role}</span>
+                      <p className="text-[11px] text-slate-400 italic leading-relaxed">
+                        "{t.quote}"
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-[#1a1d26] flex justify-end">
+                      <button
+                        onClick={() => handleDeleteTestimonial(t.id)}
+                        className="text-[10px] text-red-400 hover:text-red-300"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ================= 6. HERO & SETTINGS STUDIO ================= */}
+          {activeTab === 'settings' && (
+            <form onSubmit={handleSaveSettings} className="space-y-6 max-w-4xl font-mono text-xs">
+              {/* Hero Visual Block */}
+              <div className="p-5 bg-[#0c0d12] border border-[#1a1d26] rounded-lg space-y-4">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-[#1a1d26] pb-2">
+                  1. Hero Banner Visual &amp; Darkness Opacity
                 </div>
 
-                <div className="md:col-span-7 space-y-4">
-                  <div>
-                    <label className="block font-label-caps text-xs uppercase text-bone mb-1 font-bold">
-                      Upload New Banner Photo
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleHeroFileSelect}
-                      className="w-full text-xs text-bone-dim file:mr-3 file:py-2 file:px-4 file:border-0 file:bg-crimson file:text-bone file:font-label-caps file:text-xs file:uppercase file:cursor-pointer"
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                  <div className="md:col-span-5 h-44 bg-[#07080b] border border-[#222736] rounded overflow-hidden relative">
+                    <img
+                      src={heroImagePreview || settings.heroBannerUrl}
+                      alt="Hero Preview"
+                      className="w-full h-full object-cover"
                     />
+                    <div
+                      className="absolute inset-0 bg-[#07080b] pointer-events-none"
+                      style={{ opacity: settings.heroOpacity }}
+                    />
+                    <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-[#0c0d12]/90 border border-[#222736] text-[9px] text-slate-300 rounded font-semibold">
+                      Live Hero Preview
+                    </span>
                   </div>
 
-                  <div>
-                    <div className="flex justify-between font-label-caps text-xs uppercase text-bone mb-1 font-bold">
-                      <span>Dark Gothic Overlay Opacity</span>
-                      <span className="text-gold font-bold">{Math.round(settings.heroOpacity * 100)}%</span>
+                  <div className="md:col-span-7 space-y-4">
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1.5">
+                        Upload New Banner Photo (Sharp WebP)
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            const f = e.target.files[0];
+                            setHeroImageFile(f);
+                            setHeroImagePreview(URL.createObjectURL(f));
+                          }
+                        }}
+                        className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded file:cursor-pointer"
+                      />
                     </div>
-                    <input
-                      type="range"
-                      min="0.1"
-                      max="0.85"
-                      step="0.05"
-                      value={settings.heroOpacity}
-                      onChange={(e) =>
-                        setSettings({ ...settings, heroOpacity: parseFloat(e.target.value) })
-                      }
-                      className="w-full accent-crimson cursor-pointer"
-                    />
-                    <p className="font-body-sm text-[11px] text-bone-dim pt-1">
-                      Controls dark contrast behind the main headline text for readability.
-                    </p>
+
+                    <div>
+                      <div className="flex justify-between text-[11px] text-slate-400 mb-1">
+                        <span>Overlay Darkness Opacity</span>
+                        <span className="text-red-400 font-bold">{Math.round(settings.heroOpacity * 100)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="0.85"
+                        step="0.05"
+                        value={settings.heroOpacity}
+                        onChange={(e) =>
+                          setSettings({ ...settings, heroOpacity: parseFloat(e.target.value) })
+                        }
+                        className="w-full accent-red-600 cursor-pointer"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Editorial Copy */}
-            <div className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                2. Headline Copywriting
-              </h3>
+              {/* Statements */}
+              <div className="p-5 bg-[#0c0d12] border border-[#1a1d26] rounded-lg space-y-4">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-[#1a1d26] pb-2">
+                  2. Hero Editorial Statements
+                </div>
 
-              <div className="space-y-4">
                 <div>
-                  <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1 font-bold">
-                    Hero Headline Statement
-                  </label>
+                  <label className="block text-[11px] text-slate-400 mb-1">Headline Statement</label>
                   <input
                     type="text"
                     value={settings.heroStatement}
                     onChange={(e) => setSettings({ ...settings, heroStatement: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-sm focus:outline-none focus:border-crimson"
+                    className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1 font-bold">
-                    Hero Subtext Description
-                  </label>
+                  <label className="block text-[11px] text-slate-400 mb-1">Subtext Description</label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     value={settings.heroSubtext}
                     onChange={(e) => setSettings({ ...settings, heroSubtext: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-sm focus:outline-none focus:border-crimson"
+                    className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Contacts & Address */}
-            <div className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                3. Studio Phone &amp; Physical Address
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1 font-bold">
-                    Studio Desk Phone
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.primaryPhone}
-                    onChange={(e) => setSettings({ ...settings, primaryPhone: e.target.value })}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-sm focus:outline-none focus:border-crimson"
-                  />
+              {/* Studio Info */}
+              <div className="p-5 bg-[#0c0d12] border border-[#1a1d26] rounded-lg space-y-4">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-[#1a1d26] pb-2">
+                  3. Studio Contacts &amp; Coordinates
                 </div>
 
-                <div>
-                  <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1 font-bold">
-                    WhatsApp Direct Line
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.whatsappNumber}
-                    onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-sm focus:outline-none focus:border-crimson"
-                  />
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1">Studio Desk Phone</label>
+                    <input
+                      type="text"
+                      value={settings.primaryPhone}
+                      onChange={(e) => setSettings({ ...settings, primaryPhone: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    />
+                  </div>
 
-                <div className="md:col-span-2">
-                  <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1 font-bold">
-                    Studio Physical Address
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.physicalAddress}
-                    onChange={(e) => setSettings({ ...settings, physicalAddress: e.target.value })}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-sm focus:outline-none focus:border-crimson"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1">WhatsApp Direct Line</label>
+                    <input
+                      type="text"
+                      value={settings.whatsappNumber}
+                      onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    />
+                  </div>
 
-                <div className="md:col-span-2">
-                  <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1 font-bold">
-                    Google Maps URL
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.googleMapsUrl}
-                    onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-sm focus:outline-none focus:border-crimson"
-                  />
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] text-slate-400 mb-1">Physical Address</label>
+                    <input
+                      type="text"
+                      value={settings.physicalAddress}
+                      onChange={(e) => setSettings({ ...settings, physicalAddress: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] text-slate-400 mb-1">Google Maps URL</label>
+                    <input
+                      type="text"
+                      value={settings.googleMapsUrl}
+                      onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Social Links Manager */}
-            <div className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                4. Social Media Links &amp; Live Toggles
-              </h3>
+              {/* Social Channels */}
+              <div className="p-5 bg-[#0c0d12] border border-[#1a1d26] rounded-lg space-y-3">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-[#1a1d26] pb-2">
+                  4. Social Channels &amp; Links
+                </div>
 
-              <div className="space-y-3">
                 {settings.socialLinks.map((soc, idx) => (
-                  <div key={soc.id || idx} className="p-3 bg-noir-850 border border-noir-700 flex items-center gap-3">
-                    <div className="flex items-center gap-2 w-32 shrink-0">
+                  <div key={soc.id || idx} className="flex items-center gap-3 p-2 bg-[#12141c] rounded border border-[#222736]">
+                    <div className="flex items-center gap-2 w-28 shrink-0">
                       <input
                         type="checkbox"
                         checked={soc.active}
@@ -1281,11 +1396,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           updated[idx] = { ...soc, active: e.target.checked };
                           setSettings({ ...settings, socialLinks: updated });
                         }}
-                        className="accent-crimson cursor-pointer"
+                        className="accent-red-600 cursor-pointer"
                       />
-                      <span className="font-label-caps text-xs uppercase text-bone font-bold truncate">
-                        {soc.label}
-                      </span>
+                      <span className="text-xs font-semibold text-white truncate">{soc.label}</span>
                     </div>
                     <input
                       type="url"
@@ -1295,495 +1408,494 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         updated[idx] = { ...soc, url: e.target.value };
                         setSettings({ ...settings, socialLinks: updated });
                       }}
-                      className="flex-1 px-3 py-1.5 bg-noir-950 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
+                      className="flex-1 px-3 py-1 bg-[#090a0f] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
                     />
                   </div>
                 ))}
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={savingSettings}
-              className="py-3.5 px-8 bg-crimson hover:bg-crimson-hover disabled:opacity-50 text-bone font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-crimson/40 font-bold"
-            >
-              {savingSettings ? 'Publishing Changes...' : 'Save & Publish Studio Changes'}
-            </button>
-          </form>
-        )}
+              <button
+                type="submit"
+                disabled={savingSettings}
+                className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-mono uppercase font-semibold transition-all shadow-lg shadow-red-950/40"
+              >
+                {savingSettings ? 'Deploying...' : 'Save & Deploy Changes'}
+              </button>
+            </form>
+          )}
+        </div>
+      </main>
 
-        {/* ================= TAB 4: PORTFOLIO CMS ================= */}
-        {activeTab === 'portfolio' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="font-headline-lg text-2xl uppercase font-bold text-bone">
-                Artwork Portfolio &amp; Masterpiece Gallery
-              </h2>
-              <p className="font-body-sm text-xs text-bone-dim">
-                Upload new tattoos and piercings with automated Sharp WebP compression.
-              </p>
-            </div>
+      {/* INSPECTION SLIDE-OVER DRAWER FOR BOOKING */}
+      {inspectBooking && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-md bg-[#0c0d12] border-l border-[#1a1d26] h-full p-6 flex flex-col justify-between overflow-y-auto font-mono text-xs">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center border-b border-[#1a1d26] pb-3">
+                <span className="text-red-400 font-bold bg-red-950/40 px-2 py-0.5 rounded border border-red-800/40">
+                  {inspectBooking.referenceCode}
+                </span>
+                <button
+                  onClick={() => setInspectBooking(null)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
 
-            {/* Upload Form */}
-            <form onSubmit={handleCreatePortfolioPiece} className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4 max-w-3xl">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                Add New Masterpiece
-              </h3>
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-white">{inspectBooking.clientName}</h3>
+                <div className="text-slate-400">{inspectBooking.clientPhone}</div>
+                <div className="text-slate-400">{inspectBooking.clientEmail}</div>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Artwork Title *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={newPieceTitle}
-                    onChange={(e) => setNewPieceTitle(e.target.value)}
-                    placeholder="e.g. Baroque Skull Sleeve"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
+              <div className="p-3 bg-[#12141c] rounded border border-[#222736] space-y-2">
+                <div className="flex justify-between text-slate-400">
+                  <span>Discipline:</span>
+                  <span className="text-white font-semibold capitalize">
+                    {inspectBooking.serviceType.replace('_', ' ')}
+                  </span>
                 </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Category *
-                  </label>
-                  <select
-                    value={newPieceCategory}
-                    onChange={(e) => setNewPieceCategory(e.target.value)}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-label-caps text-xs uppercase focus:outline-none focus:border-crimson"
-                  >
-                    <option value="dark-realism">Dark Realism</option>
-                    <option value="neo-traditional">Neo-Traditional</option>
-                    <option value="micro-detail">Micro &amp; Single-Needle</option>
-                    <option value="piercing">Piercing</option>
-                    <option value="coverup">Cover-Up</option>
-                  </select>
+                <div className="flex justify-between text-slate-400">
+                  <span>Placement:</span>
+                  <span className="text-red-400 font-semibold">{inspectBooking.placement}</span>
                 </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Placement / Zone *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={newPieceZone}
-                    onChange={(e) => setNewPieceZone(e.target.value)}
-                    placeholder="e.g. Forearm, Chest, Ribcage"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Duration &amp; Pigment
-                  </label>
-                  <input
-                    type="text"
-                    value={newPieceDuration}
-                    onChange={(e) => setNewPieceDuration(e.target.value)}
-                    placeholder="e.g. 5 Hours (1 Session)"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Description *
-                  </label>
-                  <textarea
-                    required
-                    rows={2}
-                    value={newPieceDescription}
-                    onChange={(e) => setNewPieceDescription(e.target.value)}
-                    placeholder="Artistic description, anatomical placement..."
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-label-caps text-[10px] uppercase text-bone mb-1 font-bold">
-                    Upload Photo (High Res) *
-                  </label>
-                  <input
-                    required
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => e.target.files && setNewPieceImageFile(e.target.files[0])}
-                    className="w-full text-xs text-bone-dim file:mr-3 file:py-2 file:px-4 file:border-0 file:bg-crimson file:text-bone file:font-label-caps file:text-xs file:uppercase file:cursor-pointer"
-                  />
+                <div className="flex justify-between text-slate-400">
+                  <span>Preferred Date:</span>
+                  <span className="text-white">
+                    {new Date(inspectBooking.preferredDate).toLocaleDateString()} ({inspectBooking.timeSlot})
+                  </span>
                 </div>
               </div>
 
+              {/* Project Brief */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">
+                  Project Brief:
+                </span>
+                <p className="p-3 bg-[#12141c] rounded border border-[#222736] text-slate-300 leading-relaxed">
+                  {inspectBooking.description}
+                </p>
+              </div>
+
+              {/* Reference Image */}
+              {inspectBooking.referenceImage && (
+                <div className="space-y-1">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">
+                    Reference Photo:
+                  </span>
+                  <div className="max-h-60 overflow-hidden rounded border border-[#222736] bg-[#07080b]">
+                    <img
+                      src={inspectBooking.referenceImage}
+                      alt="Reference"
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Workflow Status Selector */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">
+                  Status Workflow:
+                </span>
+                <select
+                  value={inspectBooking.status}
+                  onChange={(e) => handleUpdateBookingStatus(inspectBooking.id, e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                >
+                  <option value="PENDING_REVIEW">Pending Review</option>
+                  <option value="CONFIRMED">Confirmed</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#1a1d26] space-y-2">
+              <button
+                onClick={() =>
+                  openWhatsApp(
+                    inspectBooking.clientPhone,
+                    `Hello ${inspectBooking.clientName}! This is Marvin from Marvin Tattoos Atelier regarding inquiry [${inspectBooking.referenceCode}]. We look forward to seeing you at New Pioneer Mall Level 5.`
+                  )
+                }
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <span>Message on WhatsApp</span>
+              </button>
+              <button
+                onClick={() => handleDeleteBooking(inspectBooking.id)}
+                className="w-full py-2 bg-[#161822] hover:bg-red-950/40 hover:text-red-400 text-slate-400 rounded text-xs font-mono transition-colors"
+              >
+                Delete Record
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* INSPECTION SLIDE-OVER DRAWER FOR ORDER */}
+      {inspectOrder && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-md bg-[#0c0d12] border-l border-[#1a1d26] h-full p-6 flex flex-col justify-between overflow-y-auto font-mono text-xs">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center border-b border-[#1a1d26] pb-3">
+                <span className="text-white font-bold">{inspectOrder.orderNumber}</span>
+                <button onClick={() => setInspectOrder(null)} className="text-slate-400 hover:text-white">
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-white">{inspectOrder.clientName}</h3>
+                <div className="text-slate-400">{inspectOrder.clientPhone}</div>
+                <div className="text-slate-400">{inspectOrder.clientEmail}</div>
+              </div>
+
+              <div className="p-3 bg-[#12141c] rounded border border-[#222736] space-y-2">
+                <div className="flex justify-between text-slate-400">
+                  <span>Fulfillment:</span>
+                  <span className="text-white font-semibold">
+                    {inspectOrder.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup (L5)' : 'Kampala Dispatch'}
+                  </span>
+                </div>
+                {inspectOrder.deliveryAddress && (
+                  <div className="text-[11px] text-slate-400 pt-1 border-t border-[#222736]">
+                    <span>Address: </span>
+                    <span className="text-white">{inspectOrder.deliveryAddress}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-slate-400">
+                  <span>Payment:</span>
+                  <span className="text-red-400 font-semibold">{inspectOrder.paymentMethod}</span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>Total Amount:</span>
+                  <span className="text-red-400 font-bold text-sm">
+                    UGX {inspectOrder.totalAmount?.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">
+                  Items Breakdown:
+                </span>
+                <div className="p-3 bg-[#12141c] rounded border border-[#222736] space-y-1.5">
+                  {(inspectOrder.items || []).map((it: any, i: number) => (
+                    <div key={i} className="flex justify-between text-slate-300">
+                      <span>{it.quantity}x {it.product?.name || 'Item'}</span>
+                      <span>UGX {(it.unitPrice * it.quantity).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order Status */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">
+                  Order Status:
+                </span>
+                <select
+                  value={inspectOrder.orderStatus}
+                  onChange={(e) => handleUpdateOrderStatus(inspectOrder.id, e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                >
+                  <option value="PENDING_PAYMENT">Pending Payment</option>
+                  <option value="PROCESSING">Processing</option>
+                  <option value="READY_FOR_PICKUP">Ready for Pickup</option>
+                  <option value="DISPATCHED">Dispatched with Rider</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#1a1d26] space-y-2">
+              <button
+                onClick={() =>
+                  openWhatsApp(
+                    inspectOrder.clientPhone,
+                    `Hello ${inspectOrder.clientName}! This is Marvin Tattoos Atelier regarding Order #${inspectOrder.orderNumber}. Your items are prepared.`
+                  )
+                }
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-mono uppercase font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <span>WhatsApp Customer</span>
+              </button>
+              <button
+                onClick={() => handleDeleteOrder(inspectOrder.id)}
+                className="w-full py-2 bg-[#161822] hover:bg-red-950/40 hover:text-red-400 text-slate-400 rounded text-xs font-mono transition-colors"
+              >
+                Delete Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ADD ARTWORK */}
+      {showAddArtworkModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <form
+            onSubmit={handleCreatePortfolioPiece}
+            className="w-full max-w-lg bg-[#0c0d12] border border-[#1a1d26] rounded-lg p-6 space-y-4 font-mono text-xs shadow-2xl"
+          >
+            <div className="flex justify-between items-center border-b border-[#1a1d26] pb-3">
+              <h3 className="font-semibold text-white">Upload New Artwork</h3>
+              <button type="button" onClick={() => setShowAddArtworkModal(false)} className="text-slate-400">
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <label className="block text-[11px] text-slate-400 mb-1">Title *</label>
+                <input
+                  required
+                  type="text"
+                  value={newPieceTitle}
+                  onChange={(e) => setNewPieceTitle(e.target.value)}
+                  placeholder="e.g. Baroque Skull Sleeve"
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Category *</label>
+                <select
+                  value={newPieceCategory}
+                  onChange={(e) => setNewPieceCategory(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                >
+                  <option value="dark-realism">Dark Realism</option>
+                  <option value="neo-traditional">Neo-Traditional</option>
+                  <option value="micro-detail">Micro &amp; Fine-Line</option>
+                  <option value="piercing">Piercing</option>
+                  <option value="coverup">Cover-Up</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Zone / Placement *</label>
+                <input
+                  required
+                  type="text"
+                  value={newPieceZone}
+                  onChange={(e) => setNewPieceZone(e.target.value)}
+                  placeholder="Forearm, Chest..."
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-[11px] text-slate-400 mb-1">Description *</label>
+                <textarea
+                  required
+                  rows={2}
+                  value={newPieceDescription}
+                  onChange={(e) => setNewPieceDescription(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-[11px] text-slate-400 mb-1">Artwork Photo *</label>
+                <input
+                  required
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => e.target.files && setNewPieceImageFile(e.target.files[0])}
+                  className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded file:cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-[#1a1d26] flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAddArtworkModal(false)}
+                className="px-3 py-1.5 bg-[#12141c] text-slate-400 rounded text-xs"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 disabled={creatingPiece}
-                className="py-3 px-6 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-crimson/40 font-bold"
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-semibold uppercase"
               >
-                {creatingPiece ? 'Publishing...' : 'Upload & Publish Artwork'}
+                {creatingPiece ? 'Publishing...' : 'Publish Artwork'}
               </button>
-            </form>
-
-            {/* Gallery Grid */}
-            <div className="space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                Current Portfolio Pieces ({portfolioPieces.length})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {portfolioPieces.map((p) => (
-                  <div
-                    key={p.id}
-                    className="p-3 bg-noir-900 border border-noir-700/80 flex flex-col justify-between space-y-2 gothic-card"
-                  >
-                    <div className="h-44 bg-noir-950 overflow-hidden border border-noir-700/40 relative">
-                      <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
-                      <span className="absolute top-1.5 left-1.5 px-2 py-0.5 bg-noir-950/80 text-[9px] font-label-caps uppercase text-crimson-light">
-                        {p.category}
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="font-title-editorial text-sm text-bone truncate font-bold">
-                        {p.title}
-                      </h4>
-                      <p className="font-label-data text-[11px] text-bone-dim">{p.zone}</p>
-                    </div>
-                    <button
-                      onClick={() => handleDeletePortfolioPiece(p.id)}
-                      className="w-full py-1.5 bg-noir-850 hover:bg-red-950/60 hover:text-red-300 text-bone-dim font-label-caps text-[10px] uppercase transition-colors border border-noir-700"
-                    >
-                      Delete Piece
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
-          </div>
-        )}
+          </form>
+        </div>
+      )}
 
-        {/* ================= TAB 5: INVENTORY & SHOP CMS ================= */}
-        {activeTab === 'inventory' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="font-headline-lg text-2xl uppercase font-bold text-bone">
-                Studio Shop &amp; Inventory Management
-              </h2>
-              <p className="font-body-sm text-xs text-bone-dim">
-                Add supplies, manage prices in UGX, and track stock availability.
-              </p>
+      {/* MODAL: ADD PRODUCT */}
+      {showAddProductModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <form
+            onSubmit={handleCreateProduct}
+            className="w-full max-w-lg bg-[#0c0d12] border border-[#1a1d26] rounded-lg p-6 space-y-4 font-mono text-xs shadow-2xl"
+          >
+            <div className="flex justify-between items-center border-b border-[#1a1d26] pb-3">
+              <h3 className="font-semibold text-white">Add Shop Item</h3>
+              <button type="button" onClick={() => setShowAddProductModal(false)} className="text-slate-400">
+                ✕
+              </button>
             </div>
 
-            {/* Add Product Form */}
-            <form onSubmit={handleCreateProduct} className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4 max-w-3xl">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                Add Product Item
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Product Name *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={newProdName}
-                    onChange={(e) => setNewProdName(e.target.value)}
-                    placeholder="e.g. Clinical Tattoo Aftercare Balm"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Category *
-                  </label>
-                  <select
-                    value={newProdCategory}
-                    onChange={(e) => setNewProdCategory(e.target.value)}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-label-caps text-xs uppercase focus:outline-none focus:border-crimson"
-                  >
-                    <option value="Aftercare">Aftercare</option>
-                    <option value="Hard Goods">Machines &amp; Hard Goods</option>
-                    <option value="Needles">Needles &amp; Cartridges</option>
-                    <option value="Titanium Jewelry">Titanium Jewelry</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Price (UGX) *
-                  </label>
-                  <input
-                    required
-                    type="number"
-                    value={newProdPrice}
-                    onChange={(e) => setNewProdPrice(parseFloat(e.target.value))}
-                    placeholder="95000"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Stock Quantity
-                  </label>
-                  <input
-                    type="number"
-                    value={newProdStock}
-                    onChange={(e) => setNewProdStock(parseInt(e.target.value, 10))}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Description *
-                  </label>
-                  <textarea
-                    required
-                    rows={2}
-                    value={newProdDesc}
-                    onChange={(e) => setNewProdDesc(e.target.value)}
-                    placeholder="Clinical ingredients, sterile specs..."
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-label-caps text-[10px] uppercase text-bone mb-1 font-bold">
-                    Product Image (Optional)
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => e.target.files && setNewProdImageFile(e.target.files[0])}
-                    className="w-full text-xs text-bone-dim file:mr-3 file:py-2 file:px-4 file:border-0 file:bg-crimson file:text-bone file:font-label-caps file:text-xs file:uppercase file:cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <label className="block text-[11px] text-slate-400 mb-1">Product Name *</label>
+                <input
+                  required
+                  type="text"
+                  value={newProdName}
+                  onChange={(e) => setNewProdName(e.target.value)}
+                  placeholder="e.g. Clinical Tattoo Aftercare Balm"
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
               </div>
 
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Category *</label>
+                <select
+                  value={newProdCategory}
+                  onChange={(e) => setNewProdCategory(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                >
+                  <option value="Aftercare">Aftercare</option>
+                  <option value="Hard Goods">Hard Goods</option>
+                  <option value="Needles">Needles</option>
+                  <option value="Titanium Jewelry">Titanium Jewelry</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Price (UGX) *</label>
+                <input
+                  required
+                  type="number"
+                  value={newProdPrice}
+                  onChange={(e) => setNewProdPrice(parseFloat(e.target.value))}
+                  placeholder="95000"
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-[11px] text-slate-400 mb-1">Description *</label>
+                <textarea
+                  required
+                  rows={2}
+                  value={newProdDesc}
+                  onChange={(e) => setNewProdDesc(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-[11px] text-slate-400 mb-1">Product Photo</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => e.target.files && setNewProdImageFile(e.target.files[0])}
+                  className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded file:cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-[#1a1d26] flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAddProductModal(false)}
+                className="px-3 py-1.5 bg-[#12141c] text-slate-400 rounded text-xs"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 disabled={creatingProduct}
-                className="py-3 px-6 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-crimson/40 font-bold"
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-semibold uppercase"
               >
-                {creatingProduct ? 'Saving...' : 'Add Item to Shop'}
+                {creatingProduct ? 'Saving...' : 'Add Product'}
               </button>
-            </form>
-
-            {/* Inventory Grid */}
-            <div className="space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                Active Shop Items ({productsList.length})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {productsList.map((p) => (
-                  <div
-                    key={p.id}
-                    className="p-3 bg-noir-900 border border-noir-700/80 flex flex-col justify-between space-y-2 gothic-card"
-                  >
-                    <div className="h-40 bg-noir-950 overflow-hidden border border-noir-700/40 relative">
-                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                      <span className="absolute top-1.5 left-1.5 px-2 py-0.5 bg-noir-950/80 text-[9px] font-label-caps uppercase text-crimson-light">
-                        {p.category}
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="font-title-editorial text-sm text-bone truncate font-bold">
-                        {p.name}
-                      </h4>
-                      <p className="font-label-data text-xs text-gold font-bold">
-                        UGX {p.price.toLocaleString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteProduct(p.id)}
-                      className="w-full py-1.5 bg-noir-850 hover:bg-red-950/60 hover:text-red-300 text-bone-dim font-label-caps text-[10px] uppercase transition-colors border border-noir-700"
-                    >
-                      Remove Item
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
-          </div>
-        )}
+          </form>
+        </div>
+      )}
 
-        {/* ================= TAB 6: TESTIMONIALS CMS ================= */}
-        {activeTab === 'testimonials' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="font-headline-lg text-2xl uppercase font-bold text-bone">
-                Client Testimonials &amp; Reviews
-              </h2>
-              <p className="font-body-sm text-xs text-bone-dim">
-                Add and manage verified client feedback displayed in the homepage review carousel.
-              </p>
+      {/* MODAL: ADD REVIEW */}
+      {showAddReviewModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <form
+            onSubmit={handleCreateTestimonial}
+            className="w-full max-w-lg bg-[#0c0d12] border border-[#1a1d26] rounded-lg p-6 space-y-4 font-mono text-xs shadow-2xl"
+          >
+            <div className="flex justify-between items-center border-b border-[#1a1d26] pb-3">
+              <h3 className="font-semibold text-white">Add Client Review</h3>
+              <button type="button" onClick={() => setShowAddReviewModal(false)} className="text-slate-400">
+                ✕
+              </button>
             </div>
 
-            {/* Add Review Form */}
-            <form onSubmit={handleCreateTestimonial} className="p-6 bg-noir-900 border border-noir-700/80 gothic-card space-y-4 max-w-3xl">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                Add Verified Client Review
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Client Name *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={newReviewName}
-                    onChange={(e) => setNewReviewName(e.target.value)}
-                    placeholder="e.g. Dennis Mukasa"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Tattoo / Piercing Type *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={newReviewRole}
-                    onChange={(e) => setNewReviewRole(e.target.value)}
-                    placeholder="e.g. Blackwork Cover-Up"
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Star Rating (1-5)
-                  </label>
-                  <select
-                    value={newReviewStars}
-                    onChange={(e) => setNewReviewStars(parseInt(e.target.value, 10))}
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-label-caps text-xs uppercase focus:outline-none focus:border-crimson"
-                  >
-                    <option value={5}>5 Stars (Exceptional)</option>
-                    <option value={4}>4 Stars (Great)</option>
-                    <option value={3}>3 Stars</option>
-                  </select>
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label className="block font-label-caps text-[10px] uppercase text-bone-dim mb-1 font-bold">
-                    Review Quote *
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={newReviewQuote}
-                    onChange={(e) => setNewReviewQuote(e.target.value)}
-                    placeholder="Client's review words..."
-                    className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs focus:outline-none focus:border-crimson"
-                  />
-                </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Client Name *</label>
+                <input
+                  required
+                  type="text"
+                  value={newReviewName}
+                  onChange={(e) => setNewReviewName(e.target.value)}
+                  placeholder="e.g. Dennis Mukasa"
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
               </div>
 
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Discipline / Role *</label>
+                <input
+                  required
+                  type="text"
+                  value={newReviewRole}
+                  onChange={(e) => setNewReviewRole(e.target.value)}
+                  placeholder="e.g. Dark Realism Sleeve"
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Review Quote *</label>
+                <textarea
+                  required
+                  rows={3}
+                  value={newReviewQuote}
+                  onChange={(e) => setNewReviewQuote(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#12141c] border border-[#222736] rounded text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-[#1a1d26] flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAddReviewModal(false)}
+                className="px-3 py-1.5 bg-[#12141c] text-slate-400 rounded text-xs"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 disabled={creatingReview}
-                className="py-3 px-6 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-all btn-gothic-glow border border-crimson/40 font-bold"
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-semibold uppercase"
               >
-                {creatingReview ? 'Adding...' : 'Publish Testimonial'}
-              </button>
-            </form>
-
-            {/* Testimonials List */}
-            <div className="space-y-4">
-              <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                Published Reviews ({testimonialsList.length})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {testimonialsList.map((t) => (
-                  <div
-                    key={t.id}
-                    className="p-5 bg-noir-900 border border-noir-700/80 flex flex-col justify-between space-y-3 gothic-card"
-                  >
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-label-caps text-xs text-bone font-bold">{t.name}</span>
-                        <span className="text-amber-400 font-label-data text-xs">
-                          {'★'.repeat(t.stars)}
-                        </span>
-                      </div>
-                      <span className="font-label-caps text-[10px] text-crimson-light uppercase block mb-2">
-                        {t.role}
-                      </span>
-                      <p className="font-body-sm text-xs text-bone-dim italic leading-relaxed">
-                        "{t.quote}"
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => handleDeleteTestimonial(t.id)}
-                      className="w-full py-1.5 bg-noir-850 hover:bg-red-950/60 hover:text-red-300 text-bone-dim font-label-caps text-[10px] uppercase transition-colors border border-noir-700"
-                    >
-                      Delete Review
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Booking Image Inspection Modal */}
-      {selectedBookingForModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-noir-900 border border-noir-700 max-w-2xl w-full p-6 space-y-4 gothic-card shadow-2xl">
-            <div className="flex justify-between items-center border-b border-noir-700 pb-3">
-              <div>
-                <span className="font-label-data text-xs text-crimson-light font-bold">
-                  {selectedBookingForModal.referenceCode}
-                </span>
-                <h3 className="font-title-editorial text-base text-bone uppercase font-bold">
-                  Client Reference Photo · {selectedBookingForModal.clientName}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedBookingForModal(null)}
-                className="p-1 text-bone-dim hover:text-bone"
-              >
-                <Icons8 name="times" size={18} />
+                {creatingReview ? 'Publishing...' : 'Publish Review'}
               </button>
             </div>
-
-            <div className="max-h-96 overflow-hidden flex items-center justify-center bg-noir-950 border border-noir-700">
-              <img
-                src={selectedBookingForModal.referenceImage}
-                alt="Client reference full size"
-                className="max-h-96 w-auto object-contain"
-              />
-            </div>
-
-            <div className="text-xs text-bone-dim space-y-1">
-              <p>
-                <span className="font-bold text-bone">Description: </span>
-                {selectedBookingForModal.description}
-              </p>
-              <p>
-                <span className="font-bold text-bone">Placement: </span>
-                {selectedBookingForModal.placement} ({selectedBookingForModal.size})
-              </p>
-            </div>
-
-            <button
-              onClick={() => setSelectedBookingForModal(null)}
-              className="w-full py-2.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase"
-            >
-              Close Viewer
-            </button>
-          </div>
+          </form>
         </div>
       )}
     </div>
