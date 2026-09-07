@@ -360,3 +360,67 @@ export async function adminUpdatePortfolioPiece(id: string, formData: FormData):
 export async function adminDeletePortfolioPiece(id: string): Promise<void> {
   await fetch(`/api/portfolio/${id}`, { method: "DELETE" });
 }
+
+export async function adminCreateProduct(formData: FormData): Promise<any> {
+  const res = await fetch("/api/products", {
+    method: "POST",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to create product");
+  return json.data;
+}
+
+export async function adminUpdateProduct(id: string, formData: FormData): Promise<any> {
+  const res = await fetch(`/api/products/${id}`, {
+    method: "PUT",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to update product");
+  return json.data;
+}
+
+export async function adminDeleteProduct(id: string): Promise<void> {
+  await fetch(`/api/products/${id}`, { method: "DELETE" });
+}
+
+export async function adminCreateService(formData: FormData): Promise<any> {
+  const res = await fetch("/api/services", {
+    method: "POST",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to create service");
+  return json.data;
+}
+
+export async function adminUpdateService(id: string, formData: FormData): Promise<any> {
+  const res = await fetch(`/api/services/${id}`, {
+    method: "PUT",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to update service");
+  return json.data;
+}
+
+export async function adminDeleteService(id: string): Promise<void> {
+  await fetch(`/api/services/${id}`, { method: "DELETE" });
+}
+
+export async function adminCreateTestimonial(data: any): Promise<any> {
+  const res = await fetch("/api/testimonials", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to create testimonial");
+  return json.data;
+}
+
+export async function adminDeleteTestimonial(id: string): Promise<void> {
+  await fetch(`/api/testimonials/${id}`, { method: "DELETE" });
+}
+
