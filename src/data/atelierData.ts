@@ -1,6 +1,6 @@
 import { ServiceItem, PortfolioPiece, ArtistProfile, Testimonial, ProductItem } from '../types';
 
-export const HERO_IMAGE = "https://lh3.googleusercontent.com/aida/AEtjO1WxJneVTTiW5FtUrPA-UR2MCffuWJAbObh5_9W0vlQKxC_piV154sBLGppN0_wQIIb2QAx1s4TtQItttuHFTtoKW_9vpl7OcIRzDT0xXw5czitVp0NkmhS7cZ-MzVz0skE9_yEGcoDFgvZQdsHHM1rv32xYstg6XDqLe5pD0LijkVhE9CY4QoesFaarKdffwvL8_6aJVdyy4-7wR0JXMwckNFfjtX61dr9yRUqlYQSOHZ-DHbaO_bE-a2E";
+export const HERO_IMAGE = "/images/hero-banner.png";
 
 export const LOGO_URL = "/logo.svg";
 

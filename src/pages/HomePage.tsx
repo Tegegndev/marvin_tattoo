@@ -127,7 +127,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="relative w-full min-h-[92vh] flex items-center overflow-hidden pt-28 pb-16 bg-noir-950 border-b border-noir-700/40">
         {/* Cinematic Studio Visual Backdrop */}
         <div
-          className="absolute inset-0 w-full h-full bg-cover opacity-70 mix-blend-luminosity scale-105 pointer-events-none transition-transform duration-1000 ease-out"
+          className="absolute inset-0 w-full h-full bg-cover opacity-45 mix-blend-luminosity scale-105 pointer-events-none transition-transform duration-1000 ease-out"
           style={{
             backgroundImage: `url('${HERO_IMAGE}')`,
             backgroundPosition: 'center 30%'
