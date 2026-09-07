@@ -84,18 +84,48 @@ export const SERVICES_DATA: ServiceItem[] = [
     ]
   },
   {
-    id: 'laser-removal-piercing',
+    id: 'semi-permanent-makeup',
     disciplineNumber: '06',
-    title: 'Laser Removal & Piercings',
-    subtitle: 'Safe Fading & Titanium Piercing',
-    description: 'Advanced laser tattoo removal to lighten ink for cover-ups or complete clearance, plus sterile body piercings in implant-grade titanium.',
+    title: 'Semi-Permanent Makeup',
+    subtitle: 'Microblading, Lips & Camouflage',
+    description: 'Microblading & ombré powder brows, pink lip blush / neutralization, stretch marks camouflage, and permanent hair removal.',
+    image: '/images/portfolio/cosmetic-eyebrow-pmu.png',
+    iconName: 'edit_note',
+    accentColor: 'primary',
+    specs: [
+      { label: 'Brows', value: 'Microblading & Ombré' },
+      { label: 'Lips', value: 'Pink Lips Blush & Neutralize' },
+      { label: 'Skin', value: 'Stretch Marks Camouflage' },
+    ]
+  },
+  {
+    id: 'body-piercing',
+    disciplineNumber: '07',
+    title: 'Precision Body Piercing',
+    subtitle: 'Ear, Facial, Dermals & Body',
+    description: 'Sterile ear piercings (lobe, helix, tragus, conch, industrial), facial/oral (septum, nose, smiley, lip), navel, back/surface dermals, nipple & Christina piercings in implant-grade titanium.',
     image: '/images/portfolio/spider-navel-piercing.png',
     iconName: 'colorize',
     accentColor: 'primary',
     specs: [
+      { label: 'Jewelry', value: 'ASTM F-136 Titanium Suite' },
+      { label: 'Dermals', value: 'Back & Surface Anchor Mods' },
+      { label: 'Hygiene', value: 'Aseptic Single-Use Blades' },
+    ]
+  },
+  {
+    id: 'laser-keloids-removal',
+    disciplineNumber: '08',
+    title: 'Laser & Keloids Removal',
+    subtitle: 'Safe Fading & Skin Clearance',
+    description: 'Advanced laser tattoo removal to lighten ink for cover-ups or complete removal, alongside certified keloid removal treatments.',
+    image: '/images/portfolio/back-portrait-man.png',
+    iconName: 'colorize',
+    accentColor: 'primary',
+    specs: [
       { label: 'Laser Tech', value: 'Safe Pigment Lightening' },
-      { label: 'Piercing', value: 'ASTM-F136 Titanium Suite' },
-      { label: 'Hygiene', value: 'Hospital-Grade Sterile Protocol' },
+      { label: 'Keloids', value: 'Safe Removal Protocol' },
+      { label: 'Recovery', value: 'Comprehensive Aftercare' },
     ]
   }
 ];

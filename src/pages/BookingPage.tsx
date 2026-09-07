@@ -18,7 +18,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
 }) => {
   // Form State
   const [serviceType, setServiceType] = useState<BookingServiceType>(
-    initialPiece?.category === 'piercing' ? 'piercing' : 'custom_tattoo'
+    initialPiece?.category === 'piercing' ? 'body_piercing' : 'custom_tattoo'
   );
   const [placement, setPlacement] = useState<string>(initialPiece?.zone || 'Forearm');
   const [approximateSize, setApproximateSize] = useState<BookingSize>(
@@ -159,22 +159,58 @@ Looking forward to hearing from you!`;
       icon: 'pen-fancy'
     },
     {
-      id: 'flash',
-      label: 'Flash Artwork',
-      sub: 'Original studio flash from resident artists',
-      icon: 'magic'
+      id: 'realism_portrait',
+      label: 'Realism & Portraits',
+      sub: 'High-detail black & grey photo-realism',
+      icon: 'skull'
+    },
+    {
+      id: 'fine_line',
+      label: 'Minimalist & Fine-Line',
+      sub: 'Delicate geometric lines and micro-tattoos',
+      icon: 'pen-fancy'
+    },
+    {
+      id: 'lettering_script',
+      label: 'Lettering & Script',
+      sub: 'Custom calligraphy, gothic lettering & quotes',
+      icon: 'edit_note'
+    },
+    {
+      id: 'tribal_traditional',
+      label: 'Traditional & Tribal',
+      sub: 'Bold blackwork, Polynesian & tribal armor',
+      icon: 'layers'
     },
     {
       id: 'cover_up',
       label: 'Cover-Up & Rework',
-      sub: 'Restoration, concealing old ink, or heavy blast-overs',
+      sub: 'Concealing, blending, or restoring old ink',
       icon: 'shield-alt'
     },
     {
-      id: 'piercing',
-      label: 'Sterile Piercing',
-      sub: 'Precision ear, facial & body piercing with titanium',
+      id: 'pmu_makeup',
+      label: 'Semi-Permanent Makeup',
+      sub: 'Microblading, Ombré brows, Pink lips & camo',
+      icon: 'edit_note'
+    },
+    {
+      id: 'body_piercing',
+      label: 'Precision Body Piercing',
+      sub: 'Ear, facial, dermals, navel, nipple & body mods',
       icon: 'syringe'
+    },
+    {
+      id: 'laser_removal',
+      label: 'Laser Tattoo Removal',
+      sub: 'Safe pigment fading & complete ink removal',
+      icon: 'colorize'
+    },
+    {
+      id: 'keloid_removal',
+      label: 'Keloids Removal',
+      sub: 'Certified skin treatment and safe removal',
+      icon: 'magic'
     }
   ];
 
@@ -183,22 +219,25 @@ Looking forward to hearing from you!`;
     { id: 'medium', label: 'Medium (4–6")', detail: 'Forearm, calf, shoulder, palm-sized pieces' },
     { id: 'large', label: 'Large (7–10")', detail: 'Half-sleeve, thigh, chest, ribcage' },
     { id: 'full_day', label: 'Full Day / Multi-Session', detail: 'Full sleeve, backpiece, large dark realism' },
-    { id: 'piercing_std', label: 'Piercing Session', detail: 'Single or multi-placement piercing' }
+    { id: 'piercing_std', label: 'Standard Treatment / Piercing', detail: 'Single/multi piercing or PMU/laser treatment' }
   ];
 
   const placementOptions = [
-    'Forearm',
-    'Upper Arm / Bicep',
-    'Full Sleeve',
-    'Collarbone / Chest',
-    'Ribcage / Sternum',
-    'Back / Spine',
-    'Thigh / Leg / Calf',
-    'Neck / Behind Ear',
+    'Forearm / Wrist',
+    'Upper Arm / Bicep / Shoulder',
+    'Full Sleeve / Half Sleeve',
+    'Chest / Sternum / Ribcage',
+    'Back / Spine / Back Dermals',
+    'Collarbone / Neck / Throat',
+    'Thigh / Leg / Calf / Ankle',
     'Hands / Fingers',
-    'Ear Cartilage (Helix, Tragus, Lobe)',
-    'Facial / Nose / Lip',
-    'Navel / Other'
+    'Eyebrows (Microblading / Ombré PMU)',
+    'Lips (Pink Lips Blush / Neutralization)',
+    'Stretch Marks Area (Camouflage)',
+    'Ear (Lobe, Helix, Tragus, Conch, Industrial)',
+    'Facial / Oral (Nose, Septum, Eyebrow, Lip, Tongue, Smiley)',
+    'Body Piercing (Navel, Surface Dermals, Nipple, Christina)',
+    'Other / Custom Placement'
   ];
 
   return (
@@ -358,12 +397,18 @@ Looking forward to hearing from you!`;
                         type="button"
                         onClick={() => {
                           setServiceType(opt.id);
-                          if (opt.id === 'piercing') {
+                          if (opt.id === 'body_piercing') {
                             setApproximateSize('piercing_std');
-                            setPlacement('Ear Cartilage (Helix, Tragus, Lobe)');
+                            setPlacement('Ear (Lobe, Helix, Tragus, Conch, Industrial)');
+                          } else if (opt.id === 'pmu_makeup') {
+                            setApproximateSize('piercing_std');
+                            setPlacement('Eyebrows (Microblading / Ombré PMU)');
+                          } else if (opt.id === 'laser_removal' || opt.id === 'keloid_removal') {
+                            setApproximateSize('medium');
+                            setPlacement('Forearm / Wrist');
                           } else if (approximateSize === 'piercing_std') {
                             setApproximateSize('medium');
-                            setPlacement('Forearm');
+                            setPlacement('Forearm / Wrist');
                           }
                         }}
                         className={`p-5 text-left border rounded-sm transition-all duration-200 flex flex-col justify-between h-full ${

@@ -24,7 +24,7 @@ const INITIAL_BOOKINGS: BookingRecord[] = [
   {
     id: 'bkg-102',
     referenceCode: 'MRT-2026-9134',
-    serviceType: 'piercing',
+    serviceType: 'body_piercing',
     placement: 'Ear Cartilage (Helix)',
     approximateSize: 'piercing_std',
     description: 'Double helix piercing with ASTM F-136 implant-grade titanium studs.',

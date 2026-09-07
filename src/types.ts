@@ -72,7 +72,17 @@ export interface CartItem {
   quantity: number;
 }
 
-export type BookingServiceType = 'custom_tattoo' | 'flash' | 'cover_up' | 'piercing';
+export type BookingServiceType = 
+  | 'custom_tattoo' 
+  | 'realism_portrait'
+  | 'fine_line'
+  | 'lettering_script'
+  | 'tribal_traditional'
+  | 'cover_up' 
+  | 'pmu_makeup'
+  | 'body_piercing' 
+  | 'laser_removal'
+  | 'keloid_removal';
 export type BookingSize = 'small' | 'medium' | 'large' | 'full_day' | 'piercing_std';
 export type BookingTimeSlot = 'morning' | 'afternoon' | 'evening';
 export type BookingStatus = 'pending_review' | 'confirmed' | 'rescheduled' | 'cancelled';
