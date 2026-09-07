@@ -72,18 +72,37 @@ export interface CartItem {
   quantity: number;
 }
 
-export interface BookingFormData {
-  discipline: string;
-  zone: string;
-  dimension: string;
-  styleTags: string[];
-  narrative: string;
-  selectedFlashId?: string;
-  artist: string;
-  date: string;
-  timeSlot: string;
-  clientName: string;
-  clientPhone: string;
-  clientEmail: string;
-  termsAccepted: boolean;
+export type BookingServiceType = 'custom_tattoo' | 'flash' | 'cover_up' | 'piercing';
+export type BookingSize = 'small' | 'medium' | 'large' | 'full_day' | 'piercing_std';
+export type BookingTimeSlot = 'morning' | 'afternoon' | 'evening';
+export type BookingStatus = 'pending_review' | 'confirmed' | 'rescheduled' | 'cancelled';
+
+export interface BookingPayload {
+  serviceType: BookingServiceType;
+  placement: string;
+  approximateSize: BookingSize;
+  description: string;
+  artistId: string;
+  preferredDate: string;
+  preferredTimeSlot: BookingTimeSlot;
+  fullName: string;
+  phone: string;
+  email: string;
+  notes?: string;
+  referenceFileName?: string;
+  referenceFilePreview?: string;
+}
+
+export interface BookingRecord extends BookingPayload {
+  id: string;
+  referenceCode: string;
+  createdAt: string;
+  status: BookingStatus;
+}
+
+export interface BookingResponse {
+  success: boolean;
+  message: string;
+  booking?: BookingRecord;
+  error?: string;
 }
