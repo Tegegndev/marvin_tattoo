@@ -148,8 +148,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
               </div>
 
-              {/* Festive Script Title */}
-              <h1 className="font-festive text-5xl sm:text-6xl md:text-7xl lg:text-[84px] text-bone leading-[1.05] tracking-wide font-normal">
+              {/* Hero Title with Limelight */}
+              <h1 className="font-limelight text-4xl sm:text-5xl md:text-6xl lg:text-[68px] text-bone leading-[1.1] tracking-normal font-normal">
                 Clean Lines. Heavy Blackwork. Made to Age Well.
               </h1>
 

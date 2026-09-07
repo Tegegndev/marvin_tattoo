@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Festive&family=UnifrakturCook:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Festive&family=Limelight&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -54,14 +54,11 @@
 }
 
 /* Typography Helpers */
+.font-limelight {
+  font-family: 'Limelight', cursive, serif !important;
+}
 .font-festive {
   font-family: 'Festive', cursive, sans-serif !important;
-}
-.font-cook {
-  font-family: 'UnifrakturCook', cursive, serif !important;
-}
-.font-gothic {
-  font-family: 'UnifrakturCook', 'Pirata One', serif !important;
 }
 
 .interactive-img-zoom {
