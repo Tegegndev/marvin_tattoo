@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { authRouter } from "./authRoutes.js";
+import { portfolioRouter } from "./portfolioRoutes.js";
+import { serviceRouter } from "./serviceRoutes.js";
+import { testimonialRouter } from "./testimonialRoutes.js";
 
 export const router = Router();
 
@@ -14,3 +17,6 @@ router.get("/health", (_req, res) => {
 
 // Mount Sub-routers
 router.use("/auth", authRouter);
+router.use("/portfolio", portfolioRouter);
+router.use("/services", serviceRouter);
+router.use("/testimonials", testimonialRouter);
