@@ -1,0 +1,241 @@
+import { Request, Response, NextFunction } from "express";
+import { prisma } from "../config/database.js";
+import { processAndSaveImage, deleteLocalImage } from "../services/imageService.js";
+
+export const getSettings = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    let settings = await prisma.siteSetting.findUnique({
+      where: { id: "studio_config" },
+    });
+
+    if (!settings) {
+      // Fallback default creation if not seeded
+      settings = await prisma.siteSetting.create({
+        data: {
+          id: "studio_config",
+          studioName: "Marvin Tattoos & Piercing Atelier",
+          heroStatement: "Clean Lines. Heavy Blackwork. Made to Age Well.",
+          heroSubtext:
+            "Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.",
+          heroBannerUrl: "/images/hero-banner.png",
+          heroOpacity: 0.45,
+          announcementActive: false,
+          announcementText: null,
+          primaryPhone: "+256705748774",
+          whatsappNumber: "+256705748774",
+          contactEmail: "info@marvintattoos.com",
+          physicalAddress: "Level 5, New Pioneer Mall, Burton St, Kampala, Uganda",
+          googleMapsUrl: "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
+          openingHours: JSON.stringify([
+            { day: "Monday - Saturday", hours: "10:00 AM - 8:00 PM" },
+            { day: "Sunday", hours: "By Appointment Only" },
+          ]),
+          socialLinks: JSON.stringify([
+            {
+              id: "soc-1",
+              platform: "instagram",
+              label: "Instagram",
+              url: "https://instagram.com/marvin_tattoos",
+              icon: "instagram",
+              active: true,
+            },
+            {
+              id: "soc-2",
+              platform: "tiktok",
+              label: "TikTok",
+              url: "https://tiktok.com/@marvintattoos",
+              icon: "tiktok",
+              active: true,
+            },
+            {
+              id: "soc-3",
+              platform: "whatsapp",
+              label: "WhatsApp",
+              url: "https://wa.me/256705748774",
+              icon: "whatsapp",
+              active: true,
+            },
+            {
+              id: "soc-4",
+              platform: "facebook",
+              label: "Facebook",
+              url: "https://facebook.com/marvintattoosug",
+              icon: "facebook",
+              active: true,
+            },
+            {
+              id: "soc-5",
+              platform: "maps",
+              label: "Google Maps",
+              url: "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
+              icon: "map-pin",
+              active: true,
+            },
+          ]),
+        },
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        ...settings,
+        openingHours:
+          typeof settings.openingHours === "string"
+            ? JSON.parse(settings.openingHours)
+            : settings.openingHours,
+        socialLinks:
+          typeof settings.socialLinks === "string"
+            ? JSON.parse(settings.socialLinks)
+            : settings.socialLinks,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSettings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const {
+      studioName,
+      heroStatement,
+      heroSubtext,
+      heroOpacity,
+      announcementActive,
+      announcementText,
+      primaryPhone,
+      whatsappNumber,
+      contactEmail,
+      physicalAddress,
+      googleMapsUrl,
+      openingHours,
+      socialLinks,
+    } = req.body;
+
+    const updated = await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: {
+        ...(studioName && { studioName }),
+        ...(heroStatement && { heroStatement }),
+        ...(heroSubtext !== undefined && { heroSubtext }),
+        ...(heroOpacity !== undefined && {
+          heroOpacity: parseFloat(heroOpacity),
+        }),
+        ...(announcementActive !== undefined && {
+          announcementActive:
+            announcementActive === true || announcementActive === "true",
+        }),
+        ...(announcementText !== undefined && { announcementText }),
+        ...(primaryPhone && { primaryPhone }),
+        ...(whatsappNumber && { whatsappNumber }),
+        ...(contactEmail && { contactEmail }),
+        ...(physicalAddress && { physicalAddress }),
+        ...(googleMapsUrl && { googleMapsUrl }),
+        ...(openingHours !== undefined && {
+          openingHours:
+            typeof openingHours === "object"
+              ? JSON.stringify(openingHours)
+              : openingHours,
+        }),
+        ...(socialLinks !== undefined && {
+          socialLinks:
+            typeof socialLinks === "object"
+              ? JSON.stringify(socialLinks)
+              : socialLinks,
+        }),
+      },
+      create: {
+        id: "studio_config",
+        studioName: studioName || "Marvin Tattoos & Piercing Atelier",
+        heroStatement:
+          heroStatement || "Clean Lines. Heavy Blackwork. Made to Age Well.",
+        heroSubtext: heroSubtext || "",
+        heroBannerUrl: "/images/hero-banner.png",
+        heroOpacity: heroOpacity ? parseFloat(heroOpacity) : 0.45,
+        announcementActive: announcementActive === true || announcementActive === "true",
+        announcementText: announcementText || null,
+        primaryPhone: primaryPhone || "+256705748774",
+        whatsappNumber: whatsappNumber || "+256705748774",
+        contactEmail: contactEmail || "info@marvintattoos.com",
+        physicalAddress:
+          physicalAddress || "Level 5, New Pioneer Mall, Burton St, Kampala, Uganda",
+        googleMapsUrl:
+          googleMapsUrl || "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
+        openingHours:
+          typeof openingHours === "object"
+            ? JSON.stringify(openingHours)
+            : openingHours || "[]",
+        socialLinks:
+          typeof socialLinks === "object"
+            ? JSON.stringify(socialLinks)
+            : socialLinks || "[]",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Studio settings updated successfully",
+      data: {
+        ...updated,
+        openingHours: JSON.parse(updated.openingHours),
+        socialLinks: JSON.parse(updated.socialLinks),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateHeroImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: "A heroImage file is required",
+      });
+      return;
+    }
+
+    const existing = await prisma.siteSetting.findUnique({
+      where: { id: "studio_config" },
+    });
+
+    if (existing && existing.heroBannerUrl.startsWith("/uploads/")) {
+      deleteLocalImage(existing.heroBannerUrl);
+    }
+
+    const heroBannerUrl = await processAndSaveImage(req.file, "hero-banner");
+
+    const updated = await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: { heroBannerUrl },
+      create: {
+        id: "studio_config",
+        heroBannerUrl,
+        openingHours: "[]",
+        socialLinks: "[]",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Hero banner image updated successfully",
+      heroBannerUrl: updated.heroBannerUrl,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

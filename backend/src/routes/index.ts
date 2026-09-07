@@ -3,6 +3,7 @@ import { authRouter } from "./authRoutes.js";
 import { portfolioRouter } from "./portfolioRoutes.js";
 import { serviceRouter } from "./serviceRoutes.js";
 import { testimonialRouter } from "./testimonialRoutes.js";
+import { settingRouter } from "./settingRoutes.js";
 
 export const router = Router();
 
@@ -20,3 +21,4 @@ router.use("/auth", authRouter);
 router.use("/portfolio", portfolioRouter);
 router.use("/services", serviceRouter);
 router.use("/testimonials", testimonialRouter);
+router.use("/settings", settingRouter);
