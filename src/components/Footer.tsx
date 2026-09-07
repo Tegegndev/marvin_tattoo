@@ -1,14 +1,40 @@
-import React from 'react';
-import { PageView } from '../types';
+import React, { useState, useEffect } from 'react';
+import { PageView, SiteSettingData } from '../types';
 import { LOGO_URL } from '../data/atelierData';
 import { Icons8 } from './Icons8';
+import { fetchSiteSettings, DEFAULT_SITE_SETTINGS } from '../services/apiClient';
 
 interface FooterProps {
   onNavigate: (page: PageView) => void;
   onOpenVerify: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+
+  useEffect(() => {
+    fetchSiteSettings().then(setSettings).catch(() => {});
+  }, []);
+
+  const getSocialIcon = (icon: string) => {
+    switch (icon) {
+      case 'instagram':
+        return <Icons8 name="instagram" size={16} className="group-hover:text-crimson-light transition-colors" />;
+      case 'tiktok':
+        return <Icons8 name="simple-icons:tiktok" size={14} className="group-hover:text-crimson-light transition-colors" />;
+      case 'youtube':
+        return <Icons8 name="youtube" size={16} className="group-hover:text-crimson-light transition-colors" />;
+      case 'facebook':
+        return <Icons8 name="facebook" size={16} className="group-hover:text-crimson-light transition-colors" />;
+      case 'whatsapp':
+        return <Icons8 name="phone" size={14} className="group-hover:text-crimson-light transition-colors" />;
+      default:
+        return <Icons8 name="globe" size={14} className="group-hover:text-crimson-light transition-colors" />;
+    }
+  };
+
+  const activeSocials = (settings.socialLinks || []).filter((s) => s.active);
+
   return (
     <footer className="w-full bg-noir-950 border-t border-noir-700/40">
       <div className="w-full px-4 md:px-8 lg:px-12 py-12 md:py-16">
@@ -44,25 +70,23 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             </div>
             <div className="font-body-sm text-body-sm text-bone-muted space-y-1">
               <a
-                href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
+                href={settings.googleMapsUrl || "https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-bone font-semibold hover:text-crimson-light transition-colors block"
               >
-                New Pioneer Mall, Burton St
+                {settings.physicalAddress}
               </a>
-              <p className="text-bone-muted text-xs">Level 5, Shop No. Pi55</p>
-              <p className="text-bone-dim text-xs">Kampala, Uganda</p>
               <div className="pt-2 flex flex-col gap-1.5">
                 <a
-                  href="tel:+256705748774"
+                  href={`tel:${settings.primaryPhone.replace(/\s+/g, '')}`}
                   className="font-label-data text-xs text-crimson-light hover:underline flex items-center gap-1.5 font-bold"
                 >
                   <Icons8 name="phone" size={14} />
-                  <span>+256 705 748774</span>
+                  <span>{settings.primaryPhone}</span>
                 </a>
                 <a
-                  href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
+                  href={settings.googleMapsUrl || "https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-label-caps text-[10px] text-gold hover:underline flex items-center gap-1 uppercase tracking-wider"
@@ -77,12 +101,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
                 <Icons8 name="clock" size={14} className="text-gold" />
                 <span>Operating Hours</span>
               </div>
-              <p className="font-body-sm text-xs text-bone-muted">
-                Mon – Sat: 8:00 AM — 11:00 PM
-              </p>
-              <p className="font-body-sm text-xs text-bone-dim">
-                Sun: 8:00 AM — 10:00 PM
-              </p>
+              {(settings.openingHours || []).map((h, i) => (
+                <p key={i} className="font-body-sm text-xs text-bone-muted">
+                  {h.day}: {h.hours}
+                </p>
+              ))}
             </div>
           </div>
 
@@ -111,57 +134,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
               Follow Us
             </div>
             <ul className="space-y-2 font-label-data text-label-data uppercase">
-              <li>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Icons8 name="instagram" size={16} className="group-hover:text-crimson-light transition-colors" />
-                    <span>Instagram</span>
-                  </span>
-                  <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
-                    @marvin_atelier
-                    <Icons8 name="external-link-alt" size={12} />
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://tiktok.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Icons8 name="simple-icons:tiktok" size={14} className="group-hover:text-crimson-light transition-colors" />
-                    <span>TikTok</span>
-                  </span>
-                  <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
-                    @marvintattoos.official
-                    <Icons8 name="external-link-alt" size={12} />
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Icons8 name="youtube" size={16} className="group-hover:text-crimson-light transition-colors" />
-                    <span>YouTube</span>
-                  </span>
-                  <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
-                    /marvintattoostudio
-                    <Icons8 name="external-link-alt" size={12} />
-                  </span>
-                </a>
-              </li>
+              {activeSocials.map((social) => (
+                <li key={social.id}>
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between text-bone-muted hover:text-bone group transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      {getSocialIcon(social.icon || social.platform)}
+                      <span>{social.label}</span>
+                    </span>
+                    <span className="text-crimson-light font-label-caps text-[10px] group-hover:underline flex items-center gap-1">
+                      Visit
+                      <Icons8 name="external-link-alt" size={12} />
+                    </span>
+                  </a>
+                </li>
+              ))}
             </ul>
 
             <div className="pt-2">
@@ -227,6 +218,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenVerify }) => {
             </button>
             <button onClick={() => onNavigate('booking')} className="hover:text-bone transition-colors">
               Book Terms
+            </button>
+            <button onClick={() => onNavigate('admin')} className="hover:text-crimson-light text-bone-dim transition-colors flex items-center gap-1 font-bold">
+              <Icons8 name="lock" size={12} className="text-crimson-light" />
+              <span>Admin Portal</span>
             </button>
           </div>
         </div>

@@ -13,12 +13,18 @@ import { BookingPage } from './pages/BookingPage';
 import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
 import { AftercarePage } from './pages/AftercarePage';
+import { AdminPage } from './pages/AdminPage';
 import { Preloader } from './components/Preloader';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function App() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState<PageView>('home');
+  const [currentPage, setCurrentPage] = useState<PageView>(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#admin') {
+      return 'admin';
+    }
+    return 'home';
+  });
   const [selectedArtwork, setSelectedArtwork] = useState<PortfolioPiece | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
@@ -28,6 +34,11 @@ export function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (currentPage === 'admin') {
+      window.location.hash = '#admin';
+    } else if (window.location.hash === '#admin') {
+      history.pushState('', document.title, window.location.pathname + window.location.search);
+    }
   }, [currentPage]);
 
   // Cart operations
@@ -154,6 +165,10 @@ export function App() {
                 onNavigate={setCurrentPage}
                 onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
               />
+            )}
+
+            {currentPage === 'admin' && (
+              <AdminPage onNavigate={setCurrentPage} />
             )}
           </motion.div>
         </AnimatePresence>

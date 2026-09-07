@@ -1,6 +1,7 @@
-import React from 'react';
-import { PageView } from '../types';
+import React, { useState, useEffect } from 'react';
+import { PageView, SiteSettingData } from '../types';
 import { Icons8 } from '../components/Icons8';
+import { fetchSiteSettings, DEFAULT_SITE_SETTINGS } from '../services/apiClient';
 
 interface LocationPageProps {
   onNavigate: (page: PageView) => void;
@@ -12,6 +13,18 @@ export const LocationPage: React.FC<LocationPageProps> = ({
   onNavigate,
   onOpenWhatsApp,
 }) => {
+  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+
+  useEffect(() => {
+    fetchSiteSettings().then(setSettings).catch(() => {});
+  }, []);
+
+  const phoneDisplay = settings.primaryPhone || '+256 705 748774';
+  const phoneTel = phoneDisplay.replace(/\s+/g, '');
+  const hours = settings.openingHours && settings.openingHours.length > 0
+    ? settings.openingHours
+    : DEFAULT_SITE_SETTINGS.openingHours;
+
   return (
     <div className="w-full pt-20 bg-noir-950 min-h-screen">
       {/* Header */}
@@ -58,22 +71,22 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4 border-b border-noir-700">
                   <div className="space-y-1">
                     <h3 className="font-title-editorial text-base uppercase text-bone font-bold">
-                      New Pioneer Mall, Burton St
+                      {settings.physicalAddress}
                     </h3>
                     <p className="font-body-sm text-xs text-bone-muted">
                       Level 5, Shop No. Pi55 · Kampala, Uganda
                     </p>
                     <div className="pt-1">
                       <a
-                        href="tel:+256705748774"
+                        href={`tel:${phoneTel}`}
                         className="font-label-data text-xs text-crimson-light hover:underline font-bold"
                       >
-                        Call Studio: +256 705 748774
+                        Call Studio: {phoneDisplay}
                       </a>
                     </div>
                   </div>
                   <a
-                    href="https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"
+                    href={settings.googleMapsUrl || "https://maps.app.goo.gl/DoTQfUafRoKsqiQc8"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2.5 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors flex items-center gap-2 shrink-0 border border-noir-700"
@@ -120,14 +133,12 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                 </div>
 
                 <div className="space-y-2 font-label-data text-xs">
-                  <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
-                    <span className="text-bone">Monday — Saturday</span>
-                    <span className="text-bone font-bold">8:00 AM — 11:00 PM</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
-                    <span className="text-bone">Sunday</span>
-                    <span className="text-bone-muted font-bold">8:00 AM — 10:00 PM</span>
-                  </div>
+                  {hours.map((h, i) => (
+                    <div key={i} className="flex justify-between items-center py-2.5 bg-noir-900 px-3 border border-noir-700">
+                      <span className="text-bone">{h.day}</span>
+                      <span className="text-bone font-bold">{h.hours}</span>
+                    </div>
+                  ))}
                   <div className="flex justify-between items-center py-2.5 bg-noir-800 px-3 border border-slate-500">
                     <div className="flex items-center gap-2">
                       <span className="text-bone font-bold">Direct Phone</span>
@@ -135,8 +146,8 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                         Studio Desk
                       </span>
                     </div>
-                    <a href="tel:+256705748774" className="text-crimson-light font-bold hover:underline">
-                      +256 705 748774
+                    <a href={`tel:${phoneTel}`} className="text-crimson-light font-bold hover:underline">
+                      {phoneDisplay}
                     </a>
                   </div>
                 </div>

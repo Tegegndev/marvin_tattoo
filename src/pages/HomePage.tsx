@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageView, PortfolioPiece, ProductItem } from '../types';
+import { PageView, PortfolioPiece, ProductItem, ServiceItem, SiteSettingData, Testimonial } from '../types';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA, HERO_IMAGE } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
+import {
+  fetchSiteSettings,
+  fetchPortfolioPieces,
+  fetchServices,
+  fetchTestimonials,
+  DEFAULT_SITE_SETTINGS,
+} from '../services/apiClient';
 
 interface HomePageProps {
   onNavigate: (page: PageView) => void;
@@ -60,8 +67,19 @@ export const HomePage: React.FC<HomePageProps> = ({
   onAddToCart,
   onOpenWhatsApp,
 }) => {
+  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+  const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
+  const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>(TESTIMONIALS_DATA);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const sliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetchSiteSettings().then(setSettings).catch(() => {});
+    fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
+    fetchServices().then(setServicesList).catch(() => {});
+    fetchTestimonials().then(setTestimonialsList).catch(() => {});
+  }, []);
 
   const scrollLeft = () => {
     if (sliderRef.current) {
@@ -88,8 +106,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   const filteredPortfolio = selectedPortfolioCategory === 'all'
-    ? PORTFOLIO_DATA.slice(0, 6)
-    : PORTFOLIO_DATA.filter(item => {
+    ? portfolioList.slice(0, 6)
+    : portfolioList.filter(item => {
         if (selectedPortfolioCategory === 'blackwork') return item.category === 'dark-realism';
         if (selectedPortfolioCategory === 'neo-traditional') return item.category === 'neo-traditional' || item.category === 'micro-detail';
         if (selectedPortfolioCategory === 'piercings') return item.category === 'piercing' || item.category === 'micro-detail';
@@ -116,10 +134,11 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="relative w-full min-h-[92vh] flex items-center overflow-hidden pt-28 pb-16 bg-noir-950 border-b border-noir-700/40">
         {/* Cinematic Studio Visual Backdrop */}
         <div
-          className="absolute inset-0 w-full h-full bg-cover opacity-45 mix-blend-luminosity scale-105 pointer-events-none transition-transform duration-1000 ease-out"
+          className="absolute inset-0 w-full h-full bg-cover mix-blend-luminosity scale-105 pointer-events-none transition-transform duration-1000 ease-out"
           style={{
-            backgroundImage: `url('${HERO_IMAGE}')`,
-            backgroundPosition: 'center 30%'
+            backgroundImage: `url('${settings.heroBannerUrl || HERO_IMAGE}')`,
+            backgroundPosition: 'center 30%',
+            opacity: settings.heroOpacity ?? 0.45,
           }}
         />
         {/* Dark Vignettes for high contrast and readability */}
@@ -143,12 +162,12 @@ export const HomePage: React.FC<HomePageProps> = ({
 
               {/* Hero Title with Limelight */}
               <h1 className="font-limelight text-4xl sm:text-5xl md:text-6xl lg:text-[68px] text-bone leading-[1.1] tracking-normal font-normal">
-                Clean Lines. Heavy Blackwork. Made to Age Well.
+                {settings.heroStatement || "Clean Lines. Heavy Blackwork. Made to Age Well."}
               </h1>
 
               {/* Real Studio Pitch */}
               <p className="font-body-md text-sm sm:text-base text-bone-muted max-w-2xl leading-relaxed">
-                Specializing in dark realism, solid blackwork, and custom tattoo design in Kampala, Uganda. Every piece is drawn to fit your body and tattooed to heal solid for life.
+                {settings.heroSubtext || "Specializing in dark realism, solid blackwork, and custom tattoo design in Kampala, Uganda. Every piece is drawn to fit your body and tattooed to heal solid for life."}
               </p>
 
               {/* Signature Services Pills */}
@@ -256,7 +275,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           {/* 4-Column Service Matrix */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SERVICES_DATA.map((service) => (
+            {servicesList.map((service) => (
               <div
                 key={service.id}
                 className="group flex flex-col bg-noir-850 p-6 transition-colors border border-noir-700 hover:border-slate-500 justify-between"
@@ -571,7 +590,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Infinite Looping Track */}
             <div className="animate-infinite-loop flex gap-8">
-              {[...TESTIMONIALS_DATA, ...TESTIMONIALS_DATA].map((t, idx) => (
+              {[...testimonialsList, ...testimonialsList].map((t, idx) => (
                 <div
                   key={`${t.id}-${idx}`}
                   className="w-[340px] sm:w-[420px] md:w-[460px] lg:w-[480px] shrink-0 bg-noir-850 p-7 sm:p-8 flex flex-col justify-between border border-noir-700 hover:border-crimson/50 transition-all duration-300 gothic-card group rounded-sm shadow-xl cursor-default"

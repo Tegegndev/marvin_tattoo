@@ -4,6 +4,10 @@ import { portfolioRouter } from "./portfolioRoutes.js";
 import { serviceRouter } from "./serviceRoutes.js";
 import { testimonialRouter } from "./testimonialRoutes.js";
 import { settingRouter } from "./settingRoutes.js";
+import { bookingRouter } from "./bookingRoutes.js";
+import { productRouter } from "./productRoutes.js";
+import { orderRouter } from "./orderRoutes.js";
+import { paymentRouter } from "./paymentRoutes.js";
 
 export const router = Router();
 
@@ -22,3 +26,8 @@ router.use("/portfolio", portfolioRouter);
 router.use("/services", serviceRouter);
 router.use("/testimonials", testimonialRouter);
 router.use("/settings", settingRouter);
+router.use("/bookings", bookingRouter);
+router.use("/products", productRouter);
+router.use("/orders", orderRouter);
+router.use("/payments", paymentRouter);
+

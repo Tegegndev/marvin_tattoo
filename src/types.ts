@@ -1,4 +1,4 @@
-export type PageView = 'home' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare';
+export type PageView = 'home' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare' | 'admin';
 
 export interface ServiceItem {
   id: string;
@@ -115,4 +115,31 @@ export interface BookingResponse {
   message: string;
   booking?: BookingRecord;
   error?: string;
+}
+
+export interface SocialLink {
+  id: string;
+  platform: string;
+  label: string;
+  url: string;
+  icon: string;
+  active: boolean;
+}
+
+export interface SiteSettingData {
+  id: string;
+  studioName: string;
+  heroStatement: string;
+  heroSubtext: string;
+  heroBannerUrl: string;
+  heroOpacity: number;
+  announcementActive: boolean;
+  announcementText?: string | null;
+  primaryPhone: string;
+  whatsappNumber: string;
+  contactEmail: string;
+  physicalAddress: string;
+  googleMapsUrl: string;
+  openingHours: { day: string; hours: string }[];
+  socialLinks: SocialLink[];
 }

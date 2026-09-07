@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageView, ProductItem } from '../types';
 import { PRODUCTS_DATA } from '../data/atelierData';
+import { fetchProducts } from '../services/apiClient';
 import { motion } from 'framer-motion';
 import { Icons8 } from '../components/Icons8';
 
@@ -14,8 +15,13 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
   onAddToCart,
   onOpenCart,
 }) => {
+  const [productList, setProductList] = useState<ProductItem[]>(PRODUCTS_DATA);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [addedItemIds, setAddedItemIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchProducts().then(setProductList).catch(() => {});
+  }, []);
 
   const categories = [
     { id: 'all', label: 'All Supplies' },
@@ -26,8 +32,8 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
   ];
 
   const filteredProducts = selectedCategory === 'all'
-    ? PRODUCTS_DATA
-    : PRODUCTS_DATA.filter((p) => p.category === selectedCategory);
+    ? productList
+    : productList.filter((p) => p.category === selectedCategory);
 
   const handleAdd = (prod: ProductItem) => {
     onAddToCart(prod);
@@ -119,7 +125,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
 
                   <div className="pt-3 border-t border-noir-700/60 flex items-center justify-between">
                     <span className="font-label-data text-base text-bone font-bold">
-                      ${prod.price.toFixed(2)}
+                      {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
                     </span>
                     <button
                       onClick={() => handleAdd(prod)}

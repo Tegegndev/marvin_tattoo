@@ -2,7 +2,6 @@ import { BookingPayload, BookingRecord, BookingResponse } from '../types';
 
 const STORAGE_KEY = 'marvin_tattoos_bookings_db';
 
-// Initial pre-populated records mimicking database entries
 const INITIAL_BOOKINGS: BookingRecord[] = [
   {
     id: 'bkg-101',
@@ -40,7 +39,6 @@ const INITIAL_BOOKINGS: BookingRecord[] = [
   }
 ];
 
-// Helper to retrieve current mock database array
 const getLocalBookings = (): BookingRecord[] => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
@@ -54,7 +52,6 @@ const getLocalBookings = (): BookingRecord[] => {
   }
 };
 
-// Helper to save records
 const saveLocalBookings = (records: BookingRecord[]) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
@@ -63,36 +60,73 @@ const saveLocalBookings = (records: BookingRecord[]) => {
   }
 };
 
-/**
- * Simulated Backend API Client for Bookings
- * Easy to replace with fetch('/api/bookings') once real backend endpoint is ready.
- */
 export const bookingApi = {
-  /**
-   * Submit a new booking request (POST /api/bookings)
-   */
   async createBooking(payload: BookingPayload): Promise<BookingResponse> {
-    // 1. Simulate network latency (650ms)
-    await new Promise((resolve) => setTimeout(resolve, 650));
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceType: payload.serviceType,
+          placement: payload.placement,
+          size: payload.approximateSize,
+          description: payload.description,
+          preferredDate: payload.preferredDate,
+          timeSlot: payload.preferredTimeSlot || 'afternoon',
+          clientName: payload.fullName,
+          clientPhone: payload.phone,
+          clientEmail: payload.email,
+          notes: payload.notes || null,
+        }),
+      });
 
-    // 2. Validate essential fields
+      if (res.ok) {
+        const json = await res.json();
+        const serverData = json.data;
+        const newRecord: BookingRecord = {
+          id: serverData.id,
+          referenceCode: serverData.referenceCode,
+          serviceType: serverData.serviceType,
+          placement: serverData.placement,
+          approximateSize: serverData.size,
+          description: serverData.description,
+          artistId: payload.artistId || 'marvin',
+          preferredDate: serverData.preferredDate,
+          preferredTimeSlot: serverData.timeSlot,
+          fullName: serverData.clientName,
+          phone: serverData.clientPhone,
+          email: serverData.clientEmail,
+          notes: serverData.notes,
+          createdAt: serverData.createdAt,
+          status: (serverData.status || 'pending_review').toLowerCase() as any,
+          referenceFileName: payload.referenceFileName,
+          referenceFilePreview: payload.referenceFilePreview,
+        };
+
+        const currentList = getLocalBookings();
+        saveLocalBookings([newRecord, ...currentList]);
+
+        return {
+          success: true,
+          message: 'Booking request received successfully. Studio team will review your specs.',
+          booking: newRecord,
+        };
+      }
+    } catch (err) {
+      console.warn('Backend /api/bookings unavailable, falling back to local simulation:', err);
+    }
+
+    // Fallback if backend offline
     if (!payload.fullName?.trim() || !payload.phone?.trim() || !payload.email?.trim()) {
       return {
         success: false,
         message: 'Validation failed: Full Name, Phone, and Email are required.',
-        error: 'MISSING_REQUIRED_FIELDS'
+        error: 'MISSING_REQUIRED_FIELDS',
       };
     }
 
-    if (!payload.description?.trim()) {
-      return {
-        success: false,
-        message: 'Validation failed: Project description is required.',
-        error: 'MISSING_DESCRIPTION'
-      };
-    }
-
-    // 3. Generate unique identifiers mimicking server-side ID & Reference Number
     const timestamp = new Date().toISOString();
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const referenceCode = `MRT-${new Date().getFullYear()}-${randomSuffix}`;
@@ -103,38 +137,80 @@ export const bookingApi = {
       id,
       referenceCode,
       createdAt: timestamp,
-      status: 'pending_review'
+      status: 'pending_review',
     };
 
-    // 4. Store record in mock backend database array
     const currentList = getLocalBookings();
-    const updatedList = [newRecord, ...currentList];
-    saveLocalBookings(updatedList);
+    saveLocalBookings([newRecord, ...currentList]);
 
-    console.log('[Mock Backend API] POST /api/bookings - Created record:', newRecord);
-
-    // 5. Return typed response
     return {
       success: true,
       message: 'Booking request received successfully. Studio team will review your specs.',
-      booking: newRecord
+      booking: newRecord,
     };
   },
 
-  /**
-   * Retrieve all bookings (GET /api/bookings)
-   */
   async getBookings(): Promise<BookingRecord[]> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    try {
+      const res = await fetch('/api/bookings');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data)) {
+          return json.data.map((b: any) => ({
+            id: b.id,
+            referenceCode: b.referenceCode,
+            serviceType: b.serviceType,
+            placement: b.placement,
+            approximateSize: b.size,
+            description: b.description,
+            artistId: 'marvin',
+            preferredDate: b.preferredDate,
+            preferredTimeSlot: b.timeSlot,
+            fullName: b.clientName,
+            phone: b.clientPhone,
+            email: b.clientEmail,
+            notes: b.notes,
+            createdAt: b.createdAt,
+            status: (b.status || 'pending_review').toLowerCase(),
+          }));
+        }
+      }
+    } catch (err) {
+      console.warn('Backend getBookings fallback:', err);
+    }
     return getLocalBookings();
   },
 
-  /**
-   * Retrieve single booking by reference code (GET /api/bookings/:referenceCode)
-   */
   async getBookingByReference(referenceCode: string): Promise<BookingRecord | null> {
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    try {
+      const res = await fetch(`/api/bookings/ref/${referenceCode}`);
+      if (res.ok) {
+        const json = await res.json();
+        const b = json.data;
+        if (b) {
+          return {
+            id: b.id,
+            referenceCode: b.referenceCode,
+            serviceType: b.serviceType,
+            placement: b.placement,
+            approximateSize: b.size,
+            description: b.description,
+            artistId: 'marvin',
+            preferredDate: b.preferredDate,
+            preferredTimeSlot: b.timeSlot,
+            fullName: b.clientName,
+            phone: b.clientPhone,
+            email: b.clientEmail,
+            notes: b.notes,
+            createdAt: b.createdAt,
+            status: (b.status || 'pending_review').toLowerCase(),
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('Backend getBookingByReference fallback:', err);
+    }
     const list = getLocalBookings();
     return list.find((b) => b.referenceCode.toUpperCase() === referenceCode.toUpperCase()) || null;
-  }
+  },
 };

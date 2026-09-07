@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageView, PortfolioPiece } from '../types';
 import { PORTFOLIO_DATA } from '../data/atelierData';
+import { fetchPortfolioPieces } from '../services/apiClient';
 import { motion } from 'framer-motion';
 import { Icons8 } from '../components/Icons8';
 
@@ -14,10 +15,15 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   onSelectPiece,
   onBookSimilar
 }) => {
+  const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCycle, setSelectedCycle] = useState<string>('all');
   const [selectedZone, setSelectedZone] = useState<string>('all');
   const [selectedArtist, setSelectedArtist] = useState<string>('all');
+
+  useEffect(() => {
+    fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
+  }, []);
 
   const categories = [
     { id: 'all', label: 'All' },
@@ -47,7 +53,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
     { id: 'S. Choi', label: 'S. Choi' }
   ];
 
-  const filteredPieces = PORTFOLIO_DATA.filter((piece) => {
+  const filteredPieces = portfolioList.filter((piece) => {
     if (selectedCategory !== 'all' && piece.category !== selectedCategory) {
       return false;
     }
@@ -63,7 +69,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
     return true;
   });
 
-  const featuredPiece = PORTFOLIO_DATA.find((p) => p.featured) || PORTFOLIO_DATA[0];
+  const featuredPiece = portfolioList.find((p) => p.featured) || portfolioList[0];
 
   return (
     <div className="w-full pt-20 bg-noir-950 min-h-screen">
