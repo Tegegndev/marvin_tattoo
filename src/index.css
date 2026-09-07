@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Festive&family=Geist:wght@300;400;500;600;700&family=Limelight&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Festive&family=Geist:wght@300;400;500;600;700&family=Limelight&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -60,6 +60,10 @@
 
 .font-festive {
   font-family: 'Festive', cursive !important;
+}
+
+.font-bodoni {
+  font-family: 'Bodoni Moda', serif !important;
 }
 
 .interactive-img-zoom {
