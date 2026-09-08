@@ -25,9 +25,11 @@ router.use("/auth", authRouter);
 router.use("/portfolio", portfolioRouter);
 router.use("/services", serviceRouter);
 router.use("/testimonials", testimonialRouter);
+router.use("/reviews", testimonialRouter);
 router.use("/settings", settingRouter);
 router.use("/bookings", bookingRouter);
 router.use("/products", productRouter);
 router.use("/orders", orderRouter);
 router.use("/payments", paymentRouter);
+
 

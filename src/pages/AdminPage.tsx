@@ -159,7 +159,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       if (user) {
         setIsAuthenticated(true);
         setAdminUser(user);
-        loadDashboardData();
+        await loadDashboardData();
+      } else {
+        setIsAuthenticated(false);
       }
     } catch {
       setIsAuthenticated(false);
@@ -169,13 +171,39 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   const loadDashboardData = async () => {
-    loadBookings();
-    loadOrders();
-    loadSettings();
-    loadPortfolio();
-    loadProducts();
-    loadTestimonials();
+    await Promise.allSettled([
+      loadBookings(),
+      loadOrders(),
+      loadSettings(),
+      loadPortfolio(),
+      loadProducts(),
+      loadTestimonials(),
+    ]);
   };
+
+  // Re-fetch active tab data when tab or filters change
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (activeTab === 'bookings') loadBookings();
+      else if (activeTab === 'orders') loadOrders();
+      else if (activeTab === 'portfolio') loadPortfolio();
+      else if (activeTab === 'inventory') loadProducts();
+      else if (activeTab === 'reviews') loadTestimonials();
+      else if (activeTab === 'settings') loadSettings();
+    }
+  }, [activeTab, isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadBookings();
+    }
+  }, [bookingFilterStatus]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadOrders();
+    }
+  }, [orderFilterStatus]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,8 +212,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     try {
       const data = await adminLogin(loginEmail, loginPassword);
       setIsAuthenticated(true);
-      setAdminUser(data.admin);
-      loadDashboardData();
+      setAdminUser(data.user || { name: 'Master Marvin', email: loginEmail });
+      await loadDashboardData();
       showToast('Logged in as Atelier Administrator');
     } catch (err: any) {
       setAuthError(err.message || 'Invalid administrator credentials');
@@ -347,8 +375,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       formData.append('featured', String(newPieceFeatured));
       formData.append('image', newPieceImageFile);
 
-      const created = await adminCreatePortfolioPiece(formData);
-      setPortfolioPieces((prev) => [created, ...prev]);
+      await adminCreatePortfolioPiece(formData);
+      await loadPortfolio();
       setShowAddArtworkModal(false);
       setNewPieceTitle('');
       setNewPieceDescription('');
@@ -365,7 +393,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (!confirm('Are you sure you want to remove this piece from the portfolio?')) return;
     try {
       await adminDeletePortfolioPiece(id);
-      setPortfolioPieces((prev) => prev.filter((p) => p.id !== id));
+      await loadPortfolio();
       showToast('Artwork removed from catalog');
     } catch (err: any) {
       alert(err.message || 'Failed to delete piece');
@@ -401,8 +429,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         formData.append('image', newProdImageFile);
       }
 
-      const created = await adminCreateProduct(formData);
-      setProductsList((prev) => [created, ...prev]);
+      await adminCreateProduct(formData);
+      await loadProducts();
       setShowAddProductModal(false);
       setNewProdName('');
       setNewProdDesc('');
@@ -419,7 +447,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (!confirm('Are you sure you want to remove this product from the inventory?')) return;
     try {
       await adminDeleteProduct(id);
-      setProductsList((prev) => prev.filter((p) => p.id !== id));
+      await loadProducts();
       showToast('Product removed');
     } catch (err: any) {
       alert(err.message || 'Failed to delete product');
@@ -443,14 +471,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     e.preventDefault();
     setCreatingReview(true);
     try {
-      const created = await adminCreateTestimonial({
+      await adminCreateTestimonial({
         name: newReviewName,
         role: newReviewRole,
         stars: newReviewStars,
         quote: newReviewQuote,
         date: 'Recent Client',
       });
-      setTestimonialsList((prev) => [created, ...prev]);
+      await loadTestimonials();
       setShowAddReviewModal(false);
       setNewReviewName('');
       setNewReviewQuote('');
@@ -466,7 +494,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     if (!confirm('Are you sure you want to remove this client review?')) return;
     try {
       await adminDeleteTestimonial(id);
-      setTestimonialsList((prev) => prev.filter((t) => t.id !== id));
+      await loadTestimonials();
       showToast('Review removed');
     } catch (err: any) {
       alert(err.message || 'Failed to delete testimonial');
@@ -1164,7 +1192,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   >
                     <div className="h-44 bg-[#141620] relative overflow-hidden">
                       <img
-                        src={p.image}
+                        src={p.image || p.imageUrl}
                         alt={p.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -1225,7 +1253,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between shadow-md"
                   >
                     <div className="h-36 bg-[#141620] relative overflow-hidden">
-                      <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+                      <img src={prod.image || prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" />
                       <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded">
                         {prod.category}
                       </span>
