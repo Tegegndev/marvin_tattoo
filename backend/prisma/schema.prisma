@@ -33,6 +33,8 @@ model Booking {
   clientPhone    String         // WhatsApp number with country code
   clientEmail    String
   notes          String?        // Client allergies, questions, etc.
+  userPhone      String?
+  user           User?          @relation(fields: [userPhone], references: [phone], onDelete: SetNull)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
@@ -104,6 +106,8 @@ model Order {
   orderStatus     String               @default("PENDING_PAYMENT") // PENDING_PAYMENT, PROCESSING, READY_FOR_PICKUP, DISPATCHED, COMPLETED, CANCELLED
   paymentStatus   String               @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
   paymentMethod   String               @default("MTN_MOMO") // MTN_MOMO, AIRTEL_MONEY, CARD, CASH
+  userPhone       String?
+  user            User?                @relation(fields: [userPhone], references: [phone], onDelete: SetNull)
   items           OrderItem[]
   transactions    PaymentTransaction[]
   createdAt       DateTime             @default(now())
@@ -169,3 +173,36 @@ model SiteSetting {
   socialLinks        String   // JSON string of social media links array
   updatedAt          DateTime @updatedAt
 }
+
+// 10. Studio Clients / Customers CRM (Phone Number is Primary Key)
+model User {
+  phone       String    @id
+  name        String
+  email       String?
+  notes       String?
+  bookings    Booking[]
+  orders      Order[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// 11. Website Team Members / Artists & Piercers Roster
+model Member {
+  id             String   @id @default(uuid())
+  slug           String?  @unique
+  name           String
+  title          String
+  role           String
+  avatar         String
+  experience     String
+  specialty      String
+  slotsRemaining Int      @default(4)
+  bio            String
+  badges         String   @default("[]") // JSON string of badge strings
+  instagram      String?
+  active         Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+

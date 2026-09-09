@@ -497,42 +497,55 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Equipment Grid */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {productsList.slice(0, 2).map((prod) => (
-                <div
-                  key={prod.id}
-                  className="bg-noir-850 p-5 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
-                >
-                  <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700">
-                    <img
-                      src={prod.image}
-                      alt={prod.name}
-                      className="w-full h-full object-cover interactive-img-zoom"
-                    />
-                  </div>
-                  <div>
-                    <span className="font-label-caps text-[10px] text-gold uppercase block">
-                      {prod.category}
-                    </span>
-                    <h4 className="font-title-editorial text-base text-bone uppercase mb-1 font-bold truncate">
-                      {prod.name}
-                    </h4>
-                    <p className="font-body-sm text-xs text-bone-dim mb-4 line-clamp-2">
-                      {prod.description}
-                    </p>
-                    <div className="flex items-center justify-between pt-3 border-t border-noir-700">
-                      <span className="font-label-data text-sm text-bone font-bold">
-                        {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
+              {productsList.slice(0, 2).map((prod) => {
+                const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
+                return (
+                  <div
+                    key={prod.id}
+                    className="bg-noir-850 p-5 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
+                  >
+                    <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700">
+                      <img
+                        src={prod.image}
+                        alt={prod.name}
+                        className={`w-full h-full object-cover ${isOutOfStock ? 'grayscale opacity-60' : 'interactive-img-zoom'}`}
+                      />
+                      {isOutOfStock && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-950/90 text-[10px] font-label-caps uppercase text-red-300 border border-red-700/50">
+                          Sold Out
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="font-label-caps text-[10px] text-gold uppercase block">
+                        {prod.category}
                       </span>
-                      <button
-                        onClick={() => onAddToCart(prod)}
-                        className="px-3.5 py-1.5 bg-noir-800 hover:bg-noir-700 text-bone font-label-caps text-xs uppercase transition-colors border border-noir-700"
-                      >
-                        Add to Bag
-                      </button>
+                      <h4 className="font-title-editorial text-base text-bone uppercase mb-1 font-bold truncate">
+                        {prod.name}
+                      </h4>
+                      <p className="font-body-sm text-xs text-bone-dim mb-4 line-clamp-2">
+                        {prod.description}
+                      </p>
+                      <div className="flex items-center justify-between pt-3 border-t border-noir-700">
+                        <span className="font-label-data text-sm text-bone font-bold">
+                          {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
+                        </span>
+                        <button
+                          onClick={() => !isOutOfStock && onAddToCart(prod)}
+                          disabled={isOutOfStock}
+                          className={`px-3.5 py-1.5 font-label-caps text-xs uppercase transition-colors border ${
+                            isOutOfStock
+                              ? 'bg-noir-900 text-bone-dim border-noir-800 cursor-not-allowed opacity-60'
+                              : 'bg-noir-800 hover:bg-noir-700 text-bone border-noir-700'
+                          }`}
+                        >
+                          {isOutOfStock ? 'Sold Out' : 'Add to Bag'}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -600,9 +613,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-1 text-amber-400">
-                        {Array.from({ length: t.stars }).map((_, i) => (
-                          <Icons8 key={i} name="star" size={16} className="text-amber-400" />
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Icons8
+                            key={i}
+                            name="star"
+                            size={16}
+                            className={i < (t.stars || 5) ? "text-amber-400" : "text-noir-600"}
+                          />
                         ))}
                       </div>
                       <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider">

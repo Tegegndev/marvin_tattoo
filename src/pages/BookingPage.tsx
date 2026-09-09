@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { PageView, PortfolioPiece, BookingServiceType, BookingSize, BookingTimeSlot, BookingRecord } from '../types';
+import React, { useState, useEffect } from 'react';
+import { PageView, PortfolioPiece, BookingServiceType, BookingSize, BookingTimeSlot, BookingRecord, ArtistProfile } from '../types';
 import { ARTISTS_DATA, MARVIN_DIRECT_PHONE, WHATSAPP_NUMBER } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
 import { bookingApi } from '../services/bookingApi';
+import { fetchMembers } from '../services/apiClient';
 import confetti from 'canvas-confetti';
+
 
 interface BookingPageProps {
   initialPiece?: PortfolioPiece | null;
@@ -55,6 +57,22 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  // Dynamic Team Members / Artists
+  const [artists, setArtists] = useState<ArtistProfile[]>(ARTISTS_DATA);
+
+  useEffect(() => {
+    fetchMembers(true)
+      .then((data) => {
+        if (data && data.length > 0) {
+          setArtists(data);
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not load dynamic members in BookingPage:', err);
+      });
+  }, []);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -132,7 +150,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   };
 
   const sendWhatsAppBookingSummary = (record: BookingRecord) => {
-    const artistName = ARTISTS_DATA.find(a => a.id === record.artistId)?.name || 'First Available Artist';
+    const artistName = artists.find(a => a.id === record.artistId || a.slug === record.artistId)?.name || 'First Available Artist';
     const message = `Hello Marvin Tattoos Atelier! 
 I just submitted a booking request through your website.
 
@@ -327,9 +345,10 @@ Looking forward to hearing from you!`;
                 <div className="flex justify-between py-1.5 border-b border-noir-700/60">
                   <span className="text-bone-dim">Artist</span>
                   <span className="text-bone font-bold">
-                    {ARTISTS_DATA.find(a => a.id === confirmedBooking.artistId)?.name || 'First Available Artist'}
+                    {artists.find(a => a.id === confirmedBooking.artistId || a.slug === confirmedBooking.artistId)?.name || 'First Available Artist'}
                   </span>
                 </div>
+
                 <div className="flex justify-between py-1.5">
                   <span className="text-bone-dim">Contact</span>
                   <span className="text-bone font-bold">{confirmedBooking.phone} · {confirmedBooking.email}</span>
@@ -610,13 +629,14 @@ Looking forward to hearing from you!`;
                   </button>
 
                   {/* Studio Resident Artists */}
-                  {ARTISTS_DATA.map((art) => {
-                    const isSelected = artistId === art.id;
+                  {artists.map((art) => {
+                    const isSelected = artistId === (art.slug || art.id);
                     return (
                       <button
                         key={art.id}
                         type="button"
-                        onClick={() => setArtistId(art.id)}
+                        onClick={() => setArtistId(art.slug || art.id)}
+
                         className={`p-4 border rounded-sm text-left transition-all flex flex-col justify-between ${
                           isSelected
                             ? 'bg-noir-800 border-crimson ring-1 ring-crimson'

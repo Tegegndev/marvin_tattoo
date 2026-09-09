@@ -5,8 +5,10 @@ import {
   SERVICES_DATA,
   TESTIMONIALS_DATA,
   PRODUCTS_DATA,
+  ARTISTS_DATA,
 } from "../data/atelierData";
-import { PortfolioPiece, ProductItem, ServiceItem, SiteSettingData, Testimonial } from "../types";
+import { ArtistProfile, PortfolioPiece, ProductItem, ServiceItem, SiteSettingData, Testimonial } from "../types";
+
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
   id: "studio_config",
@@ -96,16 +98,17 @@ export async function fetchPortfolioPieces(): Promise<PortfolioPiece[]> {
         title: p.title,
         category: p.category,
         categoryLabel: p.categoryLabel || p.category,
-        artist: "Marvin",
-        healingState: "Masterpiece",
-        cycle: "healed",
+        artist: p.artist || "Marvin",
+        healingState: p.healingState || "Masterpiece",
+        cycle: p.cycle || "healed",
         zone: p.zone || "General",
+        morphology: p.morphology || p.zone || "General",
         flashId: p.flashId || "",
-        image: p.imageUrl,
+        image: p.imageUrl || p.image || "",
         description: p.description,
-        duration: p.duration,
-        pigment: p.pigment,
-        featured: p.featured,
+        duration: p.duration || "Custom Session",
+        pigment: p.pigment || "Dynamic Triple Black",
+        featured: Boolean(p.featured),
       }));
     }
     return PORTFOLIO_DATA;
@@ -127,10 +130,13 @@ export async function fetchServices(): Promise<ServiceItem[]> {
         title: s.title,
         subtitle: s.subtitle,
         description: s.description,
-        image: s.imageUrl,
-        iconName: s.iconName,
+        category: s.category || "TATTOO",
+        image: s.imageUrl || "/images/portfolio/portrait-elder-woman.png",
+        imageUrl: s.imageUrl,
+        iconName: s.iconName || "skull",
         accentColor: "primary",
         specs: s.specs || [],
+        sortOrder: s.sortOrder || 0,
       }));
     }
     return SERVICES_DATA;
@@ -138,6 +144,29 @@ export async function fetchServices(): Promise<ServiceItem[]> {
     console.warn("Using default static services fallback:", err);
     return SERVICES_DATA;
   }
+}
+
+export async function adminGetServices(): Promise<ServiceItem[]> {
+  const res = await fetch("/api/services", {
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to fetch services");
+  return (json.data || []).map((s: any) => ({
+    id: s.id,
+    disciplineNumber: s.disciplineNumber,
+    title: s.title,
+    subtitle: s.subtitle,
+    description: s.description,
+    category: s.category || "TATTOO",
+    image: s.imageUrl || "/images/portfolio/portrait-elder-woman.png",
+    imageUrl: s.imageUrl,
+    iconName: s.iconName || "skull",
+    accentColor: "primary",
+    specs: s.specs || [],
+    sortOrder: s.sortOrder || 0,
+  }));
 }
 
 export async function fetchTestimonials(): Promise<Testimonial[]> {
@@ -167,23 +196,71 @@ export async function fetchTestimonials(): Promise<Testimonial[]> {
 
 export const fetchReviews = fetchTestimonials;
 
+export async function fetchMembers(activeOnly: boolean = true): Promise<ArtistProfile[]> {
+  try {
+    const res = await fetch(`/api/members${activeOnly ? "?active=true" : ""}`);
+    if (!res.ok) throw new Error("Failed to fetch team members");
+    const json = await res.json();
+    if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+      return json.data.map((m: any) => ({
+        id: m.slug || m.id,
+        slug: m.slug,
+        name: m.name,
+        title: m.title,
+        role: m.role || m.title,
+        avatar: m.avatar || "/images/marvin-founder.png",
+        experience: m.experience || "1+ Years",
+        specialty: m.specialty || "Custom Artistry",
+        slotsRemaining: m.slotsRemaining ?? 4,
+        bio: m.bio,
+        badges: Array.isArray(m.badges) ? m.badges : [],
+        instagram: m.instagram,
+        active: m.active !== false,
+        sortOrder: m.sortOrder || 0,
+      }));
+    }
+    return ARTISTS_DATA;
+  } catch (err) {
+    console.warn("Using default static artists fallback:", err);
+    return ARTISTS_DATA;
+  }
+}
+
+export const fetchArtists = fetchMembers;
+
+
 export async function fetchProducts(): Promise<ProductItem[]> {
   try {
     const res = await fetch("/api/products");
     if (!res.ok) throw new Error("Failed to fetch products");
     const json = await res.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-      return json.data.map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        category: p.category,
-        price: p.price,
-        description: p.description,
-        image: p.imageUrl,
-        accentColor: "primary",
-        inStock: p.inStock,
-        specs: Array.isArray(p.specs) ? p.specs : [],
-      }));
+      return json.data.map((p: any) => {
+        let specs: string[] = [];
+        if (Array.isArray(p.specs)) {
+          specs = p.specs;
+        } else if (typeof p.specs === "string") {
+          try {
+            const parsed = JSON.parse(p.specs);
+            specs = Array.isArray(parsed) ? parsed : [p.specs];
+          } catch {
+            specs = p.specs ? [p.specs] : [];
+          }
+        }
+        return {
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          currency: p.currency || "UGX",
+          description: p.description,
+          image: p.imageUrl || p.image || "/images/default-product.png",
+          accentColor: "primary",
+          inStock: Boolean(p.inStock !== false && (p.stockCount === undefined || p.stockCount > 0)),
+          stockCount: p.stockCount ?? 10,
+          specs,
+        };
+      });
     }
     return PRODUCTS_DATA;
   } catch (err) {
@@ -501,6 +578,30 @@ export async function adminDeleteProduct(id: string): Promise<void> {
   if (!res.ok || !json.success) throw new Error(json.message || "Failed to delete product");
 }
 
+export async function adminRenameProductCategory(oldCategory: string, newCategory: string): Promise<any> {
+  const res = await fetch("/api/products/categories/rename", {
+    method: "PUT",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
+    body: JSON.stringify({ oldCategory, newCategory }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to rename category");
+  return json;
+}
+
+export async function adminDeleteProductCategory(category: string, fallbackCategory?: string): Promise<any> {
+  const res = await fetch("/api/products/categories/delete", {
+    method: "POST",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
+    body: JSON.stringify({ category, fallbackCategory }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to delete category");
+  return json;
+}
+
 export async function adminCreateService(formData: FormData): Promise<any> {
   const res = await fetch("/api/services", {
     method: "POST",
@@ -547,6 +648,18 @@ export async function adminCreateTestimonial(data: any): Promise<any> {
   return json.data;
 }
 
+export async function adminUpdateTestimonial(id: string, data: any): Promise<any> {
+  const res = await fetch(`/api/testimonials/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to update testimonial");
+  return json.data;
+}
+
 export async function adminDeleteTestimonial(id: string): Promise<void> {
   const res = await fetch(`/api/testimonials/${id}`, {
     method: "DELETE",
@@ -556,4 +669,130 @@ export async function adminDeleteTestimonial(id: string): Promise<void> {
   const json = await res.json();
   if (!res.ok || !json.success) throw new Error(json.message || "Failed to delete testimonial");
 }
+
+// ================= ADMIN USERS / CLIENTS CRM ================= //
+
+export async function adminGetUsers(search?: string): Promise<any[]> {
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+
+  const url = `/api/users${params.toString() ? `?${params.toString()}` : ""}`;
+  const res = await fetch(url, {
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to fetch users");
+  return json.data || [];
+}
+
+export async function adminGetUserById(id: string): Promise<any> {
+  const res = await fetch(`/api/users/${id}`, {
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to fetch user");
+  return json.data;
+}
+
+export async function adminUpdateUser(id: string, data: any): Promise<any> {
+  const res = await fetch(`/api/users/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to update user profile");
+  return json.data;
+}
+
+export async function adminDeleteUser(id: string): Promise<void> {
+  const res = await fetch(`/api/users/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to delete user");
+}
+
+export async function adminSyncLegacyUsers(): Promise<any> {
+  const res = await fetch("/api/users/sync-legacy", {
+    method: "POST",
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to sync legacy users");
+  return json;
+}
+
+// ================= ADMIN MEMBERS / TEAM APIS ================= //
+
+export async function adminGetMembers(search?: string): Promise<ArtistProfile[]> {
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+  const url = `/api/members${params.toString() ? `?${params.toString()}` : ""}`;
+  const res = await fetch(url, {
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to fetch team members");
+  return (json.data || []).map((m: any) => ({
+    id: m.id,
+    slug: m.slug,
+    name: m.name,
+    title: m.title,
+    role: m.role || m.title,
+    avatar: m.avatar || "/images/marvin-founder.png",
+    experience: m.experience || "1+ Years",
+    specialty: m.specialty || "Custom Artistry",
+    slotsRemaining: m.slotsRemaining ?? 4,
+    bio: m.bio,
+    badges: Array.isArray(m.badges) ? m.badges : [],
+    instagram: m.instagram,
+    active: m.active !== false,
+    sortOrder: m.sortOrder || 0,
+  }));
+}
+
+export async function adminCreateMember(formData: FormData): Promise<any> {
+  const res = await fetch("/api/members", {
+    method: "POST",
+    headers: getAuthHeaders(),
+    credentials: "include",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to add team member");
+  return json.data;
+}
+
+export async function adminUpdateMember(id: string, formData: FormData): Promise<any> {
+  const res = await fetch(`/api/members/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    credentials: "include",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to update team member");
+  return json.data;
+}
+
+export async function adminDeleteMember(id: string): Promise<void> {
+  const res = await fetch(`/api/members/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.message || "Failed to delete team member");
+}
+
+
+
 

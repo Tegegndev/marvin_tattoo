@@ -25,14 +25,28 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
     fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
   }, []);
 
-  const categories = [
-    { id: 'all', label: 'All' },
-    { id: 'dark-realism', label: 'Dark Realism' },
-    { id: 'neo-traditional', label: 'Neo-Traditional' },
-    { id: 'micro-detail', label: 'Micro & Single-Needle' },
-    { id: 'piercing', label: 'Piercings' },
-    { id: 'coverup', label: 'Cover-Ups' },
-  ];
+  const categories = React.useMemo(() => {
+    const defaultList = [
+      { id: 'all', label: 'All' },
+      { id: 'dark-realism', label: 'Dark Realism' },
+      { id: 'neo-traditional', label: 'Neo-Traditional' },
+      { id: 'micro-detail', label: 'Micro & Single-Needle' },
+      { id: 'piercing', label: 'Piercings' },
+      { id: 'coverup', label: 'Cover-Ups' },
+    ];
+    const knownIds = new Set(defaultList.map((c) => c.id));
+    const extraCategories: { id: string; label: string }[] = [];
+    portfolioList.forEach((p) => {
+      if (p.category && !knownIds.has(p.category)) {
+        knownIds.add(p.category);
+        extraCategories.push({
+          id: p.category,
+          label: p.categoryLabel || p.category,
+        });
+      }
+    });
+    return [...defaultList, ...extraCategories];
+  }, [portfolioList]);
 
   const zones = [
     'All Zones',
@@ -280,7 +294,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               Portfolio ({filteredPieces.length})
             </h3>
             <span className="font-label-data text-xs text-bone-dim">
-              {filteredPieces.length} of {PORTFOLIO_DATA.length}
+              {filteredPieces.length} of {portfolioList.length}
             </span>
           </div>
 

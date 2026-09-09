@@ -1,7 +1,8 @@
-import React from 'react';
-import { PageView } from '../types';
+import React, { useState, useEffect } from 'react';
+import { PageView, ArtistProfile } from '../types';
 import { ARTISTS_DATA, HERO_IMAGE } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
+import { fetchMembers } from '../services/apiClient';
 
 interface AboutPageProps {
   onNavigate: (page: PageView) => void;
@@ -9,7 +10,28 @@ interface AboutPageProps {
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp }) => {
-  const masterMarvin = ARTISTS_DATA[0];
+  const [artists, setArtists] = useState<ArtistProfile[]>(ARTISTS_DATA);
+
+  useEffect(() => {
+    fetchMembers(true).then((data) => {
+      if (data && data.length > 0) {
+        setArtists(data);
+      }
+    }).catch((err) => {
+      console.warn("Could not load dynamic members in AboutPage:", err);
+    });
+  }, []);
+
+  const masterMarvin =
+    artists.find(
+      (a) =>
+        a.id === 'marvin' ||
+        a.slug === 'marvin' ||
+        a.name.toLowerCase().includes('marvin')
+    ) ||
+    artists[0] ||
+    ARTISTS_DATA[0];
+
 
   return (
     <div className="w-full pt-20 bg-noir-950 min-h-screen">
@@ -236,7 +258,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {ARTISTS_DATA.map((art) => (
+            {artists.map((art) => (
               <div
                 key={art.id}
                 className="bg-noir-850 rounded-xl overflow-hidden border border-noir-700 flex flex-col justify-between gothic-card"

@@ -511,6 +511,73 @@ async function main() {
   }
   console.log(`✅ Seeded/Refreshed ${reviews.length} client testimonials.`);
 
+  // 7. Seed Team Members / Artists & Piercers
+  const teamMembers = [
+    {
+      slug: "marvin",
+      name: "Marvin",
+      title: "Founder & Master Tattoo Artist",
+      role: "Master Tattoo Artist & Piercing Specialist since 2014",
+      avatar: "/images/marvin-founder.png",
+      experience: "14+ Years",
+      specialty: "Dark Realism, Memorial Portraits & Heavy Script",
+      slotsRemaining: 4,
+      bio: "With over 14 years of professional tattooing and piercing mastery, Marvin founded the studio in 2014 with an unwavering standard of hospital-grade sterilization, clean single-needle execution, and bespoke custom artwork.",
+      badges: JSON.stringify(["FOUNDER", "MASTER TATTOO ARTIST", "STERILE PROTOCOL CERTIFIED"]),
+      instagram: "https://instagram.com/marvin_tattoos",
+      active: true,
+      sortOrder: 1,
+    },
+    {
+      slug: "elena-kostas",
+      name: "Elena Kostas",
+      title: "Senior Tattoo Artist",
+      role: "Fine-line & portrait specialist",
+      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAnsDTCyCEfBelqzhnX6D13KQhOf5w6asxSYxPrjQ0C5LJfgIPMKgiyjyGQVPhF_q7oi1kOwbYmdvEZhAIm5Q1KgYu_iOvQ-zJm9UR25foludLRa5WMbKGbvjmQy47Lhaq4TTthAOAfTli61j3cQS3JXZdkyQgA9dSR_IXVeZjNQG2qitlKsMaAZBlBoeFXTdnFpUll0jQNTqrviGloEJXCMKHMMPFfDnDQP97d2M29XqVAan2TTOHlXg",
+      experience: "9 Years",
+      specialty: "Grey-wash Portraits & Fine Detailing",
+      slotsRemaining: 6,
+      bio: "Elena studied illustration before specializing in smooth grey-wash shading. Her portraits read like marble — soft transitions and clean, even value.",
+      badges: JSON.stringify(["SENIOR ARTIST"]),
+      instagram: "https://instagram.com/marvin_tattoos",
+      active: true,
+      sortOrder: 2,
+    },
+    {
+      slug: "s-choi",
+      name: "S. Choi",
+      title: "Piercing Specialist",
+      role: "Body piercing & jewelry curation",
+      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAlDpgCaHYdBQq2knmrwuSZ-c9MSq_YGXWya8wlDLaRjzmb7TBbGZ_d-VRf3KoXU9gMFkUXSn8Bs8YhVJCx4SNE4EspzFs_nbvHFAMb6OEmWGptM3cr4T5NNKW_dNtioaT8F8T3LNX0FoFhE3XZRTRoWDpvJAXHCmwIRTer5niJQ1sBf4ejaEIl_RXZ1qXZck-Bao0djb4vfXahL6uhxic5vVPZyQ6BzGH7ap98UovGgNk9ubF5u58Hog",
+      experience: "8 Years",
+      specialty: "Titanium & Gold, Curated Ear Projects",
+      slotsRemaining: 8,
+      bio: "APP-certified piercer. Placements are measured to your actual anatomy and sized in titanium or solid gold so they sit right and heal well.",
+      badges: JSON.stringify(["APP CERTIFIED"]),
+      instagram: "https://instagram.com/marvin_tattoos",
+      active: true,
+      sortOrder: 3,
+    },
+  ];
+
+  for (const member of teamMembers) {
+    const existing = await prisma.member.findFirst({
+      where: {
+        OR: [{ slug: member.slug }, { name: member.name }],
+      },
+    });
+
+    if (existing) {
+      await prisma.member.update({
+        where: { id: existing.id },
+        data: member,
+      });
+    } else {
+      await prisma.member.create({ data: member });
+    }
+  }
+  console.log(`✅ Seeded/Synchronized ${teamMembers.length} team members.`);
+
   console.log("✨ Database Seeding Completed Successfully!");
 }
 
@@ -522,4 +589,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
 

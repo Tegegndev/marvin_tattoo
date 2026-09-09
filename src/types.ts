@@ -6,13 +6,16 @@ export interface ServiceItem {
   title: string;
   subtitle: string;
   description: string;
+  category?: 'TATTOO' | 'PMU' | 'PIERCING' | 'REMOVAL' | string;
   image: string;
+  imageUrl?: string;
   iconName: string;
-  accentColor: 'primary' | 'secondary';
+  accentColor?: 'primary' | 'secondary' | string;
   specs: {
     label: string;
     value: string;
   }[];
+  sortOrder?: number;
 }
 
 export interface PortfolioPiece {
@@ -35,6 +38,7 @@ export interface PortfolioPiece {
 
 export interface ArtistProfile {
   id: string;
+  slug?: string;
   name: string;
   title: string;
   role: string;
@@ -44,7 +48,11 @@ export interface ArtistProfile {
   slotsRemaining: number;
   bio: string;
   badges: string[];
+  instagram?: string | null;
+  active?: boolean;
+  sortOrder?: number;
 }
+
 
 export interface Testimonial {
   id: string;
@@ -58,12 +66,14 @@ export interface Testimonial {
 export interface ProductItem {
   id: string;
   name: string;
-  category: 'Hard Goods' | 'Aftercare' | 'Needles' | 'Titanium Jewelry';
+  category: 'Hard Goods' | 'Aftercare' | 'Needles' | 'Titanium Jewelry' | string;
   price: number;
+  currency?: string;
   description: string;
   image: string;
-  accentColor: 'primary' | 'secondary';
+  accentColor?: 'primary' | 'secondary';
   inStock: boolean;
+  stockCount?: number;
   specs: string[];
 }
 
@@ -143,3 +153,19 @@ export interface SiteSettingData {
   openingHours: { day: string; hours: string }[];
   socialLinks: SocialLink[];
 }
+
+export interface ClientUserData {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  lastActive?: string | Date;
+  totalBookings: number;
+  totalOrders: number;
+  bookings?: any[];
+  orders?: any[];
+}
+

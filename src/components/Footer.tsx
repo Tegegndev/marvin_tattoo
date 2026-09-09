@@ -219,13 +219,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <button onClick={() => onNavigate('booking')} className="hover:text-bone transition-colors">
               Book Terms
             </button>
-            <button onClick={() => onNavigate('admin')} className="hover:text-crimson-light text-bone-dim transition-colors flex items-center gap-1 font-bold">
-              <Icons8 name="lock" size={12} className="text-crimson-light" />
-              <span>Admin Portal</span>
-            </button>
           </div>
         </div>
       </div>
     </footer>
+
   );
 };

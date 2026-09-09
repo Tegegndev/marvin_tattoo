@@ -23,13 +23,27 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
     fetchProducts().then(setProductList).catch(() => {});
   }, []);
 
-  const categories = [
-    { id: 'all', label: 'All Supplies' },
-    { id: 'Hard Goods', label: 'Machines' },
-    { id: 'Aftercare', label: 'Aftercare' },
-    { id: 'Needles', label: 'Needles' },
-    { id: 'Titanium Jewelry', label: 'Titanium Jewelry' }
-  ];
+  const categories = React.useMemo(() => {
+    const defaultList = [
+      { id: 'all', label: 'All Supplies' },
+      { id: 'Hard Goods', label: 'Machines' },
+      { id: 'Aftercare', label: 'Aftercare' },
+      { id: 'Needles', label: 'Needles' },
+      { id: 'Titanium Jewelry', label: 'Titanium Jewelry' },
+    ];
+    const knownIds = new Set(defaultList.map((c) => c.id));
+    const extraCategories: { id: string; label: string }[] = [];
+    productList.forEach((p) => {
+      if (p.category && !knownIds.has(p.category)) {
+        knownIds.add(p.category);
+        extraCategories.push({
+          id: p.category,
+          label: p.category,
+        });
+      }
+    });
+    return [...defaultList, ...extraCategories];
+  }, [productList]);
 
   const filteredProducts = selectedCategory === 'all'
     ? productList
@@ -82,30 +96,57 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
       {/* Product Catalog Grid */}
       <section className="w-full px-4 md:px-8 lg:px-12 py-16 bg-noir-950">
         <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex items-center justify-between">
+            <h3 className="font-headline-md text-xl uppercase text-bone font-bold">
+              Inventory Catalog ({filteredProducts.length})
+            </h3>
+            <span className="font-label-data text-xs text-bone-dim">
+              Verified Studio Equipment
+            </span>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredProducts.map((prod, idx) => {
               const isAdded = addedItemIds.includes(prod.id);
+              const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
+              const isLowStock = !isOutOfStock && prod.stockCount !== undefined && prod.stockCount <= 5;
+
               return (
                 <motion.div
                   key={prod.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: idx * 0.08 }}
-                  className="group bg-noir-850 p-5 shadow-xl flex flex-col justify-between gothic-card border border-noir-700/70 hover:border-crimson/30"
+                  className={`group bg-noir-850 p-5 shadow-xl flex flex-col justify-between gothic-card border transition-all ${
+                    isOutOfStock
+                      ? 'border-noir-800 opacity-75'
+                      : 'border-noir-700/70 hover:border-crimson/30'
+                  }`}
                 >
                   <div>
                     <div className="w-full h-48 mb-4 overflow-hidden bg-noir-950 relative border border-noir-700/40">
                       <img
                         src={prod.image}
                         alt={prod.name}
-                        className="w-full h-full object-cover interactive-img-zoom"
+                        className={`w-full h-full object-cover ${
+                          isOutOfStock ? 'grayscale opacity-60' : 'interactive-img-zoom'
+                        }`}
                       />
                       <span className="absolute top-2 left-2 px-2 py-0.5 bg-noir-950/80 text-[10px] font-label-caps uppercase text-crimson-light border border-crimson/30">
                         {prod.category}
                       </span>
+                      {isOutOfStock ? (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-950/90 text-[10px] font-label-caps uppercase text-red-300 border border-red-700/50">
+                          Sold Out
+                        </span>
+                      ) : isLowStock ? (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 bg-amber-950/90 text-[10px] font-label-caps uppercase text-amber-300 border border-amber-700/50">
+                          Only {prod.stockCount} Left
+                        </span>
+                      ) : null}
                     </div>
 
-                    <h3 className="font-title-editorial text-base text-bone uppercase mb-1 group-hover:text-crimson-light transition-colors font-bold truncate">
+                    <h3 className="font-title-editorial text-base text-bone uppercase mb-1 group-hover:text-crimson-light transition-colors font-bold truncate" title={prod.name}>
                       {prod.name}
                     </h3>
                     <p className="font-body-sm text-xs text-bone-dim mb-4 line-clamp-2 leading-relaxed">
@@ -113,14 +154,16 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                     </p>
 
                     {/* Specs Tags */}
-                    <div className="space-y-1 mb-4 pt-2 border-t border-noir-700/60">
-                      {prod.specs.map((s, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-[11px] font-label-data text-bone-muted">
-                          <span className="w-1 h-1 rounded-full bg-gold" />
-                          <span>{s}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {prod.specs && prod.specs.length > 0 && (
+                      <div className="space-y-1 mb-4 pt-2 border-t border-noir-700/60">
+                        {prod.specs.map((s, i) => (
+                          <div key={i} className="flex items-center gap-1.5 text-[11px] font-label-data text-bone-muted">
+                            <span className="w-1 h-1 rounded-full bg-gold" />
+                            <span>{s}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="pt-3 border-t border-noir-700/60 flex items-center justify-between">
@@ -128,14 +171,19 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                       {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
                     </span>
                     <button
-                      onClick={() => handleAdd(prod)}
+                      onClick={() => !isOutOfStock && handleAdd(prod)}
+                      disabled={isOutOfStock}
                       className={`px-4 py-2 font-label-caps text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 border ${
-                        isAdded
+                        isOutOfStock
+                          ? 'bg-noir-900 text-bone-dim border-noir-800 cursor-not-allowed opacity-60'
+                          : isAdded
                           ? 'bg-emerald-800 text-white border-emerald-600'
                           : 'bg-noir-800 hover:bg-crimson text-bone border-noir-700'
                       }`}
                     >
-                      {isAdded ? (
+                      {isOutOfStock ? (
+                        <span>Out of Stock</span>
+                      ) : isAdded ? (
                         <>
                           <Icons8 name="check" size={14} />
                           <span>Added</span>

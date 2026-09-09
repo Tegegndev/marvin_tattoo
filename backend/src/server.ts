@@ -6,6 +6,7 @@ import path from "path";
 import { env } from "./config/env.js";
 import { router } from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { syncHistoricalUsers } from "./services/userService.js";
 
 const app = express();
 
@@ -30,9 +31,17 @@ app.use("/api", router);
 // Error Handling Middleware
 app.use(errorHandler);
 
-app.listen(env.PORT, () => {
+app.listen(env.PORT, async () => {
   console.log(`⚡ Marvin Tattoos Atelier API running on http://localhost:${env.PORT}`);
   console.log(`⚡ Environment: ${env.NODE_ENV}`);
+
+  // Automatically feed and synchronize clients database from bookings and orders
+  try {
+    const stats = await syncHistoricalUsers();
+    console.log(`⚡ Client CRM Auto-Sync: ${stats.syncedUsers} clients populated from ${stats.totalBookings} bookings and ${stats.totalOrders} orders.`);
+  } catch (err) {
+    console.warn("Client CRM initial sync notice:", err);
+  }
 });
 
 export default app;

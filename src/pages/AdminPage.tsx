@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { PageView, SiteSettingData } from '../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { PageView, SiteSettingData, ClientUserData, ServiceItem, ArtistProfile } from '../types';
+import { Icons8 } from '../components/Icons8';
 import {
   Inbox,
   ShoppingBag,
@@ -10,6 +11,7 @@ import {
   Search,
   Plus,
   Trash2,
+  Edit,
   ExternalLink,
   LogOut,
   X,
@@ -33,11 +35,17 @@ import {
   Mail,
   DollarSign,
   User,
+  Users,
+  Crown,
+  UserCheck,
+  Shield,
   ShieldCheck,
   FileText,
   Truck,
   CreditCard,
   Building,
+  Tag,
+  PenTool,
 } from 'lucide-react';
 import {
   adminLogin,
@@ -49,18 +57,37 @@ import {
   adminGetOrders,
   adminUpdateOrder,
   adminDeleteOrder,
+  adminGetUsers,
+  adminGetUserById,
+  adminUpdateUser,
+  adminDeleteUser,
+  adminSyncLegacyUsers,
+  adminGetServices,
+  adminCreateService,
+  adminUpdateService,
+  adminDeleteService,
+  adminGetMembers,
+  adminCreateMember,
+  adminUpdateMember,
+  adminDeleteMember,
   adminUpdateSettings,
   adminUploadHeroImage,
   adminCreatePortfolioPiece,
+  adminUpdatePortfolioPiece,
   adminDeletePortfolioPiece,
   adminCreateProduct,
+  adminUpdateProduct,
   adminDeleteProduct,
+  adminRenameProductCategory,
+  adminDeleteProductCategory,
   adminCreateTestimonial,
+  adminUpdateTestimonial,
   adminDeleteTestimonial,
   fetchSiteSettings,
   fetchPortfolioPieces,
   fetchProducts,
   fetchTestimonials,
+  fetchServices,
   DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
 
@@ -68,7 +95,9 @@ interface AdminPageProps {
   onNavigate: (page: PageView) => void;
 }
 
-type TabType = 'bookings' | 'orders' | 'portfolio' | 'inventory' | 'reviews' | 'settings';
+type TabType = 'bookings' | 'users' | 'services' | 'team' | 'shop' | 'portfolio' | 'reviews' | 'settings';
+type ShopSubTab = 'products' | 'categories' | 'orders';
+
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Auth State
@@ -79,8 +108,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string>('');
 
-  // Active Tab
+  // Active Tab & Sub-Tabs
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
+  const [shopSubTab, setShopSubTab] = useState<ShopSubTab>('products');
 
   // Toast System
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -92,9 +122,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Drawer / Inspection Modals
   const [inspectBooking, setInspectBooking] = useState<any | null>(null);
   const [inspectOrder, setInspectOrder] = useState<any | null>(null);
-  const [showAddArtworkModal, setShowAddArtworkModal] = useState<boolean>(false);
-  const [showAddProductModal, setShowAddProductModal] = useState<boolean>(false);
-  const [showAddReviewModal, setShowAddReviewModal] = useState<boolean>(false);
+  const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
 
   // Bookings State
   const [bookings, setBookings] = useState<any[]>([]);
@@ -102,7 +130,60 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [bookingSearch, setBookingSearch] = useState<string>('');
   const [loadingBookings, setLoadingBookings] = useState<boolean>(false);
 
+  // Users / Clients CRM State
+  const [usersList, setUsersList] = useState<ClientUserData[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
+  const [userSearch, setUserSearch] = useState<string>('');
+  const [inspectUser, setInspectUser] = useState<ClientUserData | null>(null);
+  const [editingUserNotes, setEditingUserNotes] = useState<string>('');
+  const [savingUser, setSavingUser] = useState<boolean>(false);
+  const [syncingLegacy, setSyncingLegacy] = useState<boolean>(false);
+
+  // Services Catalog State
+  const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
+  const [loadingServices, setLoadingServices] = useState<boolean>(false);
+  const [serviceSearch, setServiceSearch] = useState<string>('');
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState<string>('ALL');
+  const [showServiceModal, setShowServiceModal] = useState<boolean>(false);
+  const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+  const [serviceDisciplineNumber, setServiceDisciplineNumber] = useState<string>('01');
+  const [serviceTitle, setServiceTitle] = useState<string>('');
+  const [serviceSubtitle, setServiceSubtitle] = useState<string>('');
+  const [serviceDescription, setServiceDescription] = useState<string>('');
+  const [serviceCategory, setServiceCategory] = useState<string>('TATTOO');
+  const [serviceIconName, setServiceIconName] = useState<string>('skull');
+  const [serviceSpecs, setServiceSpecs] = useState<{ label: string; value: string }[]>([
+    { label: '', value: '' },
+  ]);
+  const [serviceSortOrder, setServiceSortOrder] = useState<number>(0);
+  const [serviceImageFile, setServiceImageFile] = useState<File | null>(null);
+  const [serviceImagePreview, setServiceImagePreview] = useState<string>('');
+  const [savingService, setSavingService] = useState<boolean>(false);
+
+  // Team & Artists State
+  const [teamMembers, setTeamMembers] = useState<ArtistProfile[]>([]);
+  const [loadingTeam, setLoadingTeam] = useState<boolean>(false);
+  const [teamSearch, setTeamSearch] = useState<string>('');
+  const [showMemberModal, setShowMemberModal] = useState<boolean>(false);
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [memberName, setMemberName] = useState<string>('');
+  const [memberSlug, setMemberSlug] = useState<string>('');
+  const [memberTitle, setMemberTitle] = useState<string>('');
+  const [memberRole, setMemberRole] = useState<string>('');
+  const [memberExperience, setMemberExperience] = useState<string>('5+ Years');
+  const [memberSpecialty, setMemberSpecialty] = useState<string>('');
+  const [memberSlotsRemaining, setMemberSlotsRemaining] = useState<number>(4);
+  const [memberBio, setMemberBio] = useState<string>('');
+  const [memberBadgesInput, setMemberBadgesInput] = useState<string>('RESIDENT ARTIST');
+  const [memberInstagram, setMemberInstagram] = useState<string>('');
+  const [memberActive, setMemberActive] = useState<boolean>(true);
+  const [memberSortOrder, setMemberSortOrder] = useState<number>(0);
+  const [memberAvatarFile, setMemberAvatarFile] = useState<File | null>(null);
+  const [memberAvatarPreview, setMemberAvatarPreview] = useState<string>('');
+  const [savingMember, setSavingMember] = useState<boolean>(false);
+
   // Orders State
+
   const [orders, setOrders] = useState<any[]>([]);
   const [orderFilterStatus, setOrderFilterStatus] = useState<string>('ALL');
   const [orderSearch, setOrderSearch] = useState<string>('');
@@ -117,36 +198,59 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Portfolio State
   const [portfolioPieces, setPortfolioPieces] = useState<any[]>([]);
   const [loadingPortfolio, setLoadingPortfolio] = useState<boolean>(false);
-  const [newPieceTitle, setNewPieceTitle] = useState('');
-  const [newPieceCategory, setNewPieceCategory] = useState('dark-realism');
-  const [newPieceZone, setNewPieceZone] = useState('Forearm');
-  const [newPieceDescription, setNewPieceDescription] = useState('');
-  const [newPieceDuration, setNewPieceDuration] = useState('4 Hours');
-  const [newPiecePigment, setNewPiecePigment] = useState('Dynamic Triple Black');
-  const [newPieceFeatured, setNewPieceFeatured] = useState(false);
-  const [newPieceImageFile, setNewPieceImageFile] = useState<File | null>(null);
-  const [creatingPiece, setCreatingPiece] = useState(false);
+  const [portfolioCategoryFilter, setPortfolioCategoryFilter] = useState<string>('ALL');
+  const [portfolioSearch, setPortfolioSearch] = useState<string>('');
+  const [showArtworkModal, setShowArtworkModal] = useState<boolean>(false);
+  const [editingArtworkId, setEditingArtworkId] = useState<string | null>(null);
+  const [pieceTitle, setPieceTitle] = useState('');
+  const [pieceCategory, setPieceCategory] = useState('dark-realism');
+  const [pieceCategoryLabel, setPieceCategoryLabel] = useState('');
+  const [pieceZone, setPieceZone] = useState('Forearm');
+  const [pieceFlashId, setPieceFlashId] = useState('');
+  const [pieceDescription, setPieceDescription] = useState('');
+  const [pieceDuration, setPieceDuration] = useState('4 Hours (1 Session)');
+  const [piecePigment, setPiecePigment] = useState('Dynamic Triple Black');
+  const [pieceFeatured, setPieceFeatured] = useState(false);
+  const [pieceImageFile, setPieceImageFile] = useState<File | null>(null);
+  const [pieceImagePreview, setPieceImagePreview] = useState<string>('');
+  const [savingArtwork, setSavingArtwork] = useState(false);
 
-  // Products State
+  // Products / Inventory State
   const [productsList, setProductsList] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
-  const [newProdName, setNewProdName] = useState('');
-  const [newProdCategory, setNewProdCategory] = useState('Aftercare');
-  const [newProdPrice, setNewProdPrice] = useState<number>(95000);
-  const [newProdDesc, setNewProdDesc] = useState('');
-  const [newProdStock, setNewProdStock] = useState<number>(20);
-  const [newProdSpecs, setNewProdSpecs] = useState('Organic, 100ml');
-  const [newProdImageFile, setNewProdImageFile] = useState<File | null>(null);
-  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [inventoryCategoryFilter, setInventoryCategoryFilter] = useState<string>('ALL');
+  const [inventorySearch, setInventorySearch] = useState<string>('');
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [prodName, setProdName] = useState('');
+  const [prodCategory, setProdCategory] = useState('Aftercare');
+  const [prodPrice, setProdPrice] = useState<number>(95000);
+  const [prodDesc, setProdDesc] = useState('');
+  const [prodStock, setProdStock] = useState<number>(20);
+  const [prodInStock, setProdInStock] = useState<boolean>(true);
+  const [prodSpecs, setProdSpecs] = useState('Organic, 100ml');
+  const [prodImageFile, setProdImageFile] = useState<File | null>(null);
+  const [prodImagePreview, setProdImagePreview] = useState<string>('');
+  const [savingProduct, setSavingProduct] = useState(false);
 
-  // Testimonials State
+  // Category Manager State
+  const [showCategoryManagerModal, setShowCategoryManagerModal] = useState<boolean>(false);
+  const [newCategoryNameInput, setNewCategoryNameInput] = useState<string>('');
+  const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null);
+  const [renamedCategoryValue, setRenamedCategoryValue] = useState<string>('');
+  const [deletingCategoryName, setDeletingCategoryName] = useState<string | null>(null);
+  const [deleteReassignCategory, setDeleteReassignCategory] = useState<string>('Aftercare');
+  const [categoryActionLoading, setCategoryActionLoading] = useState<boolean>(false);
+
+  // Testimonials / Reviews State
   const [testimonialsList, setTestimonialsList] = useState<any[]>([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(false);
-  const [newReviewName, setNewReviewName] = useState('');
-  const [newReviewRole, setNewReviewRole] = useState('Dark Realism Sleeve');
-  const [newReviewStars, setNewReviewStars] = useState(5);
-  const [newReviewQuote, setNewReviewQuote] = useState('');
-  const [creatingReview, setCreatingReview] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [reviewName, setReviewName] = useState('');
+  const [reviewRole, setReviewRole] = useState('Dark Realism Sleeve');
+  const [reviewStars, setReviewStars] = useState<number>(5);
+  const [reviewQuote, setReviewQuote] = useState('');
+  const [savingReview, setSavingReview] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -174,6 +278,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     await Promise.allSettled([
       loadBookings(),
       loadOrders(),
+      loadUsers(),
+      loadServices(),
+      loadTeamMembers(),
       loadSettings(),
       loadPortfolio(),
       loadProducts(),
@@ -185,13 +292,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   useEffect(() => {
     if (isAuthenticated) {
       if (activeTab === 'bookings') loadBookings();
-      else if (activeTab === 'orders') loadOrders();
+      else if (activeTab === 'users') loadUsers();
+      else if (activeTab === 'services') loadServices();
+      else if (activeTab === 'team') loadTeamMembers();
+      else if (activeTab === 'shop') {
+        loadProducts();
+        loadOrders();
+      }
       else if (activeTab === 'portfolio') loadPortfolio();
-      else if (activeTab === 'inventory') loadProducts();
       else if (activeTab === 'reviews') loadTestimonials();
       else if (activeTab === 'settings') loadSettings();
     }
   }, [activeTab, isAuthenticated]);
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -204,6 +317,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       loadOrders();
     }
   }, [orderFilterStatus]);
+
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,7 +382,314 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
+  // 1.5. Users / Clients CRM Handlers
+  const loadUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const data = await adminGetUsers(userSearch || undefined);
+      setUsersList(data);
+    } catch (err) {
+      console.error('Failed to load users:', err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleSyncLegacyClients = async () => {
+    setSyncingLegacy(true);
+    try {
+      const res = await adminSyncLegacyUsers();
+      showToast(res.message || 'Synced client database successfully');
+      await Promise.allSettled([loadUsers(), loadBookings(), loadOrders()]);
+    } catch (err: any) {
+      showToast(`Sync failed: ${err.message || 'Error'}`);
+    } finally {
+      setSyncingLegacy(false);
+    }
+  };
+
+  const openInspectUser = (u: ClientUserData) => {
+    setInspectUser(u);
+    setEditingUserNotes(u.notes || '');
+  };
+
+  const handleSaveUserDetails = async () => {
+    if (!inspectUser) return;
+    setSavingUser(true);
+    try {
+      const updated = await adminUpdateUser(inspectUser.id, {
+        notes: editingUserNotes,
+      });
+      showToast(`Client "${updated.name}" notes saved`);
+      setInspectUser({
+        ...inspectUser,
+        notes: editingUserNotes,
+      });
+      await loadUsers();
+    } catch (err: any) {
+      showToast(`Failed to update client: ${err.message || 'Error'}`);
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
+  const handleDeleteClient = async (userId: string, userName: string) => {
+    if (!confirm(`Are you sure you want to remove client record "${userName}"?`)) return;
+    try {
+      await adminDeleteUser(userId);
+      showToast(`Client "${userName}" removed`);
+      if (inspectUser?.id === userId) setInspectUser(null);
+      await loadUsers();
+    } catch (err: any) {
+      showToast(`Failed to delete client: ${err.message || 'Error'}`);
+    }
+  };
+
+  // 1.8. Services Catalog Handlers
+  const loadServices = async () => {
+    setLoadingServices(true);
+    try {
+      const data = await adminGetServices();
+      setServicesList(data);
+    } catch (err) {
+      console.error('Failed to load services:', err);
+    } finally {
+      setLoadingServices(false);
+    }
+  };
+
+  const openAddServiceModal = () => {
+    setEditingServiceId(null);
+    const nextNum = String(servicesList.length + 1).padStart(2, '0');
+    setServiceDisciplineNumber(nextNum);
+    setServiceTitle('');
+    setServiceSubtitle('');
+    setServiceDescription('');
+    setServiceCategory('TATTOO');
+    setServiceIconName('skull');
+    setServiceSpecs([
+      { label: 'Technique', value: 'High-Detail Black & Grey' },
+      { label: 'Session Type', value: 'Half & Full Day Sessions' },
+    ]);
+    setServiceSortOrder(servicesList.length + 1);
+    setServiceImageFile(null);
+    setServiceImagePreview('');
+    setShowServiceModal(true);
+  };
+
+  const openEditServiceModal = (service: ServiceItem) => {
+    setEditingServiceId(service.id);
+    setServiceDisciplineNumber(service.disciplineNumber || '01');
+    setServiceTitle(service.title || '');
+    setServiceSubtitle(service.subtitle || '');
+    setServiceDescription(service.description || '');
+    setServiceCategory(service.category || 'TATTOO');
+    setServiceIconName(service.iconName || 'skull');
+    setServiceSpecs(
+      Array.isArray(service.specs) && service.specs.length > 0
+        ? service.specs
+        : [{ label: '', value: '' }]
+    );
+    setServiceSortOrder(service.sortOrder ?? 0);
+    setServiceImageFile(null);
+    setServiceImagePreview(service.imageUrl || service.image || '');
+    setShowServiceModal(true);
+  };
+
+  const handleAddSpecRow = () => {
+    setServiceSpecs([...serviceSpecs, { label: '', value: '' }]);
+  };
+
+  const handleRemoveSpecRow = (index: number) => {
+    setServiceSpecs(serviceSpecs.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateSpecRow = (index: number, field: 'label' | 'value', text: string) => {
+    const next = [...serviceSpecs];
+    next[index][field] = text;
+    setServiceSpecs(next);
+  };
+
+  const handleSaveService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!serviceTitle.trim() || !serviceDisciplineNumber.trim() || !serviceDescription.trim()) {
+      alert('Please provide discipline number, title, and description.');
+      return;
+    }
+    setSavingService(true);
+    try {
+      const validSpecs = serviceSpecs.filter((s) => s.label.trim() && s.value.trim());
+      const formData = new FormData();
+      formData.append('disciplineNumber', serviceDisciplineNumber);
+      formData.append('title', serviceTitle);
+      formData.append('subtitle', serviceSubtitle);
+      formData.append('description', serviceDescription);
+      formData.append('category', serviceCategory);
+      formData.append('iconName', serviceIconName);
+      formData.append('specs', JSON.stringify(validSpecs));
+      formData.append('sortOrder', String(serviceSortOrder));
+      if (serviceImageFile) {
+        formData.append('image', serviceImageFile);
+      } else if (serviceImagePreview && !serviceImagePreview.startsWith('data:')) {
+        formData.append('imageUrl', serviceImagePreview);
+      }
+
+      if (editingServiceId) {
+        await adminUpdateService(editingServiceId, formData);
+        showToast(`Service "${serviceTitle}" updated successfully`);
+      } else {
+        await adminCreateService(formData);
+        showToast(`New service discipline "${serviceTitle}" created`);
+      }
+
+      await loadServices();
+      setShowServiceModal(false);
+      setEditingServiceId(null);
+    } catch (err: any) {
+      alert(err.message || 'Failed to save service discipline');
+    } finally {
+      setSavingService(false);
+    }
+  };
+
+  const handleDeleteService = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete service discipline "${title}"?`)) return;
+    try {
+      await adminDeleteService(id);
+      await loadServices();
+      showToast(`Service "${title}" deleted`);
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete service');
+    }
+  };
+
+  // 1.9. Team & Artists Handlers
+  const loadTeamMembers = async () => {
+    setLoadingTeam(true);
+    try {
+      const data = await adminGetMembers(teamSearch || undefined);
+      setTeamMembers(data);
+    } catch (err: any) {
+      console.error('Failed to load team members:', err);
+    } finally {
+      setLoadingTeam(false);
+    }
+  };
+
+  const openAddMemberModal = () => {
+    setEditingMemberId(null);
+    setMemberName('');
+    setMemberSlug('');
+    setMemberTitle('Resident Tattoo Artist');
+    setMemberRole('Master Tattoo Artist & Custom Ink Specialist');
+    setMemberExperience('5+ Years');
+    setMemberSpecialty('Custom Fine-Line & Realism');
+    setMemberSlotsRemaining(4);
+    setMemberBio('');
+    setMemberBadgesInput('RESIDENT ARTIST, STERILE CERTIFIED');
+    setMemberInstagram('https://instagram.com/marvin_tattoos');
+    setMemberActive(true);
+    setMemberSortOrder(teamMembers.length + 1);
+    setMemberAvatarFile(null);
+    setMemberAvatarPreview('');
+    setShowMemberModal(true);
+  };
+
+  const openEditMemberModal = (member: ArtistProfile) => {
+    setEditingMemberId(member.id);
+    setMemberName(member.name || '');
+    setMemberSlug(member.slug || '');
+    setMemberTitle(member.title || '');
+    setMemberRole(member.role || '');
+    setMemberExperience(member.experience || '');
+    setMemberSpecialty(member.specialty || '');
+    setMemberSlotsRemaining(member.slotsRemaining ?? 4);
+    setMemberBio(member.bio || '');
+    setMemberBadgesInput(Array.isArray(member.badges) ? member.badges.join(', ') : '');
+    setMemberInstagram(member.instagram || '');
+    setMemberActive(member.active !== false);
+    setMemberSortOrder(member.sortOrder ?? 0);
+    setMemberAvatarFile(null);
+    setMemberAvatarPreview(member.avatar || '');
+    setShowMemberModal(true);
+  };
+
+  const handleSaveMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!memberName.trim() || !memberTitle.trim() || !memberBio.trim()) {
+      alert('Please provide Name, Title, and Bio/Description.');
+      return;
+    }
+    setSavingMember(true);
+    try {
+      const badgeList = memberBadgesInput
+        .split(',')
+        .map((b) => b.trim())
+        .filter(Boolean);
+
+      const formData = new FormData();
+      formData.append('name', memberName.trim());
+      if (memberSlug.trim()) formData.append('slug', memberSlug.trim());
+      formData.append('title', memberTitle.trim());
+      formData.append('role', memberRole.trim() || memberTitle.trim());
+      formData.append('experience', memberExperience.trim());
+      formData.append('specialty', memberSpecialty.trim());
+      formData.append('slotsRemaining', String(memberSlotsRemaining));
+      formData.append('bio', memberBio.trim());
+      formData.append('badges', JSON.stringify(badgeList));
+      if (memberInstagram.trim()) formData.append('instagram', memberInstagram.trim());
+      formData.append('active', String(memberActive));
+      formData.append('sortOrder', String(memberSortOrder));
+
+      if (memberAvatarFile) {
+        formData.append('avatar', memberAvatarFile);
+      } else if (memberAvatarPreview && !memberAvatarPreview.startsWith('data:')) {
+        formData.append('avatar', memberAvatarPreview);
+      }
+
+      if (editingMemberId) {
+        await adminUpdateMember(editingMemberId, formData);
+        showToast(`Team member "${memberName}" updated successfully`);
+      } else {
+        await adminCreateMember(formData);
+        showToast(`Team member "${memberName}" added successfully`);
+      }
+
+      await loadTeamMembers();
+      setShowMemberModal(false);
+      setEditingMemberId(null);
+    } catch (err: any) {
+      alert(err.message || 'Failed to save team member');
+    } finally {
+      setSavingMember(false);
+    }
+  };
+
+  const handleDeleteMember = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to remove team member "${name}"?`)) return;
+    try {
+      await adminDeleteMember(id);
+      await loadTeamMembers();
+      showToast(`Team member "${name}" removed`);
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete team member');
+    }
+  };
+
+  const handleToggleMemberActive = async (member: ArtistProfile) => {
+    try {
+      const formData = new FormData();
+      formData.append('active', String(!member.active));
+      await adminUpdateMember(member.id, formData);
+      await loadTeamMembers();
+      showToast(`Status updated for "${member.name}"`);
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle status');
+    }
+  };
+
   // 2. Orders Handlers
+
   const loadOrders = async () => {
     setLoadingOrders(true);
     try {
@@ -357,35 +778,75 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const handleCreatePortfolioPiece = async (e: React.FormEvent) => {
+  const openAddArtworkModal = () => {
+    setEditingArtworkId(null);
+    setPieceTitle('');
+    setPieceCategory('dark-realism');
+    setPieceCategoryLabel('Dark Realism');
+    setPieceZone('Forearm');
+    setPieceFlashId('');
+    setPieceDescription('');
+    setPieceDuration('4 Hours (1 Session)');
+    setPiecePigment('Dynamic Triple Black');
+    setPieceFeatured(false);
+    setPieceImageFile(null);
+    setPieceImagePreview('');
+    setShowArtworkModal(true);
+  };
+
+  const openEditArtworkModal = (piece: any) => {
+    setEditingArtworkId(piece.id);
+    setPieceTitle(piece.title || '');
+    setPieceCategory(piece.category || 'dark-realism');
+    setPieceCategoryLabel(piece.categoryLabel || piece.category || '');
+    setPieceZone(piece.zone || 'Forearm');
+    setPieceFlashId(piece.flashId || '');
+    setPieceDescription(piece.description || '');
+    setPieceDuration(piece.duration || '4 Hours (1 Session)');
+    setPiecePigment(piece.pigment || 'Dynamic Triple Black');
+    setPieceFeatured(Boolean(piece.featured));
+    setPieceImageFile(null);
+    setPieceImagePreview(piece.image || piece.imageUrl || '');
+    setShowArtworkModal(true);
+  };
+
+  const handleSavePortfolioPiece = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPieceImageFile) {
+    if (!editingArtworkId && !pieceImageFile) {
       alert('Please select an artwork photo to upload.');
       return;
     }
-    setCreatingPiece(true);
+    setSavingArtwork(true);
     try {
       const formData = new FormData();
-      formData.append('title', newPieceTitle);
-      formData.append('category', newPieceCategory);
-      formData.append('zone', newPieceZone);
-      formData.append('description', newPieceDescription);
-      formData.append('duration', newPieceDuration);
-      formData.append('pigment', newPiecePigment);
-      formData.append('featured', String(newPieceFeatured));
-      formData.append('image', newPieceImageFile);
+      formData.append('title', pieceTitle);
+      formData.append('category', pieceCategory);
+      formData.append('categoryLabel', pieceCategoryLabel || pieceCategory);
+      formData.append('zone', pieceZone);
+      formData.append('flashId', pieceFlashId);
+      formData.append('description', pieceDescription);
+      formData.append('duration', pieceDuration);
+      formData.append('pigment', piecePigment);
+      formData.append('featured', String(pieceFeatured));
+      if (pieceImageFile) {
+        formData.append('image', pieceImageFile);
+      }
 
-      await adminCreatePortfolioPiece(formData);
+      if (editingArtworkId) {
+        await adminUpdatePortfolioPiece(editingArtworkId, formData);
+        showToast('Artwork piece updated successfully');
+      } else {
+        await adminCreatePortfolioPiece(formData);
+        showToast('Artwork published to gallery');
+      }
+
       await loadPortfolio();
-      setShowAddArtworkModal(false);
-      setNewPieceTitle('');
-      setNewPieceDescription('');
-      setNewPieceImageFile(null);
-      showToast('Artwork published to gallery');
+      setShowArtworkModal(false);
+      setEditingArtworkId(null);
     } catch (err: any) {
-      alert(err.message || 'Failed to upload artwork');
+      alert(err.message || 'Failed to save artwork');
     } finally {
-      setCreatingPiece(false);
+      setSavingArtwork(false);
     }
   };
 
@@ -413,33 +874,71 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const handleCreateProduct = async (e: React.FormEvent) => {
+  const openAddProductModal = () => {
+    setEditingProductId(null);
+    setProdName('');
+    setProdCategory('Aftercare');
+    setProdPrice(95000);
+    setProdDesc('');
+    setProdStock(20);
+    setProdInStock(true);
+    setProdSpecs('Organic, 100ml');
+    setProdImageFile(null);
+    setProdImagePreview('');
+    setShowProductModal(true);
+  };
+
+  const openEditProductModal = (product: any) => {
+    setEditingProductId(product.id);
+    setProdName(product.name || '');
+    setProdCategory(product.category || 'Aftercare');
+    setProdPrice(Number(product.price) || 0);
+    setProdDesc(product.description || '');
+    setProdStock(product.stockCount !== undefined ? Number(product.stockCount) : 10);
+    setProdInStock(product.inStock !== false);
+    const specsStr = Array.isArray(product.specs)
+      ? product.specs.join(', ')
+      : typeof product.specs === 'string'
+      ? product.specs
+      : '';
+    setProdSpecs(specsStr);
+    setProdImageFile(null);
+    setProdImagePreview(product.image || product.imageUrl || '');
+    setShowProductModal(true);
+  };
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCreatingProduct(true);
+    setSavingProduct(true);
     try {
       const formData = new FormData();
-      formData.append('name', newProdName);
-      formData.append('category', newProdCategory);
-      formData.append('price', String(newProdPrice));
-      formData.append('description', newProdDesc);
-      formData.append('stockQuantity', String(newProdStock));
-      formData.append('specs', newProdSpecs);
-      formData.append('inStock', 'true');
-      if (newProdImageFile) {
-        formData.append('image', newProdImageFile);
+      formData.append('name', prodName);
+      formData.append('category', prodCategory);
+      formData.append('price', String(prodPrice));
+      formData.append('currency', 'UGX');
+      formData.append('description', prodDesc);
+      formData.append('stockCount', String(prodStock));
+      formData.append('inStock', String(prodInStock));
+      formData.append('specs', prodSpecs);
+      if (prodImageFile) {
+        formData.append('image', prodImageFile);
       }
 
-      await adminCreateProduct(formData);
+      if (editingProductId) {
+        await adminUpdateProduct(editingProductId, formData);
+        showToast('Product updated in inventory');
+      } else {
+        await adminCreateProduct(formData);
+        showToast('New product added to inventory');
+      }
+
       await loadProducts();
-      setShowAddProductModal(false);
-      setNewProdName('');
-      setNewProdDesc('');
-      setNewProdImageFile(null);
-      showToast('New product added to inventory');
+      setShowProductModal(false);
+      setEditingProductId(null);
     } catch (err: any) {
-      alert(err.message || 'Failed to add product');
+      alert(err.message || 'Failed to save product');
     } finally {
-      setCreatingProduct(false);
+      setSavingProduct(false);
     }
   };
 
@@ -451,6 +950,58 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       showToast('Product removed');
     } catch (err: any) {
       alert(err.message || 'Failed to delete product');
+    }
+  };
+
+  // Category CRUD Handlers
+  const handleAddNewCategoryPreset = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCategoryNameInput.trim();
+    if (!trimmed) return;
+
+    // Set as the current category in the Product form and toast
+    setProdCategory(trimmed);
+    showToast(`Category "${trimmed}" ready to be assigned.`);
+    setNewCategoryNameInput('');
+  };
+
+  const handleRenameCategory = async (oldCategory: string) => {
+    const trimmedNew = renamedCategoryValue.trim();
+    if (!trimmedNew || trimmedNew === oldCategory) {
+      setEditingCategoryName(null);
+      return;
+    }
+    setCategoryActionLoading(true);
+    try {
+      const res = await adminRenameProductCategory(oldCategory, trimmedNew);
+      await loadProducts();
+      showToast(res.message || `Renamed "${oldCategory}" to "${trimmedNew}"`);
+      if (inventoryCategoryFilter === oldCategory) {
+        setInventoryCategoryFilter(trimmedNew);
+      }
+      setEditingCategoryName(null);
+      setRenamedCategoryValue('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to rename category');
+    } finally {
+      setCategoryActionLoading(false);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryToDelete: string) => {
+    setCategoryActionLoading(true);
+    try {
+      const res = await adminDeleteProductCategory(categoryToDelete, deleteReassignCategory);
+      await loadProducts();
+      showToast(res.message || `Deleted category "${categoryToDelete}"`);
+      if (inventoryCategoryFilter === categoryToDelete) {
+        setInventoryCategoryFilter('ALL');
+      }
+      setDeletingCategoryName(null);
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete category');
+    } finally {
+      setCategoryActionLoading(false);
     }
   };
 
@@ -467,26 +1018,56 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const handleCreateTestimonial = async (e: React.FormEvent) => {
+  const openAddReviewModal = () => {
+    setEditingReviewId(null);
+    setReviewName('');
+    setReviewRole('Dark Realism Sleeve');
+    setReviewStars(5);
+    setReviewQuote('');
+    setShowReviewModal(true);
+  };
+
+  const openEditReviewModal = (t: any) => {
+    setEditingReviewId(t.id);
+    setReviewName(t.name || '');
+    setReviewRole(t.role || 'Verified Client');
+    setReviewStars(typeof t.stars === 'number' ? t.stars : 5);
+    setReviewQuote(t.quote || '');
+    setShowReviewModal(true);
+  };
+
+  const handleSaveReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCreatingReview(true);
+    if (!reviewName.trim() || !reviewQuote.trim()) {
+      alert('Client Name and Review Quote are required.');
+      return;
+    }
+    setSavingReview(true);
     try {
-      await adminCreateTestimonial({
-        name: newReviewName,
-        role: newReviewRole,
-        stars: newReviewStars,
-        quote: newReviewQuote,
-        date: 'Recent Client',
-      });
+      if (editingReviewId) {
+        await adminUpdateTestimonial(editingReviewId, {
+          name: reviewName.trim(),
+          role: reviewRole.trim(),
+          stars: reviewStars,
+          quote: reviewQuote.trim(),
+        });
+        showToast('Client review updated successfully');
+      } else {
+        await adminCreateTestimonial({
+          name: reviewName.trim(),
+          role: reviewRole.trim(),
+          stars: reviewStars,
+          quote: reviewQuote.trim(),
+        });
+        showToast('Client review published successfully');
+      }
       await loadTestimonials();
-      setShowAddReviewModal(false);
-      setNewReviewName('');
-      setNewReviewQuote('');
-      showToast('Client review published');
+      setShowReviewModal(false);
+      setEditingReviewId(null);
     } catch (err: any) {
-      alert(err.message || 'Failed to publish review');
+      alert(err.message || 'Failed to save review');
     } finally {
-      setCreatingReview(false);
+      setSavingReview(false);
     }
   };
 
@@ -515,6 +1096,73 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const totalRevenue = orders
     .filter((o) => o.paymentStatus === 'SUCCESS')
     .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+  // Dynamic Categories and Filtered Lists
+  const portfolioCategories = useMemo(() => {
+    const cats = new Set<string>();
+    portfolioPieces.forEach((p) => {
+      if (p.category) cats.add(p.category);
+    });
+    return Array.from(cats);
+  }, [portfolioPieces]);
+
+  const filteredPortfolioPieces = useMemo(() => {
+    return portfolioPieces.filter((p) => {
+      const matchesCategory =
+        portfolioCategoryFilter === 'ALL' ||
+        p.category?.toLowerCase() === portfolioCategoryFilter.toLowerCase();
+      const q = portfolioSearch.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        p.title?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q) ||
+        p.zone?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.flashId?.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [portfolioPieces, portfolioCategoryFilter, portfolioSearch]);
+
+  const inventoryCategories = useMemo(() => {
+    const cats = new Set<string>();
+    productsList.forEach((p) => {
+      if (p.category) cats.add(p.category);
+    });
+    return Array.from(cats);
+  }, [productsList]);
+
+  const filteredProductsList = useMemo(() => {
+    return productsList.filter((p) => {
+      const matchesCategory =
+        inventoryCategoryFilter === 'ALL' ||
+        p.category?.toLowerCase() === inventoryCategoryFilter.toLowerCase();
+      const q = inventorySearch.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        p.name?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [productsList, inventoryCategoryFilter, inventorySearch]);
+
+  const filteredServicesList = useMemo(() => {
+    return servicesList.filter((s) => {
+      const matchesCategory =
+        serviceCategoryFilter === 'ALL' ||
+        s.category?.toUpperCase() === serviceCategoryFilter.toUpperCase();
+      const q = serviceSearch.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        s.title?.toLowerCase().includes(q) ||
+        s.subtitle?.toLowerCase().includes(q) ||
+        s.disciplineNumber?.toLowerCase().includes(q) ||
+        s.description?.toLowerCase().includes(q) ||
+        s.category?.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [servicesList, serviceCategoryFilter, serviceSearch]);
+
 
   // ================= MODERN REFINED LOGIN SCREEN ================= //
   if (!isAuthenticated && !authLoading) {
@@ -642,7 +1290,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {/* Section: Operational */}
           <div className="space-y-1">
             <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Operations
+              Studio
             </div>
 
             <button
@@ -655,7 +1303,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             >
               <div className="flex items-center gap-2.5">
                 <Calendar className="w-4 h-4 text-zinc-400" />
-                <span>Inquiries</span>
+                <span>Bookings</span>
               </div>
               {pendingBookingsCount > 0 && (
                 <span className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">
@@ -665,29 +1313,128 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </button>
 
             <button
-              onClick={() => setActiveTab('orders')}
+              onClick={() => setActiveTab('users')}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
-                activeTab === 'orders'
+                activeTab === 'users'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Users className="w-4 h-4 text-zinc-400" />
+                <span>Clients</span>
+              </div>
+              <span className="text-[11px] text-zinc-400">{usersList.length}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('services')}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+                activeTab === 'services'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4 text-zinc-400" />
+                <span>Services</span>
+              </div>
+              <span className="text-[11px] text-zinc-400">{servicesList.length}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('team')}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+                activeTab === 'team'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Crown className="w-4 h-4 text-amber-400" />
+                <span>Team & Artists</span>
+              </div>
+              <span className="text-[11px] text-zinc-400">{teamMembers.length}</span>
+            </button>
+          </div>
+
+
+          {/* Section: Commerce / Shop */}
+          <div className="space-y-1">
+            <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+              <span>Shop</span>
+              {pendingOrdersCount > 0 && (
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] rounded font-bold">
+                  {pendingOrdersCount} new
+                </span>
+              )}
+            </div>
+
+            <button
+              onClick={() => {
+                setActiveTab('shop');
+                setShopSubTab('products');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+                activeTab === 'shop' && shopSubTab === 'products'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Package className="w-4 h-4 text-zinc-400" />
+                <span>Products</span>
+              </div>
+              <span className="text-[11px] text-zinc-400">{productsList.length}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('shop');
+                setShopSubTab('categories');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+                activeTab === 'shop' && shopSubTab === 'categories'
+                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Tag className="w-4 h-4 text-zinc-400" />
+                <span>Categories</span>
+              </div>
+              <span className="text-[11px] text-zinc-400">{inventoryCategories.length}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('shop');
+                setShopSubTab('orders');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+                activeTab === 'shop' && shopSubTab === 'orders'
                   ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
                   : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <ShoppingBag className="w-4 h-4 text-zinc-400" />
-                <span>Shop Orders</span>
+                <span>Orders</span>
               </div>
-              {pendingOrdersCount > 0 && (
+              {pendingOrdersCount > 0 ? (
                 <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold">
                   {pendingOrdersCount}
                 </span>
+              ) : (
+                <span className="text-[11px] text-zinc-400">{orders.length}</span>
               )}
             </button>
           </div>
 
-          {/* Section: Content & Catalog */}
+          {/* Section: Content & Media */}
           <div className="space-y-1">
             <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Catalog &amp; Media
+              Content
             </div>
 
             <button
@@ -703,21 +1450,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <span>Portfolio</span>
               </div>
               <span className="text-[11px] text-zinc-400">{portfolioPieces.length}</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('inventory')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
-                activeTab === 'inventory'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Package className="w-4 h-4 text-zinc-400" />
-                <span>Inventory</span>
-              </div>
-              <span className="text-[11px] text-zinc-400">{productsList.length}</span>
             </button>
 
             <button
@@ -739,7 +1471,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {/* Section: Configuration */}
           <div className="space-y-1">
             <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              System
+              Settings
             </div>
 
             <button
@@ -752,7 +1484,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             >
               <div className="flex items-center gap-2.5">
                 <Settings className="w-4 h-4 text-zinc-400" />
-                <span>Hero &amp; Settings</span>
+                <span>Settings</span>
               </div>
             </button>
           </div>
@@ -787,13 +1519,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
             <span>Marvin Atelier</span>
             <span>/</span>
-            <span className="text-white font-semibold capitalize">{activeTab}</span>
+            <span className="text-white font-semibold capitalize">
+              {activeTab === 'users' ? 'Clients CRM' : activeTab === 'team' ? 'Team & Artists' : activeTab}
+            </span>
+
+            {activeTab === 'shop' && (
+              <>
+                <span>/</span>
+                <span className="text-red-400 font-semibold capitalize">{shopSubTab}</span>
+              </>
+            )}
           </div>
 
           {/* Quick Metrics Bar */}
           <div className="hidden lg:flex items-center gap-6 text-xs font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-zinc-400">Pending Intake:</span>
+              <span className="text-zinc-400">Total Clients:</span>
+              <span className="text-white font-bold">{usersList.length}</span>
+            </div>
+            <div className="w-px h-3 bg-zinc-700" />
+            <div className="flex items-center gap-2">
+              <span className="text-zinc-400">New Bookings:</span>
               <span className="text-red-400 font-bold">{pendingBookingsCount}</span>
             </div>
             <div className="w-px h-3 bg-zinc-700" />
@@ -803,7 +1549,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
             <div className="w-px h-3 bg-zinc-700" />
             <div className="flex items-center gap-2">
-              <span className="text-zinc-400">MoMo Revenue:</span>
+              <span className="text-zinc-400">Total Sales:</span>
               <span className="text-emerald-400 font-bold">UGX {totalRevenue.toLocaleString()}</span>
             </div>
           </div>
@@ -818,27 +1564,71 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
 
-            {activeTab === 'portfolio' && (
+            {activeTab === 'users' && (
               <button
-                onClick={() => setShowAddArtworkModal(true)}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                onClick={handleSyncLegacyClients}
+                disabled={syncingLegacy}
+                className="px-3 py-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 text-zinc-300 hover:text-white rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5"
+                title="Scan all historical bookings and orders to create and link client profiles"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Upload Piece</span>
+                <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${syncingLegacy ? 'animate-spin' : ''}`} />
+                <span>{syncingLegacy ? 'Syncing...' : 'Sync Legacy Clients'}</span>
               </button>
             )}
-            {activeTab === 'inventory' && (
+
+            {activeTab === 'services' && (
               <button
-                onClick={() => setShowAddProductModal(true)}
+                onClick={openAddServiceModal}
                 className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Item</span>
+                <span>Add Service</span>
               </button>
+            )}
+
+            {activeTab === 'team' && (
+              <button
+                onClick={openAddMemberModal}
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Team Member</span>
+              </button>
+            )}
+
+
+            {activeTab === 'portfolio' && (
+              <button
+                onClick={openAddArtworkModal}
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Artwork</span>
+              </button>
+            )}
+            {activeTab === 'shop' && (
+              <>
+                {shopSubTab === 'products' && (
+                  <button
+                    onClick={() => setShopSubTab('categories')}
+                    className="px-3 py-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 text-zinc-300 hover:text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                  >
+                    <Tag className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Categories</span>
+                  </button>
+                )}
+                <button
+                  onClick={openAddProductModal}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Product</span>
+                </button>
+              </>
             )}
             {activeTab === 'reviews' && (
               <button
-                onClick={() => setShowAddReviewModal(true)}
+                onClick={openAddReviewModal}
                 className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -909,10 +1699,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <table className="w-full text-left font-mono text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-zinc-700/60 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider">
-                      <th className="p-3 pl-4">Ref Code</th>
+                      <th className="p-3 pl-4">Booking Ref</th>
                       <th className="p-3">Client</th>
-                      <th className="p-3">Discipline &amp; Placement</th>
-                      <th className="p-3">Preferred Slot</th>
+                      <th className="p-3">Service &amp; Placement</th>
+                      <th className="p-3">Date &amp; Time</th>
                       <th className="p-3">Status</th>
                       <th className="p-3 text-right pr-4">Actions</th>
                     </tr>
@@ -921,13 +1711,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     {loadingBookings ? (
                       <tr>
                         <td colSpan={6} className="p-8 text-center text-zinc-400">
-                          Loading consultations...
+                          Loading bookings...
                         </td>
                       </tr>
                     ) : bookings.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="p-8 text-center text-zinc-400">
-                          No inquiries found.
+                          No bookings found.
                         </td>
                       </tr>
                     ) : (
@@ -1020,142 +1810,191 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
           )}
 
-          {/* ================= 2. SHOP ORDERS TABLE ================= */}
-          {activeTab === 'orders' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                {/* Status Filter */}
-                <div className="flex items-center gap-1 bg-[#181a24] p-1 rounded-lg border border-zinc-700/70 font-mono text-xs">
-                  {['ALL', 'PENDING_PAYMENT', 'PROCESSING', 'READY_FOR_PICKUP', 'DISPATCHED', 'COMPLETED'].map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => {
-                        setOrderFilterStatus(st);
-                        setTimeout(loadOrders, 50);
-                      }}
-                      className={`px-3 py-1 rounded-md transition-colors text-[11px] ${
-                        orderFilterStatus === st
-                          ? 'bg-red-600/20 text-red-400 border border-red-600/40 font-semibold'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                    >
-                      {st === 'ALL' ? 'All' : st.replace('_', ' ')}
-                    </button>
-                  ))}
+          {/* ================= 1.5. CLIENTS / USERS CRM ================= */}
+          {activeTab === 'users' && (
+            <div className="space-y-6">
+              {/* Top CRM Analytics Banner */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="text-zinc-400 text-xs flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-red-400" />
+                    <span>Total Registered</span>
+                  </div>
+                  <div className="text-xl font-bold text-white">{usersList.length} Clients</div>
                 </div>
 
-                {/* Search */}
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="text-zinc-400 text-xs flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Total Bookings Placed</span>
+                  </div>
+                  <div className="text-xl font-bold text-white">
+                    {usersList.reduce((sum, u) => sum + (u.totalBookings || 0), 0)} Sessions
+                  </div>
+                </div>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="text-zinc-400 text-xs flex items-center gap-1.5">
+                    <ShoppingBag className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Total Shop Orders</span>
+                  </div>
+                  <div className="text-xl font-bold text-white">
+                    {usersList.reduce((sum, u) => sum + (u.totalOrders || 0), 0)} Orders
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter & Search Toolbar */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 font-mono text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="px-3.5 py-1.5 rounded-lg border bg-[#181a24] text-zinc-300 border-zinc-700/70 font-semibold">
+                    All Registered Clients ({usersList.length})
+                  </span>
+                </div>
+
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <div className="relative w-full sm:w-64">
+                  <div className="relative w-full sm:w-72">
                     <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
                     <input
                       type="text"
-                      value={orderSearch}
-                      onChange={(e) => setOrderSearch(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && loadOrders()}
-                      placeholder="Search order #, client..."
-                      className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && loadUsers()}
+                      placeholder="Search name, phone, email..."
+                      className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
                     />
+                    {userSearch && (
+                      <button
+                        onClick={() => {
+                          setUserSearch('');
+                          setTimeout(loadUsers, 50);
+                        }}
+                        className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                   <button
-                    onClick={loadOrders}
-                    className="px-3 py-1.5 bg-[#202434] hover:bg-[#282d42] border border-zinc-700 rounded-lg text-xs font-mono text-zinc-200 transition-colors"
+                    onClick={loadUsers}
+                    className="px-3.5 py-1.5 bg-[#202434] hover:bg-[#282d42] border border-zinc-700 rounded-lg text-xs text-zinc-200 transition-colors"
                   >
-                    Filter
+                    Search
                   </button>
                 </div>
               </div>
 
-              {/* Orders Table */}
-              <div className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden shadow-lg">
-                <table className="w-full text-left font-mono text-xs border-collapse">
+              {/* Users CRM Table */}
+              <div className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden shadow-lg font-mono text-xs">
+                <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-zinc-700/60 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider">
-                      <th className="p-3 pl-4">Order #</th>
-                      <th className="p-3">Customer</th>
-                      <th className="p-3">Fulfillment</th>
-                      <th className="p-3">Payment</th>
-                      <th className="p-3">Amount</th>
-                      <th className="p-3">Status</th>
+                      <th className="p-3 pl-4">Client Name</th>
+                      <th className="p-3">Phone (WhatsApp)</th>
+                      <th className="p-3">Email</th>
+                      <th className="p-3 text-center">Bookings</th>
+                      <th className="p-3 text-center">Shop Orders</th>
+                      <th className="p-3">Last Active</th>
                       <th className="p-3 text-right pr-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-700/50">
-                    {loadingOrders ? (
+                    {loadingUsers ? (
                       <tr>
                         <td colSpan={7} className="p-8 text-center text-zinc-400">
-                          Loading shop orders...
+                          Loading clients database...
                         </td>
                       </tr>
-                    ) : orders.length === 0 ? (
+                    ) : usersList.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="p-8 text-center text-zinc-400">
-                          No orders placed yet.
+                          No client records match your search.
                         </td>
                       </tr>
                     ) : (
-                      orders.map((o) => (
+                      usersList.map((u) => (
                         <tr
-                          key={o.id}
-                          onClick={() => setInspectOrder(o)}
+                          key={u.id}
+                          onClick={() => openInspectUser(u)}
                           className="hover:bg-[#202434] cursor-pointer transition-colors group"
                         >
-                          <td className="p-3 pl-4 font-semibold text-white">
-                            {o.orderNumber}
+                          <td className="p-3 pl-4">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-7 h-7 rounded-full bg-red-600/20 border border-red-600/40 flex items-center justify-center font-bold text-red-300 text-xs shrink-0">
+                                {u.name ? u.name.charAt(0).toUpperCase() : 'C'}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-semibold text-white group-hover:text-red-300 transition-colors flex items-center gap-1.5 truncate">
+                                  <span>{u.name}</span>
+                                </div>
+                                {u.notes && (
+                                  <div className="text-[10px] text-zinc-400 truncate max-w-xs">
+                                    {u.notes}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </td>
                           <td className="p-3">
-                            <div className="font-semibold text-zinc-200">{o.clientName}</div>
-                            <div className="text-[11px] text-zinc-400">{o.clientPhone}</div>
+                            <span className="text-zinc-200 font-semibold">{u.phone}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-zinc-200 font-semibold block">
-                              {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
+                            <span className="text-zinc-400 text-[11px] truncate max-w-xs block">
+                              {u.email || '—'}
                             </span>
-                            {o.deliveryAddress && (
-                              <span className="text-[10px] text-zinc-400 block truncate max-w-xs">
-                                {o.deliveryAddress}
-                              </span>
-                            )}
                           </td>
-                          <td className="p-3">
+                          <td className="p-3 text-center">
                             <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                                o.paymentStatus === 'SUCCESS'
-                                  ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
-                                  : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                              className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                                u.totalBookings > 0
+                                  ? 'bg-blue-950/60 text-blue-300 border border-blue-800/70'
+                                  : 'text-zinc-500'
                               }`}
                             >
-                              {o.paymentMethod} ({o.paymentStatus})
+                              {u.totalBookings}
                             </span>
                           </td>
-                          <td className="p-3 font-semibold text-red-400">
-                            UGX {o.totalAmount?.toLocaleString()}
-                          </td>
-                          <td className="p-3">
-                            <span className="text-zinc-300 text-[11px]">
-                              {o.orderStatus.replace('_', ' ')}
+                          <td className="p-3 text-center">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                                u.totalOrders > 0
+                                  ? 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                                  : 'text-zinc-500'
+                              }`}
+                            >
+                              {u.totalOrders}
                             </span>
+                          </td>
+                          <td className="p-3 text-zinc-400 text-[11px]">
+                            {u.lastActive ? new Date(u.lastActive).toLocaleDateString() : new Date(u.createdAt).toLocaleDateString()}
                           </td>
                           <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() =>
                                   openWhatsApp(
-                                    o.clientPhone,
-                                    `Hello ${o.clientName}! This is Marvin Tattoos Atelier regarding Order #${o.orderNumber}. Your items are prepared.`
+                                    u.phone,
+                                    `Hello ${u.name}! This is Marvin Tattoos Atelier. We are checking in with you regarding your studio experience.`
                                   )
                                 }
-                                className="px-2.5 py-1 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded text-[11px] flex items-center gap-1"
+                                className="p-1.5 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded transition-colors"
+                                title="Chat on WhatsApp"
                               >
-                                <MessageCircle className="w-3 h-3" />
-                                <span>WhatsApp</span>
+                                <MessageCircle className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={() => setInspectOrder(o)}
-                                className="px-2.5 py-1 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-300 rounded text-[11px] flex items-center gap-1"
+                                onClick={() => openInspectUser(u)}
+                                className="px-2.5 py-1 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-300 rounded text-[11px] transition-colors flex items-center gap-1"
                               >
-                                <span>View</span>
+                                <span>Dossier</span>
                                 <ArrowRight className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClient(u.id, u.name)}
+                                className="p-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded transition-colors"
+                                title="Delete Client"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
@@ -1168,123 +2007,1237 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
           )}
 
-          {/* ================= 3. PORTFOLIO CMS ================= */}
-          {activeTab === 'portfolio' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="font-mono text-xs text-zinc-400">
-                  Total Artworks: <span className="text-white font-bold">{portfolioPieces.length}</span>
-                </div>
-                <button
-                  onClick={() => setShowAddArtworkModal(true)}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Masterpiece</span>
-                </button>
-              </div>
-
+          {/* ================= 1.9. SERVICES & DISCIPLINES CMS ================= */}
+          {activeTab === 'services' && (
+            <div className="space-y-6">
+              {/* Studio Services Metrics Overview */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {portfolioPieces.map((p) => (
-                  <div
-                    key={p.id}
-                    className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between group shadow-md"
-                  >
-                    <div className="h-44 bg-[#141620] relative overflow-hidden">
-                      <img
-                        src={p.image || p.imageUrl}
-                        alt={p.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded">
-                        {p.category}
-                      </span>
-                    </div>
-
-                    <div className="p-4 space-y-2 font-mono text-xs">
-                      <h4 className="font-semibold text-white truncate">{p.title}</h4>
-                      <div className="text-[11px] text-zinc-400 flex justify-between">
-                        <span>{p.zone}</span>
-                        <span className="text-zinc-500">{p.duration || 'Session'}</span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
-                        {p.description}
-                      </p>
-
-                      <div className="pt-2.5 border-t border-zinc-700/60 flex justify-between items-center">
-                        <span className="text-[10px] text-zinc-400 font-mono">
-                          {p.pigment || 'Triple Black'}
-                        </span>
-                        <button
-                          onClick={() => handleDeletePortfolioPiece(p.id)}
-                          className="text-[11px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    </div>
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Total Disciplines</span>
+                    <PenTool className="w-4 h-4 text-red-400" />
                   </div>
-                ))}
+                  <div className="text-2xl font-bold font-mono text-white">
+                    {servicesList.length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Live studio services</p>
+                </div>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Tattoo Disciplines</span>
+                    <Icons8 name="skull" size={16} className="text-red-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-red-400">
+                    {servicesList.filter((s) => s.category?.toUpperCase() === 'TATTOO').length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Custom ink & realism</p>
+                </div>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>PMU & Piercing</span>
+                    <Sparkles className="w-4 h-4 text-fuchsia-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-fuchsia-400">
+                    {servicesList.filter((s) => ['PMU', 'PIERCING'].includes(s.category?.toUpperCase() || '')).length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Cosmetic & body mods</p>
+                </div>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Removal & Clinical</span>
+                    <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-amber-400">
+                    {servicesList.filter((s) => s.category?.toUpperCase() === 'REMOVAL').length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Laser & skin recovery</p>
+                </div>
               </div>
+
+              {/* Filter & Search Toolbar */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="relative w-full sm:w-80">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Search disciplines, techniques, numbers..."
+                    value={serviceSearch}
+                    onChange={(e) => setServiceSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white placeholder-zinc-500 font-mono text-xs focus:outline-none focus:border-red-500"
+                  />
+                  {serviceSearch && (
+                    <button
+                      onClick={() => setServiceSearch('')}
+                      className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                  <div className="font-mono text-xs text-zinc-400">
+                    Showing <span className="text-white font-bold">{filteredServicesList.length}</span> of {servicesList.length}
+                  </div>
+                  <button
+                    onClick={openAddServiceModal}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Service</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs no-scrollbar">
+                <button
+                  onClick={() => setServiceCategoryFilter('ALL')}
+                  className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap ${
+                    serviceCategoryFilter === 'ALL'
+                      ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
+                      : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                  }`}
+                >
+                  All Categories ({servicesList.length})
+                </button>
+                {(['TATTOO', 'PMU', 'PIERCING', 'REMOVAL'] as const).map((cat) => {
+                  const count = servicesList.filter((s) => s.category?.toUpperCase() === cat).length;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setServiceCategoryFilter(cat)}
+                      className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap uppercase ${
+                        serviceCategoryFilter === cat
+                          ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
+                          : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      {cat} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Services Grid */}
+              {loadingServices ? (
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-2">
+                  <RefreshCw className="w-6 h-6 text-red-500 animate-spin mx-auto" />
+                  <p className="text-zinc-400 font-mono text-xs">Loading studio service disciplines...</p>
+                </div>
+              ) : filteredServicesList.length === 0 ? (
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3">
+                  <PenTool className="w-8 h-8 text-zinc-600 mx-auto" />
+                  <p className="text-zinc-400 font-mono text-sm">No service disciplines match your search or filter.</p>
+                  <button
+                    onClick={() => {
+                      setServiceCategoryFilter('ALL');
+                      setServiceSearch('');
+                    }}
+                    className="text-red-400 hover:underline font-mono text-xs"
+                  >
+                    Clear active filters
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredServicesList.map((service) => {
+                    const categoryColors: Record<string, string> = {
+                      TATTOO: 'bg-red-950/80 text-red-300 border-red-800/80',
+                      PMU: 'bg-fuchsia-950/80 text-fuchsia-300 border-fuchsia-800/80',
+                      PIERCING: 'bg-emerald-950/80 text-emerald-300 border-emerald-800/80',
+                      REMOVAL: 'bg-amber-950/80 text-amber-300 border-amber-800/80',
+                    };
+                    const badgeClass =
+                      categoryColors[service.category?.toUpperCase() || ''] ||
+                      'bg-zinc-800 text-zinc-300 border-zinc-700';
+
+                    return (
+                      <div
+                        key={service.id}
+                        className="group bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col hover:border-zinc-500/80 transition-all duration-300 shadow-lg hover:shadow-2xl"
+                      >
+                        {/* Artwork Banner */}
+                        <div className="relative aspect-[16/10] bg-[#12141c] overflow-hidden">
+                          <img
+                            src={service.imageUrl || service.image || '/images/hero.webp'}
+                            alt={service.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90 group-hover:brightness-100"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-black/60" />
+
+                          {/* Top Badges */}
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                            <span className="px-2 py-0.5 bg-black/80 border border-zinc-700/80 backdrop-blur-md rounded text-[11px] font-mono font-bold text-red-400 tracking-wider">
+                              #{service.disciplineNumber}
+                            </span>
+                          </div>
+
+                          <div className="absolute top-2.5 right-2.5">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase border backdrop-blur-md ${badgeClass}`}
+                            >
+                              {service.category || 'TATTOO'}
+                            </span>
+                          </div>
+
+                          {/* Icon Indicator */}
+                          <div className="absolute bottom-2 left-3 flex items-center gap-1.5 text-zinc-300">
+                            <span className="p-1 bg-black/70 backdrop-blur-md border border-zinc-700/80 rounded">
+                              <Icons8 name={service.iconName || 'skull'} size={14} className="text-zinc-200" />
+                            </span>
+                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                              {service.iconName || 'skull'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1.5">
+                            <h3 className="font-semibold text-white text-sm line-clamp-1 group-hover:text-red-400 transition-colors">
+                              {service.title}
+                            </h3>
+                            {service.subtitle && (
+                              <p className="text-[11px] text-zinc-400 font-mono line-clamp-1 italic">
+                                {service.subtitle}
+                              </p>
+                            )}
+                            <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed pt-1">
+                              {service.description}
+                            </p>
+                          </div>
+
+                          {/* Specs breakdown */}
+                          {Array.isArray(service.specs) && service.specs.length > 0 && (
+                            <div className="pt-2 border-t border-zinc-700/60 space-y-1">
+                              <span className="text-[10px] font-mono uppercase text-zinc-500 block">
+                                Technical Specs
+                              </span>
+                              <div className="flex flex-wrap gap-1">
+                                {service.specs.slice(0, 3).map((spec, i) => (
+                                  <span
+                                    key={i}
+                                    className="px-1.5 py-0.5 bg-[#12141c] border border-zinc-700/80 rounded text-[10px] font-mono text-zinc-300 truncate max-w-[200px]"
+                                    title={`${spec.label}: ${spec.value}`}
+                                  >
+                                    <span className="text-zinc-500">{spec.label}:</span> {spec.value}
+                                  </span>
+                                ))}
+                                {service.specs.length > 3 && (
+                                  <span className="px-1.5 py-0.5 bg-[#12141c] text-[10px] font-mono text-zinc-500 rounded">
+                                    +{service.specs.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Action Footer */}
+                          <div className="pt-3 border-t border-zinc-700/60 flex items-center justify-between font-mono text-xs">
+                            <span className="text-[11px] text-zinc-500">
+                              Order: <span className="text-zinc-300 font-semibold">{service.sortOrder ?? 0}</span>
+                            </span>
+
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => openEditServiceModal(service)}
+                                className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded transition-colors flex items-center gap-1 text-[11px]"
+                                title="Edit Discipline"
+                              >
+                                <Edit className="w-3 h-3 text-amber-400" />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteService(service.id, service.title)}
+                                className="p-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded transition-colors"
+                                title="Delete Discipline"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
-          {/* ================= 4. INVENTORY CMS ================= */}
-          {activeTab === 'inventory' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="font-mono text-xs text-zinc-400">
-                  Shop Catalog: <span className="text-white font-bold">{productsList.length}</span> items
+          {/* ================= 1.10. TEAM & WEBSITE MEMBERS CMS ================= */}
+          {activeTab === 'team' && (
+            <div className="space-y-6">
+              {/* Team Members Metrics Overview */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Total Members</span>
+                    <Crown className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-white">
+                    {teamMembers.length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Website artist & piercer roster</p>
                 </div>
-                <button
-                  onClick={() => setShowAddProductModal(true)}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Product</span>
-                </button>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Active on Site</span>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-emerald-400">
+                    {teamMembers.filter((m) => m.active !== false).length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Visible on public about & booking</p>
+                </div>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Master Artists</span>
+                    <PenTool className="w-4 h-4 text-red-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-red-400">
+                    {teamMembers.filter((m) => m.title?.toLowerCase().includes('master') || m.title?.toLowerCase().includes('founder')).length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Founders & senior tattooists</p>
+                </div>
+
+                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                    <span>Piercing Curators</span>
+                    <Sparkles className="w-4 h-4 text-fuchsia-400" />
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-fuchsia-400">
+                    {teamMembers.filter((m) => m.title?.toLowerCase().includes('piercing') || m.specialty?.toLowerCase().includes('piercing')).length}
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-mono">Titanium & jewelry specialists</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {productsList.map((prod) => (
-                  <div
-                    key={prod.id}
-                    className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between shadow-md"
+              {/* Action Bar & Search Filter */}
+              <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="relative w-full md:w-80">
+                  <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search by artist name, specialty, role..."
+                    value={teamSearch}
+                    onChange={(e) => setTeamSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') loadTeamMembers();
+                    }}
+                    className="w-full pl-9 pr-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono placeholder:text-zinc-500 focus:outline-none focus:border-red-500 transition-colors"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                  <button
+                    onClick={loadTeamMembers}
+                    disabled={loadingTeam}
+                    className="p-2 bg-[#141620] hover:bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-mono"
+                    title="Reload Team"
                   >
-                    <div className="h-36 bg-[#141620] relative overflow-hidden">
-                      <img src={prod.image || prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" />
-                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded">
-                        {prod.category}
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingTeam ? 'animate-spin' : ''}`} />
+                    <span>Refresh</span>
+                  </button>
+
+                  <button
+                    onClick={openAddMemberModal}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5 shadow-md shadow-red-950/40"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Team Member</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Members Grid */}
+              {loadingTeam ? (
+                <div className="p-12 text-center text-zinc-500 font-mono text-xs flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-red-400" />
+                  <span>Loading team & artist roster...</span>
+                </div>
+              ) : teamMembers.length === 0 ? (
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3 font-mono">
+                  <Users className="w-10 h-10 text-zinc-600 mx-auto" />
+                  <p className="text-zinc-400 text-xs">No team members found.</p>
+                  <button
+                    onClick={openAddMemberModal}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs uppercase font-semibold inline-flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add First Team Member</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {teamMembers.map((member) => {
+                    const isMarvin =
+                      member.id === 'marvin' ||
+                      member.slug === 'marvin' ||
+                      member.name.toLowerCase().includes('marvin');
+                    const badges = Array.isArray(member.badges) ? member.badges : [];
+
+                    return (
+                      <div
+                        key={member.id}
+                        className={`bg-[#181a24] border rounded-xl overflow-hidden flex flex-col justify-between transition-all group ${
+                          member.active === false
+                            ? 'border-zinc-800 opacity-60'
+                            : isMarvin
+                            ? 'border-amber-500/50 shadow-lg shadow-amber-950/20'
+                            : 'border-zinc-700/70 hover:border-zinc-500'
+                        }`}
+                      >
+                        {/* Member Photo & Top Badges */}
+                        <div className="relative h-64 bg-[#141620] overflow-hidden">
+                          <img
+                            src={member.avatar || '/images/marvin-founder.png'}
+                            alt={member.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/images/marvin-founder.png';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-black/40" />
+
+                          {/* Top Badges */}
+                          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[80%]">
+                            {isMarvin && (
+                              <span className="px-2 py-0.5 bg-amber-500 text-black font-bold font-mono text-[9px] uppercase tracking-wider rounded flex items-center gap-1 shadow">
+                                <Crown className="w-3 h-3" /> Founder
+                              </span>
+                            )}
+                            {badges.slice(0, 2).map((b, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 bg-black/80 backdrop-blur-md text-red-300 border border-red-500/40 font-mono text-[9px] uppercase tracking-wider rounded"
+                              >
+                                {b}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* Status Badge */}
+                          <div className="absolute top-3 right-3">
+                            <span
+                              className={`px-2 py-0.5 rounded font-mono text-[9px] font-bold uppercase tracking-wider ${
+                                member.active !== false
+                                  ? 'bg-emerald-950/90 text-emerald-300 border border-emerald-700/60'
+                                  : 'bg-zinc-900 text-zinc-400 border border-zinc-700'
+                              }`}
+                            >
+                              {member.active !== false ? 'Active' : 'Hidden'}
+                            </span>
+                          </div>
+
+                          {/* Bottom info on image */}
+                          <div className="absolute bottom-3 left-3 right-3">
+                            <h3 className="text-white font-bold text-lg leading-tight flex items-center justify-between">
+                              <span>{member.name}</span>
+                              <span className="text-xs font-mono text-red-400 font-semibold">
+                                {member.experience}
+                              </span>
+                            </h3>
+                            <p className="text-xs text-amber-300/90 font-mono truncate">{member.title}</p>
+                          </div>
+                        </div>
+
+                        {/* Member Details */}
+                        <div className="p-4 space-y-3 flex-1 flex flex-col justify-between font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">Specialty</span>
+                              <p className="text-xs text-zinc-200 font-medium">{member.specialty || 'Custom Tattoo & Piercing'}</p>
+                            </div>
+
+                            <div>
+                              <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">Bio &amp; Description</span>
+                              <p className="text-xs text-zinc-400 font-sans leading-relaxed line-clamp-3">
+                                {member.bio}
+                              </p>
+                            </div>
+
+                            {badges.length > 0 && (
+                              <div className="pt-2 flex flex-wrap gap-1">
+                                {badges.map((tag, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-1.5 py-0.5 bg-[#141620] border border-zinc-700 text-zinc-300 text-[10px] rounded"
+                                  >
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Card Footer & Action Buttons */}
+                          <div className="pt-3 border-t border-zinc-700/60 flex items-center justify-between gap-2">
+                            <button
+                              onClick={() => handleToggleMemberActive(member)}
+                              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-mono transition-colors border ${
+                                member.active !== false
+                                  ? 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700'
+                                  : 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40 hover:bg-emerald-900/60'
+                              }`}
+                              title={member.active !== false ? 'Hide from public website' : 'Make visible on public website'}
+                            >
+                              {member.active !== false ? 'Deactivate' : 'Activate'}
+                            </button>
+
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => openEditMemberModal(member)}
+                                className="p-1.5 bg-[#141620] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 rounded-lg text-xs transition-colors"
+                                title="Edit Member Profile"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteMember(member.id, member.name)}
+                                className="p-1.5 bg-[#141620] hover:bg-red-950 text-zinc-400 hover:text-red-400 border border-zinc-700 hover:border-red-800 rounded-lg text-xs transition-colors"
+                                title="Delete Member"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ================= 2. SHOP (PRODUCTS / CATEGORIES / ORDERS) ================= */}
+          {activeTab === 'shop' && (
+
+            <div className="space-y-6">
+              {/* Shop Sub-Navigation Pill Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-700/60">
+                <div className="flex items-center gap-1.5 bg-[#181a24] p-1 rounded-xl border border-zinc-700/70 font-mono text-xs">
+                  <button
+                    onClick={() => setShopSubTab('products')}
+                    className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-xs ${
+                      shopSubTab === 'products'
+                        ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Package className="w-3.5 h-3.5" />
+                    <span>Products</span>
+                    <span
+                      className={`px-1.5 py-0.5 text-[10px] rounded ${
+                        shopSubTab === 'products' ? 'bg-red-800 text-white' : 'bg-[#141620] text-zinc-400'
+                      }`}
+                    >
+                      {productsList.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setShopSubTab('categories')}
+                    className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-xs ${
+                      shopSubTab === 'categories'
+                        ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    <span>Categories</span>
+                    <span
+                      className={`px-1.5 py-0.5 text-[10px] rounded ${
+                        shopSubTab === 'categories' ? 'bg-red-800 text-white' : 'bg-[#141620] text-zinc-400'
+                      }`}
+                    >
+                      {inventoryCategories.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setShopSubTab('orders')}
+                    className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-xs ${
+                      shopSubTab === 'orders'
+                        ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Orders</span>
+                    {pendingOrdersCount > 0 ? (
+                      <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold">
+                        {pendingOrdersCount} new
                       </span>
+                    ) : (
+                      <span
+                        className={`px-1.5 py-0.5 text-[10px] rounded ${
+                          shopSubTab === 'orders' ? 'bg-red-800 text-white' : 'bg-[#141620] text-zinc-400'
+                        }`}
+                      >
+                        {orders.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {shopSubTab === 'products' && (
+                    <>
+                      <button
+                        onClick={() => setShopSubTab('categories')}
+                        className="px-3 py-1.5 bg-[#181a24] hover:bg-[#222634] border border-zinc-700/80 text-zinc-300 hover:text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                      >
+                        <Tag className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Categories</span>
+                      </button>
+                      <button
+                        onClick={openAddProductModal}
+                        className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Product</span>
+                      </button>
+                    </>
+                  )}
+                  {shopSubTab === 'categories' && (
+                    <button
+                      onClick={openAddProductModal}
+                      className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Product</span>
+                    </button>
+                  )}
+                  {shopSubTab === 'orders' && (
+                    <button
+                      onClick={loadOrders}
+                      className="px-3 py-1.5 bg-[#181a24] hover:bg-[#222634] border border-zinc-700/80 text-zinc-300 hover:text-white rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Refresh Orders</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ----------------- SUB-TAB: PRODUCTS CATALOG ----------------- */}
+              {shopSubTab === 'products' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    {/* Search Bar */}
+                    <div className="relative w-full sm:w-72">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                      <input
+                        type="text"
+                        placeholder="Search products, categories..."
+                        value={inventorySearch}
+                        onChange={(e) => setInventorySearch(e.target.value)}
+                        className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white placeholder-zinc-500 font-mono text-xs focus:outline-none focus:border-red-500"
+                      />
+                      {inventorySearch && (
+                        <button
+                          onClick={() => setInventorySearch('')}
+                          className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
 
-                    <div className="p-4 space-y-2 font-mono text-xs">
-                      <h4 className="font-semibold text-white truncate">{prod.name}</h4>
-                      <div className="text-sm font-bold text-red-400">
-                        UGX {prod.price.toLocaleString()}
-                      </div>
-                      <p className="text-[11px] text-zinc-400 line-clamp-2">
-                        {prod.description}
-                      </p>
-
-                      <div className="pt-2.5 border-t border-zinc-700/60 flex justify-between items-center">
-                        <span className="text-[10px] text-emerald-400 flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" />
-                          <span>In Stock</span>
-                        </span>
-                        <button
-                          onClick={() => handleDeleteProduct(prod.id)}
-                          className="text-[11px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                          <span>Delete</span>
-                        </button>
-                      </div>
+                    <div className="font-mono text-xs text-zinc-400">
+                      Showing <span className="text-white font-bold">{filteredProductsList.length}</span> of {productsList.length} products
                     </div>
                   </div>
-                ))}
+
+                  {/* Dynamic Category Filter Pills */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs no-scrollbar">
+                    <button
+                      onClick={() => setInventoryCategoryFilter('ALL')}
+                      className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap ${
+                        inventoryCategoryFilter === 'ALL'
+                          ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
+                          : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      All Categories ({productsList.length})
+                    </button>
+                    {inventoryCategories.map((cat) => {
+                      const count = productsList.filter((p) => p.category?.toLowerCase() === cat.toLowerCase()).length;
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => setInventoryCategoryFilter(cat)}
+                          className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap capitalize ${
+                            inventoryCategoryFilter.toLowerCase() === cat.toLowerCase()
+                              ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
+                              : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                          }`}
+                        >
+                          {cat} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {filteredProductsList.length === 0 ? (
+                    <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-2">
+                      <p className="text-zinc-400 font-mono text-sm">No catalog products match your search or filter.</p>
+                      <button
+                        onClick={() => {
+                          setInventoryCategoryFilter('ALL');
+                          setInventorySearch('');
+                        }}
+                        className="text-red-400 hover:text-red-300 font-mono text-xs underline"
+                      >
+                        Reset filters
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {filteredProductsList.map((prod) => (
+                        <div
+                          key={prod.id}
+                          className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between shadow-md hover:border-zinc-500 transition-colors"
+                        >
+                          <div className="h-36 bg-[#141620] relative overflow-hidden">
+                            <img
+                              src={prod.image || prod.imageUrl}
+                              alt={prod.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded capitalize">
+                              {prod.category}
+                            </span>
+                          </div>
+
+                          <div className="p-4 space-y-2 font-mono text-xs">
+                            <h4 className="font-semibold text-white truncate" title={prod.name}>
+                              {prod.name}
+                            </h4>
+                            <div className="text-sm font-bold text-red-400">
+                              UGX {prod.price.toLocaleString()}
+                            </div>
+                            <p className="text-[11px] text-zinc-400 line-clamp-2">
+                              {prod.description}
+                            </p>
+
+                            <div className="pt-2.5 border-t border-zinc-700/60 flex justify-between items-center">
+                              {prod.inStock && (prod.stockCount === undefined || prod.stockCount > 0) ? (
+                                <span className="text-[10px] text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  <span>In Stock ({prod.stockCount ?? 10})</span>
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-red-400 flex items-center gap-1">
+                                  <XCircle className="w-3 h-3" />
+                                  <span>Out of Stock</span>
+                                </span>
+                              )}
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  onClick={() => openEditProductModal(prod)}
+                                  className="text-[11px] text-zinc-300 hover:text-white px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1"
+                                  title="Edit Product"
+                                >
+                                  <Edit className="w-3 h-3 text-amber-400" />
+                                  <span>Edit</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProduct(prod.id)}
+                                  className="text-[11px] text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
+                                  title="Delete Product"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Delete</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ----------------- SUB-TAB: CATEGORIES MANAGEMENT ----------------- */}
+              {shopSubTab === 'categories' && (
+                <div className="space-y-6 max-w-4xl">
+                  {/* Create New Category Card */}
+                  <form
+                    onSubmit={handleAddNewCategoryPreset}
+                    className="p-4 bg-[#181a24] border border-zinc-700/80 rounded-xl space-y-3 font-mono text-xs shadow-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-amber-400" />
+                      <h4 className="font-semibold text-white text-sm">Add New Product Category</h4>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="text"
+                        value={newCategoryNameInput}
+                        onChange={(e) => setNewCategoryNameInput(e.target.value)}
+                        placeholder="e.g. Rotary Machines, Needles, Furniture, PMU Supplies..."
+                        className="flex-1 px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!newCategoryNameInput.trim()}
+                        className="px-5 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold uppercase transition-colors shrink-0 flex items-center justify-center gap-1.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Create Category</span>
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-zinc-400">
+                      Newly created categories become available immediately for filtering, shop navigation, and product creation.
+                    </p>
+                  </form>
+
+                  {/* Category List */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center text-zinc-400 font-mono text-xs uppercase tracking-wider px-1">
+                      <span>Existing Categories ({inventoryCategories.length})</span>
+                      <span>Total Products: {productsList.length}</span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {inventoryCategories.map((cat) => {
+                        const count = productsList.filter(
+                          (p) => p.category?.toLowerCase() === cat.toLowerCase()
+                        ).length;
+                        const isEditing = editingCategoryName === cat;
+                        const isDeleting = deletingCategoryName === cat;
+
+                        return (
+                          <div
+                            key={cat}
+                            className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl font-mono text-xs transition-colors hover:border-zinc-600 shadow-md"
+                          >
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                              {isEditing ? (
+                                <div className="flex-1 flex gap-2 w-full">
+                                  <input
+                                    type="text"
+                                    value={renamedCategoryValue}
+                                    onChange={(e) => setRenamedCategoryValue(e.target.value)}
+                                    className="flex-1 px-3 py-1.5 bg-[#141620] border border-red-500 rounded-lg text-white text-xs focus:outline-none"
+                                    autoFocus
+                                  />
+                                  <button
+                                    onClick={() => handleRenameCategory(cat)}
+                                    disabled={categoryActionLoading}
+                                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                    <span>Save</span>
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingCategoryName(null)}
+                                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-3">
+                                  <span className="px-3 py-1 bg-red-950/60 border border-red-600/50 text-red-300 font-bold text-xs rounded-lg uppercase tracking-wider">
+                                    {cat}
+                                  </span>
+                                  <span className="text-zinc-400 text-xs">
+                                    <span className="text-white font-semibold">{count}</span> {count === 1 ? 'product' : 'products'} assigned
+                                  </span>
+                                </div>
+                              )}
+
+                              {!isEditing && (
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <button
+                                    onClick={() => {
+                                      setEditingCategoryName(cat);
+                                      setRenamedCategoryValue(cat);
+                                      setDeletingCategoryName(null);
+                                    }}
+                                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                                    title="Rename Category"
+                                  >
+                                    <Edit className="w-3.5 h-3.5 text-amber-400" />
+                                    <span>Rename</span>
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setDeletingCategoryName(cat);
+                                      setEditingCategoryName(null);
+                                      const other = inventoryCategories.find((c) => c !== cat) || 'Aftercare';
+                                      setDeleteReassignCategory(other);
+                                    }}
+                                    className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                                    title="Delete / Merge Category"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span>Delete</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* DELETE REASSIGNMENT PANEL */}
+                            {isDeleting && (
+                              <div className="mt-3 p-3.5 bg-[#141620] border border-red-900/50 rounded-lg space-y-2.5 text-xs">
+                                <p className="text-zinc-300">
+                                  Reassign all <span className="text-red-400 font-bold">{count}</span> items currently in "{cat}" to:
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <select
+                                    value={deleteReassignCategory}
+                                    onChange={(e) => setDeleteReassignCategory(e.target.value)}
+                                    className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                                  >
+                                    {inventoryCategories
+                                      .filter((c) => c !== cat)
+                                      .map((c) => (
+                                        <option key={c} value={c}>
+                                          {c}
+                                        </option>
+                                      ))}
+                                    <option value="Aftercare">Aftercare (Default)</option>
+                                    <option value="Hard Goods">Hard Goods</option>
+                                    <option value="General Merchandise">General Merchandise</option>
+                                  </select>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => handleDeleteCategory(cat)}
+                                      disabled={categoryActionLoading}
+                                      className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors"
+                                    >
+                                      {categoryActionLoading ? 'Updating...' : 'Confirm & Delete'}
+                                    </button>
+                                    <button
+                                      onClick={() => setDeletingCategoryName(null)}
+                                      className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ----------------- SUB-TAB: ORDERS TABLE ----------------- */}
+              {shopSubTab === 'orders' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-1 bg-[#181a24] p-1 rounded-lg border border-zinc-700/70 font-mono text-xs overflow-x-auto max-w-full">
+                      {['ALL', 'PENDING_PAYMENT', 'PROCESSING', 'READY_FOR_PICKUP', 'DISPATCHED', 'COMPLETED'].map((st) => (
+                        <button
+                          key={st}
+                          onClick={() => {
+                            setOrderFilterStatus(st);
+                            setTimeout(loadOrders, 50);
+                          }}
+                          className={`px-3 py-1 rounded-md transition-colors text-[11px] whitespace-nowrap ${
+                            orderFilterStatus === st
+                              ? 'bg-red-600/20 text-red-400 border border-red-600/40 font-semibold'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          {st === 'ALL' ? 'All' : st.replace('_', ' ')}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Search */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <div className="relative w-full sm:w-64">
+                        <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
+                        <input
+                          type="text"
+                          value={orderSearch}
+                          onChange={(e) => setOrderSearch(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && loadOrders()}
+                          placeholder="Search order #, client..."
+                          className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
+                        />
+                      </div>
+                      <button
+                        onClick={loadOrders}
+                        className="px-3 py-1.5 bg-[#202434] hover:bg-[#282d42] border border-zinc-700 rounded-lg text-xs font-mono text-zinc-200 transition-colors"
+                      >
+                        Filter
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Orders Table */}
+                  <div className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden shadow-lg">
+                    <table className="w-full text-left font-mono text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-zinc-700/60 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider">
+                          <th className="p-3 pl-4">Order #</th>
+                          <th className="p-3">Customer</th>
+                          <th className="p-3">Fulfillment</th>
+                          <th className="p-3">Payment</th>
+                          <th className="p-3">Amount</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3 text-right pr-4">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-700/50">
+                        {loadingOrders ? (
+                          <tr>
+                            <td colSpan={7} className="p-8 text-center text-zinc-400">
+                              Loading shop orders...
+                            </td>
+                          </tr>
+                        ) : orders.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className="p-8 text-center text-zinc-400">
+                              No orders placed yet.
+                            </td>
+                          </tr>
+                        ) : (
+                          orders.map((o) => (
+                            <tr
+                              key={o.id}
+                              onClick={() => setInspectOrder(o)}
+                              className="hover:bg-[#202434] cursor-pointer transition-colors group"
+                            >
+                              <td className="p-3 pl-4 font-semibold text-white">
+                                {o.orderNumber}
+                              </td>
+                              <td className="p-3">
+                                <div className="font-semibold text-zinc-200">{o.clientName}</div>
+                                <div className="text-[11px] text-zinc-400">{o.clientPhone}</div>
+                              </td>
+                              <td className="p-3">
+                                <span className="text-zinc-200 font-semibold block">
+                                  {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
+                                </span>
+                                {o.deliveryAddress && (
+                                  <span className="text-[10px] text-zinc-400 block truncate max-w-xs">
+                                    {o.deliveryAddress}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                    o.paymentStatus === 'SUCCESS'
+                                      ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
+                                      : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                                  }`}
+                                >
+                                  {o.paymentMethod} ({o.paymentStatus})
+                                </span>
+                              </td>
+                              <td className="p-3 font-semibold text-red-400">
+                                UGX {o.totalAmount?.toLocaleString()}
+                              </td>
+                              <td className="p-3">
+                                <span className="text-zinc-300 text-[11px]">
+                                  {o.orderStatus.replace('_', ' ')}
+                                </span>
+                              </td>
+                              <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() =>
+                                      openWhatsApp(
+                                        o.clientPhone,
+                                        `Hello ${o.clientName}! This is Marvin Tattoos Atelier regarding Order #${o.orderNumber}. Your items are prepared.`
+                                      )
+                                    }
+                                    className="px-2.5 py-1 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded text-[11px] flex items-center gap-1"
+                                  >
+                                    <MessageCircle className="w-3 h-3" />
+                                    <span>WhatsApp</span>
+                                  </button>
+                                  <button
+                                    onClick={() => setInspectOrder(o)}
+                                    className="px-2.5 py-1 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-300 rounded text-[11px] flex items-center gap-1"
+                                  >
+                                    <span>View</span>
+                                    <ArrowRight className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ================= 3. PORTFOLIO CMS ================= */}
+          {activeTab === 'portfolio' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                {/* Search Bar */}
+                <div className="relative w-full sm:w-72">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Search artworks, placements, tags..."
+                    value={portfolioSearch}
+                    onChange={(e) => setPortfolioSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white placeholder-zinc-500 font-mono text-xs focus:outline-none focus:border-red-500"
+                  />
+                  {portfolioSearch && (
+                    <button
+                      onClick={() => setPortfolioSearch('')}
+                      className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                  <div className="font-mono text-xs text-zinc-400">
+                    Showing <span className="text-white font-bold">{filteredPortfolioPieces.length}</span> of {portfolioPieces.length}
+                  </div>
+                  <button
+                    onClick={openAddArtworkModal}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Artwork</span>
+                  </button>
+                </div>
               </div>
+
+              {/* Dynamic Category Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs no-scrollbar">
+                <button
+                  onClick={() => setPortfolioCategoryFilter('ALL')}
+                  className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap ${
+                    portfolioCategoryFilter === 'ALL'
+                      ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
+                      : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                  }`}
+                >
+                  All Categories ({portfolioPieces.length})
+                </button>
+                {portfolioCategories.map((cat) => {
+                  const count = portfolioPieces.filter((p) => p.category?.toLowerCase() === cat.toLowerCase()).length;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setPortfolioCategoryFilter(cat)}
+                      className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap capitalize ${
+                        portfolioCategoryFilter.toLowerCase() === cat.toLowerCase()
+                          ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
+                          : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      {cat.replace(/-/g, ' ')} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              {filteredPortfolioPieces.length === 0 ? (
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-2">
+                  <p className="text-zinc-400 font-mono text-sm">No artworks match your search or filter.</p>
+                  <button
+                    onClick={() => {
+                      setPortfolioCategoryFilter('ALL');
+                      setPortfolioSearch('');
+                    }}
+                    className="text-red-400 hover:text-red-300 font-mono text-xs underline"
+                  >
+                    Reset filters
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {filteredPortfolioPieces.map((p) => (
+                    <div
+                      key={p.id}
+                      className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between group shadow-md hover:border-zinc-500 transition-colors"
+                    >
+                      <div className="h-44 bg-[#141620] relative overflow-hidden">
+                        <img
+                          src={p.image || p.imageUrl}
+                          alt={p.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-2 left-2 flex gap-1">
+                          <span className="px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded capitalize">
+                            {p.category}
+                          </span>
+                          {p.featured && (
+                            <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] font-mono rounded flex items-center gap-0.5">
+                              <Star className="w-2.5 h-2.5 fill-current" /> Featured
+                            </span>
+                          )}
+                        </div>
+                        {p.flashId && (
+                          <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/80 text-[9px] font-mono text-zinc-400 rounded">
+                            {p.flashId}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="p-4 space-y-2 font-mono text-xs">
+                        <h4 className="font-semibold text-white truncate" title={p.title}>{p.title}</h4>
+                        <div className="text-[11px] text-zinc-400 flex justify-between">
+                          <span className="truncate">{p.zone}</span>
+                          <span className="text-zinc-500 shrink-0">{p.duration || 'Session'}</span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
+                          {p.description}
+                        </p>
+
+                        <div className="pt-2.5 border-t border-zinc-700/60 flex justify-between items-center">
+                          <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[110px]" title={p.pigment}>
+                            {p.pigment || 'Triple Black'}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => openEditArtworkModal(p)}
+                              className="text-[11px] text-zinc-300 hover:text-white px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1"
+                              title="Edit Piece"
+                            >
+                              <Edit className="w-3 h-3 text-amber-400" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeletePortfolioPiece(p.id)}
+                              className="text-[11px] text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
+                              title="Delete Piece"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -1296,7 +3249,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   Published Reviews: <span className="text-white font-bold">{testimonialsList.length}</span>
                 </div>
                 <button
-                  onClick={() => setShowAddReviewModal(true)}
+                  onClick={openAddReviewModal}
                   className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -1308,15 +3261,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {testimonialsList.map((t) => (
                   <div
                     key={t.id}
-                    className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3 font-mono text-xs flex flex-col justify-between shadow-md"
+                    className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3 font-mono text-xs flex flex-col justify-between shadow-md group hover:border-zinc-600 transition-colors"
                   >
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold text-white">{t.name}</span>
-                        <div className="flex items-center gap-0.5 text-amber-400">
-                          {Array.from({ length: t.stars || 5 }).map((_, i) => (
-                            <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                        <span className="font-semibold text-white truncate max-w-[150px]">{t.name}</span>
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3.5 h-3.5 ${
+                                i < (typeof t.stars === 'number' ? t.stars : 5)
+                                  ? 'text-amber-400 fill-amber-400'
+                                  : 'text-zinc-600'
+                              }`}
+                            />
                           ))}
+                          <span className="ml-1 text-[10px] text-amber-400 font-bold">
+                            {t.stars || 5}★
+                          </span>
                         </div>
                       </div>
                       <span className="text-[10px] text-red-400 block mb-2">{t.role}</span>
@@ -1325,14 +3288,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       </p>
                     </div>
 
-                    <div className="pt-2.5 border-t border-zinc-700/60 flex justify-end">
-                      <button
-                        onClick={() => handleDeleteTestimonial(t.id)}
-                        className="text-[11px] text-red-400 hover:text-red-300 flex items-center gap-1"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                        <span>Delete</span>
-                      </button>
+                    <div className="pt-2.5 border-t border-zinc-700/60 flex items-center justify-between">
+                      <span className="text-[10px] text-zinc-400">
+                        {t.isGoogleVerified !== false ? 'Verified Google' : 'Direct Feedback'}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => openEditReviewModal(t)}
+                          className="text-[11px] text-zinc-300 hover:text-white transition-colors flex items-center gap-1"
+                        >
+                          <Edit className="w-3 h-3 text-zinc-400" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTestimonial(t.id)}
+                          className="text-[11px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1564,7 +3539,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               <div className="p-3.5 bg-[#141620] rounded-lg border border-zinc-700 space-y-2">
                 <div className="flex justify-between text-zinc-400">
-                  <span>Discipline:</span>
+                  <span>Service:</span>
                   <span className="text-white font-semibold capitalize">
                     {inspectBooking.serviceType.replace('_', ' ')}
                   </span>
@@ -1574,17 +3549,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <span className="text-red-400 font-semibold">{inspectBooking.placement}</span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
-                  <span>Preferred Date:</span>
+                  <span>Date &amp; Time:</span>
                   <span className="text-white">
                     {new Date(inspectBooking.preferredDate).toLocaleDateString()} ({inspectBooking.timeSlot})
                   </span>
                 </div>
               </div>
 
-              {/* Project Brief */}
+              {/* Client Idea / Notes */}
               <div className="space-y-1">
                 <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                  Project Brief:
+                  Client Idea / Notes:
                 </span>
                 <p className="p-3 bg-[#141620] rounded-lg border border-zinc-700 text-zinc-200 leading-relaxed">
                   {inspectBooking.description}
@@ -1607,10 +3582,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </div>
               )}
 
-              {/* Workflow Status Selector */}
+              {/* Status Selector */}
               <div className="space-y-1">
                 <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                  Status Workflow:
+                  Booking Status:
                 </span>
                 <select
                   value={inspectBooking.status}
@@ -1630,7 +3605,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 onClick={() =>
                   openWhatsApp(
                     inspectBooking.clientPhone,
-                    `Hello ${inspectBooking.clientName}! This is Marvin from Marvin Tattoos Atelier regarding inquiry [${inspectBooking.referenceCode}]. We look forward to seeing you at New Pioneer Mall Level 5.`
+                    `Hello ${inspectBooking.clientName}! This is Marvin from Marvin Tattoos regarding your booking [${inspectBooking.referenceCode}]. We look forward to seeing you at New Pioneer Mall Level 5.`
                   )
                 }
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center justify-center gap-2"
@@ -1762,82 +3737,197 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* MODAL: ADD ARTWORK */}
-      {showAddArtworkModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      {/* MODAL: ADD / EDIT ARTWORK */}
+      {showArtworkModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <form
-            onSubmit={handleCreatePortfolioPiece}
-            className="w-full max-w-lg bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl"
+            onSubmit={handleSavePortfolioPiece}
+            className="w-full max-w-xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
           >
             <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <h3 className="font-semibold text-white">Upload New Artwork</h3>
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-red-400" />
+                <h3 className="font-semibold text-white">
+                  {editingArtworkId ? 'Edit Artwork' : 'Add New Artwork'}
+                </h3>
+              </div>
               <button
                 type="button"
-                onClick={() => setShowAddArtworkModal(false)}
+                onClick={() => {
+                  setShowArtworkModal(false);
+                  setEditingArtworkId(null);
+                }}
                 className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 max-h-[70vh] overflow-y-auto pr-1">
               <div className="col-span-2">
                 <label className="block text-xs text-zinc-400 mb-1">Title *</label>
                 <input
                   required
                   type="text"
-                  value={newPieceTitle}
-                  onChange={(e) => setNewPieceTitle(e.target.value)}
+                  value={pieceTitle}
+                  onChange={(e) => setPieceTitle(e.target.value)}
                   placeholder="e.g. Baroque Skull Sleeve"
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">Category *</label>
-                <select
-                  value={newPieceCategory}
-                  onChange={(e) => setNewPieceCategory(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                >
-                  <option value="dark-realism">Dark Realism</option>
-                  <option value="neo-traditional">Neo-Traditional</option>
-                  <option value="micro-detail">Micro &amp; Fine-Line</option>
-                  <option value="piercing">Piercing</option>
-                  <option value="coverup">Cover-Up</option>
-                </select>
+              <div className="col-span-2">
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs text-zinc-400">Category *</label>
+                  <span className="text-[10px] text-zinc-500">Pick preset or type custom</span>
+                </div>
+                <div className="flex gap-1.5 flex-wrap mb-2">
+                  {[
+                    { id: 'dark-realism', label: 'Dark Realism' },
+                    { id: 'neo-traditional', label: 'Neo-Trad' },
+                    { id: 'micro-detail', label: 'Micro & Single-Needle' },
+                    { id: 'piercing', label: 'Piercing' },
+                    { id: 'coverup', label: 'Cover-Up' },
+                    { id: 'fine-line', label: 'Fine-Line' },
+                    { id: 'pmu', label: 'PMU Eyebrow' },
+                    { id: 'script', label: 'Lettering & Script' },
+                  ].map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => {
+                        setPieceCategory(preset.id);
+                        if (!pieceCategoryLabel || pieceCategoryLabel === pieceCategory) {
+                          setPieceCategoryLabel(preset.label);
+                        }
+                      }}
+                      className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
+                        pieceCategory === preset.id
+                          ? 'bg-red-950/80 border-red-500 text-red-300 font-bold'
+                          : 'bg-[#141620] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] text-zinc-500 mb-0.5">Category Key (Slug)</label>
+                    <input
+                      required
+                      type="text"
+                      value={pieceCategory}
+                      onChange={(e) => setPieceCategory(e.target.value)}
+                      placeholder="e.g. dark-realism, pmu, fine-line"
+                      className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-zinc-500 mb-0.5">Category Display Label</label>
+                    <input
+                      type="text"
+                      value={pieceCategoryLabel}
+                      onChange={(e) => setPieceCategoryLabel(e.target.value)}
+                      placeholder="e.g. Dark Realism &amp; Gothic Skull"
+                      className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Zone / Placement *</label>
+                <label className="block text-xs text-zinc-400 mb-1">Placement *</label>
                 <input
                   required
                   type="text"
-                  value={newPieceZone}
-                  onChange={(e) => setNewPieceZone(e.target.value)}
-                  placeholder="Forearm, Chest..."
+                  value={pieceZone}
+                  onChange={(e) => setPieceZone(e.target.value)}
+                  placeholder="e.g. Forearm, Chest, Collarbone..."
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Flash / Tag #</label>
+                <input
+                  type="text"
+                  value={pieceFlashId}
+                  onChange={(e) => setPieceFlashId(e.target.value)}
+                  placeholder="e.g. #SKL-901"
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Estimated Duration</label>
+                <input
+                  type="text"
+                  value={pieceDuration}
+                  onChange={(e) => setPieceDuration(e.target.value)}
+                  placeholder="e.g. 4.5 Hours (1 Session)"
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Ink Type</label>
+                <input
+                  type="text"
+                  value={piecePigment}
+                  onChange={(e) => setPiecePigment(e.target.value)}
+                  placeholder="e.g. Dynamic Triple Black"
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="col-span-2 flex items-center gap-2 p-2.5 bg-[#141620] border border-zinc-700 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="pieceFeatured"
+                  checked={pieceFeatured}
+                  onChange={(e) => setPieceFeatured(e.target.checked)}
+                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-[#181a24] border-zinc-600"
+                />
+                <label htmlFor="pieceFeatured" className="text-xs text-zinc-300 font-semibold cursor-pointer">
+                  Featured Artwork (Display on studio homepage showcase)
+                </label>
               </div>
 
               <div className="col-span-2">
                 <label className="block text-xs text-zinc-400 mb-1">Description *</label>
                 <textarea
                   required
-                  rows={2}
-                  value={newPieceDescription}
-                  onChange={(e) => setNewPieceDescription(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  rows={3}
+                  value={pieceDescription}
+                  onChange={(e) => setPieceDescription(e.target.value)}
+                  placeholder="Artistic concept, healing state, technique notes..."
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Artwork Photo *</label>
+                <label className="block text-xs text-zinc-400 mb-1">
+                  {editingArtworkId ? 'Artwork Photo (Optional replacement)' : 'Artwork Photo *'}
+                </label>
+                {pieceImagePreview && (
+                  <div className="mb-2 flex items-center gap-3 p-2 bg-[#141620] border border-zinc-700 rounded-lg">
+                    <img
+                      src={pieceImagePreview}
+                      alt="Artwork Preview"
+                      className="w-14 h-14 object-cover rounded border border-zinc-600"
+                    />
+                    <div className="text-[11px] text-zinc-400">
+                      <p className="text-zinc-200 font-semibold">Current Image</p>
+                      <p className="text-zinc-500">Upload a new file below only if you want to replace it.</p>
+                    </div>
+                  </div>
+                )}
                 <input
-                  required
+                  required={!editingArtworkId && !pieceImagePreview}
                   type="file"
                   accept="image/*"
-                  onChange={(e) => e.target.files && setNewPieceImageFile(e.target.files[0])}
+                  onChange={(e) => e.target.files && setPieceImageFile(e.target.files[0])}
                   className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
                 />
               </div>
@@ -1846,66 +3936,597 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => setShowAddArtworkModal(false)}
+                onClick={() => {
+                  setShowArtworkModal(false);
+                  setEditingArtworkId(null);
+                }}
                 className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={creatingPiece}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase"
+                disabled={savingArtwork}
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
               >
-                {creatingPiece ? 'Publishing...' : 'Publish Artwork'}
+                <Check className="w-3.5 h-3.5" />
+                <span>{savingArtwork ? 'Saving...' : editingArtworkId ? 'Update Artwork' : 'Save Artwork'}</span>
               </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* MODAL: ADD PRODUCT */}
-      {showAddProductModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      {/* MODAL: ADD / EDIT SERVICE DISCIPLINE */}
+      {showServiceModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <form
-            onSubmit={handleCreateProduct}
-            className="w-full max-w-lg bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl"
+            onSubmit={handleSaveService}
+            className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
           >
+            {/* Header */}
             <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <h3 className="font-semibold text-white">Add Shop Item</h3>
+              <div className="flex items-center gap-2">
+                <PenTool className="w-4 h-4 text-red-400" />
+                <h3 className="font-semibold text-white">
+                  {editingServiceId ? `Edit Discipline #${serviceDisciplineNumber}` : 'Add New Service Discipline'}
+                </h3>
+              </div>
               <button
                 type="button"
-                onClick={() => setShowAddProductModal(false)}
+                onClick={() => {
+                  setShowServiceModal(false);
+                  setEditingServiceId(null);
+                }}
                 className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+              {/* Row 1: Discipline Number, Category & Sort Order */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Discipline Number *</label>
+                  <input
+                    required
+                    type="text"
+                    value={serviceDisciplineNumber}
+                    onChange={(e) => setServiceDisciplineNumber(e.target.value)}
+                    placeholder="01"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Category *</label>
+                  <select
+                    value={serviceCategory}
+                    onChange={(e) => setServiceCategory(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  >
+                    <option value="TATTOO">TATTOO</option>
+                    <option value="PMU">PMU</option>
+                    <option value="PIERCING">PIERCING</option>
+                    <option value="REMOVAL">REMOVAL</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Sort Order</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={serviceSortOrder}
+                    onChange={(e) => setServiceSortOrder(parseInt(e.target.value, 10) || 0)}
+                    placeholder="1"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Title & Subtitle */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Service Title *</label>
+                  <input
+                    required
+                    type="text"
+                    value={serviceTitle}
+                    onChange={(e) => setServiceTitle(e.target.value)}
+                    placeholder="e.g. Dark Realism & Blackwork"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Subtitle / Tagline</label>
+                  <input
+                    type="text"
+                    value={serviceSubtitle}
+                    onChange={(e) => setServiceSubtitle(e.target.value)}
+                    placeholder="e.g. Monochromatic Depth & Shadow Mastery"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Icon Selector */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs text-zinc-400">Discipline Icon *</label>
+                  <span className="text-[10px] text-zinc-500 font-mono">Current: {serviceIconName}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: 'skull', label: 'Skull' },
+                    { id: 'edit_note', label: 'Needle / Pen' },
+                    { id: 'layers', label: 'Layers' },
+                    { id: 'colorize', label: 'Color / Syringe' },
+                    { id: 'pen-fancy', label: 'Fancy Pen' },
+                    { id: 'syringe', label: 'Syringe' },
+                    { id: 'shield-alt', label: 'Shield' },
+                  ].map((ic) => (
+                    <button
+                      key={ic.id}
+                      type="button"
+                      onClick={() => setServiceIconName(ic.id)}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-mono border transition-all flex items-center gap-1.5 ${
+                        serviceIconName === ic.id
+                          ? 'bg-red-950/80 border-red-500 text-white font-bold shadow-md shadow-red-950/30'
+                          : 'bg-[#141620] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      <Icons8 name={ic.id} size={14} />
+                      <span>{ic.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Row 4: Description */}
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Description *</label>
+                <textarea
+                  required
+                  rows={3}
+                  value={serviceDescription}
+                  onChange={(e) => setServiceDescription(e.target.value)}
+                  placeholder="Describe the discipline technique, methodology, healed finish, and studio standards..."
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                />
+              </div>
+
+              {/* Row 5: Dynamic Technical Specs Builder */}
+              <div className="space-y-2 p-3 bg-[#141620] border border-zinc-700/80 rounded-xl">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-200">
+                      Technical Specs & Metadata
+                    </label>
+                    <p className="text-[10px] text-zinc-500">
+                      Key-value breakdown displayed in service details
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddSpecRow}
+                    className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded text-[11px] font-mono flex items-center gap-1 transition-colors"
+                  >
+                    <Plus className="w-3 h-3 text-red-400" />
+                    <span>Add Spec</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  {serviceSpecs.map((spec, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={spec.label}
+                        onChange={(e) => handleUpdateSpecRow(index, 'label', e.target.value)}
+                        placeholder="Label (e.g. Technique)"
+                        className="w-1/3 px-2.5 py-1.5 bg-[#181a24] border border-zinc-700 rounded text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                      <input
+                        type="text"
+                        value={spec.value}
+                        onChange={(e) => handleUpdateSpecRow(index, 'value', e.target.value)}
+                        placeholder="Value (e.g. Black & Grey Opaque Graywash)"
+                        className="flex-1 px-2.5 py-1.5 bg-[#181a24] border border-zinc-700 rounded text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSpecRow(index)}
+                        disabled={serviceSpecs.length <= 1}
+                        className="p-1.5 text-zinc-500 hover:text-red-400 disabled:opacity-30 disabled:hover:text-zinc-500 transition-colors"
+                        title="Remove spec"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Row 6: Image upload & preview */}
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">
+                  {editingServiceId ? 'Service Artwork Photo (Optional replacement)' : 'Service Artwork Photo'}
+                </label>
+                {serviceImagePreview && (
+                  <div className="mb-2 flex items-center gap-3 p-2 bg-[#141620] border border-zinc-700 rounded-lg">
+                    <img
+                      src={serviceImagePreview}
+                      alt="Service Preview"
+                      className="w-16 h-12 object-cover rounded border border-zinc-600"
+                    />
+                    <div className="text-[11px] text-zinc-400">
+                      <p className="text-zinc-200 font-semibold">Current Image</p>
+                      <p className="text-zinc-500">Upload a new file below to replace it, or leave as is.</p>
+                    </div>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => e.target.files && setServiceImageFile(e.target.files[0])}
+                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowServiceModal(false);
+                  setEditingServiceId(null);
+                }}
+                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={savingService}
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{savingService ? 'Saving...' : editingServiceId ? 'Update Discipline' : 'Save Discipline'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* MODAL: ADD / EDIT TEAM MEMBER */}
+      {showMemberModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleSaveMember}
+            className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
+              <div className="flex items-center gap-2">
+                <Crown className="w-4 h-4 text-amber-400" />
+                <h3 className="font-semibold text-white">
+                  {editingMemberId ? `Edit Team Member: ${memberName}` : 'Add New Team Member / Artist'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMemberModal(false);
+                  setEditingMemberId(null);
+                }}
+                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+              {/* Row 1: Name, Slug & Sort Order */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Artist / Member Name *</label>
+                  <input
+                    required
+                    type="text"
+                    value={memberName}
+                    onChange={(e) => setMemberName(e.target.value)}
+                    placeholder="e.g. Marvin"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">URL Slug</label>
+                  <input
+                    type="text"
+                    value={memberSlug}
+                    onChange={(e) => setMemberSlug(e.target.value)}
+                    placeholder="e.g. marvin"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Sort Order</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={memberSortOrder}
+                    onChange={(e) => setMemberSortOrder(parseInt(e.target.value, 10) || 0)}
+                    placeholder="1"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Title & Role */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Title / Headline *</label>
+                  <input
+                    required
+                    type="text"
+                    value={memberTitle}
+                    onChange={(e) => setMemberTitle(e.target.value)}
+                    placeholder="e.g. Founder & Master Tattoo Artist"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Role Subtext</label>
+                  <input
+                    type="text"
+                    value={memberRole}
+                    onChange={(e) => setMemberRole(e.target.value)}
+                    placeholder="e.g. Master Tattoo Artist & Piercing Specialist since 2014"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Specialty, Experience & Slots */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Specialty *</label>
+                  <input
+                    required
+                    type="text"
+                    value={memberSpecialty}
+                    onChange={(e) => setMemberSpecialty(e.target.value)}
+                    placeholder="e.g. Dark Realism, Portraits & Script"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Experience (Years) *</label>
+                  <input
+                    required
+                    type="text"
+                    value={memberExperience}
+                    onChange={(e) => setMemberExperience(e.target.value)}
+                    placeholder="e.g. 14+ Years"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Available Slots</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={memberSlotsRemaining}
+                    onChange={(e) => setMemberSlotsRemaining(parseInt(e.target.value, 10) || 0)}
+                    placeholder="4"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Row 4: Bio / Description */}
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Bio / Profile Description *</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={memberBio}
+                  onChange={(e) => setMemberBio(e.target.value)}
+                  placeholder="Detailed artist biography, artistic journey, techniques, hygiene philosophy..."
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                />
+              </div>
+
+              {/* Row 5: Badges & Instagram */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Badges / Honors (Comma-separated)</label>
+                  <input
+                    type="text"
+                    value={memberBadgesInput}
+                    onChange={(e) => setMemberBadgesInput(e.target.value)}
+                    placeholder="FOUNDER, MASTER ARTIST, STERILE CERTIFIED"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Instagram Profile URL</label>
+                  <input
+                    type="text"
+                    value={memberInstagram}
+                    onChange={(e) => setMemberInstagram(e.target.value)}
+                    placeholder="https://instagram.com/marvin_tattoos"
+                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              {/* Active Toggle */}
+              <div className="flex items-center gap-2 p-3 bg-[#141620] border border-zinc-700 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="memberActiveToggle"
+                  checked={memberActive}
+                  onChange={(e) => setMemberActive(e.target.checked)}
+                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-zinc-800 border-zinc-600"
+                />
+                <label htmlFor="memberActiveToggle" className="text-xs text-zinc-300 font-semibold cursor-pointer">
+                  Active &amp; Visible on Public Atelier Website (About Page &amp; Booking Form)
+                </label>
+              </div>
+
+              {/* Member Photo / Avatar */}
+              <div className="p-3 bg-[#141620] border border-zinc-700 rounded-lg space-y-2">
+                <label className="block text-xs font-semibold text-zinc-200">
+                  Profile Photo / Avatar
+                </label>
+                {memberAvatarPreview && (
+                  <div className="flex items-center gap-3 p-2 bg-[#181a24] rounded border border-zinc-700">
+                    <img
+                      src={memberAvatarPreview}
+                      alt="Avatar Preview"
+                      className="w-16 h-16 object-cover rounded-full border border-zinc-600"
+                    />
+                    <div className="text-[11px] text-zinc-400">
+                      <p className="text-zinc-200 font-semibold">Current Avatar</p>
+                      <p className="text-zinc-500">Upload a new photo below to replace it, or keep current.</p>
+                    </div>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => e.target.files && setMemberAvatarFile(e.target.files[0])}
+                    className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
+                  />
+                  <div>
+                    <span className="text-[10px] text-zinc-500 block mb-1">Or Direct Photo Image URL</span>
+                    <input
+                      type="text"
+                      value={memberAvatarPreview}
+                      onChange={(e) => setMemberAvatarPreview(e.target.value)}
+                      placeholder="/images/marvin-founder.png or https://..."
+                      className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMemberModal(false);
+                  setEditingMemberId(null);
+                }}
+                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={savingMember}
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{savingMember ? 'Saving...' : editingMemberId ? 'Update Member' : 'Save Member'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* MODAL: ADD / EDIT PRODUCT */}
+      {showProductModal && (
+
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleSaveProduct}
+            className="w-full max-w-lg bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
+          >
+            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
+              <div className="flex items-center gap-2">
+                <Package className="w-4 h-4 text-red-400" />
+                <h3 className="font-semibold text-white">
+                  {editingProductId ? 'Edit Product' : 'Add New Product'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowProductModal(false);
+                  setEditingProductId(null);
+                }}
+                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 max-h-[70vh] overflow-y-auto pr-1">
               <div className="col-span-2">
                 <label className="block text-xs text-zinc-400 mb-1">Product Name *</label>
                 <input
                   required
                   type="text"
-                  value={newProdName}
-                  onChange={(e) => setNewProdName(e.target.value)}
+                  value={prodName}
+                  onChange={(e) => setProdName(e.target.value)}
                   placeholder="e.g. Clinical Tattoo Aftercare Balm"
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">Category *</label>
-                <select
-                  value={newProdCategory}
-                  onChange={(e) => setNewProdCategory(e.target.value)}
+              <div className="col-span-2">
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs text-zinc-400">Category *</label>
+                  <span className="text-[10px] text-zinc-500">Pick preset or type custom</span>
+                </div>
+                <div className="flex gap-1.5 flex-wrap mb-2">
+                  {[
+                    'Aftercare',
+                    'Hard Goods',
+                    'Needles',
+                    'Titanium Jewelry',
+                    'Inks & Pigments',
+                    'Sanitation',
+                    'Apparel',
+                    'PMU Supplies',
+                  ].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setProdCategory(preset)}
+                      className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
+                        prodCategory === preset
+                          ? 'bg-red-950/80 border-red-500 text-red-300 font-bold'
+                          : 'bg-[#141620] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  required
+                  type="text"
+                  value={prodCategory}
+                  onChange={(e) => setProdCategory(e.target.value)}
+                  placeholder="e.g. Aftercare, Needles, Titanium Jewelry, Apparel, Inks..."
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                >
-                  <option value="Aftercare">Aftercare</option>
-                  <option value="Hard Goods">Hard Goods</option>
-                  <option value="Needles">Needles</option>
-                  <option value="Titanium Jewelry">Titanium Jewelry</option>
-                </select>
+                />
               </div>
 
               <div>
@@ -1913,9 +4534,47 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <input
                   required
                   type="number"
-                  value={newProdPrice}
-                  onChange={(e) => setNewProdPrice(parseFloat(e.target.value))}
+                  min="0"
+                  step="500"
+                  value={prodPrice}
+                  onChange={(e) => setProdPrice(parseFloat(e.target.value) || 0)}
                   placeholder="95000"
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Stock Count (Units)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={prodStock}
+                  onChange={(e) => setProdStock(parseInt(e.target.value, 10) || 0)}
+                  placeholder="20"
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 p-2.5 bg-[#141620] border border-zinc-700 rounded-lg mt-5">
+                <input
+                  type="checkbox"
+                  id="prodInStock"
+                  checked={prodInStock}
+                  onChange={(e) => setProdInStock(e.target.checked)}
+                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-[#181a24] border-zinc-600"
+                />
+                <label htmlFor="prodInStock" className="text-xs text-zinc-300 font-semibold cursor-pointer">
+                  In Stock (Available in Shop)
+                </label>
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-xs text-zinc-400 mb-1">Key Features (comma-separated)</label>
+                <input
+                  type="text"
+                  value={prodSpecs}
+                  onChange={(e) => setProdSpecs(e.target.value)}
+                  placeholder="e.g. 100ml Glass Bottle, Organic Calendula, Zero Petroleum"
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
@@ -1924,19 +4583,35 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <label className="block text-xs text-zinc-400 mb-1">Description *</label>
                 <textarea
                   required
-                  rows={2}
-                  value={newProdDesc}
-                  onChange={(e) => setNewProdDesc(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  rows={3}
+                  value={prodDesc}
+                  onChange={(e) => setProdDesc(e.target.value)}
+                  placeholder="Product details and description..."
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Product Photo</label>
+                <label className="block text-xs text-zinc-400 mb-1">
+                  {editingProductId ? 'Product Photo (Optional replacement)' : 'Product Photo'}
+                </label>
+                {prodImagePreview && (
+                  <div className="mb-2 flex items-center gap-3 p-2 bg-[#141620] border border-zinc-700 rounded-lg">
+                    <img
+                      src={prodImagePreview}
+                      alt="Product Preview"
+                      className="w-14 h-14 object-cover rounded border border-zinc-600"
+                    />
+                    <div className="text-[11px] text-zinc-400">
+                      <p className="text-zinc-200 font-semibold">Current Image</p>
+                      <p className="text-zinc-500">Upload a new file below only if you want to replace it.</p>
+                    </div>
+                  </div>
+                )}
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => e.target.files && setNewProdImageFile(e.target.files[0])}
+                  onChange={(e) => e.target.files && setProdImageFile(e.target.files[0])}
                   className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
                 />
               </div>
@@ -1945,74 +4620,118 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => setShowAddProductModal(false)}
+                onClick={() => {
+                  setShowProductModal(false);
+                  setEditingProductId(null);
+                }}
                 className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={creatingProduct}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase"
+                disabled={savingProduct}
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
               >
-                {creatingProduct ? 'Saving...' : 'Add Product'}
+                <Check className="w-3.5 h-3.5" />
+                <span>{savingProduct ? 'Saving...' : editingProductId ? 'Update Product' : 'Add Product'}</span>
               </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* MODAL: ADD REVIEW */}
-      {showAddReviewModal && (
+      {/* MODAL: ADD / EDIT REVIEW */}
+      {showReviewModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
           <form
-            onSubmit={handleCreateTestimonial}
+            onSubmit={handleSaveReview}
             className="w-full max-w-lg bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl"
           >
             <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <h3 className="font-semibold text-white">Add Client Review</h3>
+              <h3 className="font-semibold text-white">
+                {editingReviewId ? 'Edit Review' : 'Add Review'}
+              </h3>
               <button
                 type="button"
-                onClick={() => setShowAddReviewModal(false)}
+                onClick={() => {
+                  setShowReviewModal(false);
+                  setEditingReviewId(null);
+                }}
                 className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
                 <label className="block text-xs text-zinc-400 mb-1">Client Name *</label>
                 <input
                   required
                   type="text"
-                  value={newReviewName}
-                  onChange={(e) => setNewReviewName(e.target.value)}
+                  value={reviewName}
+                  onChange={(e) => setReviewName(e.target.value)}
                   placeholder="e.g. Dennis Mukasa"
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Discipline / Role *</label>
+                <label className="block text-xs text-zinc-400 mb-1">Service / Tattoo Style *</label>
                 <input
                   required
                   type="text"
-                  value={newReviewRole}
-                  onChange={(e) => setNewReviewRole(e.target.value)}
+                  value={reviewRole}
+                  onChange={(e) => setReviewRole(e.target.value)}
                   placeholder="e.g. Dark Realism Sleeve"
                   className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
+              {/* STAR LEVEL SELECTOR */}
+              <div className="p-3 bg-[#141620] rounded-lg border border-zinc-700 space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="block text-xs text-zinc-300 font-semibold">
+                    Rating (Stars):
+                  </label>
+                  <span className="text-xs font-bold text-amber-400">
+                    {reviewStars} / 5 Stars {reviewStars === 5 ? '★ (Top Rated)' : '★'}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 pt-1">
+                  {[1, 2, 3, 4, 5].map((starNum) => (
+                    <button
+                      key={starNum}
+                      type="button"
+                      onClick={() => setReviewStars(starNum)}
+                      className={`flex-1 py-2 px-1 rounded-lg border transition-all flex flex-col items-center gap-1 ${
+                        reviewStars >= starNum
+                          ? 'bg-amber-500/15 border-amber-500/50 text-amber-300'
+                          : 'bg-[#181a24] border-zinc-700 text-zinc-500 hover:border-zinc-500'
+                      }`}
+                    >
+                      <Star
+                        className={`w-4 h-4 ${
+                          reviewStars >= starNum ? 'text-amber-400 fill-amber-400' : 'text-zinc-600'
+                        }`}
+                      />
+                      <span className="text-[10px] font-bold">{starNum}★</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Review Quote *</label>
+                <label className="block text-xs text-zinc-400 mb-1">Client Review *</label>
                 <textarea
                   required
                   rows={3}
-                  value={newReviewQuote}
-                  onChange={(e) => setNewReviewQuote(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  value={reviewQuote}
+                  onChange={(e) => setReviewQuote(e.target.value)}
+                  placeholder="Write client statement or review..."
+                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
             </div>
@@ -2020,20 +4739,411 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => setShowAddReviewModal(false)}
+                onClick={() => {
+                  setShowReviewModal(false);
+                  setEditingReviewId(null);
+                }}
                 className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={creatingReview}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase"
+                disabled={savingReview}
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
               >
-                {creatingReview ? 'Publishing...' : 'Publish Review'}
+                <Check className="w-3.5 h-3.5" />
+                <span>{savingReview ? 'Saving...' : editingReviewId ? 'Update Review' : 'Save Review'}</span>
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* MODAL: SHOP CATEGORIES MANAGER */}
+      {showCategoryManagerModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-5 font-mono text-xs shadow-2xl my-8">
+            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
+              <div className="flex items-center gap-2">
+                <Tag className="w-4 h-4 text-amber-400" />
+                <h3 className="font-semibold text-white text-sm">
+                  Shop Categories
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCategoryManagerModal(false);
+                  setEditingCategoryName(null);
+                  setDeletingCategoryName(null);
+                }}
+                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* CREATE NEW CATEGORY */}
+            <form onSubmit={handleAddNewCategoryPreset} className="p-3.5 bg-[#141620] border border-zinc-700/80 rounded-xl space-y-2">
+              <label className="block text-xs font-semibold text-zinc-300">
+                + Add New Category
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newCategoryNameInput}
+                  onChange={(e) => setNewCategoryNameInput(e.target.value)}
+                  placeholder="e.g. Rotary Machines, Tattoo Furniture, Sterile Gauze..."
+                  className="flex-1 px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                />
+                <button
+                  type="submit"
+                  disabled={!newCategoryNameInput.trim()}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold uppercase transition-colors shrink-0 flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Category</span>
+                </button>
+              </div>
+              <p className="text-[10px] text-zinc-500">
+                New categories will appear in the shop and product forms.
+              </p>
+            </form>
+
+            {/* CATEGORIES LIST */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-zinc-400 text-[11px] uppercase tracking-wider">
+                <span>Current Categories ({inventoryCategories.length})</span>
+                <span>Actions</span>
+              </div>
+
+              <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
+                {inventoryCategories.map((cat) => {
+                  const count = productsList.filter(
+                    (p) => p.category?.toLowerCase() === cat.toLowerCase()
+                  ).length;
+                  const isEditing = editingCategoryName === cat;
+                  const isDeleting = deletingCategoryName === cat;
+
+                  return (
+                    <div
+                      key={cat}
+                      className="p-3.5 bg-[#141620] border border-zinc-700/70 rounded-xl space-y-3 transition-colors hover:border-zinc-600"
+                    >
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        {isEditing ? (
+                          <div className="flex-1 flex gap-2 w-full">
+                            <input
+                              type="text"
+                              value={renamedCategoryValue}
+                              onChange={(e) => setRenamedCategoryValue(e.target.value)}
+                              className="flex-1 px-3 py-1.5 bg-[#181a24] border border-red-500 rounded-lg text-white text-xs focus:outline-none"
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => handleRenameCategory(cat)}
+                              disabled={categoryActionLoading}
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
+                            >
+                              <Check className="w-3 h-3" />
+                              <span>Save</span>
+                            </button>
+                            <button
+                              onClick={() => setEditingCategoryName(null)}
+                              className="px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2.5">
+                            <span className="px-2.5 py-1 bg-red-950/60 border border-red-600/50 text-red-300 font-bold text-xs rounded-lg uppercase">
+                              {cat}
+                            </span>
+                            <span className="text-zinc-400 text-xs">
+                              {count} {count === 1 ? 'product' : 'products'} assigned
+                            </span>
+                          </div>
+                        )}
+
+                        {!isEditing && (
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => {
+                                setEditingCategoryName(cat);
+                                setRenamedCategoryValue(cat);
+                                setDeletingCategoryName(null);
+                              }}
+                              className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                              title="Rename Category"
+                            >
+                              <Edit className="w-3 h-3 text-amber-400" />
+                              <span>Rename</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setDeletingCategoryName(cat);
+                                setEditingCategoryName(null);
+                                const other = inventoryCategories.find((c) => c !== cat) || 'Aftercare';
+                                setDeleteReassignCategory(other);
+                              }}
+                              className="px-2.5 py-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                              title="Delete / Merge Category"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* DELETE REASSIGNMENT PANEL */}
+                      {isDeleting && (
+                        <div className="p-3 bg-[#181a24] border border-red-900/50 rounded-lg space-y-2 text-xs">
+                          <p className="text-zinc-300">
+                            Reassign all <span className="text-red-400 font-bold">{count}</span> items currently in "{cat}" to:
+                          </p>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <select
+                              value={deleteReassignCategory}
+                              onChange={(e) => setDeleteReassignCategory(e.target.value)}
+                              className="flex-1 px-3 py-1.5 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                            >
+                              {inventoryCategories
+                                .filter((c) => c !== cat)
+                                .map((c) => (
+                                  <option key={c} value={c}>
+                                    {c}
+                                  </option>
+                                ))}
+                              <option value="Aftercare">Aftercare (Default)</option>
+                              <option value="Hard Goods">Hard Goods</option>
+                              <option value="General Merchandise">General Merchandise</option>
+                            </select>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleDeleteCategory(cat)}
+                                disabled={categoryActionLoading}
+                                className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors"
+                              >
+                                {categoryActionLoading ? 'Updating...' : 'Confirm & Delete'}
+                              </button>
+                              <button
+                                onClick={() => setDeletingCategoryName(null)}
+                                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-zinc-700/60 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCategoryManagerModal(false);
+                  setEditingCategoryName(null);
+                  setDeletingCategoryName(null);
+                }}
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CLIENT DOSSIER / PROFILE DRAWER */}
+      {inspectUser && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-5 font-mono text-xs shadow-2xl my-8">
+            <div className="flex justify-between items-start border-b border-zinc-700/60 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-600/50 flex items-center justify-center font-bold text-red-300 text-base">
+                  {inspectUser.name ? inspectUser.name.charAt(0).toUpperCase() : 'C'}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">{inspectUser.name}</h3>
+                  <span className="text-[11px] text-zinc-400">
+                    Client since {new Date(inspectUser.createdAt).toLocaleDateString()} · ID: {inspectUser.id.substring(0, 8)}...
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setInspectUser(null)}
+                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick Metrics & Contact */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3 bg-[#141620] border border-zinc-700/80 rounded-lg space-y-1">
+                <span className="text-[10px] text-zinc-400 uppercase">Phone &amp; WhatsApp</span>
+                <div className="text-white font-semibold text-xs flex items-center justify-between">
+                  <span>{inspectUser.phone}</span>
+                  <button
+                    onClick={() =>
+                      openWhatsApp(
+                        inspectUser.phone,
+                        `Hello ${inspectUser.name}! This is Marvin Tattoos Atelier.`
+                      )
+                    }
+                    className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 rounded border border-emerald-800/40"
+                    title="WhatsApp"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#141620] border border-zinc-700/80 rounded-lg space-y-1">
+                <span className="text-[10px] text-zinc-400 uppercase">Email</span>
+                <div className="text-zinc-200 text-xs truncate" title={inspectUser.email || 'None'}>
+                  {inspectUser.email || 'No email provided'}
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#141620] border border-zinc-700/80 rounded-lg space-y-1">
+                <span className="text-[10px] text-zinc-400 uppercase">Studio Activity</span>
+                <div className="text-white font-semibold text-xs">
+                  {inspectUser.totalBookings || 0} Bookings · {inspectUser.totalOrders || 0} Orders
+                </div>
+              </div>
+            </div>
+
+            {/* Studio Notes */}
+            <div className="p-3.5 bg-[#141620] border border-zinc-700/80 rounded-xl space-y-3">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
+                  <span>Studio Client Notes</span>
+                </label>
+              </div>
+
+              <textarea
+                rows={3}
+                value={editingUserNotes}
+                onChange={(e) => setEditingUserNotes(e.target.value)}
+                placeholder="Add special client notes, tattoo preferences, allergy warnings, custom placement notes..."
+                className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+              />
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSaveUserDetails}
+                  disabled={savingUser}
+                  className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>{savingUser ? 'Saving...' : 'Save Client Notes'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Associated Bookings */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-zinc-400 text-[11px] uppercase tracking-wider">
+                <span>Booking History ({inspectUser.bookings?.length || inspectUser.totalBookings || 0})</span>
+              </div>
+              {inspectUser.bookings && inspectUser.bookings.length > 0 ? (
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {inspectUser.bookings.map((b: any) => (
+                    <div
+                      key={b.id}
+                      className="p-2.5 bg-[#141620] border border-zinc-700/60 rounded-lg flex items-center justify-between text-xs"
+                    >
+                      <div>
+                        <div className="font-semibold text-white">
+                          {b.referenceCode} · <span className="capitalize">{b.serviceType.replace('_', ' ')}</span>
+                        </div>
+                        <div className="text-[11px] text-zinc-400">
+                          {b.placement} · {new Date(b.preferredDate).toLocaleDateString()} ({b.timeSlot})
+                        </div>
+                      </div>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          b.status === 'CONFIRMED'
+                            ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
+                            : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                        }`}
+                      >
+                        {b.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-zinc-500 italic">No bookings recorded yet.</p>
+              )}
+            </div>
+
+            {/* Associated Orders */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-zinc-400 text-[11px] uppercase tracking-wider">
+                <span>Shop Order History ({inspectUser.orders?.length || inspectUser.totalOrders || 0})</span>
+              </div>
+              {inspectUser.orders && inspectUser.orders.length > 0 ? (
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {inspectUser.orders.map((o: any) => (
+                    <div
+                      key={o.id}
+                      className="p-2.5 bg-[#141620] border border-zinc-700/60 rounded-lg flex items-center justify-between text-xs"
+                    >
+                      <div>
+                        <div className="font-semibold text-white">
+                          {o.orderNumber} · <span className="text-red-400">UGX {(o.totalAmount || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="text-[11px] text-zinc-400">
+                          {new Date(o.createdAt).toLocaleDateString()} · {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
+                        </div>
+                      </div>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          o.paymentStatus === 'SUCCESS'
+                            ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
+                            : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                        }`}
+                      >
+                        {o.orderStatus.replace('_', ' ')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-zinc-500 italic">No shop orders placed yet.</p>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-zinc-700/60 flex justify-between items-center">
+              <button
+                type="button"
+                onClick={() => handleDeleteClient(inspectUser.id, inspectUser.name)}
+                className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-lg text-xs transition-colors flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Remove Client</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setInspectUser(null)}
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs transition-colors"
+              >
+                Close Dossier
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

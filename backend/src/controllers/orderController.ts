@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database.js';
+import { upsertUserOnAction } from '../services/userService.js';
+import { notifyAdminNewOrder, notifyCustomerOrderReceived } from '../services/whatsappService.js';
 import { z } from 'zod';
 
 const orderItemInputSchema = z.object({
@@ -85,6 +87,14 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       exists = await prisma.order.findUnique({ where: { orderNumber } });
     }
 
+    // Auto-upsert Client / User record in database
+    const user = await upsertUserOnAction({
+      name: validated.clientName,
+      phone: validated.clientPhone,
+      email: validated.clientEmail,
+      notes: validated.deliveryNotes,
+    });
+
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -99,6 +109,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
         orderStatus: 'PENDING_PAYMENT',
         paymentStatus: 'PENDING',
         paymentMethod: validated.paymentMethod,
+        userPhone: user ? user.phone : null,
         items: {
           create: orderItemsData,
         },
@@ -115,6 +126,28 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     const itemsSummary = order.items
       .map((i) => `• ${i.quantity}x ${i.product.name} (UGX ${i.unitPrice.toLocaleString()})`)
       .join('\n');
+
+    // Send automated WhatsApp alerts in background
+    Promise.allSettled([
+      notifyAdminNewOrder({
+        orderNumber,
+        clientName: validated.clientName,
+        clientPhone: validated.clientPhone,
+        totalAmount: calculatedTotal,
+        deliveryMethod: validated.deliveryMethod,
+        deliveryAddress: validated.deliveryAddress,
+        paymentMethod: validated.paymentMethod,
+        itemsText: itemsSummary,
+      }),
+      notifyCustomerOrderReceived({
+        orderNumber,
+        clientName: validated.clientName,
+        clientPhone: validated.clientPhone,
+        totalAmount: calculatedTotal,
+        deliveryMethod: validated.deliveryMethod,
+        itemsText: itemsSummary,
+      }),
+    ]).catch((err) => console.error('Order WhatsApp notifications error:', err));
 
     const whatsAppMessage = encodeURIComponent(
       `Hello Marvin Tattoos Atelier! I have placed an aftercare / shop order.\n\n*Order No:* ${orderNumber}\n*Client:* ${validated.clientName}\n*Phone:* ${validated.clientPhone}\n*Delivery:* ${validated.deliveryMethod}\n*Payment:* ${validated.paymentMethod}\n*Total:* UGX ${calculatedTotal.toLocaleString()}\n\n*Items:*\n${itemsSummary}`
