@@ -79,15 +79,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [productsList, setProductsList] = useState<ProductItem[]>(PRODUCTS_DATA);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const [selectedServiceCategory, setSelectedServiceCategory] = useState<string>('ALL');
-  const [expandedServices, setExpandedServices] = useState<Record<string, boolean>>({});
   const sliderRef = useRef<HTMLDivElement>(null);
-
-  const toggleServiceSpecs = (id: string) => {
-    setExpandedServices((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
 
   useEffect(() => {
     fetchSiteSettings().then(setSettings).catch(() => {});
@@ -395,7 +387,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
 
                 {/* Card Body */}
-                <div className="p-6 flex flex-col justify-between flex-grow space-y-5">
+                <div className="p-6 flex flex-col justify-between flex-grow space-y-6">
                   <div>
                     <h3
                       onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
@@ -405,81 +397,25 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </h3>
                   </div>
 
-                  <div className="space-y-3">
-                    {/* Collapsible Discipline Specifications */}
-                    {service.specs && service.specs.length > 0 && (
-                      <div className="space-y-2">
-                        <button
-                          type="button"
-                          onClick={() => toggleServiceSpecs(service.id)}
-                          className={`w-full flex items-center justify-between px-3.5 py-2.5 bg-noir-950/80 hover:bg-noir-950 border transition-all duration-200 text-xs font-label-caps uppercase tracking-wider ${
-                            expandedServices[service.id]
-                              ? 'border-crimson/50 text-bone'
-                              : 'border-noir-700/80 hover:border-slate-500 text-bone-muted hover:text-bone'
-                          }`}
-                        >
-                          <span className="flex items-center gap-2">
-                            <Icons8 name="sliders-h" size={13} className={expandedServices[service.id] ? 'text-crimson-light' : 'text-gold'} />
-                            <span>{expandedServices[service.id] ? 'Hide Specifications' : 'View Specifications'}</span>
-                          </span>
-                          <Icons8
-                            name="angle-down"
-                            size={14}
-                            className={`transition-transform duration-300 ${
-                              expandedServices[service.id] ? 'rotate-180 text-crimson-light' : 'text-bone-dim'
-                            }`}
-                          />
-                        </button>
+                  {/* Dual Action Buttons */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-noir-800">
+                    <button
+                      type="button"
+                      onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                      className="w-full py-2.5 px-3 bg-noir-900 hover:bg-noir-850 text-bone-muted hover:text-bone font-label-caps text-xs uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>Details</span>
+                      <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
+                    </button>
 
-                        <AnimatePresence initial={false}>
-                          {expandedServices[service.id] && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.25, ease: 'easeInOut' }}
-                              className="overflow-hidden"
-                            >
-                              <div className="bg-noir-950/95 p-3.5 border border-noir-700/80 rounded-sm space-y-2">
-                                <div className="text-[10px] font-label-caps uppercase tracking-[0.2em] text-bone-dim pb-1.5 border-b border-noir-800 flex items-center justify-between">
-                                  <span>Discipline Specs</span>
-                                  <span className="text-[9px] font-label-data text-crimson-light">Verified</span>
-                                </div>
-                                <div className="space-y-1.5">
-                                  {service.specs.map((spec, i) => (
-                                    <div key={i} className="flex items-baseline justify-between text-xs font-label-data gap-2">
-                                      <span className="text-bone-dim text-[11px] uppercase tracking-wide">{spec.label}</span>
-                                      <span className="text-bone font-medium text-right text-[11px] truncate">{spec.value}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
-                        className="w-full py-2.5 px-3 bg-noir-900 hover:bg-noir-800 text-bone-muted hover:text-bone font-label-caps text-[11px] uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-all flex items-center justify-center gap-1.5"
-                      >
-                        <span>Details</span>
-                        <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => onBookService ? onBookService(service.id) : onNavigate('booking')}
-                        className="w-full py-2.5 px-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] uppercase tracking-wider border border-crimson/40 transition-all flex items-center justify-center gap-1.5 font-bold shadow-sm shadow-crimson/20"
-                      >
-                        <Icons8 name="calendar-check" size={12} />
-                        <span>Book</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onBookService ? onBookService(service.id) : onNavigate('booking')}
+                      className="w-full py-2.5 px-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-wider border border-crimson/40 transition-all flex items-center justify-center gap-1.5 font-bold shadow-sm shadow-crimson/20"
+                    >
+                      <Icons8 name="calendar-check" size={12} />
+                      <span>Book</span>
+                    </button>
                   </div>
                 </div>
               </article>

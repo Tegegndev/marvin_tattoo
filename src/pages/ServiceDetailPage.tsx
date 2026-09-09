@@ -164,25 +164,39 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
 
       {/* 03. SPECIFICATIONS & PARAMETERS */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full py-10">
-        <div className="p-6 sm:p-8 bg-noir-900 border border-noir-700/80 space-y-6">
-          <div className="border-b border-noir-800 pb-4">
-            <span className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.2em] block mb-1">
-              Technical Specifications
+        <div className="p-6 sm:p-10 bg-noir-900 border border-noir-700/80 shadow-2xl space-y-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-crimson/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-noir-800 pb-6">
+            <div className="space-y-1">
+              <span className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.2em] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-crimson" />
+                <span>Verified Studio Standards</span>
+              </span>
+              <h2 className="font-headline-sm text-2xl sm:text-3xl text-bone uppercase font-bold">
+                Discipline Specifications &amp; Technical Parameters
+              </h2>
+            </div>
+            <span className="text-[11px] font-label-data text-bone-dim uppercase">
+              100% Sterile &bull; Autoclave Class-B Certified
             </span>
-            <h2 className="font-headline-sm text-2xl text-bone uppercase font-bold">
-              Discipline Craft Standards
-            </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {currentService.specs.map((spec, i) => (
-              <div key={i} className="p-4 bg-noir-950 border border-noir-800 space-y-1">
-                <span className="font-label-caps text-[10px] text-bone-dim uppercase tracking-wider block">
-                  {spec.label}
-                </span>
-                <strong className="font-label-data text-sm text-bone block truncate">
-                  {spec.value}
-                </strong>
+              <div key={i} className="p-5 bg-noir-950 border border-noir-800 hover:border-slate-600 transition-colors space-y-2 group">
+                <div className="flex items-center justify-between text-[10px] font-label-caps uppercase tracking-wider text-bone-dim border-b border-noir-850 pb-2">
+                  <span>Parameter 0{i + 1}</span>
+                  <span className="text-gold group-hover:text-crimson-light transition-colors">Verified</span>
+                </div>
+                <div>
+                  <span className="font-label-caps text-xs text-bone-muted uppercase block">
+                    {spec.label}
+                  </span>
+                  <strong className="font-label-data text-sm sm:text-base text-bone block mt-1 leading-snug">
+                    {spec.value}
+                  </strong>
+                </div>
               </div>
             ))}
           </div>
