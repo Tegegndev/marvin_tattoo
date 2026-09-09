@@ -1197,24 +1197,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // ================= MODERN REFINED LOGIN SCREEN ================= //
   if (!isAuthenticated && !authLoading) {
     return (
-      <div className="w-full min-h-screen bg-[#12141c] flex items-center justify-center px-4 font-sans text-zinc-100 selection:bg-red-600 selection:text-white">
-        <div className="w-full max-w-sm p-8 bg-[#1a1d28] border border-zinc-700/70 rounded-xl shadow-2xl space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-zinc-700/60">
-            <div className="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center font-mono font-bold text-red-400 text-sm">
+      <div className="w-full min-h-screen bg-[#0d0f15] flex items-center justify-center px-4 font-sans text-zinc-100 selection:bg-red-600 selection:text-white">
+        <div className="w-full max-w-sm p-8 bg-[#181a24] border border-zinc-700/80 rounded-2xl shadow-2xl space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-zinc-700/70">
+            <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center font-bold text-red-400 text-sm">
               M
             </div>
             <div>
-              <h2 className="text-sm font-semibold tracking-tight text-white">
+              <h2 className="text-base font-semibold tracking-tight text-white">
                 Marvin Atelier Admin
               </h2>
-              <p className="text-xs text-zinc-400 font-mono">
-                Kampala, Uganda · Studio CRM
+              <p className="text-xs text-zinc-400">
+                Studio Management · Kampala, Uganda
               </p>
             </div>
           </div>
 
           {authError && (
-            <div className="p-3 bg-red-950/50 border border-red-800/80 rounded-lg text-red-300 text-xs font-mono flex items-center gap-2">
+            <div className="p-3.5 bg-red-950/40 border border-red-800/80 rounded-xl text-red-300 text-xs font-sans flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
               <span>{authError}</span>
             </div>
@@ -1222,7 +1222,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-xs font-medium uppercase tracking-wider text-zinc-300 mb-1.5">
                 Admin Email
               </label>
               <input
@@ -1230,13 +1230,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/30 transition-all placeholder:text-zinc-600"
+                className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/30 transition-all placeholder:text-zinc-500"
                 placeholder="admin@marvintattoos.com"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-xs font-medium uppercase tracking-wider text-zinc-300 mb-1.5">
                 Master Password
               </label>
               <input
@@ -1244,7 +1244,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/30 transition-all placeholder:text-zinc-600"
+                className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/30 transition-all placeholder:text-zinc-500"
                 placeholder="••••••••••••"
               />
             </div>
@@ -1252,22 +1252,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-md shadow-red-950/40 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-all shadow-lg shadow-red-950/40 flex items-center justify-center gap-2"
             >
               <span>Sign In to Dashboard</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
-          <div className="pt-2 flex items-center justify-between text-xs text-zinc-400 font-mono">
+          <div className="pt-2 flex items-center justify-between text-xs text-zinc-400">
             <button
               onClick={() => onNavigate('home')}
-              className="hover:text-zinc-200 transition-colors flex items-center gap-1"
+              className="hover:text-zinc-200 transition-colors flex items-center gap-1.5 font-medium"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Site</span>
+              <span>Back to Atelier</span>
             </button>
-            <span className="text-zinc-500 flex items-center gap-1">
+            <span className="text-zinc-400 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               Secure CRM
             </span>
@@ -1279,21 +1279,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // ================= MODERN REFINED DASHBOARD ================= //
   return (
-    <div className="min-h-screen bg-[#13151c] text-zinc-200 font-sans flex flex-col md:flex-row selection:bg-red-600 selection:text-white antialiased">
+    <div className="min-h-screen bg-[#0d0f15] text-zinc-100 font-sans flex flex-col md:flex-row selection:bg-red-600 selection:text-white antialiased">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 px-4 py-2.5 bg-[#1e2230] border border-red-500/40 text-zinc-100 rounded-lg shadow-2xl flex items-center gap-2.5 text-xs font-mono animate-fade-in">
+        <div className="fixed bottom-5 right-5 z-50 px-4 py-3 bg-[#1e2230] border border-red-500/40 text-white rounded-xl shadow-2xl flex items-center gap-3 text-xs font-medium animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* LEFT SIDEBAR RAIL */}
-      <aside className="w-full md:w-64 bg-[#181a24] border-r border-zinc-700/60 flex flex-col shrink-0">
+      <aside className="w-full md:w-64 bg-[#151720] border-r border-zinc-800/80 flex flex-col shrink-0">
         {/* Workspace Brand Header */}
-        <div className="p-4 border-b border-zinc-700/60 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-600/15 border border-red-600/40 flex items-center justify-center font-mono font-bold text-red-400 text-xs">
+        <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-red-600/15 border border-red-600/40 flex items-center justify-center font-bold text-red-400 text-xs">
               M
             </div>
             <div>
@@ -1301,14 +1301,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <span>Marvin Atelier</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               </div>
-              <span className="text-[11px] font-mono text-zinc-400 block">
+              <span className="text-[11px] text-zinc-400 block">
                 Pioneer Mall L5 · Kampala
               </span>
             </div>
           </div>
           <button
             onClick={() => onNavigate('home')}
-            className="text-zinc-400 hover:text-white p-1.5 rounded-md hover:bg-[#232738] transition-colors"
+            className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-[#222634] transition-colors"
             title="Open Live Website"
           >
             <ExternalLink className="w-4 h-4" />
@@ -1316,19 +1316,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-3 space-y-6 overflow-y-auto font-mono text-xs">
+        <nav className="flex-1 p-3 space-y-6 overflow-y-auto text-xs font-sans">
           {/* Section: Operational */}
           <div className="space-y-1">
-            <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Studio
+            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+              Studio Management
             </div>
 
             <button
               onClick={() => setActiveTab('bookings')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'bookings'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -1336,7 +1336,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <span>Bookings</span>
               </div>
               {pendingBookingsCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold font-mono">
                   {pendingBookingsCount}
                 </span>
               )}
@@ -1344,57 +1344,56 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
             <button
               onClick={() => setActiveTab('users')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'users'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Users className="w-4 h-4 text-zinc-400" />
-                <span>Clients</span>
+                <span>Clients CRM</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{usersList.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{usersList.length}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('services')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'services'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Sparkles className="w-4 h-4 text-zinc-400" />
                 <span>Services</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{servicesList.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{servicesList.length}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('team')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'team'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Crown className="w-4 h-4 text-amber-400" />
-                <span>Team & Artists</span>
+                <span>Team &amp; Artists</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{teamMembers.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{teamMembers.length}</span>
             </button>
           </div>
 
-
           {/* Section: Commerce / Shop */}
           <div className="space-y-1">
-            <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
-              <span>Shop</span>
+            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+              <span>Atelier Commerce</span>
               {pendingOrdersCount > 0 && (
-                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] rounded font-bold">
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] rounded-md font-bold font-mono">
                   {pendingOrdersCount} new
                 </span>
               )}
@@ -1405,17 +1404,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 setActiveTab('shop');
                 setShopSubTab('products');
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'shop' && shopSubTab === 'products'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Package className="w-4 h-4 text-zinc-400" />
-                <span>Products</span>
+                <span>Products Inventory</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{productsList.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{productsList.length}</span>
             </button>
 
             <button
@@ -1423,17 +1422,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 setActiveTab('shop');
                 setShopSubTab('categories');
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'shop' && shopSubTab === 'categories'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Tag className="w-4 h-4 text-zinc-400" />
-                <span>Categories</span>
+                <span>Shop Categories</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{inventoryCategories.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{inventoryCategories.length}</span>
             </button>
 
             <button
@@ -1441,10 +1440,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 setActiveTab('shop');
                 setShopSubTab('orders');
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'shop' && shopSubTab === 'orders'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -1452,88 +1451,88 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <span>Orders</span>
               </div>
               {pendingOrdersCount > 0 ? (
-                <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold font-mono">
                   {pendingOrdersCount}
                 </span>
               ) : (
-                <span className="text-[11px] text-zinc-400">{orders.length}</span>
+                <span className="text-[11px] font-mono text-zinc-400">{orders.length}</span>
               )}
             </button>
           </div>
 
           {/* Section: Content & Media */}
           <div className="space-y-1">
-            <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Content
+            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+              Content &amp; Media
             </div>
 
             <button
               onClick={() => setActiveTab('portfolio')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'portfolio'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <ImageIcon className="w-4 h-4 text-zinc-400" />
-                <span>Portfolio</span>
+                <span>Portfolio Artworks</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{portfolioPieces.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{portfolioPieces.length}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'reviews'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Star className="w-4 h-4 text-zinc-400" />
-                <span>Reviews</span>
+                <span>Client Reviews</span>
               </div>
-              <span className="text-[11px] text-zinc-400">{testimonialsList.length}</span>
+              <span className="text-[11px] font-mono text-zinc-400">{testimonialsList.length}</span>
             </button>
           </div>
 
           {/* Section: Configuration */}
           <div className="space-y-1">
-            <div className="px-2 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Settings
+            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+              Studio Configuration
             </div>
 
             <button
               onClick={() => setActiveTab('settings')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 activeTab === 'settings'
-                  ? 'bg-red-600/15 text-red-400 border border-red-600/30 font-semibold'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#202434]'
+                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Settings className="w-4 h-4 text-zinc-400" />
-                <span>Settings</span>
+                <span>Site Settings</span>
               </div>
             </button>
           </div>
         </nav>
 
         {/* Sidebar Footer User Card */}
-        <div className="p-3.5 border-t border-zinc-700/60 bg-[#151720] flex items-center justify-between text-xs font-mono">
-          <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-7 h-7 rounded-lg bg-zinc-700/70 border border-zinc-600/50 flex items-center justify-center text-xs font-bold text-zinc-200">
+        <div className="p-4 border-t border-zinc-800/80 bg-[#12141c] flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-8 h-8 rounded-lg bg-zinc-700/70 border border-zinc-600/50 flex items-center justify-center text-xs font-bold text-white">
               M
             </div>
             <div className="truncate">
-              <span className="text-white text-xs block truncate font-semibold">Marvin</span>
+              <span className="text-white text-xs block truncate font-semibold">Marvin Studio</span>
               <span className="text-[11px] text-zinc-400 block truncate">admin@marvintattoos.com</span>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="p-1.5 text-zinc-400 hover:text-red-400 rounded hover:bg-zinc-800 transition-colors"
+            className="p-1.5 text-zinc-400 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors"
             title="Sign Out"
           >
             <LogOut className="w-4 h-4" />
@@ -1542,45 +1541,45 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       </aside>
 
       {/* MAIN WORKSPACE CONTENT */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#13151c]">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#0d0f15]">
         {/* Top Minimal Header */}
-        <header className="h-14 px-6 border-b border-zinc-700/60 bg-[#181a24] flex items-center justify-between shrink-0">
+        <header className="h-16 px-6 border-b border-zinc-800/80 bg-[#151720]/90 backdrop-blur-md flex items-center justify-between shrink-0">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-sans text-zinc-400">
             <span>Marvin Atelier</span>
-            <span>/</span>
+            <span className="text-zinc-600">/</span>
             <span className="text-white font-semibold capitalize">
               {activeTab === 'users' ? 'Clients CRM' : activeTab === 'team' ? 'Team & Artists' : activeTab}
             </span>
 
             {activeTab === 'shop' && (
               <>
-                <span>/</span>
+                <span className="text-zinc-600">/</span>
                 <span className="text-red-400 font-semibold capitalize">{shopSubTab}</span>
               </>
             )}
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="hidden lg:flex items-center gap-6 text-xs font-mono">
+          <div className="hidden lg:flex items-center gap-6 text-xs font-sans">
             <div className="flex items-center gap-2">
               <span className="text-zinc-400">Total Clients:</span>
-              <span className="text-white font-bold">{usersList.length}</span>
+              <span className="text-white font-bold font-mono">{usersList.length}</span>
             </div>
-            <div className="w-px h-3 bg-zinc-700" />
+            <div className="w-px h-3.5 bg-zinc-800" />
             <div className="flex items-center gap-2">
               <span className="text-zinc-400">New Bookings:</span>
-              <span className="text-red-400 font-bold">{pendingBookingsCount}</span>
+              <span className="text-red-400 font-bold font-mono">{pendingBookingsCount}</span>
             </div>
-            <div className="w-px h-3 bg-zinc-700" />
+            <div className="w-px h-3.5 bg-zinc-800" />
             <div className="flex items-center gap-2">
               <span className="text-zinc-400">Active Orders:</span>
-              <span className="text-amber-400 font-bold">{pendingOrdersCount}</span>
+              <span className="text-amber-400 font-bold font-mono">{pendingOrdersCount}</span>
             </div>
-            <div className="w-px h-3 bg-zinc-700" />
+            <div className="w-px h-3.5 bg-zinc-800" />
             <div className="flex items-center gap-2">
               <span className="text-zinc-400">Total Sales:</span>
-              <span className="text-emerald-400 font-bold">UGX {totalRevenue.toLocaleString()}</span>
+              <span className="text-emerald-400 font-bold font-mono">UGX {totalRevenue.toLocaleString()}</span>
             </div>
           </div>
 
@@ -1588,17 +1587,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           <div className="flex items-center gap-2.5">
             <button
               onClick={loadDashboardData}
-              className="p-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 rounded-lg text-zinc-300 hover:text-white transition-colors"
+              className="p-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 rounded-xl text-zinc-300 hover:text-white transition-colors"
               title="Refresh Data"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-4 h-4" />
             </button>
 
             {activeTab === 'users' && (
               <button
                 onClick={handleSyncLegacyClients}
                 disabled={syncingLegacy}
-                className="px-3 py-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 text-zinc-300 hover:text-white rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-sans font-medium transition-colors flex items-center gap-2"
                 title="Scan all historical bookings and orders to create and link client profiles"
               >
                 <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${syncingLegacy ? 'animate-spin' : ''}`} />
@@ -1609,9 +1608,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             {activeTab === 'services' && (
               <button
                 onClick={openAddServiceModal}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 <span>Add Service</span>
               </button>
             )}
@@ -1619,31 +1618,31 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             {activeTab === 'team' && (
               <button
                 onClick={openAddMemberModal}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 <span>Add Team Member</span>
               </button>
             )}
 
-
             {activeTab === 'portfolio' && (
               <button
                 onClick={openAddArtworkModal}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 <span>Add Artwork</span>
               </button>
             )}
+
             {activeTab === 'shop' && (
               <>
                 {shopSubTab === 'products' && (
                   <button
                     onClick={() => setShopSubTab('categories')}
-                    className="px-3 py-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 text-zinc-300 hover:text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                    className="px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-2"
                   >
-                    <Tag className="w-3.5 h-3.5 text-amber-400" />
+                    <Tag className="w-4 h-4 text-amber-400" />
                     <span>Categories</span>
                   </button>
                 )}
@@ -1679,11 +1678,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         <div className="flex-1 p-6 overflow-y-auto">
           {/* ================= 1. BOOKINGS CRM TABLE ================= */}
           {activeTab === 'bookings' && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {/* Filter & Search Toolbar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 {/* Status Pills */}
-                <div className="flex items-center gap-1 bg-[#181a24] p-1 rounded-lg border border-zinc-700/70 font-mono text-xs">
+                <div className="flex flex-wrap items-center gap-1.5 bg-[#161822] p-1.5 rounded-xl border border-zinc-800 text-xs font-sans">
                   {['ALL', 'PENDING_REVIEW', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map((st) => (
                     <button
                       key={st}
@@ -1691,33 +1690,33 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         setBookingFilterStatus(st);
                         setTimeout(loadBookings, 50);
                       }}
-                      className={`px-3 py-1 rounded-md transition-colors text-[11px] ${
+                      className={`px-3.5 py-1.5 rounded-lg transition-colors text-xs font-medium ${
                         bookingFilterStatus === st
-                          ? 'bg-red-600/20 text-red-400 border border-red-600/40 font-semibold'
-                          : 'text-zinc-400 hover:text-white'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-sm'
+                          : 'text-zinc-400 hover:text-white hover:bg-[#202434]'
                       }`}
                     >
-                      {st === 'ALL' ? 'All' : st.replace('_', ' ')}
+                      {st === 'ALL' ? 'All Bookings' : st.replace('_', ' ')}
                     </button>
                   ))}
                 </div>
 
                 {/* Search Bar */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <div className="relative w-full sm:w-64">
-                    <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
+                <div className="flex items-center gap-2 w-full sm:w-auto font-sans">
+                  <div className="relative w-full sm:w-72">
+                    <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
                     <input
                       type="text"
                       value={bookingSearch}
                       onChange={(e) => setBookingSearch(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && loadBookings()}
                       placeholder="Search client, phone, ref..."
-                      className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
+                      className="w-full pl-10 pr-3.5 py-2.5 bg-[#161822] border border-zinc-700/80 rounded-xl text-white text-xs focus:outline-none focus:border-red-500 placeholder:text-zinc-500 transition-all"
                     />
                   </div>
                   <button
                     onClick={loadBookings}
-                    className="px-3 py-1.5 bg-[#202434] hover:bg-[#282d42] border border-zinc-700 rounded-lg text-xs font-mono text-zinc-200 transition-colors"
+                    className="px-4 py-2.5 bg-[#202434] hover:bg-[#282e42] border border-zinc-700 text-xs text-zinc-100 rounded-xl transition-colors font-medium"
                   >
                     Filter
                   </button>
@@ -1725,28 +1724,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
 
               {/* High Density Table */}
-              <div className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden shadow-lg">
-                <table className="w-full text-left font-mono text-xs border-collapse">
+              <div className="bg-[#181a24] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl">
+                <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-zinc-700/60 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider">
-                      <th className="p-3 pl-4">Booking Ref</th>
-                      <th className="p-3">Client</th>
-                      <th className="p-3">Service &amp; Placement</th>
-                      <th className="p-3">Date &amp; Time</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3 text-right pr-4">Actions</th>
+                    <tr className="border-b border-zinc-800 bg-[#12141c] text-zinc-400 text-xs uppercase tracking-wider font-medium">
+                      <th className="p-3.5 pl-5">Booking Ref</th>
+                      <th className="p-3.5">Client</th>
+                      <th className="p-3.5">Service &amp; Placement</th>
+                      <th className="p-3.5">Date &amp; Time</th>
+                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5 text-right pr-5">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-700/50">
+                  <tbody className="divide-y divide-zinc-800/70">
                     {loadingBookings ? (
                       <tr>
-                        <td colSpan={6} className="p-8 text-center text-zinc-400">
+                        <td colSpan={6} className="p-10 text-center text-zinc-400">
                           Loading bookings...
                         </td>
                       </tr>
                     ) : bookings.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="p-8 text-center text-zinc-400">
+                        <td colSpan={6} className="p-10 text-center text-zinc-400">
                           No bookings found.
                         </td>
                       </tr>
@@ -1757,34 +1756,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           onClick={() => setInspectBooking(b)}
                           className="hover:bg-[#202434] cursor-pointer transition-colors group"
                         >
-                          <td className="p-3 pl-4">
-                            <span className="font-semibold text-red-400 bg-red-950/40 px-2 py-0.5 rounded border border-red-800/40 text-[11px]">
+                          <td className="p-3.5 pl-5">
+                            <span className="font-semibold text-red-400 bg-red-950/40 px-2.5 py-1 rounded-md border border-red-800/40 text-xs font-mono">
                               {b.referenceCode}
                             </span>
                           </td>
-                          <td className="p-3">
-                            <div className="font-semibold text-white group-hover:text-red-300 transition-colors">
+                          <td className="p-3.5">
+                            <div className="font-semibold text-white group-hover:text-red-300 transition-colors text-sm">
                               {b.clientName}
                             </div>
-                            <div className="text-[11px] text-zinc-400">{b.clientPhone}</div>
+                            <div className="text-xs text-zinc-400 font-mono mt-0.5">{b.clientPhone}</div>
                           </td>
-                          <td className="p-3">
-                            <span className="text-zinc-200 capitalize block font-semibold">
+                          <td className="p-3.5">
+                            <span className="text-zinc-200 capitalize block font-medium">
                               {b.serviceType.replace('_', ' ')}
                             </span>
-                            <span className="text-[11px] text-zinc-400">
+                            <span className="text-xs text-zinc-400">
                               {b.placement} ({b.size})
                             </span>
                           </td>
-                          <td className="p-3">
-                            <div className="text-zinc-200">
+                          <td className="p-3.5">
+                            <div className="text-zinc-200 font-medium">
                               {new Date(b.preferredDate).toLocaleDateString()}
                             </div>
-                            <div className="text-[11px] text-zinc-400 capitalize">{b.timeSlot}</div>
+                            <div className="text-xs text-zinc-400 capitalize">{b.timeSlot}</div>
                           </td>
-                          <td className="p-3">
+                          <td className="p-3.5">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-semibold ${
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                                 b.status === 'CONFIRMED'
                                   ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
                                   : b.status === 'COMPLETED'
@@ -1808,7 +1807,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               <span>{b.status.replace('_', ' ')}</span>
                             </span>
                           </td>
-                          <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                          <td className="p-3.5 text-right pr-5" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() =>
@@ -1817,17 +1816,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     `Hello ${b.clientName}! This is Marvin from Marvin Tattoos Atelier regarding your booking request [${b.referenceCode}]. We are pleased to confirm your session at New Pioneer Mall, Level 5.`
                                   )
                                 }
-                                className="px-2.5 py-1 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded text-[11px] transition-colors flex items-center gap-1"
+                                className="px-3 py-1.5 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded-lg text-xs transition-colors flex items-center gap-1.5 font-medium"
                               >
-                                <MessageCircle className="w-3 h-3" />
+                                <MessageCircle className="w-3.5 h-3.5" />
                                 <span>WhatsApp</span>
                               </button>
                               <button
                                 onClick={() => setInspectBooking(b)}
-                                className="px-2.5 py-1 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-300 rounded text-[11px] transition-colors flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-200 rounded-lg text-xs transition-colors flex items-center gap-1 font-medium"
                               >
                                 <span>Details</span>
-                                <ArrowRight className="w-3 h-3" />
+                                <ArrowRight className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
@@ -1844,54 +1843,54 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {activeTab === 'users' && (
             <div className="space-y-6">
               {/* Top CRM Analytics Banner */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="text-zinc-400 text-xs flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-red-400" />
-                    <span>Total Registered</span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="text-zinc-400 text-xs flex items-center gap-2 font-medium">
+                    <Users className="w-4 h-4 text-red-400" />
+                    <span>Total Registered Clients</span>
                   </div>
-                  <div className="text-xl font-bold text-white">{usersList.length} Clients</div>
+                  <div className="text-2xl font-bold text-white font-mono">{usersList.length}</div>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="text-zinc-400 text-xs flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="text-zinc-400 text-xs flex items-center gap-2 font-medium">
+                    <Calendar className="w-4 h-4 text-blue-400" />
                     <span>Total Bookings Placed</span>
                   </div>
-                  <div className="text-xl font-bold text-white">
-                    {usersList.reduce((sum, u) => sum + (u.totalBookings || 0), 0)} Sessions
+                  <div className="text-2xl font-bold text-white font-mono">
+                    {usersList.reduce((sum, u) => sum + (u.totalBookings || 0), 0)}
                   </div>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="text-zinc-400 text-xs flex items-center gap-1.5">
-                    <ShoppingBag className="w-3.5 h-3.5 text-amber-400" />
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="text-zinc-400 text-xs flex items-center gap-2 font-medium">
+                    <ShoppingBag className="w-4 h-4 text-amber-400" />
                     <span>Total Shop Orders</span>
                   </div>
-                  <div className="text-xl font-bold text-white">
-                    {usersList.reduce((sum, u) => sum + (u.totalOrders || 0), 0)} Orders
+                  <div className="text-2xl font-bold text-white font-mono">
+                    {usersList.reduce((sum, u) => sum + (u.totalOrders || 0), 0)}
                   </div>
                 </div>
               </div>
 
               {/* Filter & Search Toolbar */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 font-mono text-xs">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <span className="px-3.5 py-1.5 rounded-lg border bg-[#181a24] text-zinc-300 border-zinc-700/70 font-semibold">
+                  <span className="px-4 py-2 rounded-xl border bg-[#161822] text-zinc-200 border-zinc-800 font-semibold text-xs">
                     All Registered Clients ({usersList.length})
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <div className="relative w-full sm:w-72">
-                    <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
                     <input
                       type="text"
                       value={userSearch}
                       onChange={(e) => setUserSearch(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && loadUsers()}
                       placeholder="Search name, phone, email..."
-                      className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
+                      className="w-full pl-10 pr-8 py-2.5 bg-[#161822] border border-zinc-700/80 rounded-xl text-white text-xs focus:outline-none focus:border-red-500 placeholder:text-zinc-500 transition-all"
                     />
                     {userSearch && (
                       <button
@@ -1899,15 +1898,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           setUserSearch('');
                           setTimeout(loadUsers, 50);
                         }}
-                        className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                        className="absolute right-3 top-3 text-zinc-400 hover:text-white"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
                     )}
                   </div>
                   <button
                     onClick={loadUsers}
-                    className="px-3.5 py-1.5 bg-[#202434] hover:bg-[#282d42] border border-zinc-700 rounded-lg text-xs text-zinc-200 transition-colors"
+                    className="px-4 py-2.5 bg-[#202434] hover:bg-[#282e42] border border-zinc-700 rounded-xl text-xs text-zinc-100 transition-colors font-medium"
                   >
                     Search
                   </button>
@@ -1915,29 +1914,29 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Users CRM Table */}
-              <div className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden shadow-lg font-mono text-xs">
-                <table className="w-full text-left border-collapse">
+              <div className="bg-[#181a24] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl">
+                <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-zinc-700/60 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider">
-                      <th className="p-3 pl-4">Client Name</th>
-                      <th className="p-3">Phone (WhatsApp)</th>
-                      <th className="p-3">Email</th>
-                      <th className="p-3 text-center">Bookings</th>
-                      <th className="p-3 text-center">Shop Orders</th>
-                      <th className="p-3">Last Active</th>
-                      <th className="p-3 text-right pr-4">Actions</th>
+                    <tr className="border-b border-zinc-800 bg-[#12141c] text-zinc-400 text-xs uppercase tracking-wider font-medium">
+                      <th className="p-3.5 pl-5">Client Name</th>
+                      <th className="p-3.5">Phone (WhatsApp)</th>
+                      <th className="p-3.5">Email</th>
+                      <th className="p-3.5 text-center">Bookings</th>
+                      <th className="p-3.5 text-center">Shop Orders</th>
+                      <th className="p-3.5">Last Active</th>
+                      <th className="p-3.5 text-right pr-5">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-700/50">
+                  <tbody className="divide-y divide-zinc-800/70">
                     {loadingUsers ? (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-zinc-400">
+                        <td colSpan={7} className="p-10 text-center text-zinc-400">
                           Loading clients database...
                         </td>
                       </tr>
                     ) : usersList.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-zinc-400">
+                        <td colSpan={7} className="p-10 text-center text-zinc-400">
                           No client records match your search.
                         </td>
                       </tr>
@@ -1948,34 +1947,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           onClick={() => openInspectUser(u)}
                           className="hover:bg-[#202434] cursor-pointer transition-colors group"
                         >
-                          <td className="p-3 pl-4">
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-7 h-7 rounded-full bg-red-600/20 border border-red-600/40 flex items-center justify-center font-bold text-red-300 text-xs shrink-0">
+                          <td className="p-3.5 pl-5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-red-600/20 border border-red-600/40 flex items-center justify-center font-bold text-red-300 text-xs shrink-0">
                                 {u.name ? u.name.charAt(0).toUpperCase() : 'C'}
                               </div>
                               <div className="min-w-0">
-                                <div className="font-semibold text-white group-hover:text-red-300 transition-colors flex items-center gap-1.5 truncate">
+                                <div className="font-semibold text-white group-hover:text-red-300 transition-colors flex items-center gap-1.5 truncate text-sm">
                                   <span>{u.name}</span>
                                 </div>
                                 {u.notes && (
-                                  <div className="text-[10px] text-zinc-400 truncate max-w-xs">
+                                  <div className="text-xs text-zinc-400 truncate max-w-xs mt-0.5">
                                     {u.notes}
                                   </div>
                                 )}
                               </div>
                             </div>
                           </td>
-                          <td className="p-3">
-                            <span className="text-zinc-200 font-semibold">{u.phone}</span>
+                          <td className="p-3.5">
+                            <span className="text-zinc-200 font-mono font-medium">{u.phone}</span>
                           </td>
-                          <td className="p-3">
-                            <span className="text-zinc-400 text-[11px] truncate max-w-xs block">
+                          <td className="p-3.5">
+                            <span className="text-zinc-400 text-xs truncate max-w-xs block">
                               {u.email || '—'}
                             </span>
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-3.5 text-center">
                             <span
-                              className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                              className={`px-2.5 py-0.5 rounded-md text-xs font-semibold font-mono ${
                                 u.totalBookings > 0
                                   ? 'bg-blue-950/60 text-blue-300 border border-blue-800/70'
                                   : 'text-zinc-500'
@@ -1984,9 +1983,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               {u.totalBookings}
                             </span>
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-3.5 text-center">
                             <span
-                              className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                              className={`px-2.5 py-0.5 rounded-md text-xs font-semibold font-mono ${
                                 u.totalOrders > 0
                                   ? 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
                                   : 'text-zinc-500'
@@ -1995,11 +1994,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               {u.totalOrders}
                             </span>
                           </td>
-                          <td className="p-3 text-zinc-400 text-[11px]">
+                          <td className="p-3.5 text-zinc-400 text-xs font-mono">
                             {u.lastActive ? new Date(u.lastActive).toLocaleDateString() : new Date(u.createdAt).toLocaleDateString()}
                           </td>
-                          <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end gap-1.5">
+                          <td className="p-3.5 text-right pr-5" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() =>
                                   openWhatsApp(
@@ -2007,24 +2006,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     `Hello ${u.name}! This is Marvin Tattoos Atelier. We are checking in with you regarding your studio experience.`
                                   )
                                 }
-                                className="p-1.5 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded transition-colors"
+                                className="p-2 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded-lg transition-colors"
                                 title="Chat on WhatsApp"
                               >
-                                <MessageCircle className="w-3.5 h-3.5" />
+                                <MessageCircle className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => openInspectUser(u)}
-                                className="px-2.5 py-1 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-300 rounded text-[11px] transition-colors flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-200 rounded-lg text-xs transition-colors flex items-center gap-1 font-medium"
                               >
                                 <span>Dossier</span>
-                                <ArrowRight className="w-3 h-3" />
+                                <ArrowRight className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteClient(u.id, u.name)}
-                                className="p-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded transition-colors"
+                                className="p-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg transition-colors"
                                 title="Delete Client"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                           </td>
@@ -2042,94 +2041,94 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="space-y-6">
               {/* Studio Services Metrics Overview */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
-                    <span>Total Disciplines</span>
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
+                    <span>Total Services</span>
                     <PenTool className="w-4 h-4 text-red-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-white">
                     {servicesList.length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Live studio services</p>
+                  <p className="text-xs text-zinc-400">Live studio disciplines</p>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
                     <span>Tattoo Disciplines</span>
                     <Icons8 name="skull" size={16} className="text-red-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-red-400">
                     {servicesList.filter((s) => s.category?.toUpperCase() === 'TATTOO').length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Custom ink & realism</p>
+                  <p className="text-xs text-zinc-400">Custom ink &amp; realism</p>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
-                    <span>PMU & Piercing</span>
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
+                    <span>PMU &amp; Piercing</span>
                     <Sparkles className="w-4 h-4 text-fuchsia-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-fuchsia-400">
                     {servicesList.filter((s) => ['PMU', 'PIERCING'].includes(s.category?.toUpperCase() || '')).length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Cosmetic & body mods</p>
+                  <p className="text-xs text-zinc-400">Cosmetic &amp; body mods</p>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
-                    <span>Removal & Clinical</span>
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
+                    <span>Removal &amp; Clinical</span>
                     <ShieldCheck className="w-4 h-4 text-amber-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-amber-400">
                     {servicesList.filter((s) => s.category?.toUpperCase() === 'REMOVAL').length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Laser & skin recovery</p>
+                  <p className="text-xs text-zinc-400">Laser &amp; skin recovery</p>
                 </div>
               </div>
 
               {/* Filter & Search Toolbar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div className="relative w-full sm:w-80">
-                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                  <Search className="w-4 h-4 absolute left-3.5 top-3 text-zinc-400" />
                   <input
                     type="text"
                     placeholder="Search disciplines, techniques, numbers..."
                     value={serviceSearch}
                     onChange={(e) => setServiceSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white placeholder-zinc-500 font-mono text-xs focus:outline-none focus:border-red-500"
+                    className="w-full pl-10 pr-8 py-2.5 bg-[#161822] border border-zinc-700/80 rounded-xl text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-red-500 transition-all"
                   />
                   {serviceSearch && (
                     <button
                       onClick={() => setServiceSearch('')}
-                      className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                      className="absolute right-3 top-3 text-zinc-400 hover:text-white"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                  <div className="font-mono text-xs text-zinc-400">
-                    Showing <span className="text-white font-bold">{filteredServicesList.length}</span> of {servicesList.length}
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                  <div className="text-xs text-zinc-400 font-medium">
+                    Showing <span className="text-white font-bold font-mono">{filteredServicesList.length}</span> of {servicesList.length}
                   </div>
                   <button
                     onClick={openAddServiceModal}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-4 h-4" />
                     <span>Add Service</span>
                   </button>
                 </div>
               </div>
 
               {/* Category Filter Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs no-scrollbar">
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
                 <button
                   onClick={() => setServiceCategoryFilter('ALL')}
-                  className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-xl border transition-all whitespace-nowrap font-medium ${
                     serviceCategoryFilter === 'ALL'
                       ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
-                      : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                      : 'bg-[#161822] text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white'
                   }`}
                 >
                   All Categories ({servicesList.length})
@@ -2140,10 +2139,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <button
                       key={cat}
                       onClick={() => setServiceCategoryFilter(cat)}
-                      className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap uppercase ${
+                      className={`px-4 py-2 rounded-xl border transition-all whitespace-nowrap uppercase font-medium ${
                         serviceCategoryFilter === cat
                           ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
-                          : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                          : 'bg-[#161822] text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white'
                       }`}
                     >
                       {cat} ({count})
@@ -2154,26 +2153,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* Services Grid */}
               {loadingServices ? (
-                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-2">
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-3">
                   <RefreshCw className="w-6 h-6 text-red-500 animate-spin mx-auto" />
-                  <p className="text-zinc-400 font-mono text-xs">Loading studio service disciplines...</p>
+                  <p className="text-zinc-400 text-xs">Loading studio service disciplines...</p>
                 </div>
               ) : filteredServicesList.length === 0 ? (
-                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3">
-                  <PenTool className="w-8 h-8 text-zinc-600 mx-auto" />
-                  <p className="text-zinc-400 font-mono text-sm">No service disciplines match your search or filter.</p>
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-3">
+                  <PenTool className="w-8 h-8 text-zinc-500 mx-auto" />
+                  <p className="text-zinc-300 text-sm font-medium">No service disciplines match your search or filter.</p>
                   <button
                     onClick={() => {
                       setServiceCategoryFilter('ALL');
                       setServiceSearch('');
                     }}
-                    className="text-red-400 hover:underline font-mono text-xs"
+                    className="text-red-400 hover:underline text-xs font-semibold"
                   >
                     Clear active filters
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                   {filteredServicesList.map((service) => {
                     const categoryColors: Record<string, string> = {
                       TATTOO: 'bg-red-950/80 text-red-300 border-red-800/80',
@@ -2188,77 +2187,77 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     return (
                       <div
                         key={service.id}
-                        className="group bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col hover:border-zinc-500/80 transition-all duration-300 shadow-lg hover:shadow-2xl"
+                        className="group bg-[#181a24] border border-zinc-800/80 rounded-2xl overflow-hidden flex flex-col hover:border-zinc-600 transition-all duration-300 shadow-lg hover:shadow-2xl"
                       >
                         {/* Artwork Banner */}
                         <div className="relative aspect-[16/10] bg-[#12141c] overflow-hidden">
                           <img
                             src={service.imageUrl || service.image || '/images/hero.webp'}
                             alt={service.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90 group-hover:brightness-100"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95 group-hover:brightness-100"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-black/60" />
 
                           {/* Top Badges */}
-                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                            <span className="px-2 py-0.5 bg-black/80 border border-zinc-700/80 backdrop-blur-md rounded text-[11px] font-mono font-bold text-red-400 tracking-wider">
+                          <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                            <span className="px-2.5 py-1 bg-black/85 border border-zinc-700/80 backdrop-blur-md rounded-lg text-xs font-mono font-bold text-red-400 tracking-wider">
                               #{service.disciplineNumber}
                             </span>
                           </div>
 
-                          <div className="absolute top-2.5 right-2.5">
+                          <div className="absolute top-3 right-3">
                             <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase border backdrop-blur-md ${badgeClass}`}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-bold tracking-wider uppercase border backdrop-blur-md ${badgeClass}`}
                             >
                               {service.category || 'TATTOO'}
                             </span>
                           </div>
 
                           {/* Icon Indicator */}
-                          <div className="absolute bottom-2 left-3 flex items-center gap-1.5 text-zinc-300">
-                            <span className="p-1 bg-black/70 backdrop-blur-md border border-zinc-700/80 rounded">
+                          <div className="absolute bottom-2.5 left-3 flex items-center gap-2 text-zinc-300">
+                            <span className="p-1.5 bg-black/75 backdrop-blur-md border border-zinc-700/80 rounded-lg">
                               <Icons8 name={service.iconName || 'skull'} size={14} className="text-zinc-200" />
                             </span>
-                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                            <span className="text-xs font-medium text-zinc-300 uppercase tracking-wider">
                               {service.iconName || 'skull'}
                             </span>
                           </div>
                         </div>
 
                         {/* Content Area */}
-                        <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                        <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
                           <div className="space-y-1.5">
-                            <h3 className="font-semibold text-white text-sm line-clamp-1 group-hover:text-red-400 transition-colors">
+                            <h3 className="font-semibold text-white text-base line-clamp-1 group-hover:text-red-400 transition-colors">
                               {service.title}
                             </h3>
                             {service.subtitle && (
-                              <p className="text-[11px] text-zinc-400 font-mono line-clamp-1 italic">
+                              <p className="text-xs text-zinc-400 line-clamp-1 italic font-medium">
                                 {service.subtitle}
                               </p>
                             )}
-                            <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed pt-1">
+                            <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed pt-1">
                               {service.description}
                             </p>
                           </div>
 
                           {/* Specs breakdown */}
                           {Array.isArray(service.specs) && service.specs.length > 0 && (
-                            <div className="pt-2 border-t border-zinc-700/60 space-y-1">
-                              <span className="text-[10px] font-mono uppercase text-zinc-500 block">
+                            <div className="pt-3 border-t border-zinc-800 space-y-1.5">
+                              <span className="text-[11px] uppercase text-zinc-400 font-semibold block">
                                 Technical Specs
                               </span>
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-1.5">
                                 {service.specs.slice(0, 3).map((spec, i) => (
                                   <span
                                     key={i}
-                                    className="px-1.5 py-0.5 bg-[#12141c] border border-zinc-700/80 rounded text-[10px] font-mono text-zinc-300 truncate max-w-[200px]"
+                                    className="px-2 py-0.5 bg-[#12141c] border border-zinc-800 rounded-md text-xs text-zinc-300 truncate max-w-[200px]"
                                     title={`${spec.label}: ${spec.value}`}
                                   >
                                     <span className="text-zinc-500">{spec.label}:</span> {spec.value}
                                   </span>
                                 ))}
                                 {service.specs.length > 3 && (
-                                  <span className="px-1.5 py-0.5 bg-[#12141c] text-[10px] font-mono text-zinc-500 rounded">
+                                  <span className="px-2 py-0.5 bg-[#12141c] text-xs text-zinc-400 rounded-md">
                                     +{service.specs.length - 3} more
                                   </span>
                                 )}
@@ -2267,26 +2266,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           )}
 
                           {/* Action Footer */}
-                          <div className="pt-3 border-t border-zinc-700/60 flex items-center justify-between font-mono text-xs">
-                            <span className="text-[11px] text-zinc-500">
-                              Order: <span className="text-zinc-300 font-semibold">{service.sortOrder ?? 0}</span>
+                          <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-xs">
+                            <span className="text-xs text-zinc-400">
+                              Order: <span className="text-white font-mono font-semibold">{service.sortOrder ?? 0}</span>
                             </span>
 
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-2">
                               <button
                                 onClick={() => openEditServiceModal(service)}
-                                className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded transition-colors flex items-center gap-1 text-[11px]"
+                                className="px-3 py-1.5 bg-[#222636] hover:bg-[#2c3146] text-zinc-200 hover:text-white rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
                                 title="Edit Discipline"
                               >
-                                <Edit className="w-3 h-3 text-amber-400" />
+                                <Edit className="w-3.5 h-3.5 text-amber-400" />
                                 <span>Edit</span>
                               </button>
                               <button
                                 onClick={() => handleDeleteService(service.id, service.title)}
-                                className="p-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded transition-colors"
+                                className="p-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg transition-colors"
                                 title="Delete Discipline"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </div>
@@ -2304,55 +2303,55 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="space-y-6">
               {/* Team Members Metrics Overview */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
                     <span>Total Members</span>
                     <Crown className="w-4 h-4 text-amber-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-white">
                     {teamMembers.length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Website artist & piercer roster</p>
+                  <p className="text-xs text-zinc-400">Artist &amp; piercer roster</p>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
                     <span>Active on Site</span>
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-emerald-400">
                     {teamMembers.filter((m) => m.active !== false).length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Visible on public about & booking</p>
+                  <p className="text-xs text-zinc-400">Visible on public about &amp; booking</p>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
                     <span>Master Artists</span>
                     <PenTool className="w-4 h-4 text-red-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-red-400">
                     {teamMembers.filter((m) => m.title?.toLowerCase().includes('master') || m.title?.toLowerCase().includes('founder')).length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Founders & senior tattooists</p>
+                  <p className="text-xs text-zinc-400">Founders &amp; senior tattooists</p>
                 </div>
 
-                <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-1">
-                  <div className="flex items-center justify-between text-zinc-400 font-mono text-xs">
-                    <span>Piercing Curators</span>
+                <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
+                  <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
+                    <span>Piercing Specialists</span>
                     <Sparkles className="w-4 h-4 text-fuchsia-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-fuchsia-400">
                     {teamMembers.filter((m) => m.title?.toLowerCase().includes('piercing') || m.specialty?.toLowerCase().includes('piercing')).length}
                   </div>
-                  <p className="text-[11px] text-zinc-500 font-mono">Titanium & jewelry specialists</p>
+                  <p className="text-xs text-zinc-400">Titanium &amp; jewelry experts</p>
                 </div>
               </div>
 
               {/* Action Bar & Search Filter */}
-              <div className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="p-4 bg-[#181a24] border border-zinc-800/80 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
                 <div className="relative w-full md:w-80">
-                  <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     placeholder="Search by artist name, specialty, role..."
@@ -2361,7 +2360,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') loadTeamMembers();
                     }}
-                    className="w-full pl-9 pr-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono placeholder:text-zinc-500 focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-xl text-white text-xs placeholder:text-zinc-500 focus:outline-none focus:border-red-500 transition-all"
                   />
                 </div>
 
@@ -2369,7 +2368,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <button
                     onClick={loadTeamMembers}
                     disabled={loadingTeam}
-                    className="p-2 bg-[#141620] hover:bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-mono"
+                    className="p-2.5 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 rounded-xl text-zinc-200 hover:text-white transition-colors flex items-center gap-2 text-xs font-medium"
                     title="Reload Team"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${loadingTeam ? 'animate-spin' : ''}`} />
@@ -2378,9 +2377,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   <button
                     onClick={openAddMemberModal}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5 shadow-md shadow-red-950/40"
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-4 h-4" />
                     <span>Add Team Member</span>
                   </button>
                 </div>
@@ -2388,19 +2387,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* Members Grid */}
               {loadingTeam ? (
-                <div className="p-12 text-center text-zinc-500 font-mono text-xs flex items-center justify-center gap-2">
+                <div className="p-12 text-center text-zinc-400 text-xs flex items-center justify-center gap-2 bg-[#181a24] border border-zinc-800/80 rounded-2xl">
                   <RefreshCw className="w-4 h-4 animate-spin text-red-400" />
-                  <span>Loading team & artist roster...</span>
+                  <span>Loading team &amp; artist roster...</span>
                 </div>
               ) : teamMembers.length === 0 ? (
-                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3 font-mono">
+                <div className="p-12 text-center bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-3">
                   <Users className="w-10 h-10 text-zinc-600 mx-auto" />
-                  <p className="text-zinc-400 text-xs">No team members found.</p>
+                  <p className="text-zinc-300 text-sm font-medium">No team members found.</p>
                   <button
                     onClick={openAddMemberModal}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs uppercase font-semibold inline-flex items-center gap-1.5"
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold inline-flex items-center gap-2 shadow-md shadow-red-950/40"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-4 h-4" />
                     <span>Add First Team Member</span>
                   </button>
                 </div>
@@ -2416,16 +2415,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     return (
                       <div
                         key={member.id}
-                        className={`bg-[#181a24] border rounded-xl overflow-hidden flex flex-col justify-between transition-all group ${
+                        className={`bg-[#181a24] border rounded-2xl overflow-hidden flex flex-col justify-between transition-all group shadow-lg ${
                           member.active === false
                             ? 'border-zinc-800 opacity-60'
                             : isMarvin
                             ? 'border-amber-500/50 shadow-lg shadow-amber-950/20'
-                            : 'border-zinc-700/70 hover:border-zinc-500'
+                            : 'border-zinc-800/80 hover:border-zinc-600'
                         }`}
                       >
                         {/* Member Photo & Top Badges */}
-                        <div className="relative h-64 bg-[#141620] overflow-hidden">
+                        <div className="relative h-64 bg-[#12141c] overflow-hidden">
                           <img
                             src={member.avatar || '/images/marvin-founder.png'}
                             alt={member.name}
@@ -2439,14 +2438,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           {/* Top Badges */}
                           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[80%]">
                             {isMarvin && (
-                              <span className="px-2 py-0.5 bg-amber-500 text-black font-bold font-mono text-[9px] uppercase tracking-wider rounded flex items-center gap-1 shadow">
-                                <Crown className="w-3 h-3" /> Founder
+                              <span className="px-2.5 py-1 bg-amber-500 text-black font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center gap-1 shadow">
+                                <Crown className="w-3.5 h-3.5" /> Founder
                               </span>
                             )}
                             {badges.slice(0, 2).map((b, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 bg-black/80 backdrop-blur-md text-red-300 border border-red-500/40 font-mono text-[9px] uppercase tracking-wider rounded"
+                                className="px-2.5 py-1 bg-black/80 backdrop-blur-md text-red-300 border border-red-500/40 text-[10px] uppercase tracking-wider rounded-lg font-semibold"
                               >
                                 {b}
                               </span>
@@ -2456,7 +2455,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           {/* Status Badge */}
                           <div className="absolute top-3 right-3">
                             <span
-                              className={`px-2 py-0.5 rounded font-mono text-[9px] font-bold uppercase tracking-wider ${
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
                                 member.active !== false
                                   ? 'bg-emerald-950/90 text-emerald-300 border border-emerald-700/60'
                                   : 'bg-zinc-900 text-zinc-400 border border-zinc-700'
@@ -2474,31 +2473,31 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 {member.experience}
                               </span>
                             </h3>
-                            <p className="text-xs text-amber-300/90 font-mono truncate">{member.title}</p>
+                            <p className="text-xs text-amber-300/90 truncate font-medium">{member.title}</p>
                           </div>
                         </div>
 
                         {/* Member Details */}
-                        <div className="p-4 space-y-3 flex-1 flex flex-col justify-between font-mono">
-                          <div className="space-y-2">
+                        <div className="p-5 space-y-3.5 flex-1 flex flex-col justify-between">
+                          <div className="space-y-2.5">
                             <div>
-                              <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">Specialty</span>
+                              <span className="text-[11px] text-zinc-400 uppercase tracking-wider font-semibold block">Specialty</span>
                               <p className="text-xs text-zinc-200 font-medium">{member.specialty || 'Custom Tattoo & Piercing'}</p>
                             </div>
 
                             <div>
-                              <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">Bio &amp; Description</span>
-                              <p className="text-xs text-zinc-400 font-sans leading-relaxed line-clamp-3">
+                              <span className="text-[11px] text-zinc-400 uppercase tracking-wider font-semibold block">Bio &amp; Description</span>
+                              <p className="text-xs text-zinc-300 leading-relaxed line-clamp-3">
                                 {member.bio}
                               </p>
                             </div>
 
                             {badges.length > 0 && (
-                              <div className="pt-2 flex flex-wrap gap-1">
+                              <div className="pt-2 flex flex-wrap gap-1.5">
                                 {badges.map((tag, idx) => (
                                   <span
                                     key={idx}
-                                    className="px-1.5 py-0.5 bg-[#141620] border border-zinc-700 text-zinc-300 text-[10px] rounded"
+                                    className="px-2 py-0.5 bg-[#12141c] border border-zinc-800 text-zinc-300 text-[10px] rounded-md"
                                   >
                                     #{tag}
                                   </span>
@@ -2508,12 +2507,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           </div>
 
                           {/* Card Footer & Action Buttons */}
-                          <div className="pt-3 border-t border-zinc-700/60 flex items-center justify-between gap-2">
+                          <div className="pt-3.5 border-t border-zinc-800 flex items-center justify-between gap-2">
                             <button
                               onClick={() => handleToggleMemberActive(member)}
-                              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-mono transition-colors border ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
                                 member.active !== false
-                                  ? 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700'
+                                  ? 'bg-[#222636] text-zinc-300 border-zinc-700 hover:bg-[#2c3146]'
                                   : 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40 hover:bg-emerald-900/60'
                               }`}
                               title={member.active !== false ? 'Hide from public website' : 'Make visible on public website'}
@@ -2553,11 +2552,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
             <div className="space-y-6">
               {/* Shop Sub-Navigation Pill Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-700/60">
-                <div className="flex items-center gap-1.5 bg-[#181a24] p-1 rounded-xl border border-zinc-700/70 font-mono text-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+                <div className="flex items-center gap-1.5 bg-[#181a24] p-1.5 rounded-xl border border-zinc-800 text-xs">
                   <button
                     onClick={() => setShopSubTab('products')}
-                    className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-xs ${
+                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs ${
                       shopSubTab === 'products'
                         ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
                         : 'text-zinc-400 hover:text-white'
@@ -2566,8 +2565,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <Package className="w-3.5 h-3.5" />
                     <span>Products</span>
                     <span
-                      className={`px-1.5 py-0.5 text-[10px] rounded ${
-                        shopSubTab === 'products' ? 'bg-red-800 text-white' : 'bg-[#141620] text-zinc-400'
+                      className={`px-1.5 py-0.5 text-[10px] font-mono rounded ${
+                        shopSubTab === 'products' ? 'bg-red-800/80 text-white' : 'bg-[#12141c] text-zinc-400'
                       }`}
                     >
                       {productsList.length}
@@ -2576,7 +2575,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   <button
                     onClick={() => setShopSubTab('categories')}
-                    className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-xs ${
+                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs ${
                       shopSubTab === 'categories'
                         ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
                         : 'text-zinc-400 hover:text-white'
@@ -2585,8 +2584,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <Tag className="w-3.5 h-3.5" />
                     <span>Categories</span>
                     <span
-                      className={`px-1.5 py-0.5 text-[10px] rounded ${
-                        shopSubTab === 'categories' ? 'bg-red-800 text-white' : 'bg-[#141620] text-zinc-400'
+                      className={`px-1.5 py-0.5 text-[10px] font-mono rounded ${
+                        shopSubTab === 'categories' ? 'bg-red-800/80 text-white' : 'bg-[#12141c] text-zinc-400'
                       }`}
                     >
                       {inventoryCategories.length}
@@ -2595,7 +2594,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   <button
                     onClick={() => setShopSubTab('orders')}
-                    className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-xs ${
+                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs ${
                       shopSubTab === 'orders'
                         ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
                         : 'text-zinc-400 hover:text-white'
@@ -2604,13 +2603,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <ShoppingBag className="w-3.5 h-3.5" />
                     <span>Orders</span>
                     {pendingOrdersCount > 0 ? (
-                      <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold">
                         {pendingOrdersCount} new
                       </span>
                     ) : (
                       <span
-                        className={`px-1.5 py-0.5 text-[10px] rounded ${
-                          shopSubTab === 'orders' ? 'bg-red-800 text-white' : 'bg-[#141620] text-zinc-400'
+                        className={`px-1.5 py-0.5 text-[10px] font-mono rounded ${
+                          shopSubTab === 'orders' ? 'bg-red-800/80 text-white' : 'bg-[#12141c] text-zinc-400'
                         }`}
                       >
                         {orders.length}
@@ -2624,14 +2623,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <>
                       <button
                         onClick={() => setShopSubTab('categories')}
-                        className="px-3 py-1.5 bg-[#181a24] hover:bg-[#222634] border border-zinc-700/80 text-zinc-300 hover:text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-[#181a24] hover:bg-[#1f222d] border border-zinc-800 text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
                       >
                         <Tag className="w-3.5 h-3.5 text-amber-400" />
                         <span>Categories</span>
                       </button>
                       <button
                         onClick={openAddProductModal}
-                        className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Product</span>
@@ -2641,7 +2640,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   {shopSubTab === 'categories' && (
                     <button
                       onClick={openAddProductModal}
-                      className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Product</span>
@@ -2650,7 +2649,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   {shopSubTab === 'orders' && (
                     <button
                       onClick={loadOrders}
-                      className="px-3 py-1.5 bg-[#181a24] hover:bg-[#222634] border border-zinc-700/80 text-zinc-300 hover:text-white rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5"
+                      className="px-3.5 py-2 bg-[#181a24] hover:bg-[#1f222d] border border-zinc-800 text-zinc-300 hover:text-white rounded-lg text-xs transition-colors flex items-center gap-1.5"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       <span>Refresh Orders</span>
@@ -2664,38 +2663,38 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     {/* Search Bar */}
-                    <div className="relative w-full sm:w-72">
-                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                    <div className="relative w-full sm:w-80">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-zinc-500" />
                       <input
                         type="text"
                         placeholder="Search products, categories..."
                         value={inventorySearch}
                         onChange={(e) => setInventorySearch(e.target.value)}
-                        className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white placeholder-zinc-500 font-mono text-xs focus:outline-none focus:border-red-500"
+                        className="w-full pl-8 pr-8 py-2 bg-[#181a24] border border-zinc-800 rounded-lg text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-red-500 transition-colors"
                       />
                       {inventorySearch && (
                         <button
                           onClick={() => setInventorySearch('')}
-                          className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
+                          className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-white text-xs"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
                       )}
                     </div>
 
-                    <div className="font-mono text-xs text-zinc-400">
-                      Showing <span className="text-white font-bold">{filteredProductsList.length}</span> of {productsList.length} products
+                    <div className="text-xs text-zinc-400 font-sans">
+                      Showing <span className="text-white font-semibold font-mono">{filteredProductsList.length}</span> of <span className="font-mono">{productsList.length}</span> products
                     </div>
                   </div>
 
                   {/* Dynamic Category Filter Pills */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs no-scrollbar">
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
                     <button
                       onClick={() => setInventoryCategoryFilter('ALL')}
-                      className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap ${
+                      className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs ${
                         inventoryCategoryFilter === 'ALL'
-                          ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
-                          : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                          ? 'bg-red-600 text-white border-red-500 font-medium shadow-md shadow-red-950/30'
+                          : 'bg-[#181a24] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white'
                       }`}
                     >
                       All Categories ({productsList.length})
@@ -2706,10 +2705,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         <button
                           key={cat}
                           onClick={() => setInventoryCategoryFilter(cat)}
-                          className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap capitalize ${
+                          className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap capitalize text-xs ${
                             inventoryCategoryFilter.toLowerCase() === cat.toLowerCase()
-                              ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
-                              : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                              ? 'bg-red-600 text-white border-red-500 font-medium shadow-md shadow-red-950/30'
+                              : 'bg-[#181a24] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white'
                           }`}
                         >
                           {cat} ({count})
@@ -2719,14 +2718,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </div>
 
                   {filteredProductsList.length === 0 ? (
-                    <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-2">
-                      <p className="text-zinc-400 font-mono text-sm">No catalog products match your search or filter.</p>
+                    <div className="p-12 text-center bg-[#181a24] border border-zinc-800 rounded-xl space-y-2">
+                      <p className="text-zinc-400 text-sm">No catalog products match your search or filter.</p>
                       <button
                         onClick={() => {
                           setInventoryCategoryFilter('ALL');
                           setInventorySearch('');
                         }}
-                        className="text-red-400 hover:text-red-300 font-mono text-xs underline"
+                        className="text-red-400 hover:text-red-300 text-xs underline"
                       >
                         Reset filters
                       </button>
@@ -2736,46 +2735,48 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       {filteredProductsList.map((prod) => (
                         <div
                           key={prod.id}
-                          className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between shadow-md hover:border-zinc-500 transition-colors"
+                          className="bg-[#181a24] border border-zinc-800 hover:border-zinc-700 rounded-xl overflow-hidden flex flex-col justify-between shadow-sm transition-all group"
                         >
-                          <div className="h-36 bg-[#141620] relative overflow-hidden">
+                          <div className="h-40 bg-[#12141c] relative overflow-hidden">
                             <img
                               src={prod.image || prod.imageUrl}
                               alt={prod.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
-                            <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded capitalize">
+                            <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 backdrop-blur-sm border border-zinc-700 text-[10px] text-red-400 font-medium rounded capitalize">
                               {prod.category}
                             </span>
                           </div>
 
-                          <div className="p-4 space-y-2 font-mono text-xs">
-                            <h4 className="font-semibold text-white truncate" title={prod.name}>
-                              {prod.name}
-                            </h4>
-                            <div className="text-sm font-bold text-red-400">
-                              UGX {prod.price.toLocaleString()}
+                          <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                            <div className="space-y-1">
+                              <h4 className="font-semibold text-white text-sm truncate" title={prod.name}>
+                                {prod.name}
+                              </h4>
+                              <div className="text-sm font-bold text-red-400 font-mono">
+                                UGX {prod.price.toLocaleString()}
+                              </div>
+                              <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                                {prod.description}
+                              </p>
                             </div>
-                            <p className="text-[11px] text-zinc-400 line-clamp-2">
-                              {prod.description}
-                            </p>
 
-                            <div className="pt-2.5 border-t border-zinc-700/60 flex justify-between items-center">
+                            <div className="pt-3 border-t border-zinc-800/80 flex justify-between items-center mt-2">
                               {prod.inStock && (prod.stockCount === undefined || prod.stockCount > 0) ? (
-                                <span className="text-[10px] text-emerald-400 flex items-center gap-1">
-                                  <CheckCircle2 className="w-3 h-3" />
-                                  <span>In Stock ({prod.stockCount ?? 10})</span>
+                                <span className="text-[11px] text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <span className="font-mono">In Stock ({prod.stockCount ?? 10})</span>
                                 </span>
                               ) : (
-                                <span className="text-[10px] text-red-400 flex items-center gap-1">
-                                  <XCircle className="w-3 h-3" />
+                                <span className="text-[11px] text-red-400 flex items-center gap-1">
+                                  <XCircle className="w-3.5 h-3.5" />
                                   <span>Out of Stock</span>
                                 </span>
                               )}
                               <div className="flex items-center gap-1.5">
                                 <button
                                   onClick={() => openEditProductModal(prod)}
-                                  className="text-[11px] text-zinc-300 hover:text-white px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1"
+                                  className="text-xs text-zinc-300 hover:text-white px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1 font-medium"
                                   title="Edit Product"
                                 >
                                   <Edit className="w-3 h-3 text-amber-400" />
@@ -2783,11 +2784,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 </button>
                                 <button
                                   onClick={() => handleDeleteProduct(prod.id)}
-                                  className="text-[11px] text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
+                                  className="text-xs text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
                                   title="Delete Product"
                                 >
                                   <Trash2 className="w-3 h-3" />
-                                  <span>Delete</span>
                                 </button>
                               </div>
                             </div>
@@ -2805,39 +2805,39 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   {/* Create New Category Card */}
                   <form
                     onSubmit={handleAddNewCategoryPreset}
-                    className="p-4 bg-[#181a24] border border-zinc-700/80 rounded-xl space-y-3 font-mono text-xs shadow-lg"
+                    className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 text-xs shadow-sm"
                   >
                     <div className="flex items-center gap-2">
                       <Tag className="w-4 h-4 text-amber-400" />
                       <h4 className="font-semibold text-white text-sm">Add New Product Category</h4>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2.5">
                       <input
                         type="text"
                         value={newCategoryNameInput}
                         onChange={(e) => setNewCategoryNameInput(e.target.value)}
                         placeholder="e.g. Rotary Machines, Needles, Furniture, PMU Supplies..."
-                        className="flex-1 px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="flex-1 px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 placeholder-zinc-500"
                       />
                       <button
                         type="submit"
                         disabled={!newCategoryNameInput.trim()}
-                        className="px-5 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold uppercase transition-colors shrink-0 flex items-center justify-center gap-1.5"
+                        className="px-5 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold uppercase transition-colors shrink-0 flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Create Category</span>
                       </button>
                     </div>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-xs text-zinc-400">
                       Newly created categories become available immediately for filtering, shop navigation, and product creation.
                     </p>
                   </form>
 
                   {/* Category List */}
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center text-zinc-400 font-mono text-xs uppercase tracking-wider px-1">
+                    <div className="flex justify-between items-center text-zinc-400 text-xs uppercase tracking-wider px-1 font-medium">
                       <span>Existing Categories ({inventoryCategories.length})</span>
-                      <span>Total Products: {productsList.length}</span>
+                      <span>Total Products: <span className="font-mono text-zinc-300 font-bold">{productsList.length}</span></span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -2851,7 +2851,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         return (
                           <div
                             key={cat}
-                            className="p-4 bg-[#181a24] border border-zinc-700/70 rounded-xl font-mono text-xs transition-colors hover:border-zinc-600 shadow-md"
+                            className="p-4 bg-[#181a24] border border-zinc-800 rounded-xl text-xs transition-colors hover:border-zinc-700 shadow-sm"
                           >
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                               {isEditing ? (
@@ -2860,7 +2860,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     type="text"
                                     value={renamedCategoryValue}
                                     onChange={(e) => setRenamedCategoryValue(e.target.value)}
-                                    className="flex-1 px-3 py-1.5 bg-[#141620] border border-red-500 rounded-lg text-white text-xs focus:outline-none"
+                                    className="flex-1 px-3 py-1.5 bg-[#12141c] border border-red-500 rounded-lg text-white text-xs focus:outline-none"
                                     autoFocus
                                   />
                                   <button
@@ -2880,11 +2880,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-3">
-                                  <span className="px-3 py-1 bg-red-950/60 border border-red-600/50 text-red-300 font-bold text-xs rounded-lg uppercase tracking-wider">
+                                  <span className="px-3 py-1 bg-red-500/15 border border-red-500/30 text-red-300 font-bold text-xs rounded-lg uppercase tracking-wider">
                                     {cat}
                                   </span>
                                   <span className="text-zinc-400 text-xs">
-                                    <span className="text-white font-semibold">{count}</span> {count === 1 ? 'product' : 'products'} assigned
+                                    <span className="text-white font-semibold font-mono">{count}</span> {count === 1 ? 'product' : 'products'} assigned
                                   </span>
                                 </div>
                               )}
@@ -2897,7 +2897,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                       setRenamedCategoryValue(cat);
                                       setDeletingCategoryName(null);
                                     }}
-                                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors font-medium"
                                     title="Rename Category"
                                   >
                                     <Edit className="w-3.5 h-3.5 text-amber-400" />
@@ -2910,7 +2910,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                       const other = inventoryCategories.find((c) => c !== cat) || 'Aftercare';
                                       setDeleteReassignCategory(other);
                                     }}
-                                    className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                                    className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1 transition-colors font-medium"
                                     title="Delete / Merge Category"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -2922,9 +2922,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                             {/* DELETE REASSIGNMENT PANEL */}
                             {isDeleting && (
-                              <div className="mt-3 p-3.5 bg-[#141620] border border-red-900/50 rounded-lg space-y-2.5 text-xs">
+                              <div className="mt-3 p-3.5 bg-[#12141c] border border-red-900/50 rounded-lg space-y-2.5 text-xs">
                                 <p className="text-zinc-300">
-                                  Reassign all <span className="text-red-400 font-bold">{count}</span> items currently in "{cat}" to:
+                                  Reassign all <span className="text-red-400 font-bold font-mono">{count}</span> items currently in "{cat}" to:
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-2">
                                   <select
@@ -2947,7 +2947,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     <button
                                       onClick={() => handleDeleteCategory(cat)}
                                       disabled={categoryActionLoading}
-                                      className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors"
+                                      className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors shadow-sm"
                                     >
                                       {categoryActionLoading ? 'Updating...' : 'Confirm & Delete'}
                                     </button>
@@ -2974,7 +2974,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     {/* Status Filter */}
-                    <div className="flex items-center gap-1 bg-[#181a24] p-1 rounded-lg border border-zinc-700/70 font-mono text-xs overflow-x-auto max-w-full">
+                    <div className="flex items-center gap-1 bg-[#181a24] p-1.5 rounded-xl border border-zinc-800 text-xs overflow-x-auto max-w-full">
                       {['ALL', 'PENDING_PAYMENT', 'PROCESSING', 'READY_FOR_PICKUP', 'DISPATCHED', 'COMPLETED'].map((st) => (
                         <button
                           key={st}
@@ -2982,9 +2982,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             setOrderFilterStatus(st);
                             setTimeout(loadOrders, 50);
                           }}
-                          className={`px-3 py-1 rounded-md transition-colors text-[11px] whitespace-nowrap ${
+                          className={`px-3 py-1 rounded-md transition-colors text-xs whitespace-nowrap font-medium ${
                             orderFilterStatus === st
-                              ? 'bg-red-600/20 text-red-400 border border-red-600/40 font-semibold'
+                              ? 'bg-red-500/15 text-red-400 border border-red-500/30'
                               : 'text-zinc-400 hover:text-white'
                           }`}
                         >
@@ -2995,7 +2995,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                     {/* Search */}
                     <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <div className="relative w-full sm:w-64">
+                      <div className="relative w-full sm:w-72">
                         <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
                         <input
                           type="text"
@@ -3003,12 +3003,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           onChange={(e) => setOrderSearch(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && loadOrders()}
                           placeholder="Search order #, client..."
-                          className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
+                          className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-800 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 placeholder:text-zinc-500"
                         />
                       </div>
                       <button
                         onClick={loadOrders}
-                        className="px-3 py-1.5 bg-[#202434] hover:bg-[#282d42] border border-zinc-700 rounded-lg text-xs font-mono text-zinc-200 transition-colors"
+                        className="px-3.5 py-1.5 bg-[#1f222d] hover:bg-[#252836] border border-zinc-800 rounded-lg text-xs text-zinc-200 transition-colors font-medium"
                       >
                         Filter
                       </button>
@@ -3016,20 +3016,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </div>
 
                   {/* Orders Table */}
-                  <div className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden shadow-lg">
-                    <table className="w-full text-left font-mono text-xs border-collapse">
+                  <div className="bg-[#181a24] border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+                    <table className="w-full text-left text-xs border-collapse">
                       <thead>
-                        <tr className="border-b border-zinc-700/60 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider">
-                          <th className="p-3 pl-4">Order #</th>
-                          <th className="p-3">Customer</th>
-                          <th className="p-3">Fulfillment</th>
-                          <th className="p-3">Payment</th>
-                          <th className="p-3">Amount</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3 text-right pr-4">Actions</th>
+                        <tr className="border-b border-zinc-800 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider font-semibold">
+                          <th className="p-3.5 pl-4">Order #</th>
+                          <th className="p-3.5">Customer</th>
+                          <th className="p-3.5">Fulfillment</th>
+                          <th className="p-3.5">Payment</th>
+                          <th className="p-3.5">Amount</th>
+                          <th className="p-3.5">Status</th>
+                          <th className="p-3.5 text-right pr-4">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-zinc-700/50">
+                      <tbody className="divide-y divide-zinc-800/60">
                         {loadingOrders ? (
                           <tr>
                             <td colSpan={7} className="p-8 text-center text-zinc-400">
@@ -3047,45 +3047,45 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             <tr
                               key={o.id}
                               onClick={() => setInspectOrder(o)}
-                              className="hover:bg-[#202434] cursor-pointer transition-colors group"
+                              className="hover:bg-[#1f222d] cursor-pointer transition-colors group"
                             >
-                              <td className="p-3 pl-4 font-semibold text-white">
+                              <td className="p-3.5 pl-4 font-semibold text-white font-mono">
                                 {o.orderNumber}
                               </td>
-                              <td className="p-3">
+                              <td className="p-3.5">
                                 <div className="font-semibold text-zinc-200">{o.clientName}</div>
-                                <div className="text-[11px] text-zinc-400">{o.clientPhone}</div>
+                                <div className="text-[11px] text-zinc-400 font-mono">{o.clientPhone}</div>
                               </td>
-                              <td className="p-3">
-                                <span className="text-zinc-200 font-semibold block">
+                              <td className="p-3.5">
+                                <span className="text-zinc-200 font-medium block">
                                   {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
                                 </span>
                                 {o.deliveryAddress && (
-                                  <span className="text-[10px] text-zinc-400 block truncate max-w-xs">
+                                  <span className="text-[11px] text-zinc-400 block truncate max-w-xs">
                                     {o.deliveryAddress}
                                   </span>
                                 )}
                               </td>
-                              <td className="p-3">
+                              <td className="p-3.5">
                                 <span
-                                  className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                  className={`px-2 py-0.5 rounded text-[11px] font-medium ${
                                     o.paymentStatus === 'SUCCESS'
-                                      ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
-                                      : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                                      : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                                   }`}
                                 >
                                   {o.paymentMethod} ({o.paymentStatus})
                                 </span>
                               </td>
-                              <td className="p-3 font-semibold text-red-400">
+                              <td className="p-3.5 font-bold text-red-400 font-mono">
                                 UGX {o.totalAmount?.toLocaleString()}
                               </td>
-                              <td className="p-3">
-                                <span className="text-zinc-300 text-[11px]">
-                                  {o.orderStatus.replace('_', ' ')}
+                              <td className="p-3.5">
+                                <span className="text-zinc-300 text-xs capitalize">
+                                  {o.orderStatus.toLowerCase().replace(/_/g, ' ')}
                                 </span>
                               </td>
-                              <td className="p-3 text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                              <td className="p-3.5 text-right pr-4" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center justify-end gap-2">
                                   <button
                                     onClick={() =>
@@ -3094,14 +3094,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                         `Hello ${o.clientName}! This is Marvin Tattoos Atelier regarding Order #${o.orderNumber}. Your items are prepared.`
                                       )
                                     }
-                                    className="px-2.5 py-1 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded text-[11px] flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 rounded-lg text-xs flex items-center gap-1 font-medium transition-colors"
                                   >
                                     <MessageCircle className="w-3 h-3" />
                                     <span>WhatsApp</span>
                                   </button>
                                   <button
                                     onClick={() => setInspectOrder(o)}
-                                    className="px-2.5 py-1 bg-[#222636] hover:bg-[#2b3046] border border-zinc-700 text-zinc-300 rounded text-[11px] flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-[#1f222d] hover:bg-zinc-700 border border-zinc-800 text-zinc-300 rounded-lg text-xs flex items-center gap-1 transition-colors"
                                   >
                                     <span>View</span>
                                     <ArrowRight className="w-3 h-3" />
@@ -3121,57 +3121,57 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           {/* ================= 3. PORTFOLIO CMS ================= */}
           {activeTab === 'portfolio' && (
-            <div className="space-y-6 font-mono">
+            <div className="space-y-6">
               {/* Studio Metrics Overview */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-[#141620] border border-zinc-800 p-4 rounded-xl flex items-center justify-between">
+                <div className="bg-[#181a24] border border-zinc-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
                   <div>
-                    <span className="text-[11px] text-zinc-400 uppercase tracking-widest block font-medium">Total Artworks</span>
-                    <span className="text-2xl font-bold text-white tracking-tight">{portfolioPieces.length}</span>
-                    <span className="text-[10px] text-zinc-500 block mt-0.5">Active in Studio Catalog</span>
+                    <span className="text-xs text-zinc-400 uppercase tracking-wider block font-medium">Total Artworks</span>
+                    <span className="text-2xl font-bold text-white tracking-tight font-mono">{portfolioPieces.length}</span>
+                    <span className="text-[11px] text-zinc-500 block mt-0.5">Active in Studio Catalog</span>
                   </div>
-                  <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-300">
+                  <div className="w-10 h-10 rounded-lg bg-[#12141c] border border-zinc-700/80 flex items-center justify-center text-zinc-300">
                     <ImageIcon className="w-5 h-5" />
                   </div>
                 </div>
 
-                <div className="bg-[#141620] border border-amber-500/20 p-4 rounded-xl flex items-center justify-between">
+                <div className="bg-[#181a24] border border-amber-500/30 p-4 rounded-xl flex items-center justify-between shadow-sm">
                   <div>
-                    <span className="text-[11px] text-amber-400/90 uppercase tracking-widest block font-medium">Featured Spotlights</span>
-                    <span className="text-2xl font-bold text-amber-300 tracking-tight">
+                    <span className="text-xs text-amber-400/90 uppercase tracking-wider block font-medium">Featured Spotlights</span>
+                    <span className="text-2xl font-bold text-amber-300 tracking-tight font-mono">
                       {portfolioPieces.filter((p) => p.featured).length}
                     </span>
-                    <span className="text-[10px] text-zinc-500 block mt-0.5">Showcased on Atelier Hero</span>
+                    <span className="text-[11px] text-zinc-500 block mt-0.5">Showcased on Atelier Hero</span>
                   </div>
-                  <div className="w-10 h-10 rounded-lg bg-amber-950/40 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
                     <Star className="w-5 h-5 fill-current" />
                   </div>
                 </div>
 
-                <div className="bg-[#141620] border border-red-500/20 p-4 rounded-xl flex items-center justify-between">
+                <div className="bg-[#181a24] border border-red-500/30 p-4 rounded-xl flex items-center justify-between shadow-sm">
                   <div>
-                    <span className="text-[11px] text-red-400/90 uppercase tracking-widest block font-medium">Studio Disciplines</span>
-                    <span className="text-2xl font-bold text-red-300 tracking-tight">{servicesList.length}</span>
-                    <span className="text-[10px] text-zinc-500 block mt-0.5">Unified Relational Categories</span>
+                    <span className="text-xs text-red-400/90 uppercase tracking-wider block font-medium">Studio Disciplines</span>
+                    <span className="text-2xl font-bold text-red-300 tracking-tight font-mono">{servicesList.length}</span>
+                    <span className="text-[11px] text-zinc-500 block mt-0.5">Unified Relational Categories</span>
                   </div>
-                  <div className="w-10 h-10 rounded-lg bg-red-950/40 border border-red-500/30 flex items-center justify-center text-red-400">
+                  <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
                     <Layers className="w-5 h-5" />
                   </div>
                 </div>
               </div>
 
               {/* Action Toolbar & Search */}
-              <div className="bg-[#141620] border border-zinc-800 p-4 rounded-xl space-y-4">
+              <div className="bg-[#181a24] border border-zinc-800 p-4 rounded-xl space-y-4 shadow-sm">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                   {/* Search Bar */}
                   <div className="relative w-full sm:w-80">
-                    <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-zinc-500" />
                     <input
                       type="text"
                       placeholder="Search title, discipline, zone, flash #..."
                       value={portfolioSearch}
                       onChange={(e) => setPortfolioSearch(e.target.value)}
-                      className="w-full pl-8 pr-8 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      className="w-full pl-8 pr-8 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-red-500 transition-colors"
                     />
                     {portfolioSearch && (
                       <button
@@ -3187,7 +3187,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <button
                       onClick={loadPortfolio}
                       disabled={loadingPortfolio}
-                      className="px-3 py-2 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+                      className="px-3.5 py-2 bg-[#1f222d] hover:bg-zinc-700 border border-zinc-800 text-zinc-300 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
                       title="Reload Portfolio Catalog"
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${loadingPortfolio ? 'animate-spin' : ''}`} />
@@ -3196,7 +3196,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                     <button
                       onClick={openAddArtworkModal}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs uppercase font-bold tracking-wider transition-colors shadow-lg shadow-red-950/40 flex items-center gap-2"
+                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md shadow-red-950/40 flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Add New Artwork</span>
@@ -3205,13 +3205,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </div>
 
                 {/* Dynamic Service Discipline Filter Tabs */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar border-t border-zinc-800/80 pt-3">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar border-t border-zinc-800 pt-3">
                   <button
                     onClick={() => setPortfolioCategoryFilter('ALL')}
-                    className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs ${
+                    className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs font-medium ${
                       portfolioCategoryFilter === 'ALL'
-                        ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/40'
-                        : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                        ? 'bg-red-600 text-white border-red-500 shadow-md shadow-red-950/40'
+                        : 'bg-[#12141c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white'
                     }`}
                   >
                     All Disciplines ({portfolioPieces.length})
@@ -3230,15 +3230,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <button
                         key={srv.id}
                         onClick={() => setPortfolioCategoryFilter(srv.id)}
-                        className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs flex items-center gap-1.5 font-medium ${
                           isSelected
-                            ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/40'
-                            : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                            ? 'bg-red-600 text-white border-red-500 shadow-md shadow-red-950/40'
+                            : 'bg-[#12141c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white'
                         }`}
                       >
-                        <span className="opacity-60">{srv.disciplineNumber}.</span>
+                        <span className="opacity-70 font-mono">{srv.disciplineNumber}.</span>
                         <span>{srv.title}</span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 text-zinc-300">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 text-zinc-300 font-mono">
                           {count}
                         </span>
                       </button>
@@ -3249,7 +3249,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* Artworks Grid Display */}
               {filteredPortfolioPieces.length === 0 ? (
-                <div className="p-16 text-center bg-[#141620] border border-zinc-800 rounded-xl space-y-3">
+                <div className="p-16 text-center bg-[#181a24] border border-zinc-800 rounded-xl space-y-3">
                   <ImageIcon className="w-10 h-10 text-zinc-600 mx-auto" />
                   <p className="text-zinc-300 font-medium text-sm">No artworks match your search or discipline filter.</p>
                   <p className="text-zinc-500 text-xs max-w-sm mx-auto">
@@ -3260,7 +3260,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       setPortfolioCategoryFilter('ALL');
                       setPortfolioSearch('');
                     }}
-                    className="mt-2 px-4 py-1.5 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700 text-red-400 text-xs rounded-lg transition-colors"
+                    className="mt-2 px-4 py-1.5 bg-[#1f222d] hover:bg-zinc-700 border border-zinc-800 text-red-400 text-xs rounded-lg transition-colors font-medium"
                   >
                     Reset all filters
                   </button>
@@ -3273,16 +3273,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     return (
                       <div
                         key={p.id}
-                        className="bg-[#141620] border border-zinc-800 hover:border-zinc-600 rounded-xl overflow-hidden flex flex-col justify-between group shadow-lg transition-all duration-300"
+                        className="bg-[#181a24] border border-zinc-800 hover:border-zinc-700 rounded-xl overflow-hidden flex flex-col justify-between group shadow-sm transition-all duration-300"
                       >
                         {/* Artwork Image Box */}
-                        <div className="h-52 bg-[#0d0e14] relative overflow-hidden cursor-pointer" onClick={() => openEditArtworkModal(p)}>
+                        <div className="h-52 bg-[#12141c] relative overflow-hidden cursor-pointer" onClick={() => openEditArtworkModal(p)}>
                           <img
                             src={p.image || p.imageUrl}
                             alt={p.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#141620] via-transparent to-transparent opacity-80" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-transparent opacity-80" />
 
                           {/* Top Badges */}
                           <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 max-w-[85%]">
@@ -3290,7 +3290,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               {linkedService?.title || p.categoryLabel || p.category}
                             </span>
                             {p.featured && (
-                              <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] font-mono rounded flex items-center gap-0.5 shadow-md">
+                              <span className="px-2 py-0.5 bg-amber-500 text-zinc-950 font-bold text-[10px] font-sans rounded flex items-center gap-0.5 shadow-md">
                                 <Star className="w-2.5 h-2.5 fill-current" /> Featured
                               </span>
                             )}
@@ -3308,7 +3308,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         </div>
 
                         {/* Spec Information */}
-                        <div className="p-4 space-y-3 font-mono text-xs flex-1 flex flex-col justify-between">
+                        <div className="p-4 space-y-3 text-xs flex-1 flex flex-col justify-between">
                           <div className="space-y-1.5">
                             <h4
                               className="font-bold text-white text-sm truncate group-hover:text-red-400 transition-colors cursor-pointer"
@@ -3318,26 +3318,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               {p.title}
                             </h4>
 
-                            <div className="text-[11px] text-zinc-400 flex justify-between items-center pt-1 border-t border-zinc-800/80">
+                            <div className="text-[11px] text-zinc-400 flex justify-between items-center pt-1 border-t border-zinc-800">
                               <span className="text-zinc-300 truncate">{p.zone || 'Body Canvas'}</span>
-                              <span className="text-zinc-500 shrink-0 text-[10px]">{p.duration || 'Session'}</span>
+                              <span className="text-zinc-500 shrink-0 text-[10px] font-mono">{p.duration || 'Session'}</span>
                             </div>
 
-                            <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed pt-1">
+                            <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed pt-1">
                               {p.description}
                             </p>
                           </div>
 
                           {/* Footer Action Strip */}
                           <div className="pt-3 border-t border-zinc-800 flex justify-between items-center">
-                            <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[120px]" title={p.pigment}>
+                            <span className="text-[11px] text-zinc-400 font-mono truncate max-w-[120px]" title={p.pigment}>
                               {p.pigment || 'Dynamic Black'}
                             </span>
 
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => openEditArtworkModal(p)}
-                                className="text-xs text-zinc-200 hover:text-white px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1 font-semibold"
+                                className="text-xs text-zinc-200 hover:text-white px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
                                 title="Edit Artwork Specs"
                               >
                                 <Edit className="w-3 h-3 text-amber-400" />
@@ -3345,7 +3345,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               </button>
                               <button
                                 onClick={() => handleDeletePortfolioPiece(p.id)}
-                                className="text-xs text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
+                                className="text-xs text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded-lg transition-colors flex items-center gap-1"
                                 title="Delete Piece"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -3365,12 +3365,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {activeTab === 'reviews' && (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <div className="font-mono text-xs text-zinc-400">
-                  Published Reviews: <span className="text-white font-bold">{testimonialsList.length}</span>
+                <div className="text-xs text-zinc-400">
+                  Published Reviews: <span className="text-white font-bold font-mono">{testimonialsList.length}</span>
                 </div>
                 <button
                   onClick={openAddReviewModal}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-sm"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Review</span>
@@ -3381,11 +3381,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {testimonialsList.map((t) => (
                   <div
                     key={t.id}
-                    className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3 font-mono text-xs flex flex-col justify-between shadow-md group hover:border-zinc-600 transition-colors"
+                    className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 text-xs flex flex-col justify-between shadow-sm group hover:border-zinc-700 transition-colors"
                   >
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold text-white truncate max-w-[150px]">{t.name}</span>
+                        <span className="font-semibold text-white truncate max-w-[150px] text-sm">{t.name}</span>
                         <div className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
@@ -3397,35 +3397,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               }`}
                             />
                           ))}
-                          <span className="ml-1 text-[10px] text-amber-400 font-bold">
+                          <span className="ml-1 text-[11px] text-amber-400 font-bold font-mono">
                             {t.stars || 5}★
                           </span>
                         </div>
                       </div>
-                      <span className="text-[10px] text-red-400 block mb-2">{t.role}</span>
-                      <p className="text-[11px] text-zinc-300 italic leading-relaxed">
+                      <span className="text-xs text-red-400 block mb-2 font-medium">{t.role}</span>
+                      <p className="text-xs text-zinc-300 italic leading-relaxed">
                         "{t.quote}"
                       </p>
                     </div>
 
-                    <div className="pt-2.5 border-t border-zinc-700/60 flex items-center justify-between">
-                      <span className="text-[10px] text-zinc-400">
+                    <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between">
+                      <span className="text-[11px] text-zinc-400">
                         {t.isGoogleVerified !== false ? 'Verified Google' : 'Direct Feedback'}
                       </span>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEditReviewModal(t)}
-                          className="text-[11px] text-zinc-300 hover:text-white transition-colors flex items-center gap-1"
+                          className="text-xs text-zinc-300 hover:text-white px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1 font-medium"
                         >
-                          <Edit className="w-3 h-3 text-zinc-400" />
+                          <Edit className="w-3 h-3 text-amber-400" />
                           <span>Edit</span>
                         </button>
                         <button
                           onClick={() => handleDeleteTestimonial(t.id)}
-                          className="text-[11px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
+                          className="text-xs text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
                         >
                           <Trash2 className="w-3 h-3" />
-                          <span>Delete</span>
                         </button>
                       </div>
                     </div>
@@ -3437,16 +3436,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           {/* ================= 6. HERO & SETTINGS STUDIO ================= */}
           {activeTab === 'settings' && (
-            <form onSubmit={handleSaveSettings} className="space-y-6 max-w-4xl font-mono text-xs">
+            <form onSubmit={handleSaveSettings} className="space-y-6 max-w-4xl text-xs">
               {/* Hero Visual Block */}
-              <div className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-4 shadow-md">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-700/60 pb-2 flex items-center gap-2">
+              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
                   <Sliders className="w-4 h-4 text-red-400" />
                   <span>1. Hero Banner Visual &amp; Darkness Opacity</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                  <div className="md:col-span-5 h-48 bg-[#141620] border border-zinc-700 rounded-lg overflow-hidden relative">
+                  <div className="md:col-span-5 h-48 bg-[#12141c] border border-zinc-800 rounded-lg overflow-hidden relative">
                     <img
                       src={heroImagePreview || settings.heroBannerUrl}
                       alt="Hero Preview"
@@ -3456,15 +3455,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       className="absolute inset-0 bg-black pointer-events-none transition-opacity"
                       style={{ opacity: settings.heroOpacity }}
                     />
-                    <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] text-zinc-200 rounded font-semibold">
+                    <span className="absolute bottom-2 left-2 px-2.5 py-1 bg-[#181a24]/90 backdrop-blur-sm border border-zinc-700 text-[10px] text-zinc-200 rounded font-medium">
                       Live Hero Preview
                     </span>
                   </div>
 
                   <div className="md:col-span-7 space-y-4">
                     <div>
-                      <label className="block text-xs text-zinc-400 mb-1.5">
-                        Upload New Banner Photo (Sharp WebP)
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                        Upload New Banner Photo (Sharp WebP / JPEG)
                       </label>
                       <input
                         type="file"
@@ -3476,14 +3475,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             setHeroImagePreview(URL.createObjectURL(f));
                           }
                         }}
-                        className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
+                        className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
                       />
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                      <div className="flex justify-between text-xs text-zinc-300 mb-1 font-medium">
                         <span>Overlay Darkness Opacity</span>
-                        <span className="text-red-400 font-bold">{Math.round(settings.heroOpacity * 100)}%</span>
+                        <span className="text-red-400 font-bold font-mono">{Math.round(settings.heroOpacity * 100)}%</span>
                       </div>
                       <input
                         type="range"
@@ -3502,93 +3501,93 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Statements */}
-              <div className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-4 shadow-md">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-700/60 pb-2 flex items-center gap-2">
+              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-red-400" />
                   <span>2. Hero Editorial Statements</span>
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Headline Statement</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Headline Statement</label>
                   <input
                     type="text"
                     value={settings.heroStatement}
                     onChange={(e) => setSettings({ ...settings, heroStatement: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Subtext Description</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Subtext Description</label>
                   <textarea
                     rows={2}
                     value={settings.heroSubtext}
                     onChange={(e) => setSettings({ ...settings, heroSubtext: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                   />
                 </div>
               </div>
 
               {/* Studio Info */}
-              <div className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-4 shadow-md">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-700/60 pb-2 flex items-center gap-2">
+              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
                   <Building className="w-4 h-4 text-red-400" />
                   <span>3. Studio Contacts &amp; Coordinates</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-zinc-400 mb-1">Studio Desk Phone</label>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Studio Desk Phone</label>
                     <input
                       type="text"
                       value={settings.primaryPhone}
                       onChange={(e) => setSettings({ ...settings, primaryPhone: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs text-zinc-400 mb-1">WhatsApp Direct Line</label>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">WhatsApp Direct Line</label>
                     <input
                       type="text"
                       value={settings.whatsappNumber}
                       onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs text-zinc-400 mb-1">Physical Address</label>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Physical Address</label>
                     <input
                       type="text"
                       value={settings.physicalAddress}
                       onChange={(e) => setSettings({ ...settings, physicalAddress: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs text-zinc-400 mb-1">Google Maps URL</label>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Google Maps URL</label>
                     <input
                       type="text"
                       value={settings.googleMapsUrl}
                       onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Social Channels */}
-              <div className="p-5 bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-3 shadow-md">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-700/60 pb-2 flex items-center gap-2">
+              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 shadow-sm">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-red-400" />
                   <span>4. Social Channels &amp; Links</span>
                 </div>
 
                 {settings.socialLinks.map((soc, idx) => (
-                  <div key={soc.id || idx} className="flex items-center gap-3 p-2.5 bg-[#141620] rounded-lg border border-zinc-700">
-                    <div className="flex items-center gap-2 w-32 shrink-0">
+                  <div key={soc.id || idx} className="flex items-center gap-3 p-3 bg-[#12141c] rounded-lg border border-zinc-800">
+                    <div className="flex items-center gap-2 w-36 shrink-0">
                       <input
                         type="checkbox"
                         checked={soc.active}
@@ -3609,7 +3608,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         updated[idx] = { ...soc, url: e.target.value };
                         setSettings({ ...settings, socialLinks: updated });
                       }}
-                      className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-md text-white text-xs focus:outline-none focus:border-red-500"
+                      className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-md text-white text-xs focus:outline-none focus:border-red-500 font-mono"
                     />
                   </div>
                 ))}
@@ -3618,7 +3617,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 type="submit"
                 disabled={savingSettings}
-                className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-all shadow-lg shadow-red-950/40 flex items-center gap-2"
+                className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-red-950/40 flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 <span>{savingSettings ? 'Deploying...' : 'Save & Deploy Changes'}</span>
@@ -3630,69 +3629,69 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* INSPECTION SLIDE-OVER DRAWER FOR BOOKING */}
       {inspectBooking && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-700 h-full p-6 flex flex-col justify-between overflow-y-auto font-mono text-xs shadow-2xl">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-                <span className="text-red-400 font-bold bg-red-950/50 px-2.5 py-0.5 rounded border border-red-800/50 text-xs">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-800 h-full p-6 flex flex-col justify-between overflow-y-auto text-xs shadow-2xl">
+            <div className="space-y-5">
+              <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+                <span className="text-red-400 font-bold bg-red-500/15 px-2.5 py-1 rounded-lg border border-red-500/30 text-xs font-mono">
                   {inspectBooking.referenceCode}
                 </span>
                 <button
                   onClick={() => setInspectBooking(null)}
-                  className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800 transition-colors"
+                  className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <h3 className="text-base font-semibold text-white">{inspectBooking.clientName}</h3>
-                <div className="text-zinc-400 flex items-center gap-1.5">
+                <div className="text-zinc-400 flex items-center gap-2 font-mono text-xs">
                   <Phone className="w-3.5 h-3.5 text-zinc-500" />
                   <span>{inspectBooking.clientPhone}</span>
                 </div>
-                <div className="text-zinc-400 flex items-center gap-1.5">
+                <div className="text-zinc-400 flex items-center gap-2 text-xs">
                   <Mail className="w-3.5 h-3.5 text-zinc-500" />
                   <span>{inspectBooking.clientEmail}</span>
                 </div>
               </div>
 
-              <div className="p-3.5 bg-[#141620] rounded-lg border border-zinc-700 space-y-2">
+              <div className="p-4 bg-[#12141c] rounded-xl border border-zinc-800 space-y-2.5">
                 <div className="flex justify-between text-zinc-400">
                   <span>Service:</span>
-                  <span className="text-white font-semibold capitalize">
-                    {inspectBooking.serviceType.replace('_', ' ')}
+                  <span className="text-white font-medium capitalize">
+                    {inspectBooking.serviceType.replace(/_/g, ' ')}
                   </span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
                   <span>Placement:</span>
-                  <span className="text-red-400 font-semibold">{inspectBooking.placement}</span>
+                  <span className="text-red-400 font-medium">{inspectBooking.placement}</span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
                   <span>Date &amp; Time:</span>
-                  <span className="text-white">
+                  <span className="text-white font-mono">
                     {new Date(inspectBooking.preferredDate).toLocaleDateString()} ({inspectBooking.timeSlot})
                   </span>
                 </div>
               </div>
 
               {/* Client Idea / Notes */}
-              <div className="space-y-1">
-                <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                  Client Idea / Notes:
+              <div className="space-y-1.5">
+                <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
+                  Client Idea / Notes
                 </span>
-                <p className="p-3 bg-[#141620] rounded-lg border border-zinc-700 text-zinc-200 leading-relaxed">
+                <p className="p-3.5 bg-[#12141c] rounded-xl border border-zinc-800 text-zinc-200 leading-relaxed text-xs">
                   {inspectBooking.description}
                 </p>
               </div>
 
               {/* Reference Image */}
               {inspectBooking.referenceImage && (
-                <div className="space-y-1">
-                  <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                    Reference Photo:
+                <div className="space-y-1.5">
+                  <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
+                    Reference Photo
                   </span>
-                  <div className="max-h-60 overflow-hidden rounded-lg border border-zinc-700 bg-[#12141c]">
+                  <div className="max-h-60 overflow-hidden rounded-xl border border-zinc-800 bg-[#12141c]">
                     <img
                       src={inspectBooking.referenceImage}
                       alt="Reference"
@@ -3703,14 +3702,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               )}
 
               {/* Status Selector */}
-              <div className="space-y-1">
-                <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                  Booking Status:
+              <div className="space-y-1.5">
+                <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
+                  Booking Status
                 </span>
                 <select
                   value={inspectBooking.status}
                   onChange={(e) => handleUpdateBookingStatus(inspectBooking.id, e.target.value)}
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 >
                   <option value="PENDING_REVIEW">Pending Review</option>
                   <option value="CONFIRMED">Confirmed</option>
@@ -3720,7 +3719,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-zinc-700/60 space-y-2">
+            <div className="pt-4 border-t border-zinc-800 space-y-2">
               <button
                 onClick={() =>
                   openWhatsApp(
@@ -3728,14 +3727,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     `Hello ${inspectBooking.clientName}! This is Marvin from Marvin Tattoos regarding your booking [${inspectBooking.referenceCode}]. We look forward to seeing you at New Pioneer Mall Level 5.`
                   )
                 }
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Message on WhatsApp</span>
               </button>
               <button
                 onClick={() => handleDeleteBooking(inspectBooking.id)}
-                className="w-full py-2 bg-[#141620] hover:bg-red-950/40 hover:text-red-400 text-zinc-400 border border-zinc-700/70 rounded-lg text-xs font-mono transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2 bg-[#12141c] hover:bg-red-950/40 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Record</span>
@@ -3747,80 +3746,80 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* INSPECTION SLIDE-OVER DRAWER FOR ORDER */}
       {inspectOrder && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-700 h-full p-6 flex flex-col justify-between overflow-y-auto font-mono text-xs shadow-2xl">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-                <span className="text-white font-bold">{inspectOrder.orderNumber}</span>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-800 h-full p-6 flex flex-col justify-between overflow-y-auto text-xs shadow-2xl">
+            <div className="space-y-5">
+              <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+                <span className="text-white font-bold font-mono text-sm">{inspectOrder.orderNumber}</span>
                 <button
                   onClick={() => setInspectOrder(null)}
-                  className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800 transition-colors"
+                  className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <h3 className="text-base font-semibold text-white">{inspectOrder.clientName}</h3>
-                <div className="text-zinc-400 flex items-center gap-1.5">
+                <div className="text-zinc-400 flex items-center gap-2 font-mono text-xs">
                   <Phone className="w-3.5 h-3.5 text-zinc-500" />
                   <span>{inspectOrder.clientPhone}</span>
                 </div>
-                <div className="text-zinc-400 flex items-center gap-1.5">
+                <div className="text-zinc-400 flex items-center gap-2 text-xs">
                   <Mail className="w-3.5 h-3.5 text-zinc-500" />
                   <span>{inspectOrder.clientEmail}</span>
                 </div>
               </div>
 
-              <div className="p-3.5 bg-[#141620] rounded-lg border border-zinc-700 space-y-2">
+              <div className="p-4 bg-[#12141c] rounded-xl border border-zinc-800 space-y-2.5">
                 <div className="flex justify-between text-zinc-400">
                   <span>Fulfillment:</span>
-                  <span className="text-white font-semibold">
+                  <span className="text-white font-medium">
                     {inspectOrder.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup (L5)' : 'Kampala Dispatch'}
                   </span>
                 </div>
                 {inspectOrder.deliveryAddress && (
-                  <div className="text-[11px] text-zinc-400 pt-1.5 border-t border-zinc-700/60">
+                  <div className="text-xs text-zinc-400 pt-1.5 border-t border-zinc-800">
                     <span>Address: </span>
                     <span className="text-white">{inspectOrder.deliveryAddress}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-zinc-400">
                   <span>Payment:</span>
-                  <span className="text-red-400 font-semibold">{inspectOrder.paymentMethod}</span>
+                  <span className="text-red-400 font-medium">{inspectOrder.paymentMethod}</span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
                   <span>Total Amount:</span>
-                  <span className="text-red-400 font-bold text-sm">
+                  <span className="text-red-400 font-bold text-sm font-mono">
                     UGX {inspectOrder.totalAmount?.toLocaleString()}
                   </span>
                 </div>
               </div>
 
               {/* Items */}
-              <div className="space-y-1">
-                <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                  Items Breakdown:
+              <div className="space-y-1.5">
+                <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
+                  Items Breakdown
                 </span>
-                <div className="p-3 bg-[#141620] rounded-lg border border-zinc-700 space-y-1.5">
+                <div className="p-3.5 bg-[#12141c] rounded-xl border border-zinc-800 space-y-2">
                   {(inspectOrder.items || []).map((it: any, i: number) => (
                     <div key={i} className="flex justify-between text-zinc-200">
                       <span>{it.quantity}x {it.product?.name || 'Item'}</span>
-                      <span className="text-zinc-300 font-semibold">UGX {(it.unitPrice * it.quantity).toLocaleString()}</span>
+                      <span className="text-zinc-300 font-semibold font-mono">UGX {(it.unitPrice * it.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Order Status */}
-              <div className="space-y-1">
-                <span className="text-[11px] text-zinc-400 uppercase tracking-wider block font-semibold">
-                  Order Status:
+              <div className="space-y-1.5">
+                <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
+                  Order Status
                 </span>
                 <select
                   value={inspectOrder.orderStatus}
                   onChange={(e) => handleUpdateOrderStatus(inspectOrder.id, e.target.value)}
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 >
                   <option value="PENDING_PAYMENT">Pending Payment</option>
                   <option value="PROCESSING">Processing</option>
@@ -3832,7 +3831,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-zinc-700/60 space-y-2">
+            <div className="pt-4 border-t border-zinc-800 space-y-2">
               <button
                 onClick={() =>
                   openWhatsApp(
@@ -3840,14 +3839,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     `Hello ${inspectOrder.clientName}! This is Marvin Tattoos Atelier regarding Order #${inspectOrder.orderNumber}. Your items are prepared.`
                   )
                 }
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>WhatsApp Customer</span>
               </button>
               <button
                 onClick={() => handleDeleteOrder(inspectOrder.id)}
-                className="w-full py-2 bg-[#141620] hover:bg-red-950/40 hover:text-red-400 text-zinc-400 border border-zinc-700/70 rounded-lg text-xs font-mono transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2 bg-[#12141c] hover:bg-red-950/40 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Order</span>
@@ -3859,22 +3858,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT ARTWORK (PRO STUDIO WORKSTATION) */}
       {showArtworkModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto font-mono">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <form
             onSubmit={handleSavePortfolioPiece}
-            className="w-full max-w-4xl bg-[#12141c] border border-zinc-700/90 rounded-2xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh]"
+            className="w-full max-w-4xl bg-[#181a24] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh] text-xs"
           >
             {/* Modal Header */}
-            <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-800 bg-[#141622]">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-800 bg-[#151720]">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-red-950/80 border border-red-500/40 flex items-center justify-center text-red-400">
+                <div className="w-8 h-8 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
                   <ImageIcon className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-sm tracking-wide">
-                    {editingArtworkId ? 'Edit Artwork Craft Specifications' : 'Publish New Artwork Masterpiece'}
+                    {editingArtworkId ? 'Edit Artwork Specifications' : 'Publish New Artwork Piece'}
                   </h3>
-                  <p className="text-[10px] text-zinc-400">
+                  <p className="text-[11px] text-zinc-400">
                     {editingArtworkId ? `Catalog ID: ${editingArtworkId}` : 'Add a new piece to the atelier portfolio and connected service pages'}
                   </p>
                 </div>
@@ -3895,18 +3894,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-y-auto flex-1">
               {/* LEFT COLUMN: Visual Asset Studio (5 cols) */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="space-y-1.5">
-                  <span className="text-[11px] text-zinc-300 uppercase tracking-widest block font-semibold flex items-center gap-1.5">
+                <div className="space-y-1">
+                  <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold flex items-center gap-1.5">
                     <Eye className="w-3.5 h-3.5 text-red-400" />
                     <span>Visual Asset &amp; Live Preview</span>
                   </span>
-                  <p className="text-[10px] text-zinc-500">
+                  <p className="text-[11px] text-zinc-400">
                     High-definition artwork photo with real-time portfolio card rendering.
                   </p>
                 </div>
 
                 {/* Live Card Preview Box */}
-                <div className="bg-[#0d0e14] border border-zinc-800 rounded-xl overflow-hidden relative shadow-inner">
+                <div className="bg-[#12141c] border border-zinc-800 rounded-xl overflow-hidden relative shadow-inner">
                   {pieceImagePreview || pieceImageFile ? (
                     <div className="relative h-64 bg-black">
                       <img
@@ -3918,35 +3917,35 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         alt="Artwork Preview"
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0d0e14] via-transparent to-transparent opacity-80" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#12141c] via-transparent to-transparent opacity-80" />
 
                       {/* Live Overlay Badges */}
                       <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 max-w-[85%]">
-                        <span className="px-2 py-0.5 bg-black/80 backdrop-blur-md border border-red-500/40 text-[10px] text-red-300 rounded font-semibold">
+                        <span className="px-2 py-0.5 bg-black/80 backdrop-blur-md border border-red-500/40 text-[10px] font-mono text-red-300 rounded font-semibold">
                           {servicesList.find((s) => s.id === pieceServiceId)?.title || pieceCategoryLabel || pieceCategory}
                         </span>
                         {pieceFeatured && (
-                          <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] rounded flex items-center gap-0.5">
+                          <span className="px-2 py-0.5 bg-amber-500 text-zinc-950 font-bold text-[10px] rounded flex items-center gap-0.5">
                             <Star className="w-2.5 h-2.5 fill-current" /> Featured
                           </span>
                         )}
                       </div>
 
                       {pieceFlashId && (
-                        <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] text-amber-300 rounded border border-amber-500/30">
+                        <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] font-mono text-amber-300 rounded border border-amber-500/30">
                           {pieceFlashId}
                         </span>
                       )}
 
-                      <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-md text-[10px] text-zinc-300 rounded">
+                      <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-md text-[10px] font-mono text-zinc-300 rounded">
                         {pieceHealingState || 'Healed Masterpiece'}
                       </div>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-zinc-700/80 hover:border-red-500/80 rounded-xl cursor-pointer p-4 text-center transition-colors bg-[#141620]/40">
+                    <label className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-zinc-700/80 hover:border-red-500 rounded-xl cursor-pointer p-4 text-center transition-colors bg-[#12141c]">
                       <Upload className="w-8 h-8 text-zinc-500 mb-2" />
                       <span className="text-xs font-semibold text-zinc-300">Click to Upload Photo</span>
-                      <span className="text-[10px] text-zinc-500 mt-1">PNG, JPG, WEBP up to 25MB</span>
+                      <span className="text-[11px] text-zinc-500 mt-1 font-mono">PNG, JPG, WEBP up to 25MB</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -3964,7 +3963,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {/* Upload File Selector Strip */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <label className="flex-1 px-3 py-2 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg text-xs font-semibold cursor-pointer transition-colors flex items-center justify-center gap-2">
+                    <label className="flex-1 px-3 py-2 bg-[#12141c] hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 rounded-lg text-xs font-medium cursor-pointer transition-colors flex items-center justify-center gap-2">
                       <Upload className="w-3.5 h-3.5 text-red-400" />
                       <span>{pieceImageFile ? 'Change Selected File' : 'Browse Local Image'}</span>
                       <input
@@ -3982,7 +3981,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   {/* Direct URL Input fallback */}
                   <div className="space-y-1">
-                    <label className="block text-[10px] text-zinc-400">Or Paste Image URL (Pinterest / Cloud)</label>
+                    <label className="block text-[11px] text-zinc-400 font-medium">Or Paste Direct Image URL</label>
                     <input
                       type="text"
                       value={pieceImagePreview}
@@ -3991,7 +3990,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         setPieceImageFile(null);
                       }}
                       placeholder="https://images.unsplash.com/... or /images/portfolio/..."
-                      className="w-full px-3 py-1.5 bg-[#141620] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      className="w-full px-3 py-1.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-mono"
                     />
                   </div>
                 </div>
@@ -4000,43 +3999,43 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {/* RIGHT COLUMN: Master Craft Parameters (7 cols) */}
               <div className="lg:col-span-7 space-y-4">
                 {/* 1. Artwork Identity */}
-                <div className="p-3.5 bg-[#141620] border border-zinc-800 rounded-xl space-y-3">
-                  <span className="text-[11px] text-zinc-300 uppercase tracking-wider block font-semibold">
+                <div className="p-4 bg-[#12141c] border border-zinc-800 rounded-xl space-y-3">
+                  <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
                     1. Artwork Identity &amp; Title
                   </span>
                   <div>
-                    <label className="block text-[10px] text-zinc-400 mb-1">Title / Subject Name *</label>
+                    <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Title / Subject Name *</label>
                     <input
                       required
                       type="text"
                       value={pieceTitle}
                       onChange={(e) => setPieceTitle(e.target.value)}
                       placeholder="e.g. Matriarch Memorial Portrait"
-                      className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
+                      className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-zinc-400 mb-1">Artistic Narrative &amp; Craft Notes *</label>
+                    <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Artistic Narrative &amp; Craft Notes *</label>
                     <textarea
                       required
                       rows={2}
                       value={pieceDescription}
                       onChange={(e) => setPieceDescription(e.target.value)}
                       placeholder="Detailed notes on shading, technique, needle gauge, and aesthetic concept..."
-                      className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs leading-relaxed focus:outline-none focus:border-red-500"
+                      className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs leading-relaxed focus:outline-none focus:border-red-500"
                     />
                   </div>
                 </div>
 
                 {/* 2. Connected Studio Service Discipline */}
-                <div className="p-3.5 bg-[#141620] border border-red-950/70 rounded-xl space-y-2.5">
+                <div className="p-4 bg-[#12141c] border border-red-500/20 rounded-xl space-y-2.5">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] text-red-400 uppercase tracking-wider block font-semibold flex items-center gap-1.5">
+                    <span className="text-xs text-red-400 uppercase tracking-wider block font-semibold flex items-center gap-1.5">
                       <Layers className="w-3.5 h-3.5" />
                       <span>2. Linked Studio Discipline</span>
                     </span>
-                    <span className="text-[10px] text-zinc-500">Auto-routes to service page</span>
+                    <span className="text-[11px] text-zinc-400">Auto-routes to service page</span>
                   </div>
 
                   <select
@@ -4057,11 +4056,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         else if (selId.includes('laser')) setPieceCategory('coverup');
                       }
                     }}
-                    className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
+                    className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
                   >
                     {servicesList.map((srv) => (
                       <option key={srv.id} value={srv.id}>
-                        Discipline // {srv.disciplineNumber} — {srv.title} ({srv.category})
+                        Discipline #{srv.disciplineNumber} — {srv.title} ({srv.category})
                       </option>
                     ))}
                   </select>
@@ -4083,103 +4082,103 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           else if (srv.id.includes('piercing')) setPieceCategory('piercing');
                           else if (srv.id.includes('laser')) setPieceCategory('coverup');
                         }}
-                        className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
+                        className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
                           pieceServiceId === srv.id
-                            ? 'bg-red-950/90 border-red-500 text-red-200 font-bold shadow-sm'
-                            : 'bg-[#181a24] border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'
+                            ? 'bg-red-500/15 border-red-500/40 text-red-300 font-semibold shadow-sm'
+                            : 'bg-[#181a24] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'
                         }`}
                       >
-                        {srv.disciplineNumber}. {srv.title}
+                        <span className="font-mono">{srv.disciplineNumber}.</span> {srv.title}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* 3. Master Technical Specs (2-column Grid) */}
-                <div className="p-3.5 bg-[#141620] border border-zinc-800 rounded-xl space-y-3">
-                  <span className="text-[11px] text-zinc-300 uppercase tracking-wider block font-semibold">
+                <div className="p-4 bg-[#12141c] border border-zinc-800 rounded-xl space-y-3">
+                  <span className="text-xs text-zinc-300 uppercase tracking-wider block font-semibold">
                     3. Anatomical &amp; Pigment Specifications
                   </span>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[10px] text-zinc-400 mb-1">Body Placement / Zone *</label>
+                      <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Body Placement / Zone *</label>
                       <input
                         required
                         type="text"
                         value={pieceZone}
                         onChange={(e) => setPieceZone(e.target.value)}
                         placeholder="e.g. Forearm, Collarbone..."
-                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] text-zinc-400 mb-1">Flash ID / Catalog #</label>
+                      <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Flash ID / Catalog #</label>
                       <input
                         type="text"
                         value={pieceFlashId}
                         onChange={(e) => setPieceFlashId(e.target.value)}
                         placeholder="e.g. #MOM-701"
-                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] text-zinc-400 mb-1">Duration / Session</label>
+                      <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Duration / Session</label>
                       <input
                         type="text"
                         value={pieceDuration}
                         onChange={(e) => setPieceDuration(e.target.value)}
                         placeholder="e.g. 6 Hours Single Session"
-                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] text-zinc-400 mb-1">Pigment Formula</label>
+                      <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Pigment Formula</label>
                       <input
                         type="text"
                         value={piecePigment}
                         onChange={(e) => setPiecePigment(e.target.value)}
                         placeholder="e.g. Dynamic Carbon Deep &amp; Greywash"
-                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] text-zinc-400 mb-1">Lead Artist</label>
+                      <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Lead Artist</label>
                       <input
                         type="text"
                         value={pieceArtist}
                         onChange={(e) => setPieceArtist(e.target.value)}
                         placeholder="e.g. Marvin"
-                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] text-zinc-400 mb-1">Healing Lifecycle Stage</label>
+                      <label className="block text-[11px] text-zinc-400 mb-1 font-medium">Healing Lifecycle Stage</label>
                       <input
                         type="text"
                         value={pieceHealingState}
                         onChange={(e) => setPieceHealingState(e.target.value)}
                         placeholder="e.g. Healed Masterpiece, Fresh Ink"
-                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* 4. Showcase Publishing Toggle */}
-                <div className="p-3 bg-[#141620] border border-zinc-800 rounded-xl flex items-center justify-between">
+                <div className="p-3.5 bg-[#12141c] border border-zinc-800 rounded-xl flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <label htmlFor="pieceFeatured" className="text-xs text-white font-bold cursor-pointer flex items-center gap-1.5">
+                    <label htmlFor="pieceFeatured" className="text-xs text-white font-semibold cursor-pointer flex items-center gap-1.5">
                       <Star className="w-3.5 h-3.5 text-amber-400 fill-current" />
                       <span>Featured Atelier Masterpiece</span>
                     </label>
-                    <p className="text-[10px] text-zinc-500">
-                      Display prominently in the homepage 4K spotlight carousel.
+                    <p className="text-[11px] text-zinc-400">
+                      Display prominently in the homepage spotlight carousel.
                     </p>
                   </div>
                   <input
@@ -4194,8 +4193,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Modal Footer Actions */}
-            <div className="px-6 py-4 border-t border-zinc-800 bg-[#141622] flex justify-between items-center">
-              <span className="text-[10px] text-zinc-500 hidden sm:inline">
+            <div className="px-6 py-4 border-t border-zinc-800 bg-[#151720] flex justify-between items-center">
+              <span className="text-[11px] text-zinc-400 hidden sm:inline">
                 All changes sync immediately to studio portfolio and service pages.
               </span>
               <div className="flex items-center gap-2.5 ml-auto">
@@ -4205,14 +4204,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     setShowArtworkModal(false);
                     setEditingArtworkId(null);
                   }}
-                  className="px-4 py-2 bg-[#181a24] text-zinc-300 rounded-lg text-xs font-semibold hover:bg-zinc-800 transition-colors"
+                  className="px-4 py-2 bg-[#181a24] text-zinc-300 rounded-lg text-xs font-medium hover:bg-zinc-800 transition-colors border border-zinc-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingArtwork}
-                  className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-lg shadow-red-950/40 flex items-center gap-2"
+                  className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md shadow-red-950/40 flex items-center gap-2"
                 >
                   <Check className="w-4 h-4" />
                   <span>{savingArtwork ? 'Saving & Publishing...' : editingArtworkId ? 'Update Artwork Specs' : 'Publish Artwork'}</span>
@@ -4225,16 +4224,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT SERVICE DISCIPLINE */}
       {showServiceModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <form
             onSubmit={handleSaveService}
-            className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
+            className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl my-8"
           >
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <div className="flex items-center gap-2">
-                <PenTool className="w-4 h-4 text-red-400" />
-                <h3 className="font-semibold text-white">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
+                  <PenTool className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-white text-sm">
                   {editingServiceId ? `Edit Discipline #${serviceDisciplineNumber}` : 'Add New Service Discipline'}
                 </h3>
               </div>
@@ -4244,7 +4245,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setShowServiceModal(false);
                   setEditingServiceId(null);
                 }}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -4254,23 +4255,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {/* Row 1: Discipline Number, Category & Sort Order */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Discipline Number *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Discipline Number *</label>
                   <input
                     required
                     type="text"
                     value={serviceDisciplineNumber}
                     onChange={(e) => setServiceDisciplineNumber(e.target.value)}
                     placeholder="01"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Category *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Category *</label>
                   <select
                     value={serviceCategory}
                     onChange={(e) => setServiceCategory(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                   >
                     <option value="TATTOO">TATTOO</option>
                     <option value="PMU">PMU</option>
@@ -4280,14 +4281,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Sort Order</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Sort Order</label>
                   <input
                     type="number"
                     min="0"
                     value={serviceSortOrder}
                     onChange={(e) => setServiceSortOrder(parseInt(e.target.value, 10) || 0)}
                     placeholder="1"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
@@ -4295,34 +4296,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {/* Row 2: Title & Subtitle */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Service Title *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Service Title *</label>
                   <input
                     required
                     type="text"
                     value={serviceTitle}
                     onChange={(e) => setServiceTitle(e.target.value)}
                     placeholder="e.g. Dark Realism & Blackwork"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Subtitle / Tagline</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Subtitle / Tagline</label>
                   <input
                     type="text"
                     value={serviceSubtitle}
                     onChange={(e) => setServiceSubtitle(e.target.value)}
                     placeholder="e.g. Monochromatic Depth & Shadow Mastery"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
 
               {/* Row 3: Icon Selector */}
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs text-zinc-400">Discipline Icon *</label>
-                  <span className="text-[10px] text-zinc-500 font-mono">Current: {serviceIconName}</span>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-xs text-zinc-300 font-medium">Discipline Icon *</label>
+                  <span className="text-[11px] text-zinc-400 font-mono">Current: {serviceIconName}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -4338,10 +4339,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       key={ic.id}
                       type="button"
                       onClick={() => setServiceIconName(ic.id)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-mono border transition-all flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-lg text-xs border transition-all flex items-center gap-1.5 ${
                         serviceIconName === ic.id
-                          ? 'bg-red-950/80 border-red-500 text-white font-bold shadow-md shadow-red-950/30'
-                          : 'bg-[#141620] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white'
+                          ? 'bg-red-500/15 border-red-500/40 text-red-300 font-medium shadow-sm'
+                          : 'bg-[#12141c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'
                       }`}
                     >
                       <Icons8 name={ic.id} size={14} />
@@ -4353,34 +4354,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* Row 4: Description */}
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Description *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Description *</label>
                 <textarea
                   required
                   rows={3}
                   value={serviceDescription}
                   onChange={(e) => setServiceDescription(e.target.value)}
                   placeholder="Describe the discipline technique, methodology, healed finish, and studio standards..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
 
               {/* Row 5: Dynamic Technical Specs Builder */}
-              <div className="space-y-2 p-3 bg-[#141620] border border-zinc-700/80 rounded-xl">
+              <div className="space-y-2.5 p-4 bg-[#12141c] border border-zinc-800 rounded-xl">
                 <div className="flex justify-between items-center">
                   <div>
                     <label className="text-xs font-semibold text-zinc-200">
                       Technical Specs & Metadata
                     </label>
-                    <p className="text-[10px] text-zinc-500">
+                    <p className="text-[11px] text-zinc-400">
                       Key-value breakdown displayed in service details
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleAddSpecRow}
-                    className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded text-[11px] font-mono flex items-center gap-1 transition-colors"
+                    className="px-3 py-1.5 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
                   >
-                    <Plus className="w-3 h-3 text-red-400" />
+                    <Plus className="w-3.5 h-3.5 text-red-400" />
                     <span>Add Spec</span>
                   </button>
                 </div>
@@ -4393,14 +4394,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         value={spec.label}
                         onChange={(e) => handleUpdateSpecRow(index, 'label', e.target.value)}
                         placeholder="Label (e.g. Technique)"
-                        className="w-1/3 px-2.5 py-1.5 bg-[#181a24] border border-zinc-700 rounded text-white text-xs focus:outline-none focus:border-red-500"
+                        className="w-1/3 px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                       <input
                         type="text"
                         value={spec.value}
                         onChange={(e) => handleUpdateSpecRow(index, 'value', e.target.value)}
                         placeholder="Value (e.g. Black & Grey Opaque Graywash)"
-                        className="flex-1 px-2.5 py-1.5 bg-[#181a24] border border-zinc-700 rounded text-white text-xs focus:outline-none focus:border-red-500"
+                        className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                       <button
                         type="button"
@@ -4418,19 +4419,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* Row 6: Image upload & preview */}
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">
                   {editingServiceId ? 'Service Artwork Photo (Optional replacement)' : 'Service Artwork Photo'}
                 </label>
                 {serviceImagePreview && (
-                  <div className="mb-2 flex items-center gap-3 p-2 bg-[#141620] border border-zinc-700 rounded-lg">
+                  <div className="mb-2 flex items-center gap-3 p-2.5 bg-[#12141c] border border-zinc-800 rounded-lg">
                     <img
                       src={serviceImagePreview}
                       alt="Service Preview"
-                      className="w-16 h-12 object-cover rounded border border-zinc-600"
+                      className="w-16 h-12 object-cover rounded-lg border border-zinc-700"
                     />
-                    <div className="text-[11px] text-zinc-400">
+                    <div className="text-xs text-zinc-400">
                       <p className="text-zinc-200 font-semibold">Current Image</p>
-                      <p className="text-zinc-500">Upload a new file below to replace it, or leave as is.</p>
+                      <p className="text-zinc-500 text-[11px]">Upload a new file below to replace it, or leave as is.</p>
                     </div>
                   </div>
                 )}
@@ -4438,27 +4439,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => e.target.files && setServiceImageFile(e.target.files[0])}
-                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
+                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
+            <div className="pt-3 border-t border-zinc-800 flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => {
                   setShowServiceModal(false);
                   setEditingServiceId(null);
                 }}
-                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
+                className="px-4 py-2 bg-[#12141c] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800 transition-colors border border-zinc-800 font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingService}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+                className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{savingService ? 'Saving...' : editingServiceId ? 'Update Discipline' : 'Save Discipline'}</span>
@@ -4470,16 +4471,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT TEAM MEMBER */}
       {showMemberModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <form
             onSubmit={handleSaveMember}
-            className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
+            className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl my-8"
           >
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <div className="flex items-center gap-2">
-                <Crown className="w-4 h-4 text-amber-400" />
-                <h3 className="font-semibold text-white">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <Crown className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-white text-sm">
                   {editingMemberId ? `Edit Team Member: ${memberName}` : 'Add New Team Member / Artist'}
                 </h3>
               </div>
@@ -4489,7 +4492,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setShowMemberModal(false);
                   setEditingMemberId(null);
                 }}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -4499,37 +4502,37 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {/* Row 1: Name, Slug & Sort Order */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Artist / Member Name *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Artist / Member Name *</label>
                   <input
                     required
                     type="text"
                     value={memberName}
                     onChange={(e) => setMemberName(e.target.value)}
                     placeholder="e.g. Marvin"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">URL Slug</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">URL Slug</label>
                   <input
                     type="text"
                     value={memberSlug}
                     onChange={(e) => setMemberSlug(e.target.value)}
                     placeholder="e.g. marvin"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Sort Order</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Sort Order</label>
                   <input
                     type="number"
                     min="0"
                     value={memberSortOrder}
                     onChange={(e) => setMemberSortOrder(parseInt(e.target.value, 10) || 0)}
                     placeholder="1"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
@@ -4537,25 +4540,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {/* Row 2: Title & Role */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Title / Headline *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Title / Headline *</label>
                   <input
                     required
                     type="text"
                     value={memberTitle}
                     onChange={(e) => setMemberTitle(e.target.value)}
                     placeholder="e.g. Founder & Master Tattoo Artist"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Role Subtext</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Role Subtext</label>
                   <input
                     type="text"
                     value={memberRole}
                     onChange={(e) => setMemberRole(e.target.value)}
                     placeholder="e.g. Master Tattoo Artist & Piercing Specialist since 2014"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
@@ -4563,109 +4566,109 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               {/* Row 3: Specialty, Experience & Slots */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Specialty *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Specialty *</label>
                   <input
                     required
                     type="text"
                     value={memberSpecialty}
                     onChange={(e) => setMemberSpecialty(e.target.value)}
                     placeholder="e.g. Dark Realism, Portraits & Script"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Experience (Years) *</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Experience (Years) *</label>
                   <input
                     required
                     type="text"
                     value={memberExperience}
                     onChange={(e) => setMemberExperience(e.target.value)}
                     placeholder="e.g. 14+ Years"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Available Slots</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Available Slots</label>
                   <input
                     type="number"
                     min="0"
                     value={memberSlotsRemaining}
                     onChange={(e) => setMemberSlotsRemaining(parseInt(e.target.value, 10) || 0)}
                     placeholder="4"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
 
               {/* Row 4: Bio / Description */}
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Bio / Profile Description *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Bio / Profile Description *</label>
                 <textarea
                   required
                   rows={4}
                   value={memberBio}
                   onChange={(e) => setMemberBio(e.target.value)}
                   placeholder="Detailed artist biography, artistic journey, techniques, hygiene philosophy..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
 
               {/* Row 5: Badges & Instagram */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Badges / Honors (Comma-separated)</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Badges / Honors (Comma-separated)</label>
                   <input
                     type="text"
                     value={memberBadgesInput}
                     onChange={(e) => setMemberBadgesInput(e.target.value)}
                     placeholder="FOUNDER, MASTER ARTIST, STERILE CERTIFIED"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs text-zinc-400 mb-1">Instagram Profile URL</label>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Instagram Profile URL</label>
                   <input
                     type="text"
                     value={memberInstagram}
                     onChange={(e) => setMemberInstagram(e.target.value)}
                     placeholder="https://instagram.com/marvin_tattoos"
-                    className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-mono"
                   />
                 </div>
               </div>
 
               {/* Active Toggle */}
-              <div className="flex items-center gap-2 p-3 bg-[#141620] border border-zinc-700 rounded-lg">
+              <div className="flex items-center gap-2.5 p-3 bg-[#12141c] border border-zinc-800 rounded-lg">
                 <input
                   type="checkbox"
                   id="memberActiveToggle"
                   checked={memberActive}
                   onChange={(e) => setMemberActive(e.target.checked)}
-                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-zinc-800 border-zinc-600"
+                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-zinc-800 border-zinc-600 cursor-pointer"
                 />
-                <label htmlFor="memberActiveToggle" className="text-xs text-zinc-300 font-semibold cursor-pointer">
+                <label htmlFor="memberActiveToggle" className="text-xs text-zinc-300 font-medium cursor-pointer">
                   Active &amp; Visible on Public Atelier Website (About Page &amp; Booking Form)
                 </label>
               </div>
 
               {/* Member Photo / Avatar */}
-              <div className="p-3 bg-[#141620] border border-zinc-700 rounded-lg space-y-2">
+              <div className="p-3.5 bg-[#12141c] border border-zinc-800 rounded-lg space-y-2">
                 <label className="block text-xs font-semibold text-zinc-200">
                   Profile Photo / Avatar
                 </label>
                 {memberAvatarPreview && (
-                  <div className="flex items-center gap-3 p-2 bg-[#181a24] rounded border border-zinc-700">
+                  <div className="flex items-center gap-3 p-2.5 bg-[#181a24] rounded-lg border border-zinc-700/80">
                     <img
                       src={memberAvatarPreview}
                       alt="Avatar Preview"
                       className="w-16 h-16 object-cover rounded-full border border-zinc-600"
                     />
-                    <div className="text-[11px] text-zinc-400">
+                    <div className="text-xs text-zinc-400">
                       <p className="text-zinc-200 font-semibold">Current Avatar</p>
-                      <p className="text-zinc-500">Upload a new photo below to replace it, or keep current.</p>
+                      <p className="text-zinc-500 text-[11px]">Upload a new photo below to replace it, or keep current.</p>
                     </div>
                   </div>
                 )}
@@ -4674,16 +4677,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     type="file"
                     accept="image/*"
                     onChange={(e) => e.target.files && setMemberAvatarFile(e.target.files[0])}
-                    className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
+                    className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
                   />
                   <div>
-                    <span className="text-[10px] text-zinc-500 block mb-1">Or Direct Photo Image URL</span>
+                    <span className="text-[11px] text-zinc-400 block mb-1">Or Direct Photo Image URL</span>
                     <input
                       type="text"
                       value={memberAvatarPreview}
                       onChange={(e) => setMemberAvatarPreview(e.target.value)}
                       placeholder="/images/marvin-founder.png or https://..."
-                      className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded text-white text-xs focus:outline-none focus:border-red-500"
+                      className="w-full px-3.5 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-mono"
                     />
                   </div>
                 </div>
@@ -4691,21 +4694,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Footer */}
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
+            <div className="pt-3 border-t border-zinc-800 flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => {
                   setShowMemberModal(false);
                   setEditingMemberId(null);
                 }}
-                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
+                className="px-4 py-2 bg-[#12141c] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800 transition-colors border border-zinc-800 font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingMember}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+                className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{savingMember ? 'Saving...' : editingMemberId ? 'Update Member' : 'Save Member'}</span>
@@ -4717,16 +4720,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT PRODUCT */}
       {showProductModal && (
-
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <form
             onSubmit={handleSaveProduct}
-            className="w-full max-w-lg bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
+            className="w-full max-w-lg bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl my-8"
           >
-            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <div className="flex items-center gap-2">
-                <Package className="w-4 h-4 text-red-400" />
-                <h3 className="font-semibold text-white">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
+                  <Package className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-white text-sm">
                   {editingProductId ? 'Edit Product' : 'Add New Product'}
                 </h3>
               </div>
@@ -4736,29 +4740,29 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setShowProductModal(false);
                   setEditingProductId(null);
                 }}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="grid grid-cols-2 gap-3.5 max-h-[70vh] overflow-y-auto pr-1">
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Product Name *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Product Name *</label>
                 <input
                   required
                   type="text"
                   value={prodName}
                   onChange={(e) => setProdName(e.target.value)}
                   placeholder="e.g. Clinical Tattoo Aftercare Balm"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-medium"
                 />
               </div>
 
               <div className="col-span-2">
-                <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs text-zinc-400">Category *</label>
-                  <span className="text-[10px] text-zinc-500">Pick preset or type custom</span>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-xs text-zinc-300 font-medium">Category *</label>
+                  <span className="text-[11px] text-zinc-400">Pick preset or type custom</span>
                 </div>
                 <div className="flex gap-1.5 flex-wrap mb-2">
                   {[
@@ -4775,10 +4779,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       key={preset}
                       type="button"
                       onClick={() => setProdCategory(preset)}
-                      className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
+                      className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
                         prodCategory === preset
-                          ? 'bg-red-950/80 border-red-500 text-red-300 font-bold'
-                          : 'bg-[#141620] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white'
+                          ? 'bg-red-500/15 border-red-500/40 text-red-300 font-semibold shadow-sm'
+                          : 'bg-[#12141c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'
                       }`}
                     >
                       {preset}
@@ -4791,12 +4795,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   value={prodCategory}
                   onChange={(e) => setProdCategory(e.target.value)}
                   placeholder="e.g. Aftercare, Needles, Titanium Jewelry, Apparel, Inks..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Price (UGX) *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Price (UGX) *</label>
                 <input
                   required
                   type="number"
@@ -4805,72 +4809,72 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   value={prodPrice}
                   onChange={(e) => setProdPrice(parseFloat(e.target.value) || 0)}
                   placeholder="95000"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Stock Count (Units)</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Stock Count (Units)</label>
                 <input
                   type="number"
                   min="0"
                   value={prodStock}
                   onChange={(e) => setProdStock(parseInt(e.target.value, 10) || 0)}
                   placeholder="20"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
                 />
               </div>
 
-              <div className="flex items-center gap-2 p-2.5 bg-[#141620] border border-zinc-700 rounded-lg mt-5">
+              <div className="flex items-center gap-2.5 p-3 bg-[#12141c] border border-zinc-800 rounded-lg mt-5">
                 <input
                   type="checkbox"
                   id="prodInStock"
                   checked={prodInStock}
                   onChange={(e) => setProdInStock(e.target.checked)}
-                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-[#181a24] border-zinc-600"
+                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-[#181a24] border-zinc-600 cursor-pointer"
                 />
-                <label htmlFor="prodInStock" className="text-xs text-zinc-300 font-semibold cursor-pointer">
+                <label htmlFor="prodInStock" className="text-xs text-zinc-300 font-medium cursor-pointer">
                   In Stock (Available in Shop)
                 </label>
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Key Features (comma-separated)</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Key Features (comma-separated)</label>
                 <input
                   type="text"
                   value={prodSpecs}
                   onChange={(e) => setProdSpecs(e.target.value)}
                   placeholder="e.g. 100ml Glass Bottle, Organic Calendula, Zero Petroleum"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Description *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Description *</label>
                 <textarea
                   required
                   rows={3}
                   value={prodDesc}
                   onChange={(e) => setProdDesc(e.target.value)}
                   placeholder="Product details and description..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">
                   {editingProductId ? 'Product Photo (Optional replacement)' : 'Product Photo'}
                 </label>
                 {prodImagePreview && (
-                  <div className="mb-2 flex items-center gap-3 p-2 bg-[#141620] border border-zinc-700 rounded-lg">
+                  <div className="mb-2 flex items-center gap-3 p-2.5 bg-[#12141c] border border-zinc-800 rounded-lg">
                     <img
                       src={prodImagePreview}
                       alt="Product Preview"
-                      className="w-14 h-14 object-cover rounded border border-zinc-600"
+                      className="w-14 h-14 object-cover rounded-lg border border-zinc-700"
                     />
-                    <div className="text-[11px] text-zinc-400">
+                    <div className="text-xs text-zinc-400">
                       <p className="text-zinc-200 font-semibold">Current Image</p>
-                      <p className="text-zinc-500">Upload a new file below only if you want to replace it.</p>
+                      <p className="text-zinc-500 text-[11px]">Upload a new file below only if you want to replace it.</p>
                     </div>
                   </div>
                 )}
@@ -4878,26 +4882,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => e.target.files && setProdImageFile(e.target.files[0])}
-                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
+                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
+            <div className="pt-3 border-t border-zinc-800 flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => {
                   setShowProductModal(false);
                   setEditingProductId(null);
                 }}
-                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
+                className="px-4 py-2 bg-[#12141c] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800 transition-colors border border-zinc-800 font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingProduct}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+                className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{savingProduct ? 'Saving...' : editingProductId ? 'Update Product' : 'Add Product'}</span>
@@ -4909,13 +4913,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT REVIEW */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <form
             onSubmit={handleSaveReview}
-            className="w-full max-w-lg bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl"
+            className="w-full max-w-lg bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl"
           >
-            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <h3 className="font-semibold text-white">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+              <h3 className="font-bold text-white text-sm">
                 {editingReviewId ? 'Edit Review' : 'Add Review'}
               </h3>
               <button
@@ -4924,7 +4928,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setShowReviewModal(false);
                   setEditingReviewId(null);
                 }}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -4932,41 +4936,41 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Client Name *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Client Name *</label>
                 <input
                   required
                   type="text"
                   value={reviewName}
                   onChange={(e) => setReviewName(e.target.value)}
                   placeholder="e.g. Dennis Mukasa"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Service / Tattoo Style *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Service / Tattoo Style *</label>
                 <input
                   required
                   type="text"
                   value={reviewRole}
                   onChange={(e) => setReviewRole(e.target.value)}
                   placeholder="e.g. Dark Realism Sleeve"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
               {/* STAR LEVEL SELECTOR */}
-              <div className="p-3 bg-[#141620] rounded-lg border border-zinc-700 space-y-2">
+              <div className="p-3.5 bg-[#12141c] rounded-xl border border-zinc-800 space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="block text-xs text-zinc-300 font-semibold">
+                  <label className="block text-xs text-zinc-300 font-medium">
                     Rating (Stars):
                   </label>
-                  <span className="text-xs font-bold text-amber-400">
+                  <span className="text-xs font-bold text-amber-400 font-mono">
                     {reviewStars} / 5 Stars {reviewStars === 5 ? '★ (Top Rated)' : '★'}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 pt-1">
+                <div className="flex items-center gap-2 pt-1">
                   {[1, 2, 3, 4, 5].map((starNum) => (
                     <button
                       key={starNum}
@@ -4975,7 +4979,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       className={`flex-1 py-2 px-1 rounded-lg border transition-all flex flex-col items-center gap-1 ${
                         reviewStars >= starNum
                           ? 'bg-amber-500/15 border-amber-500/50 text-amber-300'
-                          : 'bg-[#181a24] border-zinc-700 text-zinc-500 hover:border-zinc-500'
+                          : 'bg-[#181a24] border-zinc-800 text-zinc-500 hover:border-zinc-700'
                       }`}
                     >
                       <Star
@@ -4983,40 +4987,40 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           reviewStars >= starNum ? 'text-amber-400 fill-amber-400' : 'text-zinc-600'
                         }`}
                       />
-                      <span className="text-[10px] font-bold">{starNum}★</span>
+                      <span className="text-[11px] font-bold font-mono">{starNum}★</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-1">Client Review *</label>
+                <label className="block text-xs text-zinc-300 font-medium mb-1.5">Client Review *</label>
                 <textarea
                   required
                   rows={3}
                   value={reviewQuote}
                   onChange={(e) => setReviewQuote(e.target.value)}
                   placeholder="Write client statement or review..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                  className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
+            <div className="pt-3 border-t border-zinc-800 flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => {
                   setShowReviewModal(false);
                   setEditingReviewId(null);
                 }}
-                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
+                className="px-4 py-2 bg-[#12141c] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800 transition-colors border border-zinc-800 font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingReview}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+                className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{savingReview ? 'Saving...' : editingReviewId ? 'Update Review' : 'Save Review'}</span>
@@ -5028,13 +5032,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: SHOP CATEGORIES MANAGER */}
       {showCategoryManagerModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-5 font-mono text-xs shadow-2xl my-8">
-            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <div className="flex items-center gap-2">
-                <Tag className="w-4 h-4 text-amber-400" />
-                <h3 className="font-semibold text-white text-sm">
-                  Shop Categories
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-5 text-xs shadow-2xl my-8">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <Tag className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-white text-sm">
+                  Shop Categories Manager
                 </h3>
               </div>
               <button
@@ -5044,47 +5050,47 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setEditingCategoryName(null);
                   setDeletingCategoryName(null);
                 }}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* CREATE NEW CATEGORY */}
-            <form onSubmit={handleAddNewCategoryPreset} className="p-3.5 bg-[#141620] border border-zinc-700/80 rounded-xl space-y-2">
-              <label className="block text-xs font-semibold text-zinc-300">
+            <form onSubmit={handleAddNewCategoryPreset} className="p-4 bg-[#12141c] border border-zinc-800 rounded-xl space-y-2.5">
+              <label className="block text-xs font-semibold text-zinc-200">
                 + Add New Category
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2.5">
                 <input
                   type="text"
                   value={newCategoryNameInput}
                   onChange={(e) => setNewCategoryNameInput(e.target.value)}
                   placeholder="e.g. Rotary Machines, Tattoo Furniture, Sterile Gauze..."
-                  className="flex-1 px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  className="flex-1 px-3.5 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                 />
                 <button
                   type="submit"
                   disabled={!newCategoryNameInput.trim()}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold uppercase transition-colors shrink-0 flex items-center gap-1.5"
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold uppercase transition-colors shrink-0 flex items-center gap-1.5 shadow-sm"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Category</span>
                 </button>
               </div>
-              <p className="text-[10px] text-zinc-500">
+              <p className="text-[11px] text-zinc-400">
                 New categories will appear in the shop and product forms.
               </p>
             </form>
 
             {/* CATEGORIES LIST */}
             <div className="space-y-3">
-              <div className="flex justify-between items-center text-zinc-400 text-[11px] uppercase tracking-wider">
+              <div className="flex justify-between items-center text-zinc-400 text-xs uppercase tracking-wider font-medium">
                 <span>Current Categories ({inventoryCategories.length})</span>
                 <span>Actions</span>
               </div>
 
-              <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
+              <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
                 {inventoryCategories.map((cat) => {
                   const count = productsList.filter(
                     (p) => p.category?.toLowerCase() === cat.toLowerCase()
@@ -5095,9 +5101,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   return (
                     <div
                       key={cat}
-                      className="p-3.5 bg-[#141620] border border-zinc-700/70 rounded-xl space-y-3 transition-colors hover:border-zinc-600"
+                      className="p-4 bg-[#12141c] border border-zinc-800 rounded-xl space-y-3 transition-colors hover:border-zinc-700"
                     >
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5">
                         {isEditing ? (
                           <div className="flex-1 flex gap-2 w-full">
                             <input
@@ -5110,41 +5116,41 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             <button
                               onClick={() => handleRenameCategory(cat)}
                               disabled={categoryActionLoading}
-                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
+                              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
                             >
-                              <Check className="w-3 h-3" />
+                              <Check className="w-3.5 h-3.5" />
                               <span>Save</span>
                             </button>
                             <button
                               onClick={() => setEditingCategoryName(null)}
-                              className="px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs"
+                              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs"
                             >
                               Cancel
                             </button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2.5">
-                            <span className="px-2.5 py-1 bg-red-950/60 border border-red-600/50 text-red-300 font-bold text-xs rounded-lg uppercase">
+                          <div className="flex items-center gap-3">
+                            <span className="px-3 py-1 bg-red-500/15 border border-red-500/30 text-red-300 font-bold text-xs rounded-lg uppercase">
                               {cat}
                             </span>
                             <span className="text-zinc-400 text-xs">
-                              {count} {count === 1 ? 'product' : 'products'} assigned
+                              <span className="text-white font-semibold font-mono">{count}</span> {count === 1 ? 'product' : 'products'} assigned
                             </span>
                           </div>
                         )}
 
                         {!isEditing && (
-                          <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex items-center gap-2 shrink-0">
                             <button
                               onClick={() => {
                                 setEditingCategoryName(cat);
                                 setRenamedCategoryValue(cat);
                                 setDeletingCategoryName(null);
                               }}
-                              className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors font-medium"
                               title="Rename Category"
                             >
-                              <Edit className="w-3 h-3 text-amber-400" />
+                              <Edit className="w-3.5 h-3.5 text-amber-400" />
                               <span>Rename</span>
                             </button>
                             <button
@@ -5154,10 +5160,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 const other = inventoryCategories.find((c) => c !== cat) || 'Aftercare';
                                 setDeleteReassignCategory(other);
                               }}
-                              className="px-2.5 py-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1 transition-colors"
+                              className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1 transition-colors font-medium"
                               title="Delete / Merge Category"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <Trash2 className="w-3.5 h-3.5" />
                               <span>Delete</span>
                             </button>
                           </div>
@@ -5166,15 +5172,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                       {/* DELETE REASSIGNMENT PANEL */}
                       {isDeleting && (
-                        <div className="p-3 bg-[#181a24] border border-red-900/50 rounded-lg space-y-2 text-xs">
+                        <div className="p-3.5 bg-[#181a24] border border-red-900/50 rounded-lg space-y-2.5 text-xs">
                           <p className="text-zinc-300">
-                            Reassign all <span className="text-red-400 font-bold">{count}</span> items currently in "{cat}" to:
+                            Reassign all <span className="text-red-400 font-bold font-mono">{count}</span> items currently in "{cat}" to:
                           </p>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <select
                               value={deleteReassignCategory}
                               onChange={(e) => setDeleteReassignCategory(e.target.value)}
-                              className="flex-1 px-3 py-1.5 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                              className="flex-1 px-3 py-1.5 bg-[#12141c] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                             >
                               {inventoryCategories
                                 .filter((c) => c !== cat)
@@ -5191,7 +5197,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               <button
                                 onClick={() => handleDeleteCategory(cat)}
                                 disabled={categoryActionLoading}
-                                className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors"
+                                className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors shadow-sm"
                               >
                                 {categoryActionLoading ? 'Updating...' : 'Confirm & Delete'}
                               </button>
@@ -5211,7 +5217,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-end">
+            <div className="pt-3 border-t border-zinc-800 flex justify-end">
               <button
                 type="button"
                 onClick={() => {
@@ -5219,7 +5225,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setEditingCategoryName(null);
                   setDeletingCategoryName(null);
                 }}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs transition-colors"
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs transition-colors font-medium"
               >
                 Close
               </button>
@@ -5230,23 +5236,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: CLIENT DOSSIER / PROFILE DRAWER */}
       {inspectUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-5 font-mono text-xs shadow-2xl my-8">
-            <div className="flex justify-between items-start border-b border-zinc-700/60 pb-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-5 text-xs shadow-2xl my-8">
+            <div className="flex justify-between items-start border-b border-zinc-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-600/50 flex items-center justify-center font-bold text-red-300 text-base">
+                <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center font-bold text-red-300 text-base">
                   {inspectUser.name ? inspectUser.name.charAt(0).toUpperCase() : 'C'}
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">{inspectUser.name}</h3>
-                  <span className="text-[11px] text-zinc-400">
-                    Client since {new Date(inspectUser.createdAt).toLocaleDateString()} · ID: {inspectUser.id.substring(0, 8)}...
+                  <span className="text-xs text-zinc-400">
+                    Client since {new Date(inspectUser.createdAt).toLocaleDateString()} · ID: <span className="font-mono">{inspectUser.id.substring(0, 8)}...</span>
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setInspectUser(null)}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -5254,9 +5260,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
             {/* Quick Metrics & Contact */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-3 bg-[#141620] border border-zinc-700/80 rounded-lg space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase">Phone &amp; WhatsApp</span>
-                <div className="text-white font-semibold text-xs flex items-center justify-between">
+              <div className="p-3.5 bg-[#12141c] border border-zinc-800 rounded-xl space-y-1">
+                <span className="text-[11px] text-zinc-400 uppercase font-medium">Phone &amp; WhatsApp</span>
+                <div className="text-white font-semibold text-xs flex items-center justify-between font-mono">
                   <span>{inspectUser.phone}</span>
                   <button
                     onClick={() =>
@@ -5265,7 +5271,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         `Hello ${inspectUser.name}! This is Marvin Tattoos Atelier.`
                       )
                     }
-                    className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 rounded border border-emerald-800/40"
+                    className="p-1.5 text-emerald-400 hover:text-emerald-300 bg-emerald-500/15 rounded-lg border border-emerald-500/30 transition-colors"
                     title="WhatsApp"
                   >
                     <MessageCircle className="w-3 h-3" />
@@ -5273,23 +5279,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </div>
               </div>
 
-              <div className="p-3 bg-[#141620] border border-zinc-700/80 rounded-lg space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase">Email</span>
+              <div className="p-3.5 bg-[#12141c] border border-zinc-800 rounded-xl space-y-1">
+                <span className="text-[11px] text-zinc-400 uppercase font-medium">Email</span>
                 <div className="text-zinc-200 text-xs truncate" title={inspectUser.email || 'None'}>
                   {inspectUser.email || 'No email provided'}
                 </div>
               </div>
 
-              <div className="p-3 bg-[#141620] border border-zinc-700/80 rounded-lg space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase">Studio Activity</span>
-                <div className="text-white font-semibold text-xs">
+              <div className="p-3.5 bg-[#12141c] border border-zinc-800 rounded-xl space-y-1">
+                <span className="text-[11px] text-zinc-400 uppercase font-medium">Studio Activity</span>
+                <div className="text-white font-semibold text-xs font-mono">
                   {inspectUser.totalBookings || 0} Bookings · {inspectUser.totalOrders || 0} Orders
                 </div>
               </div>
             </div>
 
             {/* Studio Notes */}
-            <div className="p-3.5 bg-[#141620] border border-zinc-700/80 rounded-xl space-y-3">
+            <div className="p-4 bg-[#12141c] border border-zinc-800 rounded-xl space-y-3">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
@@ -5302,7 +5308,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 value={editingUserNotes}
                 onChange={(e) => setEditingUserNotes(e.target.value)}
                 placeholder="Add special client notes, tattoo preferences, allergy warnings, custom placement notes..."
-                className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                className="w-full px-3.5 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
               />
 
               <div className="flex justify-end">
@@ -5310,7 +5316,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   type="button"
                   onClick={handleSaveUserDetails}
                   disabled={savingUser}
-                  className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm flex items-center gap-1.5"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>{savingUser ? 'Saving...' : 'Save Client Notes'}</span>
@@ -5320,7 +5326,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
             {/* Associated Bookings */}
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-zinc-400 text-[11px] uppercase tracking-wider">
+              <div className="flex justify-between items-center text-zinc-400 text-xs uppercase tracking-wider font-medium">
                 <span>Booking History ({inspectUser.bookings?.length || inspectUser.totalBookings || 0})</span>
               </div>
               {inspectUser.bookings && inspectUser.bookings.length > 0 ? (
@@ -5328,36 +5334,36 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   {inspectUser.bookings.map((b: any) => (
                     <div
                       key={b.id}
-                      className="p-2.5 bg-[#141620] border border-zinc-700/60 rounded-lg flex items-center justify-between text-xs"
+                      className="p-3 bg-[#12141c] border border-zinc-800 rounded-lg flex items-center justify-between text-xs"
                     >
                       <div>
                         <div className="font-semibold text-white">
-                          {b.referenceCode} · <span className="capitalize">{b.serviceType.replace('_', ' ')}</span>
+                          <span className="font-mono text-red-400">{b.referenceCode}</span> · <span className="capitalize">{b.serviceType.replace(/_/g, ' ')}</span>
                         </div>
-                        <div className="text-[11px] text-zinc-400">
+                        <div className="text-[11px] text-zinc-400 font-mono">
                           {b.placement} · {new Date(b.preferredDate).toLocaleDateString()} ({b.timeSlot})
                         </div>
                       </div>
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                        className={`px-2 py-0.5 rounded text-[11px] font-medium ${
                           b.status === 'CONFIRMED'
-                            ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
-                            : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                         }`}
                       >
-                        {b.status.replace('_', ' ')}
+                        {b.status.replace(/_/g, ' ')}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[11px] text-zinc-500 italic">No bookings recorded yet.</p>
+                <p className="text-xs text-zinc-500 italic">No bookings recorded yet.</p>
               )}
             </div>
 
             {/* Associated Orders */}
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-zinc-400 text-[11px] uppercase tracking-wider">
+              <div className="flex justify-between items-center text-zinc-400 text-xs uppercase tracking-wider font-medium">
                 <span>Shop Order History ({inspectUser.orders?.length || inspectUser.totalOrders || 0})</span>
               </div>
               {inspectUser.orders && inspectUser.orders.length > 0 ? (
@@ -5365,38 +5371,38 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   {inspectUser.orders.map((o: any) => (
                     <div
                       key={o.id}
-                      className="p-2.5 bg-[#141620] border border-zinc-700/60 rounded-lg flex items-center justify-between text-xs"
+                      className="p-3 bg-[#12141c] border border-zinc-800 rounded-lg flex items-center justify-between text-xs"
                     >
                       <div>
                         <div className="font-semibold text-white">
-                          {o.orderNumber} · <span className="text-red-400">UGX {(o.totalAmount || 0).toLocaleString()}</span>
+                          <span className="font-mono">{o.orderNumber}</span> · <span className="text-red-400 font-mono">UGX {(o.totalAmount || 0).toLocaleString()}</span>
                         </div>
                         <div className="text-[11px] text-zinc-400">
-                          {new Date(o.createdAt).toLocaleDateString()} · {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
+                          <span className="font-mono">{new Date(o.createdAt).toLocaleDateString()}</span> · {o.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Dispatch'}
                         </div>
                       </div>
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                        className={`px-2 py-0.5 rounded text-[11px] font-medium ${
                           o.paymentStatus === 'SUCCESS'
-                            ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/70'
-                            : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                         }`}
                       >
-                        {o.orderStatus.replace('_', ' ')}
+                        {o.orderStatus.replace(/_/g, ' ')}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[11px] text-zinc-500 italic">No shop orders placed yet.</p>
+                <p className="text-xs text-zinc-500 italic">No shop orders placed yet.</p>
               )}
             </div>
 
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-between items-center">
+            <div className="pt-3 border-t border-zinc-800 flex justify-between items-center">
               <button
                 type="button"
                 onClick={() => handleDeleteClient(inspectUser.id, inspectUser.name)}
-                className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-lg text-xs transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-lg text-xs transition-colors flex items-center gap-1.5 font-medium"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Remove Client</span>
@@ -5404,7 +5410,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => setInspectUser(null)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs transition-colors"
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs transition-colors font-medium"
               >
                 Close Dossier
               </button>
