@@ -75,7 +75,15 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [productsList, setProductsList] = useState<ProductItem[]>(PRODUCTS_DATA);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const [selectedServiceCategory, setSelectedServiceCategory] = useState<string>('ALL');
+  const [expandedServices, setExpandedServices] = useState<Record<string, boolean>>({});
   const sliderRef = useRef<HTMLDivElement>(null);
+
+  const toggleServiceSpecs = (id: string) => {
+    setExpandedServices((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   useEffect(() => {
     fetchSiteSettings().then(setSettings).catch(() => {});
@@ -371,28 +379,65 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
 
                 {/* Card Body */}
-                <div className="p-6 flex flex-col justify-between flex-grow space-y-6">
+                <div className="p-6 flex flex-col justify-between flex-grow space-y-5">
                   <div>
                     <h3 className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors">
                       {service.title}
                     </h3>
                   </div>
 
-                  <div className="space-y-4">
-                    {/* Studio Specifications Container */}
+                  <div className="space-y-3">
+                    {/* Collapsible Discipline Specifications */}
                     {service.specs && service.specs.length > 0 && (
-                      <div className="bg-noir-950/80 p-3.5 border border-noir-700/60 rounded-sm space-y-2">
-                        <div className="text-[10px] font-label-caps uppercase tracking-[0.2em] text-bone-dim pb-1.5 border-b border-noir-800">
-                          Discipline Specifications
-                        </div>
-                        <div className="space-y-1.5">
-                          {service.specs.map((spec, i) => (
-                            <div key={i} className="flex items-baseline justify-between text-xs font-label-data gap-2">
-                              <span className="text-bone-dim text-[11px] uppercase tracking-wide">{spec.label}</span>
-                              <span className="text-bone font-medium text-right text-[11px] truncate">{spec.value}</span>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleServiceSpecs(service.id)}
+                          className={`w-full flex items-center justify-between px-3.5 py-2.5 bg-noir-950/80 hover:bg-noir-950 border transition-all duration-200 text-xs font-label-caps uppercase tracking-wider ${
+                            expandedServices[service.id]
+                              ? 'border-crimson/50 text-bone'
+                              : 'border-noir-700/80 hover:border-slate-500 text-bone-muted hover:text-bone'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <Icons8 name="sliders-h" size={13} className={expandedServices[service.id] ? 'text-crimson-light' : 'text-gold'} />
+                            <span>{expandedServices[service.id] ? 'Hide Specifications' : 'View Specifications'}</span>
+                          </span>
+                          <Icons8
+                            name="angle-down"
+                            size={14}
+                            className={`transition-transform duration-300 ${
+                              expandedServices[service.id] ? 'rotate-180 text-crimson-light' : 'text-bone-dim'
+                            }`}
+                          />
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                          {expandedServices[service.id] && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.25, ease: 'easeInOut' }}
+                              className="overflow-hidden"
+                            >
+                              <div className="bg-noir-950/95 p-3.5 border border-noir-700/80 rounded-sm space-y-2">
+                                <div className="text-[10px] font-label-caps uppercase tracking-[0.2em] text-bone-dim pb-1.5 border-b border-noir-800 flex items-center justify-between">
+                                  <span>Discipline Specs</span>
+                                  <span className="text-[9px] font-label-data text-crimson-light">Verified</span>
+                                </div>
+                                <div className="space-y-1.5">
+                                  {service.specs.map((spec, i) => (
+                                    <div key={i} className="flex items-baseline justify-between text-xs font-label-data gap-2">
+                                      <span className="text-bone-dim text-[11px] uppercase tracking-wide">{spec.label}</span>
+                                      <span className="text-bone font-medium text-right text-[11px] truncate">{spec.value}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     )}
 
