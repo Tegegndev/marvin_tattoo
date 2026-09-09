@@ -74,6 +74,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>(TESTIMONIALS_DATA);
   const [productsList, setProductsList] = useState<ProductItem[]>(PRODUCTS_DATA);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
+  const [selectedServiceCategory, setSelectedServiceCategory] = useState<string>('ALL');
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -117,17 +118,42 @@ export const HomePage: React.FC<HomePageProps> = ({
         return true;
       });
 
+  const serviceCategoryTabs = [
+    { id: 'ALL', label: 'All Disciplines' },
+    { id: 'TATTOO', label: 'Custom Tattoos' },
+    { id: 'PIERCING', label: 'Body Piercing' },
+    { id: 'PMU', label: 'Semi-Permanent PMU' },
+    { id: 'REMOVAL', label: 'Laser & Clearance' },
+  ];
+
+  const filteredServices = servicesList.filter((service) => {
+    if (selectedServiceCategory === 'ALL') return true;
+    const cat = service.category?.toUpperCase();
+    if (selectedServiceCategory === 'TATTOO') {
+      return cat === 'TATTOO' || !cat;
+    }
+    return cat === selectedServiceCategory;
+  });
+
+  const getServiceCategoryCount = (catId: string) => {
+    if (catId === 'ALL') return servicesList.length;
+    if (catId === 'TATTOO') {
+      return servicesList.filter(s => (s.category || '').toUpperCase() === 'TATTOO' || !s.category).length;
+    }
+    return servicesList.filter(s => (s.category || '').toUpperCase() === catId).length;
+  };
+
   const getServiceIcon = (iconName: string) => {
     switch (iconName) {
       case 'skull':
-        return <Icons8 name="skull" size={20} />;
+        return <Icons8 name="skull" size={18} />;
       case 'edit_note':
-        return <Icons8 name="pen-fancy" size={20} />;
+        return <Icons8 name="pen-fancy" size={18} />;
       case 'colorize':
-        return <Icons8 name="syringe" size={20} />;
+        return <Icons8 name="syringe" size={18} />;
       case 'layers':
       default:
-        return <Icons8 name="layer-group" size={20} />;
+        return <Icons8 name="layer-group" size={18} />;
     }
   };
 
@@ -259,80 +285,132 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* 02. SERVICES & DISCIPLINES */}
-      <section id="services-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-b border-noir-700/40">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section id="services-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-900 border-b border-noir-700/40 relative">
+        {/* Subtle Ambient Background Glow */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-crimson/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto space-y-10 relative z-10">
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-noir-700/40">
             <div className="space-y-2 max-w-xl">
-              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em]">
-                STUDIO DISCIPLINES
+              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-crimson animate-pulse" />
+                STUDIO DISCIPLINES &amp; CRAFTSMANSHIP
               </span>
               <h2 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold tracking-tight">
                 Our Core Services
               </h2>
             </div>
             <p className="font-body-md text-sm text-bone-muted max-w-md leading-relaxed">
-              Every design is calibrated to how skin heals and moves over time. Transparent pricing, private consultation rooms, and strict sterile protocols.
+              Every design is calibrated to how skin heals and moves over time. Transparent pricing, private consultation rooms, and hospital-grade sterile protocols.
             </p>
           </div>
 
-          {/* 4-Column Service Matrix */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {servicesList.map((service) => (
-              <div
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap items-center gap-2">
+            {serviceCategoryTabs.map((tab) => {
+              const count = getServiceCategoryCount(tab.id);
+              const isActive = selectedServiceCategory === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedServiceCategory(tab.id)}
+                  className={`px-4 py-2 text-xs font-label-caps uppercase tracking-wider transition-all duration-200 border flex items-center gap-2 ${
+                    isActive
+                      ? 'bg-crimson text-bone border-crimson shadow-md shadow-crimson/20 font-bold'
+                      : 'bg-noir-850 hover:bg-noir-800 text-bone-muted hover:text-bone border-noir-700/80 hover:border-slate-500'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-label-data ${
+                    isActive ? 'bg-noir-950/40 text-bone' : 'bg-noir-950 text-bone-dim'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 3-Column Luxury Service Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredServices.map((service) => (
+              <article
                 key={service.id}
-                className="group flex flex-col bg-noir-850 p-6 transition-colors border border-noir-700 hover:border-slate-500 justify-between"
+                className="group flex flex-col bg-noir-850 border border-noir-700/80 hover:border-slate-400/80 transition-all duration-300 hover:shadow-2xl hover:shadow-noir-950/80 overflow-hidden"
               >
-                <div>
-                  <div className="w-full h-48 mb-4 overflow-hidden bg-noir-950 relative border border-noir-700">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover interactive-img-zoom"
-                    />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-noir-950/90 text-[10px] font-label-data uppercase text-bone-dim border border-noir-700">
-                      {service.subtitle}
-                    </div>
+                {/* Card Hero Image with Badges */}
+                <div className="w-full h-64 overflow-hidden bg-noir-950 relative border-b border-noir-700/60">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover interactive-img-zoom filter grayscale group-hover:grayscale-0 contrast-110 brightness-95 group-hover:brightness-100 transition-all duration-700"
+                  />
+                  {/* Ambient Dark Gradient for Legibility */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/40 pointer-events-none" />
+
+                  {/* Top Discipline Tag */}
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 backdrop-blur-md text-[11px] font-label-data uppercase tracking-wider text-bone-dim border border-noir-700/80 shadow-sm">
+                    Discipline // {service.disciplineNumber}
                   </div>
 
-                  <div className="flex items-center justify-between text-bone-dim mb-2">
-                    <span className="font-label-data text-xs uppercase font-semibold">
-                      Discipline // {service.disciplineNumber}
-                    </span>
-                    <div className="text-gold">
+                  {/* Top Category Badge */}
+                  {service.category && (
+                    <div className="absolute top-3 right-3 px-2.5 py-1 bg-crimson/90 backdrop-blur-md text-[10px] font-label-caps uppercase tracking-wider text-bone font-bold border border-crimson/40">
+                      {service.category}
+                    </div>
+                  )}
+
+                  {/* Bottom Image Subtitle */}
+                  <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-label-data text-bone-muted bg-noir-950/85 backdrop-blur-sm px-3 py-1.5 border border-noir-700/60">
+                    <span className="truncate uppercase tracking-wider text-bone font-medium">{service.subtitle}</span>
+                    <div className="text-gold flex-shrink-0 ml-2">
                       {getServiceIcon(service.iconName)}
                     </div>
                   </div>
-
-                  <h3 className="font-headline-sm text-xl text-bone uppercase mb-2 group-hover:text-white font-bold">
-                    {service.title}
-                  </h3>
-
-                  <p className="font-body-sm text-xs text-bone-muted mb-6 leading-relaxed">
-                    {service.description}
-                  </p>
                 </div>
 
-                <div>
-                  {/* Service Specs */}
-                  <div className="space-y-1 mb-4 pt-3 border-t border-noir-700">
-                    {service.specs.map((spec, i) => (
-                      <div key={i} className="flex justify-between text-[11px] font-label-data">
-                        <span className="text-bone-dim">{spec.label}:</span>
-                        <span className="text-bone font-semibold">{spec.value}</span>
-                      </div>
-                    ))}
+                {/* Card Body */}
+                <div className="p-6 flex flex-col justify-between flex-grow space-y-6">
+                  <div className="space-y-3">
+                    <h3 className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors">
+                      {service.title}
+                    </h3>
+
+                    <p className="font-body-sm text-xs sm:text-sm text-bone-muted leading-relaxed">
+                      {service.description}
+                    </p>
                   </div>
 
-                  <button
-                    onClick={() => onNavigate('booking')}
-                    className="inline-flex items-center justify-between w-full pt-3 border-t border-noir-700 font-label-caps text-xs uppercase tracking-wider text-bone-muted hover:text-bone transition-colors"
-                  >
-                    <span>Schedule Session</span>
-                    <Icons8 name="arrow-right" size={16} />
-                  </button>
+                  <div className="space-y-4 pt-2">
+                    {/* Studio Specifications Container */}
+                    {service.specs && service.specs.length > 0 && (
+                      <div className="bg-noir-950/80 p-3.5 border border-noir-700/60 rounded-sm space-y-2">
+                        <div className="text-[10px] font-label-caps uppercase tracking-[0.2em] text-bone-dim pb-1.5 border-b border-noir-800">
+                          Discipline Specifications
+                        </div>
+                        <div className="space-y-1.5">
+                          {service.specs.map((spec, i) => (
+                            <div key={i} className="flex items-baseline justify-between text-xs font-label-data gap-2">
+                              <span className="text-bone-dim text-[11px] uppercase tracking-wide">{spec.label}</span>
+                              <span className="text-bone font-medium text-right text-[11px] truncate">{spec.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Button */}
+                    <button
+                      onClick={() => onNavigate('booking')}
+                      className="w-full py-3 px-4 bg-noir-900 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-[0.15em] border border-noir-700 hover:border-crimson transition-all duration-200 flex items-center justify-center gap-2 group/btn font-semibold"
+                    >
+                      <span>Book This Discipline</span>
+                      <Icons8 name="arrow-right" size={14} className="text-crimson-light group-hover/btn:text-bone transition-transform group-hover/btn:translate-x-1" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
