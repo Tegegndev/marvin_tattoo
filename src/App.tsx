@@ -7,6 +7,8 @@ import { ShopModal } from './components/ShopModal';
 import { WhatsAppModal } from './components/WhatsAppModal';
 import { SecurityVerifyModal } from './components/SecurityVerifyModal';
 import { HomePage } from './pages/HomePage';
+import { ServicesPage } from './pages/ServicesPage';
+import { ServiceDetailPage } from './pages/ServiceDetailPage';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { AboutPage } from './pages/AboutPage';
 import { BookingPage } from './pages/BookingPage';
@@ -14,6 +16,7 @@ import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
 import { AftercarePage } from './pages/AftercarePage';
 import { AdminPage } from './pages/AdminPage';
+import { SERVICES_DATA } from './data/atelierData';
 import { Preloader } from './components/Preloader';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -26,6 +29,7 @@ export function App() {
     return 'home';
   });
   const [selectedArtwork, setSelectedArtwork] = useState<PortfolioPiece | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
@@ -86,6 +90,31 @@ export function App() {
     setSelectedArtwork(null);
   };
 
+  const handleSelectService = (serviceId: string) => {
+    setSelectedServiceId(serviceId);
+    setCurrentPage('service-detail');
+  };
+
+  const handleBookService = (serviceId: string) => {
+    const s = SERVICES_DATA.find((item) => item.id === serviceId);
+    if (s) {
+      setBookingPreselectedPiece({
+        id: s.id,
+        title: s.title,
+        category: 'dark-realism',
+        categoryLabel: `${s.title} (${s.subtitle})`,
+        artist: 'Marvin',
+        healingState: 'Consultation & Mapping',
+        cycle: 'fresh',
+        zone: s.specs.find((sp) => sp.label.toLowerCase().includes('placement') || sp.label.toLowerCase().includes('coverage'))?.value || 'Custom Placement',
+        flashId: `DISC-${s.disciplineNumber}`,
+        image: s.image,
+        description: s.description,
+      });
+    }
+    setCurrentPage('booking');
+  };
+
   return (
     <div className="min-h-screen bg-noir-950 text-bone flex flex-col selection:bg-crimson selection:text-bone">
       {/* Studio Preloader with Gothic M & Crimson Dot */}
@@ -115,9 +144,29 @@ export function App() {
               <HomePage
                 onNavigate={setCurrentPage}
                 onSelectPiece={setSelectedArtwork}
+                onSelectService={handleSelectService}
+                onBookService={handleBookService}
                 onAddToCart={handleAddToCart}
                 onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
                 onOpenVerify={() => setIsVerifyOpen(true)}
+              />
+            )}
+
+            {currentPage === 'services' && (
+              <ServicesPage
+                onNavigate={setCurrentPage}
+                onSelectService={handleSelectService}
+                onBookService={handleBookService}
+              />
+            )}
+
+            {currentPage === 'service-detail' && (
+              <ServiceDetailPage
+                serviceId={selectedServiceId}
+                onNavigate={setCurrentPage}
+                onSelectService={handleSelectService}
+                onBookService={handleBookService}
+                onSelectPiece={setSelectedArtwork}
               />
             )}
 

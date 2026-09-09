@@ -15,6 +15,8 @@ import {
 interface HomePageProps {
   onNavigate: (page: PageView) => void;
   onSelectPiece: (piece: PortfolioPiece) => void;
+  onSelectService?: (serviceId: string) => void;
+  onBookService?: (serviceId: string) => void;
   onAddToCart: (product: ProductItem) => void;
   onOpenWhatsApp: () => void;
   onOpenVerify: () => void;
@@ -65,6 +67,8 @@ const MarvinPortraitLens: React.FC = () => {
 export const HomePage: React.FC<HomePageProps> = ({
   onNavigate,
   onSelectPiece,
+  onSelectService,
+  onBookService,
   onAddToCart,
   onOpenWhatsApp,
 }) => {
@@ -309,9 +313,18 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Our Core Services
               </h2>
             </div>
-            <p className="font-body-md text-sm text-bone-muted max-w-md leading-relaxed">
-              Every design is calibrated to how skin heals and moves over time. Transparent pricing, private consultation rooms, and hospital-grade sterile protocols.
-            </p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <p className="font-body-md text-sm text-bone-muted max-w-md leading-relaxed">
+                Every design is calibrated to how skin heals and moves over time. Transparent pricing, private consultation rooms, and hospital-grade sterile protocols.
+              </p>
+              <button
+                onClick={() => onNavigate('services')}
+                className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2.5 bg-noir-850 hover:bg-noir-800 border border-noir-700 hover:border-slate-500 text-xs font-label-caps uppercase tracking-wider text-bone shrink-0 transition-colors"
+              >
+                <span>Full Directory</span>
+                <Icons8 name="arrow-right" size={14} className="text-crimson-light" />
+              </button>
+            </div>
           </div>
 
           {/* Category Filter Pills */}
@@ -348,7 +361,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 className="group flex flex-col bg-noir-850 border border-noir-700/80 hover:border-slate-400/80 transition-all duration-300 hover:shadow-2xl hover:shadow-noir-950/80 overflow-hidden"
               >
                 {/* Card Hero Image with Badges */}
-                <div className="w-full h-64 overflow-hidden bg-noir-950 relative border-b border-noir-700/60">
+                <div
+                  onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                  className="w-full h-64 overflow-hidden bg-noir-950 relative border-b border-noir-700/60 cursor-pointer"
+                >
                   <img
                     src={service.image}
                     alt={service.title}
@@ -381,7 +397,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 {/* Card Body */}
                 <div className="p-6 flex flex-col justify-between flex-grow space-y-5">
                   <div>
-                    <h3 className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors">
+                    <h3
+                      onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                      className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors cursor-pointer"
+                    >
                       {service.title}
                     </h3>
                   </div>
@@ -441,14 +460,26 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </div>
                     )}
 
-                    {/* Action Button */}
-                    <button
-                      onClick={() => onNavigate('booking')}
-                      className="w-full py-3 px-4 bg-noir-900 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-[0.15em] border border-noir-700 hover:border-crimson transition-all duration-200 flex items-center justify-center gap-2 group/btn font-semibold"
-                    >
-                      <span>Book This Discipline</span>
-                      <Icons8 name="arrow-right" size={14} className="text-crimson-light group-hover/btn:text-bone transition-transform group-hover/btn:translate-x-1" />
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                        className="w-full py-2.5 px-3 bg-noir-900 hover:bg-noir-800 text-bone-muted hover:text-bone font-label-caps text-[11px] uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <span>Details</span>
+                        <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onBookService ? onBookService(service.id) : onNavigate('booking')}
+                        className="w-full py-2.5 px-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] uppercase tracking-wider border border-crimson/40 transition-all flex items-center justify-center gap-1.5 font-bold shadow-sm shadow-crimson/20"
+                      >
+                        <Icons8 name="calendar-check" size={12} />
+                        <span>Book</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>

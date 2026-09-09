@@ -1,4 +1,21 @@
-export type PageView = 'home' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare' | 'admin';
+export type PageView = 'home' | 'services' | 'service-detail' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare' | 'admin';
+
+export interface ServiceProcessStep {
+  step: string;
+  title: string;
+  description: string;
+}
+
+export interface ServicePricingTier {
+  tier: string;
+  price: string;
+  description: string;
+}
+
+export interface ServiceFAQ {
+  question: string;
+  answer: string;
+}
 
 export interface ServiceItem {
   id: string;
@@ -6,6 +23,7 @@ export interface ServiceItem {
   title: string;
   subtitle: string;
   description: string;
+  longDescription?: string;
   category?: 'TATTOO' | 'PMU' | 'PIERCING' | 'REMOVAL' | string;
   image: string;
   imageUrl?: string;
@@ -15,6 +33,12 @@ export interface ServiceItem {
     label: string;
     value: string;
   }[];
+  processSteps?: ServiceProcessStep[];
+  pricingTiers?: ServicePricingTier[];
+  faqs?: ServiceFAQ[];
+  prepGuidelines?: string[];
+  aftercareGuidelines?: string[];
+  galleryImages?: string[];
   sortOrder?: number;
 }
 

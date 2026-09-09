@@ -33,6 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navLinks: { id: PageView; label: string }[] = [
     { id: 'home', label: 'Home' },
+    { id: 'services', label: 'Services' },
     { id: 'portfolio', label: 'Portfolio' },
     { id: 'about', label: 'About' },
     { id: 'aftercare', label: 'Aftercare' },
@@ -68,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 bg-noir-900/80 p-1 rounded border border-noir-700/50">
           {navLinks.map((link) => {
-            const isActive = currentPage === link.id;
+            const isActive = currentPage === link.id || (link.id === 'services' && currentPage === 'service-detail');
             return (
               <button
                 key={link.id}
@@ -154,25 +155,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             transition={{ duration: 0.25 }}
             className="md:hidden bg-noir-950/98 border-b border-noir-700 px-6 py-5 flex flex-col gap-3 shadow-2xl"
           >
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => {
-                  onNavigate(link.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`flex items-center justify-between py-2.5 text-left font-label-caps text-sm uppercase tracking-wider transition-colors ${
-                  currentPage === link.id
-                    ? 'text-white font-bold border-l-2 border-slate-300 pl-3 bg-noir-900/60'
-                    : 'text-bone-muted hover:text-bone pl-3'
-                }`}
-              >
-                <span>{link.label}</span>
-                {currentPage === link.id && (
-                  <span className="text-xs text-slate-300">●</span>
-                )}
-              </button>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = currentPage === link.id || (link.id === 'services' && currentPage === 'service-detail');
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => {
+                    onNavigate(link.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center justify-between py-2.5 text-left font-label-caps text-sm uppercase tracking-wider transition-colors ${
+                    isActive
+                      ? 'text-white font-bold border-l-2 border-slate-300 pl-3 bg-noir-900/60'
+                      : 'text-bone-muted hover:text-bone pl-3'
+                  }`}
+                >
+                  <span>{link.label}</span>
+                  {isActive && (
+                    <span className="text-xs text-slate-300">●</span>
+                  )}
+                </button>
+              );
+            })}
 
             <div className="pt-3 mt-2 border-t border-noir-700/80 flex flex-col gap-2.5">
               <button
