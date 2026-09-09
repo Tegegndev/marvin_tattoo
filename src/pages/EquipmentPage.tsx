@@ -140,7 +140,7 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                           Sold Out
                         </span>
                       ) : isLowStock ? (
-                        <span className="absolute top-2 right-2 px-2 py-0.5 bg-amber-950/90 text-[10px] font-label-caps uppercase text-amber-300 border border-amber-700/50">
+                        <span className="absolute top-2 right-2 px-2 py-0.5 bg-rose-950/90 text-[10px] font-label-caps uppercase text-rose-300 border border-rose-700/50">
                           Only {prod.stockCount} Left
                         </span>
                       ) : null}

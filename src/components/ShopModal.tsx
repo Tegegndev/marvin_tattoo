@@ -388,12 +388,12 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             onClick={() => setPaymentMethod('MTN_MOMO')}
                             className={`p-2.5 text-left border font-label-caps text-xs uppercase transition-colors flex items-center justify-between ${
                               paymentMethod === 'MTN_MOMO'
-                                ? 'bg-amber-950/40 border-amber-500 text-amber-300'
+                                ? 'bg-blue-950/40 border-blue-500 text-blue-300'
                                 : 'bg-noir-850 border-noir-700 text-bone-dim hover:text-bone'
                             }`}
                           >
                             <span>MTN MoMo</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-300">Push</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/20 text-blue-300">Push</span>
                           </button>
                           <button
                             type="button"
@@ -464,7 +464,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                 {/* Step: Payment Prompt / USSD Instruction */}
                 {checkoutStep === 'payment_prompt' && (
                   <div className="text-center py-8 space-y-5">
-                    <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
+                    <div className="w-16 h-16 rounded-full bg-crimson/20 border border-crimson text-crimson-light flex items-center justify-center mx-auto animate-pulse">
                       <Icons8 name="mobile-alt" size={32} />
                     </div>
 

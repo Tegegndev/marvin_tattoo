@@ -1381,7 +1381,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Crown className="w-4 h-4 text-amber-400" />
+                <Crown className="w-4 h-4 text-rose-400" />
                 <span>Team &amp; Artists</span>
               </div>
               <span className="text-[11px] font-mono text-zinc-400">{teamMembers.length}</span>
@@ -1393,7 +1393,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
               <span>Atelier Commerce</span>
               {pendingOrdersCount > 0 && (
-                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] rounded-md font-bold font-mono">
+                <span className="px-1.5 py-0.5 bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[9px] rounded-md font-bold font-mono">
                   {pendingOrdersCount} new
                 </span>
               )}
@@ -1451,7 +1451,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <span>Orders</span>
               </div>
               {pendingOrdersCount > 0 ? (
-                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold font-mono">
+                <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-bold font-mono">
                   {pendingOrdersCount}
                 </span>
               ) : (
@@ -1574,7 +1574,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="w-px h-3.5 bg-zinc-800" />
             <div className="flex items-center gap-2">
               <span className="text-zinc-400">Active Orders:</span>
-              <span className="text-amber-400 font-bold font-mono">{pendingOrdersCount}</span>
+              <span className="text-sky-400 font-bold font-mono">{pendingOrdersCount}</span>
             </div>
             <div className="w-px h-3.5 bg-zinc-800" />
             <div className="flex items-center gap-2">
@@ -1600,7 +1600,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 className="px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-sans font-medium transition-colors flex items-center gap-2"
                 title="Scan all historical bookings and orders to create and link client profiles"
               >
-                <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${syncingLegacy ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 text-sky-400 ${syncingLegacy ? 'animate-spin' : ''}`} />
                 <span>{syncingLegacy ? 'Syncing...' : 'Sync Legacy Clients'}</span>
               </button>
             )}
@@ -1642,7 +1642,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     onClick={() => setShopSubTab('categories')}
                     className="px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-2"
                   >
-                    <Tag className="w-4 h-4 text-amber-400" />
+                    <Tag className="w-4 h-4 text-sky-400" />
                     <span>Categories</span>
                   </button>
                 )}
@@ -1790,7 +1790,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                   ? 'bg-blue-950/60 text-blue-300 border border-blue-800/70'
                                   : b.status === 'CANCELLED'
                                   ? 'bg-red-950/60 text-red-300 border border-red-800/70'
-                                  : 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                                  : 'bg-sky-950/60 text-sky-300 border border-sky-800/70'
                               }`}
                             >
                               <span
@@ -1801,7 +1801,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     ? 'bg-blue-400'
                                     : b.status === 'CANCELLED'
                                     ? 'bg-red-400'
-                                    : 'bg-amber-400'
+                                    : 'bg-sky-400'
                                 }`}
                               />
                               <span>{b.status.replace('_', ' ')}</span>
@@ -1864,7 +1864,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                 <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
                   <div className="text-zinc-400 text-xs flex items-center gap-2 font-medium">
-                    <ShoppingBag className="w-4 h-4 text-amber-400" />
+                    <ShoppingBag className="w-4 h-4 text-sky-400" />
                     <span>Total Shop Orders</span>
                   </div>
                   <div className="text-2xl font-bold text-white font-mono">
@@ -1987,7 +1987,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             <span
                               className={`px-2.5 py-0.5 rounded-md text-xs font-semibold font-mono ${
                                 u.totalOrders > 0
-                                  ? 'bg-amber-950/60 text-amber-300 border border-amber-800/70'
+                                  ? 'bg-sky-950/60 text-sky-300 border border-sky-800/70'
                                   : 'text-zinc-500'
                               }`}
                             >
@@ -2077,9 +2077,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
                   <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
                     <span>Removal &amp; Clinical</span>
-                    <ShieldCheck className="w-4 h-4 text-amber-400" />
+                    <ShieldCheck className="w-4 h-4 text-cyan-400" />
                   </div>
-                  <div className="text-2xl font-bold font-mono text-amber-400">
+                  <div className="text-2xl font-bold font-mono text-cyan-400">
                     {servicesList.filter((s) => s.category?.toUpperCase() === 'REMOVAL').length}
                   </div>
                   <p className="text-xs text-zinc-400">Laser &amp; skin recovery</p>
@@ -2178,7 +2178,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       TATTOO: 'bg-red-950/80 text-red-300 border-red-800/80',
                       PMU: 'bg-fuchsia-950/80 text-fuchsia-300 border-fuchsia-800/80',
                       PIERCING: 'bg-emerald-950/80 text-emerald-300 border-emerald-800/80',
-                      REMOVAL: 'bg-amber-950/80 text-amber-300 border-amber-800/80',
+                      REMOVAL: 'bg-cyan-950/80 text-cyan-300 border-cyan-800/80',
                     };
                     const badgeClass =
                       categoryColors[service.category?.toUpperCase() || ''] ||
@@ -2277,7 +2277,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 className="px-3 py-1.5 bg-[#222636] hover:bg-[#2c3146] text-zinc-200 hover:text-white rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
                                 title="Edit Discipline"
                               >
-                                <Edit className="w-3.5 h-3.5 text-amber-400" />
+                                <Edit className="w-3.5 h-3.5 text-sky-400" />
                                 <span>Edit</span>
                               </button>
                               <button
@@ -2306,7 +2306,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="p-5 bg-[#181a24] border border-zinc-800/80 rounded-2xl space-y-1 shadow-lg">
                   <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
                     <span>Total Members</span>
-                    <Crown className="w-4 h-4 text-amber-400" />
+                    <Crown className="w-4 h-4 text-rose-400" />
                   </div>
                   <div className="text-2xl font-bold font-mono text-white">
                     {teamMembers.length}
@@ -2419,7 +2419,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           member.active === false
                             ? 'border-zinc-800 opacity-60'
                             : isMarvin
-                            ? 'border-amber-500/50 shadow-lg shadow-amber-950/20'
+                            ? 'border-red-500/50 shadow-lg shadow-red-950/20'
                             : 'border-zinc-800/80 hover:border-zinc-600'
                         }`}
                       >
@@ -2438,7 +2438,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           {/* Top Badges */}
                           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[80%]">
                             {isMarvin && (
-                              <span className="px-2.5 py-1 bg-amber-500 text-black font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center gap-1 shadow">
+                              <span className="px-2.5 py-1 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg flex items-center gap-1 shadow">
                                 <Crown className="w-3.5 h-3.5" /> Founder
                               </span>
                             )}
@@ -2473,7 +2473,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 {member.experience}
                               </span>
                             </h3>
-                            <p className="text-xs text-amber-300/90 truncate font-medium">{member.title}</p>
+                            <p className="text-xs text-zinc-300 truncate font-medium">{member.title}</p>
                           </div>
                         </div>
 
@@ -2523,16 +2523,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => openEditMemberModal(member)}
-                                className="p-1.5 bg-[#141620] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 rounded-lg text-xs transition-colors"
-                                title="Edit Member Profile"
+                                className="px-3 py-1.5 bg-[#222636] hover:bg-[#2c3146] text-zinc-200 hover:text-white rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
+                                title="Edit Team Member"
                               >
-                                <Edit className="w-3.5 h-3.5" />
+                                <Edit className="w-3.5 h-3.5 text-sky-400" />
+                                <span>Edit</span>
                               </button>
-
                               <button
                                 onClick={() => handleDeleteMember(member.id, member.name)}
-                                className="p-1.5 bg-[#141620] hover:bg-red-950 text-zinc-400 hover:text-red-400 border border-zinc-700 hover:border-red-800 rounded-lg text-xs transition-colors"
-                                title="Delete Member"
+                                className="p-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 rounded-lg transition-colors"
+                                title="Delete Team Member"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -2603,7 +2603,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <ShoppingBag className="w-3.5 h-3.5" />
                     <span>Orders</span>
                     {pendingOrdersCount > 0 ? (
-                      <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-mono font-bold">
                         {pendingOrdersCount} new
                       </span>
                     ) : (
@@ -2625,7 +2625,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         onClick={() => setShopSubTab('categories')}
                         className="px-3.5 py-2 bg-[#181a24] hover:bg-[#1f222d] border border-zinc-800 text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
                       >
-                        <Tag className="w-3.5 h-3.5 text-amber-400" />
+                        <Tag className="w-3.5 h-3.5 text-sky-400" />
                         <span>Categories</span>
                       </button>
                       <button
@@ -2779,7 +2779,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                   className="text-xs text-zinc-300 hover:text-white px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1 font-medium"
                                   title="Edit Product"
                                 >
-                                  <Edit className="w-3 h-3 text-amber-400" />
+                                  <Edit className="w-3 h-3 text-sky-400" />
                                   <span>Edit</span>
                                 </button>
                                 <button
@@ -2808,7 +2808,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 text-xs shadow-sm"
                   >
                     <div className="flex items-center gap-2">
-                      <Tag className="w-4 h-4 text-amber-400" />
+                      <Tag className="w-4 h-4 text-sky-400" />
                       <h4 className="font-semibold text-white text-sm">Add New Product Category</h4>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2.5">
@@ -2900,7 +2900,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors font-medium"
                                     title="Rename Category"
                                   >
-                                    <Edit className="w-3.5 h-3.5 text-amber-400" />
+                                    <Edit className="w-3.5 h-3.5 text-sky-400" />
                                     <span>Rename</span>
                                   </button>
                                   <button
@@ -3071,7 +3071,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                   className={`px-2 py-0.5 rounded text-[11px] font-medium ${
                                     o.paymentStatus === 'SUCCESS'
                                       ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                                      : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                                      : 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
                                   }`}
                                 >
                                   {o.paymentMethod} ({o.paymentStatus})
@@ -3135,15 +3135,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
 
-                <div className="bg-[#181a24] border border-amber-500/30 p-4 rounded-xl flex items-center justify-between shadow-sm">
+                <div className="bg-[#181a24] border border-rose-500/30 p-4 rounded-xl flex items-center justify-between shadow-sm">
                   <div>
-                    <span className="text-xs text-amber-400/90 uppercase tracking-wider block font-medium">Featured Spotlights</span>
-                    <span className="text-2xl font-bold text-amber-300 tracking-tight font-mono">
+                    <span className="text-xs text-rose-400/90 uppercase tracking-wider block font-medium">Featured Spotlights</span>
+                    <span className="text-2xl font-bold text-rose-300 tracking-tight font-mono">
                       {portfolioPieces.filter((p) => p.featured).length}
                     </span>
                     <span className="text-[11px] text-zinc-500 block mt-0.5">Showcased on Atelier Hero</span>
                   </div>
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <div className="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
                     <Star className="w-5 h-5 fill-current" />
                   </div>
                 </div>
@@ -3290,14 +3290,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               {linkedService?.title || p.categoryLabel || p.category}
                             </span>
                             {p.featured && (
-                              <span className="px-2 py-0.5 bg-amber-500 text-zinc-950 font-bold text-[10px] font-sans rounded flex items-center gap-0.5 shadow-md">
+                              <span className="px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] font-sans rounded flex items-center gap-0.5 shadow-md">
                                 <Star className="w-2.5 h-2.5 fill-current" /> Featured
                               </span>
                             )}
                           </div>
 
                           {p.flashId && (
-                            <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] font-mono text-amber-300 rounded border border-amber-500/30">
+                            <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] font-mono text-sky-300 rounded border border-sky-500/30">
                               {p.flashId}
                             </span>
                           )}
@@ -3340,7 +3340,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 className="text-xs text-zinc-200 hover:text-white px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
                                 title="Edit Artwork Specs"
                               >
-                                <Edit className="w-3 h-3 text-amber-400" />
+                                <Edit className="w-3 h-3 text-sky-400" />
                                 <span>Edit</span>
                               </button>
                               <button
@@ -3392,12 +3392,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               key={i}
                               className={`w-3.5 h-3.5 ${
                                 i < (typeof t.stars === 'number' ? t.stars : 5)
-                                  ? 'text-amber-400 fill-amber-400'
+                                  ? 'text-rose-400 fill-rose-400'
                                   : 'text-zinc-600'
                               }`}
                             />
                           ))}
-                          <span className="ml-1 text-[11px] text-amber-400 font-bold font-mono">
+                          <span className="ml-1 text-[11px] text-rose-400 font-bold font-mono">
                             {t.stars || 5}★
                           </span>
                         </div>
@@ -3417,7 +3417,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           onClick={() => openEditReviewModal(t)}
                           className="text-xs text-zinc-300 hover:text-white px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1 font-medium"
                         >
-                          <Edit className="w-3 h-3 text-amber-400" />
+                          <Edit className="w-3 h-3 text-sky-400" />
                           <span>Edit</span>
                         </button>
                         <button
@@ -3925,14 +3925,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           {servicesList.find((s) => s.id === pieceServiceId)?.title || pieceCategoryLabel || pieceCategory}
                         </span>
                         {pieceFeatured && (
-                          <span className="px-2 py-0.5 bg-amber-500 text-zinc-950 font-bold text-[10px] rounded flex items-center gap-0.5">
+                          <span className="px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] rounded flex items-center gap-0.5 shadow-md">
                             <Star className="w-2.5 h-2.5 fill-current" /> Featured
                           </span>
                         )}
                       </div>
 
                       {pieceFlashId && (
-                        <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] font-mono text-amber-300 rounded border border-amber-500/30">
+                        <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] font-mono text-sky-300 rounded border border-sky-500/30">
                           {pieceFlashId}
                         </span>
                       )}
@@ -4174,7 +4174,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <div className="p-3.5 bg-[#12141c] border border-zinc-800 rounded-xl flex items-center justify-between">
                   <div className="space-y-0.5">
                     <label htmlFor="pieceFeatured" className="text-xs text-white font-semibold cursor-pointer flex items-center gap-1.5">
-                      <Star className="w-3.5 h-3.5 text-amber-400 fill-current" />
+                      <Star className="w-3.5 h-3.5 text-rose-400 fill-current" />
                       <span>Featured Atelier Masterpiece</span>
                     </label>
                     <p className="text-[11px] text-zinc-400">
@@ -4479,7 +4479,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             {/* Header */}
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <div className="w-8 h-8 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
                   <Crown className="w-4 h-4" />
                 </div>
                 <h3 className="font-bold text-white text-sm">
@@ -4965,7 +4965,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <label className="block text-xs text-zinc-300 font-medium">
                     Rating (Stars):
                   </label>
-                  <span className="text-xs font-bold text-amber-400 font-mono">
+                  <span className="text-xs font-bold text-rose-400 font-mono">
                     {reviewStars} / 5 Stars {reviewStars === 5 ? '★ (Top Rated)' : '★'}
                   </span>
                 </div>
@@ -4978,13 +4978,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       onClick={() => setReviewStars(starNum)}
                       className={`flex-1 py-2 px-1 rounded-lg border transition-all flex flex-col items-center gap-1 ${
                         reviewStars >= starNum
-                          ? 'bg-amber-500/15 border-amber-500/50 text-amber-300'
+                          ? 'bg-rose-500/15 border-rose-500/50 text-rose-300'
                           : 'bg-[#181a24] border-zinc-800 text-zinc-500 hover:border-zinc-700'
                       }`}
                     >
                       <Star
                         className={`w-4 h-4 ${
-                          reviewStars >= starNum ? 'text-amber-400 fill-amber-400' : 'text-zinc-600'
+                          reviewStars >= starNum ? 'text-rose-400 fill-rose-400' : 'text-zinc-600'
                         }`}
                       />
                       <span className="text-[11px] font-bold font-mono">{starNum}★</span>
@@ -5036,7 +5036,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-5 text-xs shadow-2xl my-8">
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <div className="w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
                   <Tag className="w-4 h-4" />
                 </div>
                 <h3 className="font-bold text-white text-sm">
@@ -5150,7 +5150,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs flex items-center gap-1 transition-colors font-medium"
                               title="Rename Category"
                             >
-                              <Edit className="w-3.5 h-3.5 text-amber-400" />
+                              <Edit className="w-3.5 h-3.5 text-sky-400" />
                               <span>Rename</span>
                             </button>
                             <button
@@ -5203,7 +5203,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                               </button>
                               <button
                                 onClick={() => setDeletingCategoryName(null)}
-                                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg"
+                                className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg"
                               >
                                 Cancel
                               </button>
@@ -5348,7 +5348,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         className={`px-2 py-0.5 rounded text-[11px] font-medium ${
                           b.status === 'CONFIRMED'
                             ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                            : 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
                         }`}
                       >
                         {b.status.replace(/_/g, ' ')}
@@ -5385,7 +5385,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         className={`px-2 py-0.5 rounded text-[11px] font-medium ${
                           o.paymentStatus === 'SUCCESS'
                             ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                            : 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
                         }`}
                       >
                         {o.orderStatus.replace(/_/g, ' ')}

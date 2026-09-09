@@ -106,7 +106,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     const styles = [
       'bg-crimson/20 border-crimson/60 text-crimson-light group-hover:bg-crimson group-hover:text-bone',
       'bg-gold/20 border-gold/60 text-gold group-hover:bg-gold group-hover:text-noir-950',
-      'bg-amber-500/20 border-amber-500/60 text-amber-300 group-hover:bg-amber-500 group-hover:text-noir-950',
+      'bg-rose-500/20 border-rose-500/60 text-rose-300 group-hover:bg-rose-500 group-hover:text-noir-950',
       'bg-rose-900/30 border-rose-600/60 text-rose-300 group-hover:bg-rose-700 group-hover:text-bone',
       'bg-noir-800 border-bone/40 text-bone group-hover:bg-bone group-hover:text-noir-950'
     ];
@@ -265,8 +265,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                   className="flex items-center gap-1.5 px-2.5 py-1 bg-noir-900 hover:bg-noir-850 border border-noir-700 hover:border-slate-500 rounded transition-all text-bone hover:text-white group"
                   title="View verified reviews on Google"
                 >
-                  <div className="flex items-center text-amber-400">
-                    <Icons8 name="star" size={14} className="text-amber-400" />
+                  <div className="flex items-center text-rose-400">
+                    <Icons8 name="star" size={14} className="text-rose-400" />
                   </div>
                   <span>
                     <strong className="text-bone font-bold">4.9/5.0</strong> on Google Reviews
