@@ -206,11 +206,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [pieceServiceId, setPieceServiceId] = useState<string>('realism-portraits');
   const [pieceCategory, setPieceCategory] = useState('dark-realism');
   const [pieceCategoryLabel, setPieceCategoryLabel] = useState('');
+  const [pieceArtist, setPieceArtist] = useState<string>('Marvin');
+  const [pieceHealingState, setPieceHealingState] = useState<string>('Healed Masterpiece');
+  const [pieceCycle, setPieceCycle] = useState<'healed' | 'fresh'>('healed');
   const [pieceZone, setPieceZone] = useState('Forearm');
   const [pieceFlashId, setPieceFlashId] = useState('');
   const [pieceDescription, setPieceDescription] = useState('');
   const [pieceDuration, setPieceDuration] = useState('4 Hours (1 Session)');
-  const [piecePigment, setPiecePigment] = useState('Dynamic Triple Black');
+  const [piecePigment, setPiecePigment] = useState('Dynamic Triple Black & Greywash');
   const [pieceFeatured, setPieceFeatured] = useState(false);
   const [pieceImageFile, setPieceImageFile] = useState<File | null>(null);
   const [pieceImagePreview, setPieceImagePreview] = useState<string>('');
@@ -782,14 +785,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const openAddArtworkModal = () => {
     setEditingArtworkId(null);
     setPieceTitle('');
-    setPieceServiceId(servicesList.length > 0 ? servicesList[0].id : 'realism-portraits');
+    const firstService = servicesList.length > 0 ? servicesList[0] : null;
+    setPieceServiceId(firstService ? firstService.id : 'realism-portraits');
     setPieceCategory('dark-realism');
-    setPieceCategoryLabel('Dark Realism');
+    setPieceCategoryLabel(firstService ? firstService.title : 'Memorial Realism');
+    setPieceArtist('Marvin');
+    setPieceHealingState('Healed Masterpiece');
+    setPieceCycle('healed');
     setPieceZone('Forearm');
     setPieceFlashId('');
     setPieceDescription('');
     setPieceDuration('4 Hours (1 Session)');
-    setPiecePigment('Dynamic Triple Black');
+    setPiecePigment('Dynamic Triple Black & Greywash');
     setPieceFeatured(false);
     setPieceImageFile(null);
     setPieceImagePreview('');
@@ -802,6 +809,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setPieceServiceId(piece.serviceId || piece.service?.id || (servicesList.length > 0 ? servicesList[0].id : 'realism-portraits'));
     setPieceCategory(piece.category || 'dark-realism');
     setPieceCategoryLabel(piece.categoryLabel || piece.category || '');
+    setPieceArtist(piece.artist || 'Marvin');
+    setPieceHealingState(piece.healingState || 'Healed Masterpiece');
+    setPieceCycle(piece.cycle || 'healed');
     setPieceZone(piece.zone || 'Forearm');
     setPieceFlashId(piece.flashId || '');
     setPieceDescription(piece.description || '');
@@ -815,8 +825,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   const handleSavePortfolioPiece = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingArtworkId && !pieceImageFile) {
-      alert('Please select an artwork photo to upload.');
+    if (!editingArtworkId && !pieceImageFile && !pieceImagePreview) {
+      alert('Please select an artwork photo to upload or enter an image URL.');
       return;
     }
     setSavingArtwork(true);
@@ -826,6 +836,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       formData.append('serviceId', pieceServiceId);
       formData.append('category', pieceCategory);
       formData.append('categoryLabel', pieceCategoryLabel || pieceCategory);
+      formData.append('artist', pieceArtist);
+      formData.append('healingState', pieceHealingState);
+      formData.append('cycle', pieceCycle);
       formData.append('zone', pieceZone);
       formData.append('flashId', pieceFlashId);
       formData.append('description', pieceDescription);
@@ -834,6 +847,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       formData.append('featured', String(pieceFeatured));
       if (pieceImageFile) {
         formData.append('image', pieceImageFile);
+      } else if (pieceImagePreview && pieceImagePreview.startsWith('http')) {
+        formData.append('imageUrl', pieceImagePreview);
       }
 
       if (editingArtworkId) {
@@ -3106,154 +3121,241 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           {/* ================= 3. PORTFOLIO CMS ================= */}
           {activeTab === 'portfolio' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-72">
-                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
-                  <input
-                    type="text"
-                    placeholder="Search artworks, placements, tags..."
-                    value={portfolioSearch}
-                    onChange={(e) => setPortfolioSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 bg-[#181a24] border border-zinc-700/70 rounded-lg text-white placeholder-zinc-500 font-mono text-xs focus:outline-none focus:border-red-500"
-                  />
-                  {portfolioSearch && (
-                    <button
-                      onClick={() => setPortfolioSearch('')}
-                      className="absolute right-2.5 top-2 text-zinc-400 hover:text-white text-xs"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                  <div className="font-mono text-xs text-zinc-400">
-                    Showing <span className="text-white font-bold">{filteredPortfolioPieces.length}</span> of {portfolioPieces.length}
+            <div className="space-y-6 font-mono">
+              {/* Studio Metrics Overview */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-[#141620] border border-zinc-800 p-4 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-zinc-400 uppercase tracking-widest block font-medium">Total Artworks</span>
+                    <span className="text-2xl font-bold text-white tracking-tight">{portfolioPieces.length}</span>
+                    <span className="text-[10px] text-zinc-500 block mt-0.5">Active in Studio Catalog</span>
                   </div>
-                  <button
-                    onClick={openAddArtworkModal}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Artwork</span>
-                  </button>
+                  <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-300">
+                    <ImageIcon className="w-5 h-5" />
+                  </div>
+                </div>
+
+                <div className="bg-[#141620] border border-amber-500/20 p-4 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-amber-400/90 uppercase tracking-widest block font-medium">Featured Spotlights</span>
+                    <span className="text-2xl font-bold text-amber-300 tracking-tight">
+                      {portfolioPieces.filter((p) => p.featured).length}
+                    </span>
+                    <span className="text-[10px] text-zinc-500 block mt-0.5">Showcased on Atelier Hero</span>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-amber-950/40 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <Star className="w-5 h-5 fill-current" />
+                  </div>
+                </div>
+
+                <div className="bg-[#141620] border border-red-500/20 p-4 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-red-400/90 uppercase tracking-widest block font-medium">Studio Disciplines</span>
+                    <span className="text-2xl font-bold text-red-300 tracking-tight">{servicesList.length}</span>
+                    <span className="text-[10px] text-zinc-500 block mt-0.5">Unified Relational Categories</span>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-red-950/40 border border-red-500/30 flex items-center justify-center text-red-400">
+                    <Layers className="w-5 h-5" />
+                  </div>
                 </div>
               </div>
 
-              {/* Dynamic Category Filter Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs no-scrollbar">
-                <button
-                  onClick={() => setPortfolioCategoryFilter('ALL')}
-                  className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap ${
-                    portfolioCategoryFilter === 'ALL'
-                      ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
-                      : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
-                  }`}
-                >
-                  All Categories ({portfolioPieces.length})
-                </button>
-                {portfolioCategories.map((cat) => {
-                  const count = portfolioPieces.filter((p) => p.category?.toLowerCase() === cat.toLowerCase()).length;
-                  return (
+              {/* Action Toolbar & Search */}
+              <div className="bg-[#141620] border border-zinc-800 p-4 rounded-xl space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  {/* Search Bar */}
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+                    <input
+                      type="text"
+                      placeholder="Search title, discipline, zone, flash #..."
+                      value={portfolioSearch}
+                      onChange={(e) => setPortfolioSearch(e.target.value)}
+                      className="w-full pl-8 pr-8 py-2 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-red-500 transition-colors"
+                    />
+                    {portfolioSearch && (
+                      <button
+                        onClick={() => setPortfolioSearch('')}
+                        className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-white text-xs"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
                     <button
-                      key={cat}
-                      onClick={() => setPortfolioCategoryFilter(cat)}
-                      className={`px-3 py-1 rounded-lg border transition-all whitespace-nowrap capitalize ${
-                        portfolioCategoryFilter.toLowerCase() === cat.toLowerCase()
-                          ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/30'
-                          : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
-                      }`}
+                      onClick={loadPortfolio}
+                      disabled={loadingPortfolio}
+                      className="px-3 py-2 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+                      title="Reload Portfolio Catalog"
                     >
-                      {cat.replace(/-/g, ' ')} ({count})
+                      <RefreshCw className={`w-3.5 h-3.5 ${loadingPortfolio ? 'animate-spin' : ''}`} />
+                      <span className="hidden sm:inline">Refresh</span>
                     </button>
-                  );
-                })}
+
+                    <button
+                      onClick={openAddArtworkModal}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs uppercase font-bold tracking-wider transition-colors shadow-lg shadow-red-950/40 flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add New Artwork</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Dynamic Service Discipline Filter Tabs */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar border-t border-zinc-800/80 pt-3">
+                  <button
+                    onClick={() => setPortfolioCategoryFilter('ALL')}
+                    className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs ${
+                      portfolioCategoryFilter === 'ALL'
+                        ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/40'
+                        : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                    }`}
+                  >
+                    All Disciplines ({portfolioPieces.length})
+                  </button>
+                  {servicesList.map((srv) => {
+                    const count = portfolioPieces.filter(
+                      (p) =>
+                        p.serviceId?.toLowerCase() === srv.id.toLowerCase() ||
+                        p.category?.toLowerCase() === srv.id.toLowerCase() ||
+                        p.categoryLabel?.toLowerCase().includes(srv.title.toLowerCase())
+                    ).length;
+
+                    const isSelected = portfolioCategoryFilter.toLowerCase() === srv.id.toLowerCase();
+
+                    return (
+                      <button
+                        key={srv.id}
+                        onClick={() => setPortfolioCategoryFilter(srv.id)}
+                        className={`px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-xs flex items-center gap-1.5 ${
+                          isSelected
+                            ? 'bg-red-600 text-white border-red-500 font-bold shadow-md shadow-red-950/40'
+                            : 'bg-[#181a24] text-zinc-400 border-zinc-700/70 hover:border-zinc-500 hover:text-white'
+                        }`}
+                      >
+                        <span className="opacity-60">{srv.disciplineNumber}.</span>
+                        <span>{srv.title}</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 text-zinc-300">
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
+              {/* Artworks Grid Display */}
               {filteredPortfolioPieces.length === 0 ? (
-                <div className="p-12 text-center bg-[#181a24] border border-zinc-700/70 rounded-xl space-y-2">
-                  <p className="text-zinc-400 font-mono text-sm">No artworks match your search or filter.</p>
+                <div className="p-16 text-center bg-[#141620] border border-zinc-800 rounded-xl space-y-3">
+                  <ImageIcon className="w-10 h-10 text-zinc-600 mx-auto" />
+                  <p className="text-zinc-300 font-medium text-sm">No artworks match your search or discipline filter.</p>
+                  <p className="text-zinc-500 text-xs max-w-sm mx-auto">
+                    Try clearing your search query or selecting "All Disciplines".
+                  </p>
                   <button
                     onClick={() => {
                       setPortfolioCategoryFilter('ALL');
                       setPortfolioSearch('');
                     }}
-                    className="text-red-400 hover:text-red-300 font-mono text-xs underline"
+                    className="mt-2 px-4 py-1.5 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700 text-red-400 text-xs rounded-lg transition-colors"
                   >
-                    Reset filters
+                    Reset all filters
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {filteredPortfolioPieces.map((p) => (
-                    <div
-                      key={p.id}
-                      className="bg-[#181a24] border border-zinc-700/70 rounded-xl overflow-hidden flex flex-col justify-between group shadow-md hover:border-zinc-500 transition-colors"
-                    >
-                      <div className="h-44 bg-[#141620] relative overflow-hidden">
-                        <img
-                          src={p.image || p.imageUrl}
-                          alt={p.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute top-2 left-2 flex flex-wrap gap-1 max-w-[80%]">
-                          <span className="px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded capitalize">
-                            {p.service?.title || p.serviceId?.replace(/-/g, ' ') || p.category}
-                          </span>
-                          {p.featured && (
-                            <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] font-mono rounded flex items-center gap-0.5">
-                              <Star className="w-2.5 h-2.5 fill-current" /> Featured
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                  {filteredPortfolioPieces.map((p) => {
+                    const linkedService = servicesList.find((s) => s.id === p.serviceId) || p.service;
+
+                    return (
+                      <div
+                        key={p.id}
+                        className="bg-[#141620] border border-zinc-800 hover:border-zinc-600 rounded-xl overflow-hidden flex flex-col justify-between group shadow-lg transition-all duration-300"
+                      >
+                        {/* Artwork Image Box */}
+                        <div className="h-52 bg-[#0d0e14] relative overflow-hidden cursor-pointer" onClick={() => openEditArtworkModal(p)}>
+                          <img
+                            src={p.image || p.imageUrl}
+                            alt={p.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#141620] via-transparent to-transparent opacity-80" />
+
+                          {/* Top Badges */}
+                          <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 max-w-[85%]">
+                            <span className="px-2 py-0.5 bg-black/80 backdrop-blur-md border border-red-500/40 text-[10px] font-mono text-red-300 rounded font-semibold">
+                              {linkedService?.title || p.categoryLabel || p.category}
+                            </span>
+                            {p.featured && (
+                              <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] font-mono rounded flex items-center gap-0.5 shadow-md">
+                                <Star className="w-2.5 h-2.5 fill-current" /> Featured
+                              </span>
+                            )}
+                          </div>
+
+                          {p.flashId && (
+                            <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] font-mono text-amber-300 rounded border border-amber-500/30">
+                              {p.flashId}
                             </span>
                           )}
-                        </div>
-                        {p.flashId && (
-                          <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/80 text-[9px] font-mono text-zinc-400 rounded">
-                            {p.flashId}
-                          </span>
-                        )}
-                      </div>
 
-                      <div className="p-4 space-y-2 font-mono text-xs">
-                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono truncate">
-                          {p.categoryLabel || p.category}
+                          <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-md text-[10px] font-mono text-zinc-300 rounded">
+                            {p.healingState || 'Healed Artwork'}
+                          </div>
                         </div>
-                        <h4 className="font-semibold text-white truncate" title={p.title}>{p.title}</h4>
-                        <div className="text-[11px] text-zinc-400 flex justify-between">
-                          <span className="truncate">{p.zone}</span>
-                          <span className="text-zinc-500 shrink-0">{p.duration || 'Session'}</span>
-                        </div>
-                        <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
-                          {p.description}
-                        </p>
 
-                        <div className="pt-2.5 border-t border-zinc-700/60 flex justify-between items-center">
-                          <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[110px]" title={p.pigment}>
-                            {p.pigment || 'Triple Black'}
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <button
+                        {/* Spec Information */}
+                        <div className="p-4 space-y-3 font-mono text-xs flex-1 flex flex-col justify-between">
+                          <div className="space-y-1.5">
+                            <h4
+                              className="font-bold text-white text-sm truncate group-hover:text-red-400 transition-colors cursor-pointer"
+                              title={p.title}
                               onClick={() => openEditArtworkModal(p)}
-                              className="text-[11px] text-zinc-300 hover:text-white px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1"
-                              title="Edit Piece"
                             >
-                              <Edit className="w-3 h-3 text-amber-400" />
-                              <span>Edit</span>
-                            </button>
-                            <button
-                              onClick={() => handleDeletePortfolioPiece(p.id)}
-                              className="text-[11px] text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
-                              title="Delete Piece"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                              <span>Delete</span>
-                            </button>
+                              {p.title}
+                            </h4>
+
+                            <div className="text-[11px] text-zinc-400 flex justify-between items-center pt-1 border-t border-zinc-800/80">
+                              <span className="text-zinc-300 truncate">{p.zone || 'Body Canvas'}</span>
+                              <span className="text-zinc-500 shrink-0 text-[10px]">{p.duration || 'Session'}</span>
+                            </div>
+
+                            <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed pt-1">
+                              {p.description}
+                            </p>
+                          </div>
+
+                          {/* Footer Action Strip */}
+                          <div className="pt-3 border-t border-zinc-800 flex justify-between items-center">
+                            <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[120px]" title={p.pigment}>
+                              {p.pigment || 'Dynamic Black'}
+                            </span>
+
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => openEditArtworkModal(p)}
+                                className="text-xs text-zinc-200 hover:text-white px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors flex items-center gap-1 font-semibold"
+                                title="Edit Artwork Specs"
+                              >
+                                <Edit className="w-3 h-3 text-amber-400" />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeletePortfolioPiece(p.id)}
+                                className="text-xs text-red-400 hover:text-red-300 px-2 py-1 bg-red-950/40 hover:bg-red-900/60 rounded transition-colors flex items-center gap-1"
+                                title="Delete Piece"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -3755,19 +3857,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* MODAL: ADD / EDIT ARTWORK */}
+      {/* MODAL: ADD / EDIT ARTWORK (PRO STUDIO WORKSTATION) */}
       {showArtworkModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto font-mono">
           <form
             onSubmit={handleSavePortfolioPiece}
-            className="w-full max-w-xl bg-[#181a24] border border-zinc-700 rounded-xl p-6 space-y-4 font-mono text-xs shadow-2xl my-8"
+            className="w-full max-w-4xl bg-[#12141c] border border-zinc-700/90 rounded-2xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh]"
           >
-            <div className="flex justify-between items-center border-b border-zinc-700/60 pb-3">
-              <div className="flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-red-400" />
-                <h3 className="font-semibold text-white">
-                  {editingArtworkId ? 'Edit Artwork' : 'Add New Artwork'}
-                </h3>
+            {/* Modal Header */}
+            <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-800 bg-[#141622]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-red-950/80 border border-red-500/40 flex items-center justify-center text-red-400">
+                  <ImageIcon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white text-sm tracking-wide">
+                    {editingArtworkId ? 'Edit Artwork Craft Specifications' : 'Publish New Artwork Masterpiece'}
+                  </h3>
+                  <p className="text-[10px] text-zinc-400">
+                    {editingArtworkId ? `Catalog ID: ${editingArtworkId}` : 'Add a new piece to the atelier portfolio and connected service pages'}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
@@ -3775,232 +3885,339 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   setShowArtworkModal(false);
                   setEditingArtworkId(null);
                 }}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 max-h-[70vh] overflow-y-auto pr-1">
-              <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Title *</label>
-                <input
-                  required
-                  type="text"
-                  value={pieceTitle}
-                  onChange={(e) => setPieceTitle(e.target.value)}
-                  placeholder="e.g. Baroque Skull Sleeve"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                />
-              </div>
-
-              {/* 1. LINKED SERVICE DISCIPLINE (SHARED TAXONOMY) */}
-              <div className="col-span-2 bg-[#141620] p-3 rounded-lg border border-red-950/60 space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="block text-xs font-semibold text-red-400">
-                    Linked Studio Discipline / Service *
-                  </label>
-                  <span className="text-[10px] text-zinc-400">Automatically displays in Service detail pages</span>
+            {/* Modal Body: 2-Column Workstation */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-y-auto flex-1">
+              {/* LEFT COLUMN: Visual Asset Studio (5 cols) */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="space-y-1.5">
+                  <span className="text-[11px] text-zinc-300 uppercase tracking-widest block font-semibold flex items-center gap-1.5">
+                    <Eye className="w-3.5 h-3.5 text-red-400" />
+                    <span>Visual Asset &amp; Live Preview</span>
+                  </span>
+                  <p className="text-[10px] text-zinc-500">
+                    High-definition artwork photo with real-time portfolio card rendering.
+                  </p>
                 </div>
-                <select
-                  value={pieceServiceId}
-                  onChange={(e) => {
-                    const selId = e.target.value;
-                    setPieceServiceId(selId);
-                    const matchedSrv = servicesList.find((s) => s.id === selId);
-                    if (matchedSrv) {
-                      setPieceCategoryLabel(matchedSrv.title);
-                      if (selId.includes('realism')) setPieceCategory('dark-realism');
-                      else if (selId.includes('fine-line')) setPieceCategory('micro-detail');
-                      else if (selId.includes('lettering')) setPieceCategory('neo-traditional');
-                      else if (selId.includes('tribal')) setPieceCategory('dark-realism');
-                      else if (selId.includes('cover')) setPieceCategory('coverup');
-                      else if (selId.includes('pmu')) setPieceCategory('micro-detail');
-                      else if (selId.includes('piercing')) setPieceCategory('piercing');
-                      else if (selId.includes('laser')) setPieceCategory('coverup');
-                    }
-                  }}
-                  className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
-                >
-                  {servicesList.map((srv) => (
-                    <option key={srv.id} value={srv.id}>
-                      Discipline // {srv.disciplineNumber} — {srv.title} ({srv.category})
-                    </option>
-                  ))}
-                </select>
 
-                <div className="flex gap-1.5 flex-wrap pt-1">
-                  {servicesList.map((srv) => (
-                    <button
-                      key={srv.id}
-                      type="button"
-                      onClick={() => {
-                        setPieceServiceId(srv.id);
-                        setPieceCategoryLabel(srv.title);
-                        if (srv.id.includes('realism')) setPieceCategory('dark-realism');
-                        else if (srv.id.includes('fine-line')) setPieceCategory('micro-detail');
-                        else if (srv.id.includes('lettering')) setPieceCategory('neo-traditional');
-                        else if (srv.id.includes('tribal')) setPieceCategory('dark-realism');
-                        else if (srv.id.includes('cover')) setPieceCategory('coverup');
-                        else if (srv.id.includes('pmu')) setPieceCategory('micro-detail');
-                        else if (srv.id.includes('piercing')) setPieceCategory('piercing');
-                        else if (srv.id.includes('laser')) setPieceCategory('coverup');
+                {/* Live Card Preview Box */}
+                <div className="bg-[#0d0e14] border border-zinc-800 rounded-xl overflow-hidden relative shadow-inner">
+                  {pieceImagePreview || pieceImageFile ? (
+                    <div className="relative h-64 bg-black">
+                      <img
+                        src={
+                          pieceImageFile
+                            ? URL.createObjectURL(pieceImageFile)
+                            : pieceImagePreview
+                        }
+                        alt="Artwork Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0d0e14] via-transparent to-transparent opacity-80" />
+
+                      {/* Live Overlay Badges */}
+                      <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 max-w-[85%]">
+                        <span className="px-2 py-0.5 bg-black/80 backdrop-blur-md border border-red-500/40 text-[10px] text-red-300 rounded font-semibold">
+                          {servicesList.find((s) => s.id === pieceServiceId)?.title || pieceCategoryLabel || pieceCategory}
+                        </span>
+                        {pieceFeatured && (
+                          <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] rounded flex items-center gap-0.5">
+                            <Star className="w-2.5 h-2.5 fill-current" /> Featured
+                          </span>
+                        )}
+                      </div>
+
+                      {pieceFlashId && (
+                        <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/85 backdrop-blur-md text-[10px] text-amber-300 rounded border border-amber-500/30">
+                          {pieceFlashId}
+                        </span>
+                      )}
+
+                      <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-md text-[10px] text-zinc-300 rounded">
+                        {pieceHealingState || 'Healed Masterpiece'}
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-zinc-700/80 hover:border-red-500/80 rounded-xl cursor-pointer p-4 text-center transition-colors bg-[#141620]/40">
+                      <Upload className="w-8 h-8 text-zinc-500 mb-2" />
+                      <span className="text-xs font-semibold text-zinc-300">Click to Upload Photo</span>
+                      <span className="text-[10px] text-zinc-500 mt-1">PNG, JPG, WEBP up to 25MB</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setPieceImageFile(e.target.files[0]);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Upload File Selector Strip */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <label className="flex-1 px-3 py-2 bg-[#181a24] hover:bg-zinc-800 border border-zinc-700 text-zinc-200 rounded-lg text-xs font-semibold cursor-pointer transition-colors flex items-center justify-center gap-2">
+                      <Upload className="w-3.5 h-3.5 text-red-400" />
+                      <span>{pieceImageFile ? 'Change Selected File' : 'Browse Local Image'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setPieceImageFile(e.target.files[0]);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  {/* Direct URL Input fallback */}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] text-zinc-400">Or Paste Image URL (Pinterest / Cloud)</label>
+                    <input
+                      type="text"
+                      value={pieceImagePreview}
+                      onChange={(e) => {
+                        setPieceImagePreview(e.target.value);
+                        setPieceImageFile(null);
                       }}
-                      className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
-                        pieceServiceId === srv.id
-                          ? 'bg-red-950/90 border-red-500 text-red-200 font-bold'
-                          : 'bg-[#181a24] border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'
-                      }`}
-                    >
-                      {srv.disciplineNumber}. {srv.title}
-                    </button>
-                  ))}
+                      placeholder="https://images.unsplash.com/... or /images/portfolio/..."
+                      className="w-full px-3 py-1.5 bg-[#141620] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* 2. CATEGORY & LABELS */}
-              <div className="col-span-2">
-                <div className="grid grid-cols-2 gap-2">
+              {/* RIGHT COLUMN: Master Craft Parameters (7 cols) */}
+              <div className="lg:col-span-7 space-y-4">
+                {/* 1. Artwork Identity */}
+                <div className="p-3.5 bg-[#141620] border border-zinc-800 rounded-xl space-y-3">
+                  <span className="text-[11px] text-zinc-300 uppercase tracking-wider block font-semibold">
+                    1. Artwork Identity &amp; Title
+                  </span>
                   <div>
-                    <label className="block text-[10px] text-zinc-500 mb-0.5">Category Key (Slug)</label>
+                    <label className="block text-[10px] text-zinc-400 mb-1">Title / Subject Name *</label>
                     <input
                       required
                       type="text"
-                      value={pieceCategory}
-                      onChange={(e) => setPieceCategory(e.target.value)}
-                      placeholder="e.g. dark-realism, pmu, fine-line"
-                      className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      value={pieceTitle}
+                      onChange={(e) => setPieceTitle(e.target.value)}
+                      placeholder="e.g. Matriarch Memorial Portrait"
+                      className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-[10px] text-zinc-500 mb-0.5">Category Display Label</label>
-                    <input
-                      type="text"
-                      value={pieceCategoryLabel}
-                      onChange={(e) => setPieceCategoryLabel(e.target.value)}
-                      placeholder="e.g. Dark Realism &amp; Gothic Skull"
-                      className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    <label className="block text-[10px] text-zinc-400 mb-1">Artistic Narrative &amp; Craft Notes *</label>
+                    <textarea
+                      required
+                      rows={2}
+                      value={pieceDescription}
+                      onChange={(e) => setPieceDescription(e.target.value)}
+                      placeholder="Detailed notes on shading, technique, needle gauge, and aesthetic concept..."
+                      className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs leading-relaxed focus:outline-none focus:border-red-500"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">Placement *</label>
-                <input
-                  required
-                  type="text"
-                  value={pieceZone}
-                  onChange={(e) => setPieceZone(e.target.value)}
-                  placeholder="e.g. Forearm, Chest, Collarbone..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                />
-              </div>
+                {/* 2. Connected Studio Service Discipline */}
+                <div className="p-3.5 bg-[#141620] border border-red-950/70 rounded-xl space-y-2.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] text-red-400 uppercase tracking-wider block font-semibold flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>2. Linked Studio Discipline</span>
+                    </span>
+                    <span className="text-[10px] text-zinc-500">Auto-routes to service page</span>
+                  </div>
 
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">Flash / Tag #</label>
-                <input
-                  type="text"
-                  value={pieceFlashId}
-                  onChange={(e) => setPieceFlashId(e.target.value)}
-                  placeholder="e.g. #SKL-901"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                />
-              </div>
+                  <select
+                    value={pieceServiceId}
+                    onChange={(e) => {
+                      const selId = e.target.value;
+                      setPieceServiceId(selId);
+                      const matchedSrv = servicesList.find((s) => s.id === selId);
+                      if (matchedSrv) {
+                        setPieceCategoryLabel(matchedSrv.title);
+                        if (selId.includes('realism')) setPieceCategory('dark-realism');
+                        else if (selId.includes('fine-line')) setPieceCategory('micro-detail');
+                        else if (selId.includes('lettering')) setPieceCategory('neo-traditional');
+                        else if (selId.includes('tribal')) setPieceCategory('dark-realism');
+                        else if (selId.includes('cover')) setPieceCategory('coverup');
+                        else if (selId.includes('pmu')) setPieceCategory('micro-detail');
+                        else if (selId.includes('piercing')) setPieceCategory('piercing');
+                        else if (selId.includes('laser')) setPieceCategory('coverup');
+                      }
+                    }}
+                    className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
+                  >
+                    {servicesList.map((srv) => (
+                      <option key={srv.id} value={srv.id}>
+                        Discipline // {srv.disciplineNumber} — {srv.title} ({srv.category})
+                      </option>
+                    ))}
+                  </select>
 
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">Estimated Duration</label>
-                <input
-                  type="text"
-                  value={pieceDuration}
-                  onChange={(e) => setPieceDuration(e.target.value)}
-                  placeholder="e.g. 4.5 Hours (1 Session)"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                />
-              </div>
+                  <div className="flex gap-1.5 flex-wrap pt-1">
+                    {servicesList.map((srv) => (
+                      <button
+                        key={srv.id}
+                        type="button"
+                        onClick={() => {
+                          setPieceServiceId(srv.id);
+                          setPieceCategoryLabel(srv.title);
+                          if (srv.id.includes('realism')) setPieceCategory('dark-realism');
+                          else if (srv.id.includes('fine-line')) setPieceCategory('micro-detail');
+                          else if (srv.id.includes('lettering')) setPieceCategory('neo-traditional');
+                          else if (srv.id.includes('tribal')) setPieceCategory('dark-realism');
+                          else if (srv.id.includes('cover')) setPieceCategory('coverup');
+                          else if (srv.id.includes('pmu')) setPieceCategory('micro-detail');
+                          else if (srv.id.includes('piercing')) setPieceCategory('piercing');
+                          else if (srv.id.includes('laser')) setPieceCategory('coverup');
+                        }}
+                        className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
+                          pieceServiceId === srv.id
+                            ? 'bg-red-950/90 border-red-500 text-red-200 font-bold shadow-sm'
+                            : 'bg-[#181a24] border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'
+                        }`}
+                      >
+                        {srv.disciplineNumber}. {srv.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">Ink Type</label>
-                <input
-                  type="text"
-                  value={piecePigment}
-                  onChange={(e) => setPiecePigment(e.target.value)}
-                  placeholder="e.g. Dynamic Triple Black"
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                />
-              </div>
+                {/* 3. Master Technical Specs (2-column Grid) */}
+                <div className="p-3.5 bg-[#141620] border border-zinc-800 rounded-xl space-y-3">
+                  <span className="text-[11px] text-zinc-300 uppercase tracking-wider block font-semibold">
+                    3. Anatomical &amp; Pigment Specifications
+                  </span>
 
-              <div className="col-span-2 flex items-center gap-2 p-2.5 bg-[#141620] border border-zinc-700 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="pieceFeatured"
-                  checked={pieceFeatured}
-                  onChange={(e) => setPieceFeatured(e.target.checked)}
-                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-[#181a24] border-zinc-600"
-                />
-                <label htmlFor="pieceFeatured" className="text-xs text-zinc-300 font-semibold cursor-pointer">
-                  Featured Artwork (Display on studio homepage showcase)
-                </label>
-              </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 mb-1">Body Placement / Zone *</label>
+                      <input
+                        required
+                        type="text"
+                        value={pieceZone}
+                        onChange={(e) => setPieceZone(e.target.value)}
+                        placeholder="e.g. Forearm, Collarbone..."
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
 
-              <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">Description *</label>
-                <textarea
-                  required
-                  rows={3}
-                  value={pieceDescription}
-                  onChange={(e) => setPieceDescription(e.target.value)}
-                  placeholder="Artistic concept, healing state, technique notes..."
-                  className="w-full px-3 py-2 bg-[#141620] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
-                />
-              </div>
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 mb-1">Flash ID / Catalog #</label>
+                      <input
+                        type="text"
+                        value={pieceFlashId}
+                        onChange={(e) => setPieceFlashId(e.target.value)}
+                        placeholder="e.g. #MOM-701"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
 
-              <div className="col-span-2">
-                <label className="block text-xs text-zinc-400 mb-1">
-                  {editingArtworkId ? 'Artwork Photo (Optional replacement)' : 'Artwork Photo *'}
-                </label>
-                {pieceImagePreview && (
-                  <div className="mb-2 flex items-center gap-3 p-2 bg-[#141620] border border-zinc-700 rounded-lg">
-                    <img
-                      src={pieceImagePreview}
-                      alt="Artwork Preview"
-                      className="w-14 h-14 object-cover rounded border border-zinc-600"
-                    />
-                    <div className="text-[11px] text-zinc-400">
-                      <p className="text-zinc-200 font-semibold">Current Image</p>
-                      <p className="text-zinc-500">Upload a new file below only if you want to replace it.</p>
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 mb-1">Duration / Session</label>
+                      <input
+                        type="text"
+                        value={pieceDuration}
+                        onChange={(e) => setPieceDuration(e.target.value)}
+                        placeholder="e.g. 6 Hours Single Session"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 mb-1">Pigment Formula</label>
+                      <input
+                        type="text"
+                        value={piecePigment}
+                        onChange={(e) => setPiecePigment(e.target.value)}
+                        placeholder="e.g. Dynamic Carbon Deep &amp; Greywash"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 mb-1">Lead Artist</label>
+                      <input
+                        type="text"
+                        value={pieceArtist}
+                        onChange={(e) => setPieceArtist(e.target.value)}
+                        placeholder="e.g. Marvin"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 mb-1">Healing Lifecycle Stage</label>
+                      <input
+                        type="text"
+                        value={pieceHealingState}
+                        onChange={(e) => setPieceHealingState(e.target.value)}
+                        placeholder="e.g. Healed Masterpiece, Fresh Ink"
+                        className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
                     </div>
                   </div>
-                )}
-                <input
-                  required={!editingArtworkId && !pieceImagePreview}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => e.target.files && setPieceImageFile(e.target.files[0])}
-                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:rounded-md file:cursor-pointer"
-                />
+                </div>
+
+                {/* 4. Showcase Publishing Toggle */}
+                <div className="p-3 bg-[#141620] border border-zinc-800 rounded-xl flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <label htmlFor="pieceFeatured" className="text-xs text-white font-bold cursor-pointer flex items-center gap-1.5">
+                      <Star className="w-3.5 h-3.5 text-amber-400 fill-current" />
+                      <span>Featured Atelier Masterpiece</span>
+                    </label>
+                    <p className="text-[10px] text-zinc-500">
+                      Display prominently in the homepage 4K spotlight carousel.
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    id="pieceFeatured"
+                    checked={pieceFeatured}
+                    onChange={(e) => setPieceFeatured(e.target.checked)}
+                    className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-[#181a24] border-zinc-600 cursor-pointer"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-zinc-700/60 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowArtworkModal(false);
-                  setEditingArtworkId(null);
-                }}
-                className="px-3.5 py-1.5 bg-[#141620] text-zinc-300 rounded-lg text-xs hover:bg-zinc-800"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={savingArtwork}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase transition-colors shadow-md flex items-center gap-1.5"
-              >
-                <Check className="w-3.5 h-3.5" />
-                <span>{savingArtwork ? 'Saving...' : editingArtworkId ? 'Update Artwork' : 'Save Artwork'}</span>
-              </button>
+            {/* Modal Footer Actions */}
+            <div className="px-6 py-4 border-t border-zinc-800 bg-[#141622] flex justify-between items-center">
+              <span className="text-[10px] text-zinc-500 hidden sm:inline">
+                All changes sync immediately to studio portfolio and service pages.
+              </span>
+              <div className="flex items-center gap-2.5 ml-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowArtworkModal(false);
+                    setEditingArtworkId(null);
+                  }}
+                  className="px-4 py-2 bg-[#181a24] text-zinc-300 rounded-lg text-xs font-semibold hover:bg-zinc-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingArtwork}
+                  className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-lg shadow-red-950/40 flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{savingArtwork ? 'Saving & Publishing...' : editingArtworkId ? 'Update Artwork Specs' : 'Publish Artwork'}</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>

@@ -270,6 +270,7 @@ async function main() {
   // 4. Seed Portfolio Pieces
   const pieces = [
     {
+      id: "piece-01",
       title: "Honor To Mothers: Matriarch Portrait",
       serviceId: "realism-portraits",
       category: "dark-realism",
@@ -285,6 +286,7 @@ async function main() {
       sortOrder: 1,
     },
     {
+      id: "piece-02",
       title: 'Custom Script "Abdul S"',
       serviceId: "custom-lettering",
       category: "neo-traditional",
@@ -300,6 +302,7 @@ async function main() {
       sortOrder: 2,
     },
     {
+      id: "piece-03",
       title: "Spider Blackwork & Navel Piercing",
       serviceId: "body-piercings",
       category: "piercing",
@@ -315,6 +318,7 @@ async function main() {
       sortOrder: 3,
     },
     {
+      id: "piece-04",
       title: "Memorial Portrait Backpiece",
       serviceId: "realism-portraits",
       category: "dark-realism",
@@ -330,6 +334,7 @@ async function main() {
       sortOrder: 4,
     },
     {
+      id: "piece-05",
       title: "Ombré Powder Brows & PMU",
       serviceId: "semi-permanent-makeup",
       category: "micro-detail",
@@ -345,6 +350,7 @@ async function main() {
       sortOrder: 5,
     },
     {
+      id: "piece-06",
       title: "Corvus Nocturne Chest Piece",
       serviceId: "realism-portraits",
       category: "dark-realism",
@@ -360,6 +366,7 @@ async function main() {
       sortOrder: 6,
     },
     {
+      id: "piece-07",
       title: "Botanical Fine-Line Micro Floral",
       serviceId: "fine-line-script",
       category: "micro-detail",
@@ -375,6 +382,7 @@ async function main() {
       sortOrder: 7,
     },
     {
+      id: "piece-08",
       title: 'Gothic Blackletter "Loyalty & Faith"',
       serviceId: "custom-lettering",
       category: "neo-traditional",
@@ -390,6 +398,7 @@ async function main() {
       sortOrder: 8,
     },
     {
+      id: "piece-09",
       title: "Polynesian & African Tribal Armor",
       serviceId: "traditional-tribal",
       category: "dark-realism",
@@ -405,6 +414,7 @@ async function main() {
       sortOrder: 9,
     },
     {
+      id: "piece-10",
       title: "Dark Lotus Cover-Up & Restoration",
       serviceId: "coverups-restorations",
       category: "coverup",
@@ -420,6 +430,7 @@ async function main() {
       sortOrder: 10,
     },
     {
+      id: "piece-11",
       title: "Titanium Ear Cartilage & Conch Curation",
       serviceId: "body-piercings",
       category: "piercing",
@@ -435,6 +446,7 @@ async function main() {
       sortOrder: 11,
     },
     {
+      id: "piece-12",
       title: "Nd:YAG Laser Lightening & Keloid Clearance",
       serviceId: "laser-keloid",
       category: "coverup",

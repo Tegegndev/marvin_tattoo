@@ -89,6 +89,9 @@ export const createPortfolioPiece = async (
       serviceId,
       category,
       categoryLabel,
+      artist,
+      healingState,
+      cycle,
       zone,
       flashId,
       description,
@@ -125,6 +128,9 @@ export const createPortfolioPiece = async (
         serviceId: serviceId || null,
         category,
         categoryLabel: categoryLabel || category,
+        artist: artist || "Marvin",
+        healingState: healingState || "Healed Masterpiece",
+        cycle: cycle || "healed",
         zone: zone || "General",
         flashId: flashId || null,
         imageUrl,
@@ -163,10 +169,66 @@ export const updatePortfolioPiece = async (
 ): Promise<void> => {
   try {
     const id = req.params.id as string;
-    const existing = await prisma.portfolioPiece.findUnique({ where: { id } });
+    let existing = await prisma.portfolioPiece.findUnique({ where: { id } });
+
+    if (!existing && req.body.flashId) {
+      existing = await prisma.portfolioPiece.findFirst({
+        where: { flashId: req.body.flashId },
+      });
+    }
+
+    if (!existing && req.body.title) {
+      existing = await prisma.portfolioPiece.findFirst({
+        where: { title: req.body.title },
+      });
+    }
 
     if (!existing) {
-      res.status(404).json({ success: false, message: "Portfolio piece not found" });
+      // If piece is not yet in database (e.g. static catalog item being edited), create it directly
+      let imageUrl = req.body.imageUrl || "";
+      if (req.file) {
+        imageUrl = await processAndSaveImage(req.file, "portfolio");
+      }
+      if (!imageUrl) {
+        imageUrl = "/images/portfolio/portrait-elder-woman.png";
+      }
+
+      const created = await prisma.portfolioPiece.create({
+        data: {
+          id: id.startsWith("piece-") ? id : undefined,
+          title: req.body.title || "Untitled Artwork",
+          serviceId: req.body.serviceId || null,
+          category: req.body.category || "dark-realism",
+          categoryLabel: req.body.categoryLabel || req.body.category || "Dark Realism",
+          artist: req.body.artist || "Marvin",
+          healingState: req.body.healingState || "Healed Masterpiece",
+          cycle: req.body.cycle || "healed",
+          zone: req.body.zone || "Forearm",
+          flashId: req.body.flashId || null,
+          imageUrl,
+          description: req.body.description || "",
+          duration: req.body.duration || null,
+          pigment: req.body.pigment || "Dynamic Triple Black",
+          featured: req.body.featured === "true" || req.body.featured === true,
+          sortOrder: req.body.sortOrder ? parseInt(req.body.sortOrder, 10) : 0,
+        },
+        include: {
+          service: {
+            select: {
+              id: true,
+              title: true,
+              disciplineNumber: true,
+              category: true,
+            },
+          },
+        },
+      });
+
+      res.json({
+        success: true,
+        message: "Portfolio piece updated successfully",
+        data: created,
+      });
       return;
     }
 
@@ -184,6 +246,9 @@ export const updatePortfolioPiece = async (
       serviceId,
       category,
       categoryLabel,
+      artist,
+      healingState,
+      cycle,
       zone,
       flashId,
       description,
@@ -194,12 +259,15 @@ export const updatePortfolioPiece = async (
     } = req.body;
 
     const updated = await prisma.portfolioPiece.update({
-      where: { id },
+      where: { id: existing.id },
       data: {
         ...(title && { title }),
         ...(serviceId !== undefined && { serviceId: serviceId || null }),
         ...(category && { category }),
         ...(categoryLabel && { categoryLabel }),
+        ...(artist !== undefined && { artist }),
+        ...(healingState !== undefined && { healingState }),
+        ...(cycle !== undefined && { cycle }),
         ...(zone && { zone }),
         ...(flashId !== undefined && { flashId }),
         ...(imageUrl && { imageUrl }),

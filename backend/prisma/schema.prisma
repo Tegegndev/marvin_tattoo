@@ -47,6 +47,9 @@ model PortfolioPiece {
   service       Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   category      String   // dark-realism, neo-traditional, micro-detail, piercing, coverup, pmu
   categoryLabel String   // e.g. "Memorial Realism & Mother Tribute"
+  artist        String?  @default("Marvin")
+  healingState  String?  @default("Healed Masterpiece")
+  cycle         String?  @default("healed") // healed, fresh
   zone          String   // e.g. "Forearm", "Chest", "Collarbone"
   flashId       String?  // e.g. "#MOM-701"
   imageUrl      String
