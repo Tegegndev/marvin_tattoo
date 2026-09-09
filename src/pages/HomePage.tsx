@@ -372,17 +372,13 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 {/* Card Body */}
                 <div className="p-6 flex flex-col justify-between flex-grow space-y-6">
-                  <div className="space-y-3">
+                  <div>
                     <h3 className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors">
                       {service.title}
                     </h3>
-
-                    <p className="font-body-sm text-xs sm:text-sm text-bone-muted leading-relaxed">
-                      {service.description}
-                    </p>
                   </div>
 
-                  <div className="space-y-4 pt-2">
+                  <div className="space-y-4">
                     {/* Studio Specifications Container */}
                     {service.specs && service.specs.length > 0 && (
                       <div className="bg-noir-950/80 p-3.5 border border-noir-700/60 rounded-sm space-y-2">
