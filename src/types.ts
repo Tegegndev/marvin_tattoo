@@ -45,7 +45,9 @@ export interface ServiceItem {
 export interface PortfolioPiece {
   id: string;
   title: string;
-  category: 'dark-realism' | 'neo-traditional' | 'micro-detail' | 'piercing' | 'coverup';
+  serviceId?: string;
+  service?: Partial<ServiceItem>;
+  category: 'dark-realism' | 'neo-traditional' | 'micro-detail' | 'piercing' | 'coverup' | string;
   categoryLabel: string;
   artist: string;
   healingState: string;
@@ -53,11 +55,13 @@ export interface PortfolioPiece {
   zone: string;
   flashId: string;
   image: string;
+  imageUrl?: string;
   description: string;
   duration?: string;
   pigment?: string;
   morphology?: string;
   featured?: boolean;
+  sortOrder?: number;
 }
 
 export interface ArtistProfile {

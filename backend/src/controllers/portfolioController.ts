@@ -8,11 +8,14 @@ export const getPortfolio = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { category, featured } = req.query;
+    const { category, serviceId, featured } = req.query;
 
     const whereClause: any = {};
     if (category && typeof category === "string" && category !== "all") {
       whereClause.category = category;
+    }
+    if (serviceId && typeof serviceId === "string" && serviceId !== "all") {
+      whereClause.serviceId = serviceId;
     }
     if (featured === "true") {
       whereClause.featured = true;
@@ -20,6 +23,16 @@ export const getPortfolio = async (
 
     const pieces = await prisma.portfolioPiece.findMany({
       where: whereClause,
+      include: {
+        service: {
+          select: {
+            id: true,
+            title: true,
+            disciplineNumber: true,
+            category: true,
+          },
+        },
+      },
       orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
     });
 
@@ -42,6 +55,16 @@ export const getPortfolioPiece = async (
     const id = req.params.id as string;
     const piece = await prisma.portfolioPiece.findUnique({
       where: { id },
+      include: {
+        service: {
+          select: {
+            id: true,
+            title: true,
+            disciplineNumber: true,
+            category: true,
+          },
+        },
+      },
     });
 
     if (!piece) {
@@ -63,6 +86,7 @@ export const createPortfolioPiece = async (
   try {
     const {
       title,
+      serviceId,
       category,
       categoryLabel,
       zone,
@@ -98,6 +122,7 @@ export const createPortfolioPiece = async (
     const newPiece = await prisma.portfolioPiece.create({
       data: {
         title,
+        serviceId: serviceId || null,
         category,
         categoryLabel: categoryLabel || category,
         zone: zone || "General",
@@ -108,6 +133,16 @@ export const createPortfolioPiece = async (
         pigment: pigment || "Dynamic Triple Black",
         featured: featured === "true" || featured === true,
         sortOrder: sortOrder ? parseInt(sortOrder, 10) : 0,
+      },
+      include: {
+        service: {
+          select: {
+            id: true,
+            title: true,
+            disciplineNumber: true,
+            category: true,
+          },
+        },
       },
     });
 
@@ -146,6 +181,7 @@ export const updatePortfolioPiece = async (
 
     const {
       title,
+      serviceId,
       category,
       categoryLabel,
       zone,
@@ -161,6 +197,7 @@ export const updatePortfolioPiece = async (
       where: { id },
       data: {
         ...(title && { title }),
+        ...(serviceId !== undefined && { serviceId: serviceId || null }),
         ...(category && { category }),
         ...(categoryLabel && { categoryLabel }),
         ...(zone && { zone }),
@@ -173,6 +210,16 @@ export const updatePortfolioPiece = async (
           featured: featured === "true" || featured === true,
         }),
         ...(sortOrder !== undefined && { sortOrder: parseInt(sortOrder, 10) }),
+      },
+      include: {
+        service: {
+          select: {
+            id: true,
+            title: true,
+            disciplineNumber: true,
+            category: true,
+          },
+        },
       },
     });
 

@@ -87,15 +87,20 @@ export async function fetchSiteSettings(): Promise<SiteSettingData> {
   }
 }
 
-export async function fetchPortfolioPieces(): Promise<PortfolioPiece[]> {
+export async function fetchPortfolioPieces(serviceId?: string): Promise<PortfolioPiece[]> {
   try {
-    const res = await fetch("/api/portfolio");
+    const url = serviceId && serviceId !== "all" 
+      ? `/api/portfolio?serviceId=${encodeURIComponent(serviceId)}` 
+      : "/api/portfolio";
+    const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch portfolio");
     const json = await res.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
       return json.data.map((p: any) => ({
         id: p.id,
         title: p.title,
+        serviceId: p.serviceId || undefined,
+        service: p.service || undefined,
         category: p.category,
         categoryLabel: p.categoryLabel || p.category,
         artist: p.artist || "Marvin",
@@ -105,10 +110,12 @@ export async function fetchPortfolioPieces(): Promise<PortfolioPiece[]> {
         morphology: p.morphology || p.zone || "General",
         flashId: p.flashId || "",
         image: p.imageUrl || p.image || "",
+        imageUrl: p.imageUrl || p.image || "",
         description: p.description,
         duration: p.duration || "Custom Session",
         pigment: p.pigment || "Dynamic Triple Black",
         featured: Boolean(p.featured),
+        sortOrder: p.sortOrder || 0,
       }));
     }
     return PORTFOLIO_DATA;

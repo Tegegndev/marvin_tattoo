@@ -328,33 +328,36 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
           {(() => {
             const sId = currentService.id.toLowerCase();
             const matchingPieces = portfolioList.filter((piece) => {
+              if (piece.serviceId && piece.serviceId.toLowerCase() === sId) {
+                return true;
+              }
               const cat = (piece.category || '').toLowerCase();
               const label = (piece.categoryLabel || '').toLowerCase();
               const title = (piece.title || '').toLowerCase();
               const desc = (piece.description || '').toLowerCase();
 
-              if (sId === 'realism-portraits') {
+              if (sId.includes('realism') || sId.includes('portrait')) {
                 return cat === 'dark-realism' || label.includes('realism') || label.includes('portrait') || title.includes('portrait');
               }
-              if (sId === 'minimalist-fineline') {
+              if (sId.includes('fine-line') || sId.includes('minimalist')) {
                 return cat === 'micro-detail' || label.includes('fine-line') || label.includes('minimalist') || label.includes('botanical') || desc.includes('single needle');
               }
-              if (sId === 'lettering-script') {
+              if (sId.includes('lettering') || sId.includes('script')) {
                 return label.includes('script') || label.includes('lettering') || title.includes('script') || desc.includes('script') || desc.includes('calligraphy');
               }
-              if (sId === 'traditional-tribal') {
+              if (sId.includes('tribal') || sId.includes('traditional')) {
                 return label.includes('tribal') || label.includes('traditional') || label.includes('polynesian') || desc.includes('tribal') || title.includes('chest');
               }
-              if (sId === 'coverups-restorations') {
+              if (sId.includes('coverup') || sId.includes('restoration')) {
                 return cat === 'coverup' || label.includes('cover') || desc.includes('cover') || title.includes('cover');
               }
-              if (sId === 'semi-permanent-makeup') {
+              if (sId.includes('pmu') || sId.includes('makeup') || sId.includes('semi-permanent')) {
                 return cat === 'pmu' || label.includes('pmu') || label.includes('powder brows') || title.includes('brows') || label.includes('cosmetic');
               }
-              if (sId === 'body-piercing') {
+              if (sId.includes('piercing')) {
                 return cat === 'piercing' || label.includes('piercing') || title.includes('piercing');
               }
-              if (sId === 'laser-keloids-removal') {
+              if (sId.includes('laser') || sId.includes('keloid') || sId.includes('removal')) {
                 return label.includes('laser') || label.includes('removal') || label.includes('clearance') || title.includes('laser');
               }
               return false;

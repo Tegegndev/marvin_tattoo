@@ -115,6 +115,7 @@ async function main() {
   // 3. Seed Services Catalog
   const services = [
     {
+      id: "realism-portraits",
       disciplineNumber: "01",
       title: "Realism & Portraits",
       subtitle: "Photo-Realistic Artistry",
@@ -132,6 +133,7 @@ async function main() {
       sortOrder: 1,
     },
     {
+      id: "fine-line-script",
       disciplineNumber: "02",
       title: "Minimalist & Fine-Line",
       subtitle: "Delicate Precision Marking",
@@ -149,6 +151,7 @@ async function main() {
       sortOrder: 2,
     },
     {
+      id: "custom-lettering",
       disciplineNumber: "03",
       title: "Lettering & Script",
       subtitle: "Custom Typography & Calligraphy",
@@ -166,6 +169,7 @@ async function main() {
       sortOrder: 3,
     },
     {
+      id: "traditional-tribal",
       disciplineNumber: "04",
       title: "Traditional & Tribal",
       subtitle: "Bold Blackwork & Flash",
@@ -183,6 +187,7 @@ async function main() {
       sortOrder: 4,
     },
     {
+      id: "coverups-restorations",
       disciplineNumber: "05",
       title: "Cover-Ups & Restorations",
       subtitle: "Reworking & Concealing Old Ink",
@@ -200,6 +205,7 @@ async function main() {
       sortOrder: 5,
     },
     {
+      id: "semi-permanent-makeup",
       disciplineNumber: "06",
       title: "Semi-Permanent Makeup",
       subtitle: "Microblading, Lips & Camouflage",
@@ -217,6 +223,7 @@ async function main() {
       sortOrder: 6,
     },
     {
+      id: "body-piercings",
       disciplineNumber: "07",
       title: "Precision Body Piercing",
       subtitle: "Ear, Facial, Dermals & Body",
@@ -234,6 +241,7 @@ async function main() {
       sortOrder: 7,
     },
     {
+      id: "laser-keloid",
       disciplineNumber: "08",
       title: "Laser & Keloids Removal",
       subtitle: "Safe Fading & Skin Clearance",
@@ -263,6 +271,7 @@ async function main() {
   const pieces = [
     {
       title: "Honor To Mothers: Matriarch Portrait",
+      serviceId: "realism-portraits",
       category: "dark-realism",
       categoryLabel: "Memorial Realism & Mother Tribute",
       zone: "Forearm",
@@ -277,6 +286,7 @@ async function main() {
     },
     {
       title: 'Custom Script "Abdul S"',
+      serviceId: "custom-lettering",
       category: "neo-traditional",
       categoryLabel: "Lettering & Fine-Line Script",
       zone: "Collarbone",
@@ -291,6 +301,7 @@ async function main() {
     },
     {
       title: "Spider Blackwork & Navel Piercing",
+      serviceId: "body-piercings",
       category: "piercing",
       categoryLabel: "Piercing & Blackwork",
       zone: "Abdomen / Navel",
@@ -305,6 +316,7 @@ async function main() {
     },
     {
       title: "Memorial Portrait Backpiece",
+      serviceId: "realism-portraits",
       category: "dark-realism",
       categoryLabel: "Dark Realism & Portraits",
       zone: "Backpiece",
@@ -319,6 +331,7 @@ async function main() {
     },
     {
       title: "Ombré Powder Brows & PMU",
+      serviceId: "semi-permanent-makeup",
       category: "micro-detail",
       categoryLabel: "Cosmetic Eyebrow PMU",
       zone: "Face & Brow",
@@ -333,6 +346,7 @@ async function main() {
     },
     {
       title: "Corvus Nocturne Chest Piece",
+      serviceId: "realism-portraits",
       category: "dark-realism",
       categoryLabel: "Dark Realism & Heavy Shading",
       zone: "Chest",
@@ -347,6 +361,7 @@ async function main() {
     },
     {
       title: "Botanical Fine-Line Micro Floral",
+      serviceId: "fine-line-script",
       category: "micro-detail",
       categoryLabel: "Minimalist & Fine-Line Botanicals",
       zone: "Wrist & Forearm",
@@ -361,6 +376,7 @@ async function main() {
     },
     {
       title: 'Gothic Blackletter "Loyalty & Faith"',
+      serviceId: "custom-lettering",
       category: "neo-traditional",
       categoryLabel: "Lettering & Gothic Script",
       zone: "Chest & Sternum",
@@ -375,6 +391,7 @@ async function main() {
     },
     {
       title: "Polynesian & African Tribal Armor",
+      serviceId: "traditional-tribal",
       category: "dark-realism",
       categoryLabel: "Traditional & Tribal Blackwork",
       zone: "Shoulder & Arm",
@@ -389,6 +406,7 @@ async function main() {
     },
     {
       title: "Dark Lotus Cover-Up & Restoration",
+      serviceId: "coverups-restorations",
       category: "coverup",
       categoryLabel: "Cover-Ups & Tattoo Restorations",
       zone: "Upper Arm",
@@ -403,6 +421,7 @@ async function main() {
     },
     {
       title: "Titanium Ear Cartilage & Conch Curation",
+      serviceId: "body-piercings",
       category: "piercing",
       categoryLabel: "Precision Body Piercings",
       zone: "Ear (Conch & Helix)",
@@ -417,6 +436,7 @@ async function main() {
     },
     {
       title: "Nd:YAG Laser Lightening & Keloid Clearance",
+      serviceId: "laser-keloid",
       category: "coverup",
       categoryLabel: "Laser & Skin Clearance",
       zone: "Forearm & Skin",

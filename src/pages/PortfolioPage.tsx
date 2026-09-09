@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { PageView, PortfolioPiece } from '../types';
-import { PORTFOLIO_DATA } from '../data/atelierData';
-import { fetchPortfolioPieces } from '../services/apiClient';
+import React, { useState, useEffect, useMemo } from 'react';
+import { PageView, PortfolioPiece, ServiceItem } from '../types';
+import { PORTFOLIO_DATA, SERVICES_DATA } from '../data/atelierData';
+import { fetchPortfolioPieces, fetchServices } from '../services/apiClient';
 import { motion } from 'framer-motion';
 import { Icons8 } from '../components/Icons8';
 
@@ -16,6 +16,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   onBookSimilar
 }) => {
   const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCycle, setSelectedCycle] = useState<string>('all');
   const [selectedZone, setSelectedZone] = useState<string>('all');
@@ -23,30 +24,39 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
   useEffect(() => {
     fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
+    fetchServices().then(setServicesList).catch(() => {});
   }, []);
 
-  const categories = React.useMemo(() => {
-    const defaultList = [
-      { id: 'all', label: 'All' },
-      { id: 'dark-realism', label: 'Dark Realism' },
-      { id: 'neo-traditional', label: 'Neo-Traditional' },
-      { id: 'micro-detail', label: 'Micro & Single-Needle' },
-      { id: 'piercing', label: 'Piercings' },
-      { id: 'coverup', label: 'Cover-Ups' },
-    ];
-    const knownIds = new Set(defaultList.map((c) => c.id));
-    const extraCategories: { id: string; label: string }[] = [];
-    portfolioList.forEach((p) => {
-      if (p.category && !knownIds.has(p.category)) {
-        knownIds.add(p.category);
-        extraCategories.push({
-          id: p.category,
-          label: p.categoryLabel || p.category,
-        });
-      }
+  // Construct dynamic category tabs directly from studio services catalog
+  const categories = useMemo(() => {
+    const allTab = { id: 'all', label: 'All Disciplines', count: portfolioList.length };
+    const serviceTabs = servicesList.map((srv) => {
+      const sId = srv.id.toLowerCase();
+      const count = portfolioList.filter((p) => {
+        if (p.serviceId && p.serviceId.toLowerCase() === sId) return true;
+        const pCat = (p.category || '').toLowerCase();
+        const pLabel = (p.categoryLabel || '').toLowerCase();
+        if (sId.includes('realism') && (pCat === 'dark-realism' || pLabel.includes('realism'))) return true;
+        if (sId.includes('fine-line') && (pCat === 'micro-detail' || pLabel.includes('fine-line') || pLabel.includes('botanical'))) return true;
+        if (sId.includes('lettering') && (pLabel.includes('script') || pLabel.includes('lettering'))) return true;
+        if (sId.includes('tribal') && (pLabel.includes('tribal') || pLabel.includes('traditional'))) return true;
+        if (sId.includes('cover') && (pCat === 'coverup' || pLabel.includes('cover'))) return true;
+        if (sId.includes('pmu') && (pCat === 'pmu' || pLabel.includes('pmu') || pLabel.includes('brow'))) return true;
+        if (sId.includes('piercing') && (pCat === 'piercing' || pLabel.includes('piercing'))) return true;
+        if (sId.includes('laser') && (pLabel.includes('laser') || pLabel.includes('clearance'))) return true;
+        return false;
+      }).length;
+
+      return {
+        id: srv.id,
+        label: `${srv.disciplineNumber}. ${srv.title}`,
+        shortLabel: srv.title,
+        count,
+      };
     });
-    return [...defaultList, ...extraCategories];
-  }, [portfolioList]);
+
+    return [allTab, ...serviceTabs];
+  }, [portfolioList, servicesList]);
 
   const zones = [
     'All Zones',
@@ -68,8 +78,26 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   ];
 
   const filteredPieces = portfolioList.filter((piece) => {
-    if (selectedCategory !== 'all' && piece.category !== selectedCategory) {
-      return false;
+    if (selectedCategory !== 'all') {
+      const sel = selectedCategory.toLowerCase();
+      const pServId = (piece.serviceId || '').toLowerCase();
+      const pCat = (piece.category || '').toLowerCase();
+      const pLabel = (piece.categoryLabel || '').toLowerCase();
+
+      const matchesService = pServId === sel;
+      const matchesLegacy = 
+        (sel.includes('realism') && (pCat === 'dark-realism' || pLabel.includes('realism'))) ||
+        (sel.includes('fine-line') && (pCat === 'micro-detail' || pLabel.includes('fine-line') || pLabel.includes('botanical'))) ||
+        (sel.includes('lettering') && (pLabel.includes('script') || pLabel.includes('lettering'))) ||
+        (sel.includes('tribal') && (pLabel.includes('tribal') || pLabel.includes('traditional'))) ||
+        (sel.includes('cover') && (pCat === 'coverup' || pLabel.includes('cover'))) ||
+        (sel.includes('pmu') && (pCat === 'pmu' || pLabel.includes('pmu') || pLabel.includes('brow'))) ||
+        (sel.includes('piercing') && (pCat === 'piercing' || pLabel.includes('piercing'))) ||
+        (sel.includes('laser') && (pLabel.includes('laser') || pLabel.includes('clearance')));
+
+      if (!matchesService && !matchesLegacy) {
+        return false;
+      }
     }
     if (selectedCycle !== 'all' && piece.cycle !== selectedCycle) {
       return false;
@@ -325,6 +353,9 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
                 <div className="p-5 flex flex-col justify-between flex-1 bg-noir-850">
                   <div className="space-y-2">
+                    <div className="text-[10px] font-label-caps text-crimson-light uppercase tracking-widest font-semibold">
+                      {piece.service?.title || piece.categoryLabel || piece.category.replace(/-/g, ' ')}
+                    </div>
                     <div className="flex items-center justify-between">
                       <span className="font-title-editorial text-lg uppercase text-bone group-hover:text-crimson-light transition-colors">
                         {piece.title}

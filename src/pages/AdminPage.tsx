@@ -203,6 +203,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [showArtworkModal, setShowArtworkModal] = useState<boolean>(false);
   const [editingArtworkId, setEditingArtworkId] = useState<string | null>(null);
   const [pieceTitle, setPieceTitle] = useState('');
+  const [pieceServiceId, setPieceServiceId] = useState<string>('realism-portraits');
   const [pieceCategory, setPieceCategory] = useState('dark-realism');
   const [pieceCategoryLabel, setPieceCategoryLabel] = useState('');
   const [pieceZone, setPieceZone] = useState('Forearm');
@@ -781,6 +782,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const openAddArtworkModal = () => {
     setEditingArtworkId(null);
     setPieceTitle('');
+    setPieceServiceId(servicesList.length > 0 ? servicesList[0].id : 'realism-portraits');
     setPieceCategory('dark-realism');
     setPieceCategoryLabel('Dark Realism');
     setPieceZone('Forearm');
@@ -797,6 +799,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const openEditArtworkModal = (piece: any) => {
     setEditingArtworkId(piece.id);
     setPieceTitle(piece.title || '');
+    setPieceServiceId(piece.serviceId || piece.service?.id || (servicesList.length > 0 ? servicesList[0].id : 'realism-portraits'));
     setPieceCategory(piece.category || 'dark-realism');
     setPieceCategoryLabel(piece.categoryLabel || piece.category || '');
     setPieceZone(piece.zone || 'Forearm');
@@ -820,6 +823,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     try {
       const formData = new FormData();
       formData.append('title', pieceTitle);
+      formData.append('serviceId', pieceServiceId);
       formData.append('category', pieceCategory);
       formData.append('categoryLabel', pieceCategoryLabel || pieceCategory);
       formData.append('zone', pieceZone);
@@ -1101,21 +1105,32 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const portfolioCategories = useMemo(() => {
     const cats = new Set<string>();
     portfolioPieces.forEach((p) => {
-      if (p.category) cats.add(p.category);
+      if (p.serviceId) cats.add(p.serviceId);
+      else if (p.category) cats.add(p.category);
     });
     return Array.from(cats);
   }, [portfolioPieces]);
 
   const filteredPortfolioPieces = useMemo(() => {
     return portfolioPieces.filter((p) => {
+      const pServ = (p.serviceId || '').toLowerCase();
+      const pCat = (p.category || '').toLowerCase();
+      const pLabel = (p.categoryLabel || '').toLowerCase();
+      const filter = portfolioCategoryFilter.toLowerCase();
+
       const matchesCategory =
         portfolioCategoryFilter === 'ALL' ||
-        p.category?.toLowerCase() === portfolioCategoryFilter.toLowerCase();
+        pServ === filter ||
+        pCat === filter ||
+        pLabel.includes(filter);
+
       const q = portfolioSearch.trim().toLowerCase();
       const matchesSearch =
         !q ||
         p.title?.toLowerCase().includes(q) ||
-        p.category?.toLowerCase().includes(q) ||
+        pServ.includes(q) ||
+        pCat.includes(q) ||
+        pLabel.includes(q) ||
         p.zone?.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q) ||
         p.flashId?.toLowerCase().includes(q);
@@ -3183,9 +3198,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           alt={p.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        <div className="absolute top-2 left-2 flex gap-1">
+                        <div className="absolute top-2 left-2 flex flex-wrap gap-1 max-w-[80%]">
                           <span className="px-2 py-0.5 bg-[#181a24]/90 border border-zinc-700 text-[10px] font-mono text-red-400 rounded capitalize">
-                            {p.category}
+                            {p.service?.title || p.serviceId?.replace(/-/g, ' ') || p.category}
                           </span>
                           {p.featured && (
                             <span className="px-2 py-0.5 bg-amber-500/90 text-zinc-950 font-bold text-[10px] font-mono rounded flex items-center gap-0.5">
@@ -3201,6 +3216,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       </div>
 
                       <div className="p-4 space-y-2 font-mono text-xs">
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono truncate">
+                          {p.categoryLabel || p.category}
+                        </div>
                         <h4 className="font-semibold text-white truncate" title={p.title}>{p.title}</h4>
                         <div className="text-[11px] text-zinc-400 flex justify-between">
                           <span className="truncate">{p.zone}</span>
@@ -3776,41 +3794,72 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 />
               </div>
 
-              <div className="col-span-2">
-                <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs text-zinc-400">Category *</label>
-                  <span className="text-[10px] text-zinc-500">Pick preset or type custom</span>
+              {/* 1. LINKED SERVICE DISCIPLINE (SHARED TAXONOMY) */}
+              <div className="col-span-2 bg-[#141620] p-3 rounded-lg border border-red-950/60 space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="block text-xs font-semibold text-red-400">
+                    Linked Studio Discipline / Service *
+                  </label>
+                  <span className="text-[10px] text-zinc-400">Automatically displays in Service detail pages</span>
                 </div>
-                <div className="flex gap-1.5 flex-wrap mb-2">
-                  {[
-                    { id: 'dark-realism', label: 'Dark Realism' },
-                    { id: 'neo-traditional', label: 'Neo-Trad' },
-                    { id: 'micro-detail', label: 'Micro & Single-Needle' },
-                    { id: 'piercing', label: 'Piercing' },
-                    { id: 'coverup', label: 'Cover-Up' },
-                    { id: 'fine-line', label: 'Fine-Line' },
-                    { id: 'pmu', label: 'PMU Eyebrow' },
-                    { id: 'script', label: 'Lettering & Script' },
-                  ].map((preset) => (
+                <select
+                  value={pieceServiceId}
+                  onChange={(e) => {
+                    const selId = e.target.value;
+                    setPieceServiceId(selId);
+                    const matchedSrv = servicesList.find((s) => s.id === selId);
+                    if (matchedSrv) {
+                      setPieceCategoryLabel(matchedSrv.title);
+                      if (selId.includes('realism')) setPieceCategory('dark-realism');
+                      else if (selId.includes('fine-line')) setPieceCategory('micro-detail');
+                      else if (selId.includes('lettering')) setPieceCategory('neo-traditional');
+                      else if (selId.includes('tribal')) setPieceCategory('dark-realism');
+                      else if (selId.includes('cover')) setPieceCategory('coverup');
+                      else if (selId.includes('pmu')) setPieceCategory('micro-detail');
+                      else if (selId.includes('piercing')) setPieceCategory('piercing');
+                      else if (selId.includes('laser')) setPieceCategory('coverup');
+                    }
+                  }}
+                  className="w-full px-3 py-2 bg-[#181a24] border border-zinc-700 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                >
+                  {servicesList.map((srv) => (
+                    <option key={srv.id} value={srv.id}>
+                      Discipline // {srv.disciplineNumber} — {srv.title} ({srv.category})
+                    </option>
+                  ))}
+                </select>
+
+                <div className="flex gap-1.5 flex-wrap pt-1">
+                  {servicesList.map((srv) => (
                     <button
-                      key={preset.id}
+                      key={srv.id}
                       type="button"
                       onClick={() => {
-                        setPieceCategory(preset.id);
-                        if (!pieceCategoryLabel || pieceCategoryLabel === pieceCategory) {
-                          setPieceCategoryLabel(preset.label);
-                        }
+                        setPieceServiceId(srv.id);
+                        setPieceCategoryLabel(srv.title);
+                        if (srv.id.includes('realism')) setPieceCategory('dark-realism');
+                        else if (srv.id.includes('fine-line')) setPieceCategory('micro-detail');
+                        else if (srv.id.includes('lettering')) setPieceCategory('neo-traditional');
+                        else if (srv.id.includes('tribal')) setPieceCategory('dark-realism');
+                        else if (srv.id.includes('cover')) setPieceCategory('coverup');
+                        else if (srv.id.includes('pmu')) setPieceCategory('micro-detail');
+                        else if (srv.id.includes('piercing')) setPieceCategory('piercing');
+                        else if (srv.id.includes('laser')) setPieceCategory('coverup');
                       }}
                       className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors ${
-                        pieceCategory === preset.id
-                          ? 'bg-red-950/80 border-red-500 text-red-300 font-bold'
-                          : 'bg-[#141620] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white'
+                        pieceServiceId === srv.id
+                          ? 'bg-red-950/90 border-red-500 text-red-200 font-bold'
+                          : 'bg-[#181a24] border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white'
                       }`}
                     >
-                      {preset.label}
+                      {srv.disciplineNumber}. {srv.title}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* 2. CATEGORY & LABELS */}
+              <div className="col-span-2">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-[10px] text-zinc-500 mb-0.5">Category Key (Slug)</label>

@@ -43,6 +43,8 @@ model Booking {
 model PortfolioPiece {
   id            String   @id @default(uuid())
   title         String
+  serviceId     String?  // Relation to Service discipline (e.g. "realism-portraits", "fine-line-script")
+  service       Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   category      String   // dark-realism, neo-traditional, micro-detail, piercing, coverup, pmu
   categoryLabel String   // e.g. "Memorial Realism & Mother Tribute"
   zone          String   // e.g. "Forearm", "Chest", "Collarbone"
@@ -59,18 +61,19 @@ model PortfolioPiece {
 
 // 4. Studio Services Catalog
 model Service {
-  id               String   @id @default(uuid())
-  disciplineNumber String   // "01", "02", "03", etc.
+  id               String           @id @default(uuid())
+  disciplineNumber String           // "01", "02", "03", etc.
   title            String
   subtitle         String
   description      String
-  category         String   // TATTOO, PMU, PIERCING, REMOVAL
+  category         String           // TATTOO, PMU, PIERCING, REMOVAL
   imageUrl         String
-  iconName         String   // skull, pen-fancy, edit_note, layers, colorize, syringe, shield-alt
-  specs            String   // JSON string of specs array { label, value }
-  sortOrder        Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  iconName         String           // skull, pen-fancy, edit_note, layers, colorize, syringe, shield-alt
+  specs            String           // JSON string of specs array { label, value }
+  sortOrder        Int              @default(0)
+  portfolioPieces  PortfolioPiece[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 // 5. Studio Shop Products & Merchandise
