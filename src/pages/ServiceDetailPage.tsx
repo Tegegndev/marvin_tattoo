@@ -302,55 +302,118 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
         </section>
       )}
 
-      {/* 06. CURATED SAMPLE GALLERY */}
-      {currentService.galleryImages && currentService.galleryImages.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full py-12 border-t border-noir-800/80">
-          <div className="space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-              <div className="space-y-2">
-                <span className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.2em]">
-                  Visual Craft Archive
-                </span>
-                <h2 className="font-headline-lg text-3xl sm:text-4xl text-bone uppercase font-bold">
-                  Sample Works in this Discipline
-                </h2>
-              </div>
-              <button
-                onClick={() => onNavigate('portfolio')}
-                className="text-xs font-label-caps text-bone-dim hover:text-bone uppercase tracking-wider flex items-center gap-1.5"
-              >
-                <span>View Full 500+ Piece Gallery</span>
-                <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
-              </button>
+      {/* 06. CURATED SAMPLE WORKS ARCHIVE */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full py-12 border-t border-noir-800/80">
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <span className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.2em] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-crimson" />
+                <span>Verified Healed Archive</span>
+              </span>
+              <h2 className="font-headline-lg text-3xl sm:text-4xl text-bone uppercase font-bold">
+                Sample Works in this Discipline
+              </h2>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentService.galleryImages.map((imgUrl, i) => (
-                <div
-                  key={i}
-                  className="group relative h-72 bg-noir-900 border border-noir-700/80 overflow-hidden cursor-pointer"
-                >
-                  <img
-                    src={imgUrl}
-                    alt={`${currentService.title} sample ${i + 1}`}
-                    className="w-full h-full object-cover interactive-img-zoom filter grayscale group-hover:grayscale-0 contrast-110 transition-all duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-noir-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <div className="space-y-1">
-                      <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider block">
-                        {currentService.title}
-                      </span>
-                      <strong className="font-label-data text-xs text-bone block uppercase">
-                        Sample Archive #{i + 1}
-                      </strong>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <button
+              onClick={() => onNavigate('portfolio')}
+              className="text-xs font-label-caps text-bone-dim hover:text-bone uppercase tracking-wider flex items-center gap-1.5 transition-colors"
+            >
+              <span>View Full 500+ Piece Gallery</span>
+              <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
+            </button>
           </div>
-        </section>
-      )}
+
+          {/* Dynamic Portfolio Pieces matching this Discipline */}
+          {(() => {
+            const sId = currentService.id.toLowerCase();
+            const matchingPieces = portfolioList.filter((piece) => {
+              const cat = (piece.category || '').toLowerCase();
+              const label = (piece.categoryLabel || '').toLowerCase();
+              const title = (piece.title || '').toLowerCase();
+              const desc = (piece.description || '').toLowerCase();
+
+              if (sId === 'realism-portraits') {
+                return cat === 'dark-realism' || label.includes('realism') || label.includes('portrait') || title.includes('portrait');
+              }
+              if (sId === 'minimalist-fineline') {
+                return cat === 'micro-detail' || label.includes('fine-line') || label.includes('minimalist') || label.includes('botanical') || desc.includes('single needle');
+              }
+              if (sId === 'lettering-script') {
+                return label.includes('script') || label.includes('lettering') || title.includes('script') || desc.includes('script') || desc.includes('calligraphy');
+              }
+              if (sId === 'traditional-tribal') {
+                return label.includes('tribal') || label.includes('traditional') || label.includes('polynesian') || desc.includes('tribal') || title.includes('chest');
+              }
+              if (sId === 'coverups-restorations') {
+                return cat === 'coverup' || label.includes('cover') || desc.includes('cover') || title.includes('cover');
+              }
+              if (sId === 'semi-permanent-makeup') {
+                return cat === 'pmu' || label.includes('pmu') || label.includes('powder brows') || title.includes('brows') || label.includes('cosmetic');
+              }
+              if (sId === 'body-piercing') {
+                return cat === 'piercing' || label.includes('piercing') || title.includes('piercing');
+              }
+              if (sId === 'laser-keloids-removal') {
+                return label.includes('laser') || label.includes('removal') || label.includes('clearance') || title.includes('laser');
+              }
+              return false;
+            });
+
+            const displayList = matchingPieces.length > 0 ? matchingPieces : portfolioList.slice(0, 3);
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayList.map((piece) => (
+                  <article
+                    key={piece.id}
+                    onClick={() => onSelectPiece ? onSelectPiece(piece) : onNavigate('portfolio')}
+                    className="group relative bg-noir-900 border border-noir-700/80 hover:border-slate-400 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between shadow-xl"
+                  >
+                    {/* Image Box */}
+                    <div className="w-full h-72 overflow-hidden bg-noir-950 relative">
+                      <img
+                        src={piece.image}
+                        alt={piece.title}
+                        className="w-full h-full object-cover interactive-img-zoom filter grayscale group-hover:grayscale-0 contrast-110 brightness-95 group-hover:brightness-100 transition-all duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-noir-950/80 via-transparent to-noir-950/30 pointer-events-none" />
+
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 backdrop-blur-md text-[10px] font-label-data uppercase tracking-wider text-bone-dim border border-noir-700">
+                        {piece.healingState || 'Healed Artwork'}
+                      </div>
+
+                      {piece.flashId && (
+                        <div className="absolute top-3 right-3 px-2 py-0.5 bg-noir-950/90 backdrop-blur-md text-[10px] font-label-data uppercase text-gold border border-noir-700">
+                          {piece.flashId}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Body Footer */}
+                    <div className="p-4 bg-noir-900 border-t border-noir-800 space-y-2">
+                      <div className="flex items-center justify-between text-[11px] font-label-data text-bone-dim">
+                        <span className="uppercase text-crimson-light font-medium truncate">{piece.zone || currentService.title}</span>
+                        {piece.duration && <span className="text-bone-muted">{piece.duration}</span>}
+                      </div>
+
+                      <h3 className="font-headline-sm text-base uppercase text-bone group-hover:text-white transition-colors truncate font-bold">
+                        {piece.title}
+                      </h3>
+
+                      <div className="pt-2 border-t border-noir-850 flex items-center justify-between text-[10px] font-label-caps uppercase text-bone-muted group-hover:text-bone transition-colors">
+                        <span>Inspect Artwork &bull; 4K Lens</span>
+                        <Icons8 name="search-plus" size={12} className="text-gold" />
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      </section>
 
       {/* 07. PREPARATION & AFTERCARE GUIDELINES */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full py-12 border-t border-noir-800/80">
