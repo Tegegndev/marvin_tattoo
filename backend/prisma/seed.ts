@@ -119,14 +119,15 @@ async function main() {
       title: "Realism & Portraits",
       subtitle: "Photo-Realistic Artistry",
       description:
-        "High-detail black-and-grey and photo-realistic face, memorial, animal, or object pieces executed with smooth tonal transitions and deep contrast.",
+        "High-detail black-and-grey and photo-realistic memorial, face, wildlife, and classical sculpture pieces rendered with deep contrast and smooth tonal gradients.",
       category: "TATTOO",
-      imageUrl: "/images/portfolio/portrait-elder-woman.png",
+      imageUrl: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=1000&q=80",
       iconName: "skull",
       specs: JSON.stringify([
         { label: "Technique", value: "High-Detail Black & Grey" },
-        { label: "Subject", value: "Portraits, Wildlife & Objects" },
+        { label: "Subject", value: "Portraits, Statues & Wildlife" },
         { label: "Session Type", value: "Half & Full Day Sessions" },
+        { label: "Pigment", value: "Dynamic & Silverback Greywash" },
       ]),
       sortOrder: 1,
     },
@@ -135,14 +136,15 @@ async function main() {
       title: "Minimalist & Fine-Line",
       subtitle: "Delicate Precision Marking",
       description:
-        "Delicate geometric shapes, continuous line art, micro-tattoos, and clean subtle markings tailored to anatomical curves.",
+        "Delicate geometric shapes, botanical florals, micro-tattoos, continuous line art, and clean subtle markings tailored to anatomical curves.",
       category: "TATTOO",
-      imageUrl: "/images/portfolio/script-abdul-collarbone.png",
+      imageUrl: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?auto=format&fit=crop&w=1000&q=80",
       iconName: "edit_note",
       specs: JSON.stringify([
-        { label: "Technique", value: "Single Needle & Micro-Line" },
-        { label: "Style", value: "Geometric & Continuous Line" },
-        { label: "Healing", value: "Fast & Clean" },
+        { label: "Technique", value: "Single Needle 0.25mm Bugpin" },
+        { label: "Style", value: "Botanical & Continuous Line" },
+        { label: "Healing", value: "Fast & Clean Zero Blowout" },
+        { label: "Longevity", value: "Spaced for Sharp Aging" },
       ]),
       sortOrder: 2,
     },
@@ -151,13 +153,14 @@ async function main() {
       title: "Lettering & Script",
       subtitle: "Custom Typography & Calligraphy",
       description:
-        "Custom typography, freehand calligraphy, names, meaningful quotes, and dates drawn to flow naturally across the skin.",
+        "Freehand custom typography, Chicano cursive, Gothic blackletter, names, and meaningful quotes drawn to flow naturally across the skin.",
       category: "TATTOO",
-      imageUrl: "/images/portfolio/script-abdul-collarbone.png",
+      imageUrl: "https://images.unsplash.com/photo-1562962230-16e4623d36e6?auto=format&fit=crop&w=1000&q=80",
       iconName: "edit_note",
       specs: JSON.stringify([
+        { label: "Design", value: "100% Freehand & Custom Draft" },
         { label: "Style", value: "Chicano, Gothic & Calligraphy" },
-        { label: "Design", value: "100% Custom Lettering" },
+        { label: "Placement", value: "Collarbone, Forearm & Ribs" },
         { label: "Longevity", value: "Spaced for Sharp Aging" },
       ]),
       sortOrder: 3,
@@ -167,14 +170,15 @@ async function main() {
       title: "Traditional & Tribal",
       subtitle: "Bold Blackwork & Flash",
       description:
-        "Bold blackwork, Polynesian and African tribal patterns, bold geometric armor, and classic timeless flash art.",
+        "Deep saturated solid blackwork, Polynesian and African tribal patterns, bold geometric armor, and classic timeless flash art.",
       category: "TATTOO",
-      imageUrl: "/images/portfolio/back-portrait-man.png",
+      imageUrl: "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?auto=format&fit=crop&w=1000&q=80",
       iconName: "layers",
       specs: JSON.stringify([
         { label: "Style", value: "Polynesian, Tribal & Flash" },
         { label: "Pigment", value: "Opaque Triple Black" },
         { label: "Impact", value: "High Contrast & Heavy Lines" },
+        { label: "Coverage", value: "Full Sleeves, Armor & Backpieces" },
       ]),
       sortOrder: 4,
     },
@@ -183,14 +187,15 @@ async function main() {
       title: "Cover-Ups & Restorations",
       subtitle: "Reworking & Concealing Old Ink",
       description:
-        "Reworking, blending, or fully concealing faded, poorly done, or unwanted old tattoos with strategic custom cover designs.",
+        "Masterfully reworking, blending, or fully concealing faded, poorly done, or unwanted old tattoos with strategic custom cover designs.",
       category: "TATTOO",
-      imageUrl: "/images/portfolio/portrait-elder-woman.png",
+      imageUrl: "https://images.unsplash.com/photo-1590246814883-57833748b615?auto=format&fit=crop&w=1000&q=80",
       iconName: "layers",
       specs: JSON.stringify([
-        { label: "Consult", value: "In-Person Evaluation" },
+        { label: "Consult", value: "In-Person Skin Evaluation" },
         { label: "Technique", value: "Strategic Contrast & Blending" },
         { label: "Outcome", value: "Complete Fresh Tattoo" },
+        { label: "Sessions", value: "Layered Multi-Pass Coverage" },
       ]),
       sortOrder: 5,
     },
@@ -199,14 +204,15 @@ async function main() {
       title: "Semi-Permanent Makeup",
       subtitle: "Microblading, Lips & Camouflage",
       description:
-        "Microblading & ombré powder brows, pink lip blush / neutralization, stretch marks camouflage, and permanent hair removal.",
+        "Microblading & ombré powder brows, pink lip blush / neutralization, stretch marks camouflage, and aesthetic permanent makeup.",
       category: "PMU",
-      imageUrl: "/images/portfolio/cosmetic-eyebrow-pmu.png",
+      imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1000&q=80",
       iconName: "edit_note",
       specs: JSON.stringify([
-        { label: "Brows", value: "Microblading & Ombré" },
+        { label: "Brows", value: "Microblading & Ombré Powder" },
         { label: "Lips", value: "Pink Lips Blush & Neutralize" },
-        { label: "Skin", value: "Stretch Marks Camouflage" },
+        { label: "Skin", value: "Stretch Marks & Scar Camouflage" },
+        { label: "Longevity", value: "18 to 36 Months Retention" },
       ]),
       sortOrder: 6,
     },
@@ -217,12 +223,13 @@ async function main() {
       description:
         "Sterile ear piercings (lobe, helix, tragus, conch, industrial), facial/oral (septum, nose, smiley, lip), navel, back/surface dermals, nipple & Christina piercings in implant-grade titanium.",
       category: "PIERCING",
-      imageUrl: "/images/portfolio/spider-navel-piercing.png",
+      imageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1000&q=80",
       iconName: "colorize",
       specs: JSON.stringify([
         { label: "Jewelry", value: "ASTM F-136 Titanium Suite" },
         { label: "Dermals", value: "Back & Surface Anchor Mods" },
         { label: "Hygiene", value: "Aseptic Single-Use Blades" },
+        { label: "Aftercare", value: "Sterile Saline Recovery Kit" },
       ]),
       sortOrder: 7,
     },
@@ -233,12 +240,13 @@ async function main() {
       description:
         "Advanced laser tattoo removal to lighten ink for cover-ups or complete removal, alongside certified keloid removal treatments.",
       category: "REMOVAL",
-      imageUrl: "/images/portfolio/back-portrait-man.png",
+      imageUrl: "https://images.unsplash.com/photo-1512290900672-1f02e1a3ef78?auto=format&fit=crop&w=1000&q=80",
       iconName: "colorize",
       specs: JSON.stringify([
         { label: "Laser Tech", value: "Safe Pigment Lightening" },
         { label: "Keloids", value: "Safe Removal Protocol" },
-        { label: "Recovery", value: "Comprehensive Aftercare" },
+        { label: "Recovery", value: "Comprehensive Skin Aftercare" },
+        { label: "Outcome", value: "Clean Canvas for New Tattoos" },
       ]),
       sortOrder: 8,
     },
@@ -249,6 +257,7 @@ async function main() {
     await prisma.service.create({ data: service });
   }
   console.log(`✅ Seeded/Refreshed ${services.length} studio service disciplines.`);
+
 
   // 4. Seed Portfolio Pieces
   const pieces = [
