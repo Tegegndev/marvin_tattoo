@@ -15,6 +15,7 @@ import { BookingPage } from './pages/BookingPage';
 import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
 import { AftercarePage } from './pages/AftercarePage';
+import { CheckoutPage } from './pages/CheckoutPage';
 import { AdminPage } from './pages/AdminPage';
 import { SERVICES_DATA } from './data/atelierData';
 import { Preloader } from './components/Preloader';
@@ -216,6 +217,16 @@ export function App() {
               />
             )}
 
+            {currentPage === 'checkout' && (
+              <CheckoutPage
+                cart={cart}
+                onUpdateQuantity={handleUpdateQuantity}
+                onRemoveItem={handleRemoveItem}
+                onClearCart={handleClearCart}
+                onNavigate={setCurrentPage}
+              />
+            )}
+
             {currentPage === 'admin' && (
               <AdminPage onNavigate={setCurrentPage} />
             )}
@@ -240,6 +251,7 @@ export function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
+        onProceedToCheckout={() => setCurrentPage('checkout')}
       />
 
       <WhatsAppModal
