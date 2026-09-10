@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CartItem, PageView } from '../types';
 import { Icons8 } from '../components/Icons8';
 import { createShopOrder, initializePayment } from '../services/apiClient';
+import { printReceipt, downloadReceiptHTML, OrderReceiptData } from '../utils/receiptGenerator';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -619,24 +620,97 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
-                className="bg-noir-900 border border-noir-800 rounded-xl p-8 sm:p-12 text-center space-y-8"
+                className="bg-noir-900 border border-noir-800 rounded-xl p-6 sm:p-10 text-center space-y-8"
               >
-                <div className="w-20 h-20 rounded-full bg-emerald-950/60 border border-emerald-500 text-emerald-400 flex items-center justify-center mx-auto">
+                <div className="w-20 h-20 rounded-full bg-emerald-950/60 border border-emerald-500 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-950/40">
                   <Icons8 name="check-circle" size={42} />
                 </div>
 
                 <div className="space-y-2 max-w-lg mx-auto">
                   <span className="font-label-caps text-xs text-emerald-400 uppercase tracking-widest block font-bold">
-                    Order Confirmed &amp; Logged
+                    Order Successfully Placed &amp; Logged
                   </span>
                   <h2 className="font-title-editorial text-2xl sm:text-3xl text-bone uppercase">
                     Order #{createdOrder?.orderNumber || 'CONFIRMED'}
                   </h2>
                   <p className="font-body-sm text-sm text-bone-dim leading-relaxed">
-                    Thank you for your order! A receipt and tracking slip have been prepared for {shippingData.email || 'your email'}.
+                    Thank you, <strong className="text-bone">{shippingData.fullName || 'Valued Client'}</strong>. Your order has been recorded in our studio ledger.
                   </p>
                 </div>
 
+                {/* Important Notice: Download Receipt to Track Status */}
+                <div className="p-6 bg-gradient-to-b from-noir-850 to-noir-950 border-2 border-gold/40 rounded-xl max-w-xl mx-auto text-left space-y-4 shadow-xl">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-lg bg-gold/15 border border-gold/40 text-gold flex items-center justify-center shrink-0 mt-0.5">
+                      <Icons8 name="file-invoice" size={22} />
+                    </div>
+                    <div>
+                      <h4 className="font-title-editorial text-base text-bone uppercase">
+                        Download Your Official Order Receipt
+                      </h4>
+                      <p className="font-body-sm text-xs text-bone-dim mt-1 leading-relaxed">
+                        Please save or print your receipt now. You will need your <strong className="text-gold">Order Reference ({createdOrder?.orderNumber})</strong> to track live fulfillment with our concierge or present upon studio pickup.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Receipt Action Buttons */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const receiptData: OrderReceiptData = {
+                          orderNumber: createdOrder?.orderNumber || 'ORD-STUDIO',
+                          clientName: shippingData.fullName || 'Valued Client',
+                          clientPhone: shippingData.phone,
+                          clientEmail: shippingData.email,
+                          deliveryMethod,
+                          deliveryAddress: shippingData.address,
+                          deliveryNotes: shippingData.notes,
+                          paymentMethod,
+                          items: cart,
+                          subtotal,
+                          dispatchFee,
+                          total,
+                          createdAt: new Date(),
+                        };
+                        printReceipt(receiptData);
+                      }}
+                      className="w-full py-3 bg-gold hover:bg-gold-light text-noir-950 font-label-caps text-xs uppercase tracking-wider font-bold transition-all rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                    >
+                      <Icons8 name="print" size={15} />
+                      <span>Print / PDF Receipt</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const receiptData: OrderReceiptData = {
+                          orderNumber: createdOrder?.orderNumber || 'ORD-STUDIO',
+                          clientName: shippingData.fullName || 'Valued Client',
+                          clientPhone: shippingData.phone,
+                          clientEmail: shippingData.email,
+                          deliveryMethod,
+                          deliveryAddress: shippingData.address,
+                          deliveryNotes: shippingData.notes,
+                          paymentMethod,
+                          items: cart,
+                          subtotal,
+                          dispatchFee,
+                          total,
+                          createdAt: new Date(),
+                        };
+                        downloadReceiptHTML(receiptData);
+                      }}
+                      className="w-full py-3 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Icons8 name="download" size={15} className="text-gold" />
+                      <span>Save Receipt File (.html)</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick Copy Ref Button */}
                 <div className="flex items-center justify-center gap-2">
                   <button
                     type="button"
@@ -648,6 +722,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </button>
                 </div>
 
+                {/* Summary Details */}
                 <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto text-left font-label-data text-xs space-y-3">
                   <div className="flex justify-between text-bone-dim">
                     <span>Recipient:</span>
@@ -669,6 +744,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 </div>
 
+                {/* Bottom Concierge / Return Actions */}
                 <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3 pt-2">
                   {createdOrder?.directWhatsAppUrl && (
                     <a
@@ -678,14 +754,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       className="flex-1 py-4 bg-emerald-700 hover:bg-emerald-600 text-white font-label-caps text-xs uppercase tracking-widest transition-colors rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
                     >
                       <Icons8 name="whatsapp" size={18} />
-                      <span>Message Concierge on WhatsApp</span>
+                      <span>Track Status on WhatsApp</span>
                     </a>
                   )}
                   <button
                     onClick={handleFinishAndReturn}
                     className="flex-1 py-4 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-widest transition-colors border border-noir-700 rounded-xl cursor-pointer"
                   >
-                    Continue Browsing
+                    Return to Studio Shop
                   </button>
                 </div>
               </motion.div>
