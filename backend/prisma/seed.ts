@@ -502,6 +502,13 @@ async function main() {
     },
   ];
 
+  const validServiceIds = services.map(s => s.id);
+  await prisma.service.deleteMany({
+    where: {
+      id: { notIn: validServiceIds }
+    }
+  });
+
   for (const service of services) {
     await prisma.service.upsert({
       where: { id: service.id },
