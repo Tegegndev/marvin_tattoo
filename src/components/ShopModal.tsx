@@ -160,7 +160,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                         Atelier Checkout &amp; Bag
                       </h3>
                       <p className="font-label-data text-[11px] text-bone-dim">
-                        Kampala Studio · Sterile &amp; Authentic Supplies
+                        Kampala Studio · Order &amp; Fulfillment
                       </p>
                     </div>
                   </div>
@@ -207,7 +207,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             Your Bag is Empty
                           </p>
                           <p className="font-body-sm text-xs text-bone-dim max-w-xs leading-relaxed">
-                            Browse professional machines, cartridges, sterile piercing jewelry, and hospital-grade aftercare.
+                            Browse studio equipment, cartridges, jewelry, and aftercare products.
                           </p>
                         </div>
                         <button
@@ -299,12 +299,6 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                             <span>Grand Subtotal</span>
                             <span className="text-crimson-light">UGX {subtotal.toLocaleString()}</span>
                           </div>
-                        </div>
-
-                        {/* Guarantee note */}
-                        <div className="p-3 bg-noir-850/40 border border-noir-800 rounded flex items-center gap-2.5 text-bone-dim text-[11px] font-body-sm">
-                          <Icons8 name="shield-alt" size={16} className="text-gold shrink-0" />
-                          <span>All items sealed in sterile packaging with genuine manufacturer certification.</span>
                         </div>
                       </div>
                     )}
@@ -791,7 +785,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
 
               {/* Footer CTA for Cart Step */}
               {checkoutStep === 'cart' && cart.length > 0 && (
-                <div className="p-5 sm:p-6 border-t border-noir-700 bg-noir-850 space-y-3">
+                <div className="p-5 sm:p-6 border-t border-noir-700 bg-noir-850">
                   <button
                     onClick={() => setCheckoutStep('checkout')}
                     className="w-full py-4 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow flex items-center justify-center gap-2 border border-crimson/30 rounded shadow-lg shadow-crimson/20"
@@ -799,9 +793,6 @@ export const ShopModal: React.FC<ShopModalProps> = ({
                     <span>Proceed to Checkout</span>
                     <Icons8 name="arrow-right" size={14} />
                   </button>
-                  <p className="text-center font-label-data text-[10px] text-bone-dim uppercase">
-                    Sterile packaging &amp; hospital-grade sealed goods
-                  </p>
                 </div>
               )}
             </motion.div>
