@@ -11,7 +11,7 @@ import { syncHistoricalUsers } from "./services/userService.js";
 const app = express();
 
 // Security & Middlewares
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use((helmet as any)({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(
   cors({
     origin: [env.CLIENT_URL, "http://localhost:5173", "http://localhost:3000"],
