@@ -18,4 +18,17 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-confetti': ['canvas-confetti'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
 });
+

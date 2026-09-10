@@ -3,6 +3,7 @@ import { CartItem, PageView } from '../types';
 import { Icons8 } from '../components/Icons8';
 import { createShopOrder, initializePayment } from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
+import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -26,13 +27,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' | 'CASH'>('MTN_MOMO');
   const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
 
-  const [shippingData, setShippingData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    address: '',
-    notes: '',
+  const [shippingData, setShippingData] = useState(() => {
+    const saved = getSavedUserProfile();
+    return {
+      fullName: saved?.fullName || '',
+      phone: saved?.phone || '',
+      email: saved?.email || '',
+      address: saved?.address || '',
+      notes: saved?.notes || '',
+    };
   });
+  const [hasAutoFilled] = useState(() => Boolean(getSavedUserProfile()?.phone));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -69,6 +74,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       const orderResult = await createShopOrder(orderPayload);
       setCreatedOrder(orderResult);
+
+      // Save user profile for seamless return visits
+      saveUserProfile({
+        fullName: shippingData.fullName,
+        phone: shippingData.phone,
+        email: shippingData.email,
+        address: shippingData.address,
+        notes: shippingData.notes,
+      });
 
       // 2. Initialize Payment if MoMo or Card
       if (paymentMethod === 'MTN_MOMO' || paymentMethod === 'AIRTEL_MONEY' || paymentMethod === 'CARD') {
@@ -231,7 +245,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         Contact Information
                       </h2>
                     </div>
-                    <span className="font-label-caps text-[10px] text-bone-muted uppercase">Required</span>
+                    {hasAutoFilled ? (
+                      <span className="font-label-caps text-[10px] text-emerald-400 uppercase flex items-center gap-1 font-semibold bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded">
+                        <Icons8 name="check-circle" size={12} />
+                        <span>Auto-Filled · Returning Client</span>
+                      </span>
+                    ) : (
+                      <span className="font-label-caps text-[10px] text-bone-muted uppercase">Required</span>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

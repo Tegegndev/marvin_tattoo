@@ -3,6 +3,7 @@ import { PageView, PortfolioPiece, ServiceItem, BookingServiceType, BookingRecor
 import { SERVICES_DATA, WHATSAPP_NUMBER } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
 import { bookingApi } from '../services/bookingApi';
+import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
 import confetti from 'canvas-confetti';
 
 interface BookingPageProps {
@@ -65,10 +66,11 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   const [preferredDate, setPreferredDate] = useState<string>(getDefaultDate());
   const [preferredTimeSlot, setPreferredTimeSlot] = useState<'morning' | 'afternoon' | 'evening'>('afternoon');
 
-  // Contact Info
-  const [fullName, setFullName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
+  // Contact Info (Auto-Filled from previous visits)
+  const [fullName, setFullName] = useState<string>(() => getSavedUserProfile()?.fullName || '');
+  const [phone, setPhone] = useState<string>(() => getSavedUserProfile()?.phone || '');
+  const [email, setEmail] = useState<string>(() => getSavedUserProfile()?.email || '');
+  const [hasAutoFilled] = useState(() => Boolean(getSavedUserProfile()?.phone));
 
   // Image Upload
   const [referenceFileName, setReferenceFileName] = useState<string>('');
@@ -135,6 +137,13 @@ export const BookingPage: React.FC<BookingPageProps> = ({
       });
 
       if (response.success && response.booking) {
+        // Save user profile for seamless return visits
+        saveUserProfile({
+          fullName,
+          phone,
+          email,
+        });
+
         setConfirmedBooking(response.booking);
         confetti({
           particleCount: 80,
@@ -338,11 +347,24 @@ Looking forward to discussing the design and finalizing my appointment slot.`;
           </div>
 
           {/* 2. Client Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
-                Full Name *
-              </label>
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center justify-between border-b border-noir-800 pb-2">
+              <span className="font-label-caps text-xs uppercase text-bone tracking-wider font-bold">
+                Client Contact Details *
+              </span>
+              {hasAutoFilled && (
+                <span className="font-label-caps text-[10px] text-emerald-400 uppercase flex items-center gap-1 font-semibold bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded">
+                  <Icons8 name="check-circle" size={12} />
+                  <span>Auto-Filled · Returning Client</span>
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                  Full Name *
+                </label>
               <input
                 required
                 type="text"
@@ -381,6 +403,7 @@ Looking forward to discussing the design and finalizing my appointment slot.`;
               />
             </div>
           </div>
+        </div>
 
           {/* 3. Schedule Preference */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
