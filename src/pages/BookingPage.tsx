@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageView, PortfolioPiece, ServiceItem, BookingServiceType, BookingRecord } from '../types';
-import { WHATSAPP_NUMBER } from '../data/atelierData';
+import { SERVICES_DATA, WHATSAPP_NUMBER } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
 import { bookingApi } from '../services/bookingApi';
 import confetti from 'canvas-confetti';
@@ -13,31 +13,29 @@ interface BookingPageProps {
   onOpenWhatsApp: () => void;
 }
 
-function mapServiceToBookingType(serviceIdOrCat?: string): BookingServiceType {
-  if (!serviceIdOrCat) return 'realism_portrait';
+function mapServiceToBookingId(serviceIdOrCat?: string): string {
+  if (!serviceIdOrCat) return 'realism-portraits';
   const s = serviceIdOrCat.toLowerCase();
-  if (s.includes('realism') || s.includes('portrait')) return 'realism_portrait';
-  if (s.includes('minimalist') || s.includes('fine-line') || s.includes('fineline')) return 'fine_line';
-  if (s.includes('lettering') || s.includes('script')) return 'lettering_script';
-  if (s.includes('tribal') || s.includes('traditional')) return 'tribal_traditional';
-  if (s.includes('coverup') || s.includes('cover_up') || s.includes('cover-up') || s.includes('restoration')) return 'cover_up';
-  if (s.includes('pmu') || s.includes('makeup') || s.includes('semi-permanent')) return 'pmu_makeup';
-  if (s.includes('piercing')) return 'body_piercing';
-  if (s.includes('keloid') || s.includes('laser') || s.includes('removal')) return 'laser_removal';
+  if (s.includes('realism') || s.includes('portrait')) return 'realism-portraits';
+  if (s.includes('minimalist') || s.includes('fine-line') || s.includes('fineline')) return 'minimalist-fineline';
+  if (s.includes('lettering') || s.includes('script')) return 'lettering-script';
+  if (s.includes('tribal') || s.includes('traditional')) return 'traditional-tribal';
+  if (s.includes('coverup') || s.includes('cover_up') || s.includes('cover-up') || s.includes('restoration')) return 'coverups-restorations';
+  if (s.includes('pmu') || s.includes('makeup') || s.includes('semi-permanent')) return 'semi-permanent-makeup';
+  if (s.includes('piercing')) return 'body-piercing';
+  if (s.includes('keloid') || s.includes('laser') || s.includes('removal')) return 'laser-keloids-removal';
   return 'custom_tattoo';
 }
 
-const SERVICES_LIST = [
-  { id: 'realism_portrait', label: 'Realism & Portraits' },
-  { id: 'minimalist_fineline', label: 'Minimalist & Fine-Line' },
-  { id: 'lettering_script', label: 'Lettering & Script' },
-  { id: 'traditional_tribal', label: 'Traditional & Tribal' },
-  { id: 'coverups_restorations', label: 'Cover-Ups & Restorations' },
-  { id: 'semi_permanent_makeup', label: 'Semi-Permanent Makeup (PMU)' },
-  { id: 'body_piercing', label: 'Precision Body Piercing' },
-  { id: 'laser_keloids_removal', label: 'Laser & Keloids Clearance' },
-  { id: 'custom_tattoo', label: 'Other Custom Project' },
-];
+const CUSTOM_SERVICE_ITEM = {
+  id: 'custom_tattoo',
+  disciplineNumber: '09',
+  title: 'Custom Tattoo Project',
+  subtitle: 'Bespoke Inking & Freehand Design',
+  description: 'Discuss your unique concept, multi-element tattoo, or custom collaboration with Marvin.',
+  category: 'CUSTOM' as const,
+  image: 'https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=1000&q=80',
+};
 
 export const BookingPage: React.FC<BookingPageProps> = ({
   initialPiece,
@@ -47,9 +45,9 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   onOpenWhatsApp
 }) => {
   const [serviceType, setServiceType] = useState<string>(() => {
-    if (initialService?.id) return initialService.id.replace(/-/g, '_');
-    if (initialPiece) return mapServiceToBookingType(initialPiece.serviceId || initialPiece.category);
-    return 'realism_portrait';
+    if (initialService?.id) return initialService.id;
+    if (initialPiece) return mapServiceToBookingId(initialPiece.serviceId || initialPiece.category);
+    return 'realism-portraits';
   });
 
   const [notes, setNotes] = useState<string>(() => {
@@ -81,12 +79,21 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   const [confirmedBooking, setConfirmedBooking] = useState<BookingRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  const currentService =
+    SERVICES_DATA.find(
+      (s) =>
+        s.id === serviceType ||
+        s.id === serviceType.replace(/_/g, '-') ||
+        s.id.replace(/-/g, '_') === serviceType
+    ) ||
+    (serviceType === 'custom_tattoo' ? CUSTOM_SERVICE_ITEM : SERVICES_DATA[0]);
+
   useEffect(() => {
     if (initialService) {
-      setServiceType(initialService.id.replace(/-/g, '_'));
+      setServiceType(initialService.id);
       if (initialTier) setNotes(`Preferred Option: ${initialTier}`);
     } else if (initialPiece) {
-      setServiceType(mapServiceToBookingType(initialPiece.serviceId || initialPiece.category));
+      setServiceType(mapServiceToBookingId(initialPiece.serviceId || initialPiece.category));
       setNotes(`Design Reference: ${initialPiece.title} (#${initialPiece.flashId || initialPiece.id})`);
     }
   }, [initialService, initialPiece, initialTier]);
@@ -108,11 +115,11 @@ export const BookingPage: React.FC<BookingPageProps> = ({
     setErrorMessage('');
     setIsSubmitting(true);
 
-    const selectedServiceLabel = SERVICES_LIST.find((s) => s.id === serviceType)?.label || serviceType;
+    const selectedServiceLabel = currentService.title;
 
     try {
       const response = await bookingApi.createBooking({
-        serviceType: serviceType as any,
+        serviceType: currentService.id as any,
         placement: 'Discussed on WhatsApp',
         approximateSize: 'medium',
         description: notes ? `Service: ${selectedServiceLabel}. Notes: ${notes}` : `Service: ${selectedServiceLabel}`,
@@ -146,7 +153,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   };
 
   const sendWhatsAppBookingSummary = (record: BookingRecord) => {
-    const selectedServiceLabel = SERVICES_LIST.find((s) => s.id === record.serviceType)?.label || record.serviceType;
+    const matched = SERVICES_DATA.find((s) => s.id === record.serviceType || s.id.replace(/-/g, '_') === record.serviceType);
+    const selectedServiceLabel = matched ? matched.title : currentService.title;
     const message = `Hello Marvin Tattoos Atelier! 
 I just submitted a booking request online.
 
@@ -214,7 +222,7 @@ Looking forward to discussing the design and finalizing my appointment slot.`;
             <div className="flex justify-between text-bone-dim">
               <span>Service:</span>
               <span className="text-bone font-medium">
-                {SERVICES_LIST.find((s) => s.id === confirmedBooking.serviceType)?.label || confirmedBooking.serviceType}
+                {SERVICES_DATA.find((s) => s.id === confirmedBooking.serviceType || s.id.replace(/-/g, '_') === confirmedBooking.serviceType)?.title || confirmedBooking.serviceType}
               </span>
             </div>
             <div className="flex justify-between text-bone-dim">
@@ -260,21 +268,72 @@ Looking forward to discussing the design and finalizing my appointment slot.`;
             </div>
           )}
 
-          {/* 1. Service Type */}
-          <div>
-            <label className="block font-label-caps text-xs uppercase text-bone tracking-wider font-bold mb-1.5">
-              Service Type *
-            </label>
+          {/* 1. Service Discipline & Visual Preview */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="block font-label-caps text-xs uppercase text-bone tracking-wider font-bold">
+                Service Discipline *
+              </label>
+              {currentService && (
+                <span className="text-[11px] font-label-data text-gold uppercase tracking-wider font-semibold">
+                  Discipline {currentService.disciplineNumber || '01'}
+                </span>
+              )}
+            </div>
+
+            {/* Active Service Visual Preview Card */}
+            {currentService && (
+              <div className="flex items-center gap-3.5 p-3.5 bg-noir-850 border border-noir-750/90 rounded-xl overflow-hidden shadow-inner">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden shrink-0 border border-noir-700 bg-noir-950">
+                  <img
+                    src={
+                      initialPiece?.image &&
+                      serviceType === mapServiceToBookingId(initialPiece.serviceId || initialPiece.category)
+                        ? initialPiece.image
+                        : currentService.image
+                    }
+                    alt={currentService.title}
+                    className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-noir-950/60 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-1 right-1 text-[9px] font-label-caps font-bold px-1.5 py-0.5 rounded bg-noir-950/90 text-gold border border-gold/30">
+                    #{currentService.disciplineNumber}
+                  </span>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="px-2 py-0.5 text-[10px] font-label-caps uppercase bg-crimson/15 text-crimson-light border border-crimson/30 rounded font-semibold tracking-wider">
+                      {currentService.category || 'TATTOO'}
+                    </span>
+                    {initialTier && (
+                      <span className="px-2 py-0.5 text-[10px] font-label-data text-gold bg-gold/10 border border-gold/20 rounded truncate max-w-[140px]">
+                        {initialTier}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-title-editorial text-base sm:text-lg text-bone truncate">
+                    {currentService.title}
+                  </h3>
+                  <p className="font-body-sm text-xs text-bone-dim truncate">
+                    {currentService.subtitle || currentService.description}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Dropdown Selector */}
             <select
               value={serviceType}
               onChange={(e) => setServiceType(e.target.value)}
-              className="w-full px-4 py-3 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson transition-colors"
+              className="w-full px-4 py-3 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson transition-colors cursor-pointer"
             >
-              {SERVICES_LIST.map((s) => (
+              {SERVICES_DATA.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.label}
+                  {s.disciplineNumber ? `${s.disciplineNumber}. ` : ''}{s.title} — {s.subtitle}
                 </option>
               ))}
+              <option value="custom_tattoo">09. Other Custom Project / Collaboration</option>
             </select>
           </div>
 
