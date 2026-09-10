@@ -415,6 +415,21 @@ export async function adminGetMe(): Promise<any> {
   return json.user;
 }
 
+export async function adminChangePassword(currentPassword: string, newPassword: string): Promise<any> {
+  const res = await fetch(apiUrl("/api/auth/change-password"), {
+    method: "POST",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to update password");
+  }
+  return json;
+}
+
+
 export async function adminGetBookings(status?: string, search?: string): Promise<any[]> {
   const params = new URLSearchParams();
   if (status && status !== "ALL") params.append("status", status);

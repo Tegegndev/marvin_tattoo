@@ -46,11 +46,14 @@ import {
   Building,
   Tag,
   PenTool,
+  Lock,
+  Key,
 } from 'lucide-react';
 import {
   adminLogin,
   adminLogout,
   adminGetMe,
+  adminChangePassword,
   adminGetBookings,
   adminUpdateBooking,
   adminDeleteBooking,
@@ -107,6 +110,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [loginPassword, setLoginPassword] = useState<string>('');
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string>('');
+
+  // Admin Password Change State
+  const [currPassword, setCurrPassword] = useState<string>('');
+  const [newPasswordVal, setNewPasswordVal] = useState<string>('');
+  const [confirmPasswordVal, setConfirmPasswordVal] = useState<string>('');
+  const [passwordLoading, setPasswordLoading] = useState<boolean>(false);
+  const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Active Tab & Sub-Tabs
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
@@ -766,6 +776,38 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       alert(err.message || 'Failed to update site settings');
     } finally {
       setSavingSettings(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordStatus(null);
+
+    if (!currPassword) {
+      setPasswordStatus({ type: 'error', message: 'Current password is required.' });
+      return;
+    }
+    if (!newPasswordVal || newPasswordVal.length < 6) {
+      setPasswordStatus({ type: 'error', message: 'New password must be at least 6 characters.' });
+      return;
+    }
+    if (newPasswordVal !== confirmPasswordVal) {
+      setPasswordStatus({ type: 'error', message: 'New passwords do not match.' });
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await adminChangePassword(currPassword, newPasswordVal);
+      setPasswordStatus({ type: 'success', message: res.message || 'Password updated successfully!' });
+      setCurrPassword('');
+      setNewPasswordVal('');
+      setConfirmPasswordVal('');
+      showToast('Master password updated successfully');
+    } catch (err: any) {
+      setPasswordStatus({ type: 'error', message: err.message || 'Failed to update password' });
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -3436,8 +3478,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           {/* ================= 6. HERO & SETTINGS STUDIO ================= */}
           {activeTab === 'settings' && (
-            <form onSubmit={handleSaveSettings} className="space-y-6 max-w-4xl text-xs">
-              {/* Hero Visual Block */}
+            <div className="space-y-6 max-w-4xl text-xs">
+              <form onSubmit={handleSaveSettings} className="space-y-6">
+                {/* Hero Visual Block */}
               <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
                 <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
                   <Sliders className="w-4 h-4 text-red-400" />
@@ -3623,7 +3666,97 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 <span>{savingSettings ? 'Deploying...' : 'Save & Deploy Changes'}</span>
               </button>
             </form>
-          )}
+
+            {/* Section 5: Admin Security & Password Change */}
+            <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm max-w-4xl">
+              <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-red-400" />
+                  <span>5. Admin Security &amp; Master Password</span>
+                </div>
+                <span className="text-[11px] text-zinc-400 font-mono">
+                  Account: {adminUser?.email || 'admin@marvintattoos.com'}
+                </span>
+              </div>
+
+              <form onSubmit={handlePasswordChange} className="space-y-4 max-w-xl">
+                {passwordStatus && (
+                  <div
+                    className={`p-3 rounded-lg border text-xs flex items-center gap-2 ${
+                      passwordStatus.type === 'success'
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                        : 'bg-red-500/10 border-red-500/30 text-red-300'
+                    }`}
+                  >
+                    {passwordStatus.type === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
+                    )}
+                    <span>{passwordStatus.message}</span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                    Current Password <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    required
+                    type="password"
+                    value={currPassword}
+                    onChange={(e) => setCurrPassword(e.target.value)}
+                    placeholder="Enter your current password"
+                    className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                      New Password <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      required
+                      type="password"
+                      value={newPasswordVal}
+                      onChange={(e) => setNewPasswordVal(e.target.value)}
+                      placeholder="At least 6 characters"
+                      minLength={6}
+                      className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                      Confirm New Password <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      required
+                      type="password"
+                      value={confirmPasswordVal}
+                      onChange={(e) => setConfirmPasswordVal(e.target.value)}
+                      placeholder="Repeat new password"
+                      minLength={6}
+                      className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    className="py-2.5 px-5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border border-zinc-700 flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Key className="w-3.5 h-3.5 text-red-400" />
+                    <span>{passwordLoading ? 'Updating Password...' : 'Change Master Password'}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
         </div>
       </main>
 

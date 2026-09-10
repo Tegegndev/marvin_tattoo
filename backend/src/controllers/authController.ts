@@ -103,3 +103,56 @@ export const me = async (
     user: req.admin,
   });
 };
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+});
+
+export const changePassword = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.admin) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    const admin = await prisma.admin.findUnique({
+      where: { id: req.admin.id },
+    });
+
+    if (!admin) {
+      res.status(404).json({ success: false, message: "Admin account not found" });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      res.status(400).json({
+        success: false,
+        message: "Current password does not match our records",
+      });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.admin.update({
+      where: { id: req.admin.id },
+      data: { password: hashedPassword },
+    });
+
+    res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
