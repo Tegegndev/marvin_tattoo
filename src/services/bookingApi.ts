@@ -1,4 +1,5 @@
 import { BookingPayload, BookingRecord, BookingResponse } from '../types';
+import { apiUrl } from '../config/api';
 
 const STORAGE_KEY = 'marvin_tattoos_bookings_db';
 
@@ -63,7 +64,7 @@ const saveLocalBookings = (records: BookingRecord[]) => {
 export const bookingApi = {
   async createBooking(payload: BookingPayload): Promise<BookingResponse> {
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch(apiUrl('/api/bookings'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ export const bookingApi = {
 
   async getBookings(): Promise<BookingRecord[]> {
     try {
-      const res = await fetch('/api/bookings');
+      const res = await fetch(apiUrl('/api/bookings'));
       if (res.ok) {
         const json = await res.json();
         if (json.data && Array.isArray(json.data)) {
@@ -183,7 +184,7 @@ export const bookingApi = {
 
   async getBookingByReference(referenceCode: string): Promise<BookingRecord | null> {
     try {
-      const res = await fetch(`/api/bookings/ref/${referenceCode}`);
+      const res = await fetch(apiUrl(`/api/bookings/ref/${referenceCode}`));
       if (res.ok) {
         const json = await res.json();
         const b = json.data;

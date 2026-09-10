@@ -8,6 +8,7 @@ import {
   ARTISTS_DATA,
 } from "../data/atelierData";
 import { ArtistProfile, PortfolioPiece, ProductItem, ServiceItem, SiteSettingData, Testimonial } from "../types";
+import { apiUrl, formatImageUrl } from "../config/api";
 
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
@@ -77,10 +78,14 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
 
 export async function fetchSiteSettings(): Promise<SiteSettingData> {
   try {
-    const res = await fetch("/api/settings");
+    const res = await fetch(apiUrl("/api/settings"));
     if (!res.ok) throw new Error("Failed to fetch site settings");
     const json = await res.json();
-    return json.data || DEFAULT_SITE_SETTINGS;
+    const data = json.data || DEFAULT_SITE_SETTINGS;
+    return {
+      ...data,
+      heroBannerUrl: formatImageUrl(data.heroBannerUrl) || DEFAULT_SITE_SETTINGS.heroBannerUrl,
+    };
   } catch (err) {
     console.warn("Using default static site settings fallback:", err);
     return DEFAULT_SITE_SETTINGS;
@@ -89,10 +94,10 @@ export async function fetchSiteSettings(): Promise<SiteSettingData> {
 
 export async function fetchPortfolioPieces(serviceId?: string): Promise<PortfolioPiece[]> {
   try {
-    const url = serviceId && serviceId !== "all" 
+    const path = serviceId && serviceId !== "all" 
       ? `/api/portfolio?serviceId=${encodeURIComponent(serviceId)}` 
       : "/api/portfolio";
-    const res = await fetch(url);
+    const res = await fetch(apiUrl(path));
     if (!res.ok) throw new Error("Failed to fetch portfolio");
     const json = await res.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -109,8 +114,8 @@ export async function fetchPortfolioPieces(serviceId?: string): Promise<Portfoli
         zone: p.zone || "General",
         morphology: p.morphology || p.zone || "General",
         flashId: p.flashId || "",
-        image: p.imageUrl || p.image || "",
-        imageUrl: p.imageUrl || p.image || "",
+        image: formatImageUrl(p.imageUrl || p.image || ""),
+        imageUrl: formatImageUrl(p.imageUrl || p.image || ""),
         description: p.description,
         duration: p.duration || "Custom Session",
         pigment: p.pigment || "Dynamic Triple Black",
@@ -127,7 +132,7 @@ export async function fetchPortfolioPieces(serviceId?: string): Promise<Portfoli
 
 export async function fetchServices(): Promise<ServiceItem[]> {
   try {
-    const res = await fetch("/api/services");
+    const res = await fetch(apiUrl("/api/services"));
     if (!res.ok) throw new Error("Failed to fetch services");
     const json = await res.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -138,8 +143,8 @@ export async function fetchServices(): Promise<ServiceItem[]> {
         subtitle: s.subtitle,
         description: s.description,
         category: s.category || "TATTOO",
-        image: s.imageUrl || "/images/portfolio/portrait-elder-woman.png",
-        imageUrl: s.imageUrl,
+        image: formatImageUrl(s.imageUrl || "/images/portfolio/portrait-elder-woman.png"),
+        imageUrl: formatImageUrl(s.imageUrl),
         iconName: s.iconName || "skull",
         accentColor: "primary",
         specs: s.specs || [],
@@ -154,7 +159,7 @@ export async function fetchServices(): Promise<ServiceItem[]> {
 }
 
 export async function adminGetServices(): Promise<ServiceItem[]> {
-  const res = await fetch("/api/services", {
+  const res = await fetch(apiUrl("/api/services"), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -167,8 +172,8 @@ export async function adminGetServices(): Promise<ServiceItem[]> {
     subtitle: s.subtitle,
     description: s.description,
     category: s.category || "TATTOO",
-    image: s.imageUrl || "/images/portfolio/portrait-elder-woman.png",
-    imageUrl: s.imageUrl,
+    image: formatImageUrl(s.imageUrl || "/images/portfolio/portrait-elder-woman.png"),
+    imageUrl: formatImageUrl(s.imageUrl),
     iconName: s.iconName || "skull",
     accentColor: "primary",
     specs: s.specs || [],
@@ -178,8 +183,8 @@ export async function adminGetServices(): Promise<ServiceItem[]> {
 
 export async function fetchTestimonials(): Promise<Testimonial[]> {
   try {
-    const res = await fetch("/api/reviews");
-    const response = res.ok ? res : await fetch("/api/testimonials");
+    const res = await fetch(apiUrl("/api/reviews"));
+    const response = res.ok ? res : await fetch(apiUrl("/api/testimonials"));
     if (!response.ok) throw new Error("Failed to fetch reviews");
     const json = await response.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -205,7 +210,7 @@ export const fetchReviews = fetchTestimonials;
 
 export async function fetchMembers(activeOnly: boolean = true): Promise<ArtistProfile[]> {
   try {
-    const res = await fetch(`/api/members${activeOnly ? "?active=true" : ""}`);
+    const res = await fetch(apiUrl(`/api/members${activeOnly ? "?active=true" : ""}`));
     if (!res.ok) throw new Error("Failed to fetch team members");
     const json = await res.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -215,7 +220,7 @@ export async function fetchMembers(activeOnly: boolean = true): Promise<ArtistPr
         name: m.name,
         title: m.title,
         role: m.role || m.title,
-        avatar: m.avatar || "/images/marvin-founder.png",
+        avatar: formatImageUrl(m.avatar || "/images/marvin-founder.png"),
         experience: m.experience || "1+ Years",
         specialty: m.specialty || "Custom Artistry",
         slotsRemaining: m.slotsRemaining ?? 4,
@@ -238,7 +243,7 @@ export const fetchArtists = fetchMembers;
 
 export async function fetchProducts(): Promise<ProductItem[]> {
   try {
-    const res = await fetch("/api/products");
+    const res = await fetch(apiUrl("/api/products"));
     if (!res.ok) throw new Error("Failed to fetch products");
     const json = await res.json();
     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -261,7 +266,7 @@ export async function fetchProducts(): Promise<ProductItem[]> {
           price: p.price,
           currency: p.currency || "UGX",
           description: p.description,
-          image: p.imageUrl || p.image || "/images/default-product.png",
+          image: formatImageUrl(p.imageUrl || p.image || "/images/default-product.png"),
           accentColor: "primary",
           inStock: Boolean(p.inStock !== false && (p.stockCount === undefined || p.stockCount > 0)),
           stockCount: p.stockCount ?? 10,
@@ -288,7 +293,7 @@ export async function createShopOrder(orderData: {
   paymentMethod: "MTN_MOMO" | "AIRTEL_MONEY" | "CARD" | "CASH";
   items: Array<{ productId: string; quantity: number }>;
 }): Promise<any> {
-  const res = await fetch("/api/orders", {
+  const res = await fetch(apiUrl("/api/orders"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(orderData),
@@ -306,7 +311,7 @@ export async function initializePayment(data: {
   paymentMethod: "MTN_MOMO" | "AIRTEL_MONEY" | "CARD";
   phoneNumber: string;
 }): Promise<any> {
-  const res = await fetch("/api/payments/initialize", {
+  const res = await fetch(apiUrl("/api/payments/initialize"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -319,7 +324,7 @@ export async function initializePayment(data: {
 }
 
 export async function verifyPayment(txRef: string): Promise<any> {
-  const res = await fetch(`/api/payments/verify/${txRef}`);
+  const res = await fetch(apiUrl(`/api/payments/verify/${txRef}`));
   const json = await res.json();
   if (!res.ok || !json.success) {
     throw new Error(json.message || "Failed to verify payment");
@@ -367,7 +372,7 @@ function getAuthHeaders(extraHeaders: Record<string, string> = {}): Record<strin
 // ================= ADMIN AUTH & CMS APIS ================= //
 
 export async function adminLogin(email: string, password: string): Promise<any> {
-  const res = await fetch("/api/auth/login", {
+  const res = await fetch(apiUrl("/api/auth/login"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -389,7 +394,7 @@ export async function adminLogin(email: string, password: string): Promise<any> 
 export async function adminLogout(): Promise<void> {
   clearAuthToken();
   try {
-    await fetch("/api/auth/logout", {
+    await fetch(apiUrl("/api/auth/logout"), {
       method: "POST",
       headers: getAuthHeaders(),
       credentials: "include",
@@ -400,7 +405,7 @@ export async function adminLogout(): Promise<void> {
 }
 
 export async function adminGetMe(): Promise<any> {
-  const res = await fetch("/api/auth/me", {
+  const res = await fetch(apiUrl("/api/auth/me"), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -414,7 +419,7 @@ export async function adminGetBookings(status?: string, search?: string): Promis
   const params = new URLSearchParams();
   if (status && status !== "ALL") params.append("status", status);
   if (search) params.append("search", search);
-  const res = await fetch(`/api/bookings?${params.toString()}`, {
+  const res = await fetch(apiUrl(`/api/bookings?${params.toString()}`), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -423,7 +428,7 @@ export async function adminGetBookings(status?: string, search?: string): Promis
 }
 
 export async function adminUpdateBooking(id: string, data: any): Promise<any> {
-  const res = await fetch(`/api/bookings/${id}`, {
+  const res = await fetch(apiUrl(`/api/bookings/${id}`), {
     method: "PUT",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -437,7 +442,7 @@ export async function adminUpdateBooking(id: string, data: any): Promise<any> {
 }
 
 export async function adminDeleteBooking(id: string): Promise<void> {
-  const res = await fetch(`/api/bookings/${id}`, {
+  const res = await fetch(apiUrl(`/api/bookings/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -453,7 +458,7 @@ export async function adminGetOrders(orderStatus?: string, paymentStatus?: strin
   if (orderStatus && orderStatus !== "ALL") params.append("orderStatus", orderStatus);
   if (paymentStatus && paymentStatus !== "ALL") params.append("paymentStatus", paymentStatus);
   if (search) params.append("search", search);
-  const res = await fetch(`/api/orders?${params.toString()}`, {
+  const res = await fetch(apiUrl(`/api/orders?${params.toString()}`), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -462,7 +467,7 @@ export async function adminGetOrders(orderStatus?: string, paymentStatus?: strin
 }
 
 export async function adminUpdateOrder(id: string, data: any): Promise<any> {
-  const res = await fetch(`/api/orders/${id}`, {
+  const res = await fetch(apiUrl(`/api/orders/${id}`), {
     method: "PUT",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -476,7 +481,7 @@ export async function adminUpdateOrder(id: string, data: any): Promise<any> {
 }
 
 export async function adminDeleteOrder(id: string): Promise<void> {
-  const res = await fetch(`/api/orders/${id}`, {
+  const res = await fetch(apiUrl(`/api/orders/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -488,7 +493,7 @@ export async function adminDeleteOrder(id: string): Promise<void> {
 }
 
 export async function adminUpdateSettings(data: Partial<SiteSettingData>): Promise<SiteSettingData> {
-  const res = await fetch("/api/settings", {
+  const res = await fetch(apiUrl("/api/settings"), {
     method: "PUT",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -504,7 +509,7 @@ export async function adminUpdateSettings(data: Partial<SiteSettingData>): Promi
 export async function adminUploadHeroImage(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("heroImage", file);
-  const res = await fetch("/api/settings/hero-image", {
+  const res = await fetch(apiUrl("/api/settings/hero-image"), {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -514,11 +519,11 @@ export async function adminUploadHeroImage(file: File): Promise<string> {
   if (!res.ok || !json.success) {
     throw new Error(json.message || "Failed to upload hero image");
   }
-  return json.heroBannerUrl || json.imageUrl;
+  return formatImageUrl(json.heroBannerUrl || json.imageUrl);
 }
 
 export async function adminCreatePortfolioPiece(formData: FormData): Promise<any> {
-  const res = await fetch("/api/portfolio", {
+  const res = await fetch(apiUrl("/api/portfolio"), {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -530,7 +535,7 @@ export async function adminCreatePortfolioPiece(formData: FormData): Promise<any
 }
 
 export async function adminUpdatePortfolioPiece(id: string, formData: FormData): Promise<any> {
-  const res = await fetch(`/api/portfolio/${id}`, {
+  const res = await fetch(apiUrl(`/api/portfolio/${id}`), {
     method: "PUT",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -542,7 +547,7 @@ export async function adminUpdatePortfolioPiece(id: string, formData: FormData):
 }
 
 export async function adminDeletePortfolioPiece(id: string): Promise<void> {
-  const res = await fetch(`/api/portfolio/${id}`, {
+  const res = await fetch(apiUrl(`/api/portfolio/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -552,7 +557,7 @@ export async function adminDeletePortfolioPiece(id: string): Promise<void> {
 }
 
 export async function adminCreateProduct(formData: FormData): Promise<any> {
-  const res = await fetch("/api/products", {
+  const res = await fetch(apiUrl("/api/products"), {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -564,7 +569,7 @@ export async function adminCreateProduct(formData: FormData): Promise<any> {
 }
 
 export async function adminUpdateProduct(id: string, formData: FormData): Promise<any> {
-  const res = await fetch(`/api/products/${id}`, {
+  const res = await fetch(apiUrl(`/api/products/${id}`), {
     method: "PUT",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -576,7 +581,7 @@ export async function adminUpdateProduct(id: string, formData: FormData): Promis
 }
 
 export async function adminDeleteProduct(id: string): Promise<void> {
-  const res = await fetch(`/api/products/${id}`, {
+  const res = await fetch(apiUrl(`/api/products/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -586,7 +591,7 @@ export async function adminDeleteProduct(id: string): Promise<void> {
 }
 
 export async function adminRenameProductCategory(oldCategory: string, newCategory: string): Promise<any> {
-  const res = await fetch("/api/products/categories/rename", {
+  const res = await fetch(apiUrl("/api/products/categories/rename"), {
     method: "PUT",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -598,7 +603,7 @@ export async function adminRenameProductCategory(oldCategory: string, newCategor
 }
 
 export async function adminDeleteProductCategory(category: string, fallbackCategory?: string): Promise<any> {
-  const res = await fetch("/api/products/categories/delete", {
+  const res = await fetch(apiUrl("/api/products/categories/delete"), {
     method: "POST",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -610,7 +615,7 @@ export async function adminDeleteProductCategory(category: string, fallbackCateg
 }
 
 export async function adminCreateService(formData: FormData): Promise<any> {
-  const res = await fetch("/api/services", {
+  const res = await fetch(apiUrl("/api/services"), {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -622,7 +627,7 @@ export async function adminCreateService(formData: FormData): Promise<any> {
 }
 
 export async function adminUpdateService(id: string, formData: FormData): Promise<any> {
-  const res = await fetch(`/api/services/${id}`, {
+  const res = await fetch(apiUrl(`/api/services/${id}`), {
     method: "PUT",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -634,7 +639,7 @@ export async function adminUpdateService(id: string, formData: FormData): Promis
 }
 
 export async function adminDeleteService(id: string): Promise<void> {
-  const res = await fetch(`/api/services/${id}`, {
+  const res = await fetch(apiUrl(`/api/services/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -644,7 +649,7 @@ export async function adminDeleteService(id: string): Promise<void> {
 }
 
 export async function adminCreateTestimonial(data: any): Promise<any> {
-  const res = await fetch("/api/testimonials", {
+  const res = await fetch(apiUrl("/api/testimonials"), {
     method: "POST",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -656,7 +661,7 @@ export async function adminCreateTestimonial(data: any): Promise<any> {
 }
 
 export async function adminUpdateTestimonial(id: string, data: any): Promise<any> {
-  const res = await fetch(`/api/testimonials/${id}`, {
+  const res = await fetch(apiUrl(`/api/testimonials/${id}`), {
     method: "PUT",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -668,7 +673,7 @@ export async function adminUpdateTestimonial(id: string, data: any): Promise<any
 }
 
 export async function adminDeleteTestimonial(id: string): Promise<void> {
-  const res = await fetch(`/api/testimonials/${id}`, {
+  const res = await fetch(apiUrl(`/api/testimonials/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -684,7 +689,7 @@ export async function adminGetUsers(search?: string): Promise<any[]> {
   if (search) params.append("search", search);
 
   const url = `/api/users${params.toString() ? `?${params.toString()}` : ""}`;
-  const res = await fetch(url, {
+  const res = await fetch(apiUrl(url), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -694,7 +699,7 @@ export async function adminGetUsers(search?: string): Promise<any[]> {
 }
 
 export async function adminGetUserById(id: string): Promise<any> {
-  const res = await fetch(`/api/users/${id}`, {
+  const res = await fetch(apiUrl(`/api/users/${id}`), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -704,7 +709,7 @@ export async function adminGetUserById(id: string): Promise<any> {
 }
 
 export async function adminUpdateUser(id: string, data: any): Promise<any> {
-  const res = await fetch(`/api/users/${id}`, {
+  const res = await fetch(apiUrl(`/api/users/${id}`), {
     method: "PUT",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
@@ -716,7 +721,7 @@ export async function adminUpdateUser(id: string, data: any): Promise<any> {
 }
 
 export async function adminDeleteUser(id: string): Promise<void> {
-  const res = await fetch(`/api/users/${id}`, {
+  const res = await fetch(apiUrl(`/api/users/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -726,7 +731,7 @@ export async function adminDeleteUser(id: string): Promise<void> {
 }
 
 export async function adminSyncLegacyUsers(): Promise<any> {
-  const res = await fetch("/api/users/sync-legacy", {
+  const res = await fetch(apiUrl("/api/users/sync-legacy"), {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -742,7 +747,7 @@ export async function adminGetMembers(search?: string): Promise<ArtistProfile[]>
   const params = new URLSearchParams();
   if (search) params.append("search", search);
   const url = `/api/members${params.toString() ? `?${params.toString()}` : ""}`;
-  const res = await fetch(url, {
+  const res = await fetch(apiUrl(url), {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -754,7 +759,7 @@ export async function adminGetMembers(search?: string): Promise<ArtistProfile[]>
     name: m.name,
     title: m.title,
     role: m.role || m.title,
-    avatar: m.avatar || "/images/marvin-founder.png",
+    avatar: formatImageUrl(m.avatar || "/images/marvin-founder.png"),
     experience: m.experience || "1+ Years",
     specialty: m.specialty || "Custom Artistry",
     slotsRemaining: m.slotsRemaining ?? 4,
@@ -767,7 +772,7 @@ export async function adminGetMembers(search?: string): Promise<ArtistProfile[]>
 }
 
 export async function adminCreateMember(formData: FormData): Promise<any> {
-  const res = await fetch("/api/members", {
+  const res = await fetch(apiUrl("/api/members"), {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -779,7 +784,7 @@ export async function adminCreateMember(formData: FormData): Promise<any> {
 }
 
 export async function adminUpdateMember(id: string, formData: FormData): Promise<any> {
-  const res = await fetch(`/api/members/${id}`, {
+  const res = await fetch(apiUrl(`/api/members/${id}`), {
     method: "PUT",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -791,7 +796,7 @@ export async function adminUpdateMember(id: string, formData: FormData): Promise
 }
 
 export async function adminDeleteMember(id: string): Promise<void> {
-  const res = await fetch(`/api/members/${id}`, {
+  const res = await fetch(apiUrl(`/api/members/${id}`), {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -799,7 +804,3 @@ export async function adminDeleteMember(id: string): Promise<void> {
   const json = await res.json();
   if (!res.ok || !json.success) throw new Error(json.message || "Failed to delete team member");
 }
-
-
-
-
