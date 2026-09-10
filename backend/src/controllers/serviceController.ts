@@ -2,6 +2,17 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "../config/database.js";
 import { processAndSaveImage, deleteLocalImage } from "../services/imageService.js";
 
+const formatService = (s: any) => ({
+  ...s,
+  specs: typeof s.specs === "string" ? JSON.parse(s.specs || "[]") : s.specs || [],
+  processSteps: typeof s.processSteps === "string" ? JSON.parse(s.processSteps || "[]") : s.processSteps || [],
+  pricingTiers: typeof s.pricingTiers === "string" ? JSON.parse(s.pricingTiers || "[]") : s.pricingTiers || [],
+  faqs: typeof s.faqs === "string" ? JSON.parse(s.faqs || "[]") : s.faqs || [],
+  prepGuidelines: typeof s.prepGuidelines === "string" ? JSON.parse(s.prepGuidelines || "[]") : s.prepGuidelines || [],
+  aftercareGuidelines: typeof s.aftercareGuidelines === "string" ? JSON.parse(s.aftercareGuidelines || "[]") : s.aftercareGuidelines || [],
+  galleryImages: typeof s.galleryImages === "string" ? JSON.parse(s.galleryImages || "[]") : s.galleryImages || [],
+});
+
 export const getServices = async (
   _req: Request,
   res: Response,
@@ -12,15 +23,10 @@ export const getServices = async (
       orderBy: { sortOrder: "asc" },
     });
 
-    const formatted = services.map((s) => ({
-      ...s,
-      specs: typeof s.specs === "string" ? JSON.parse(s.specs) : s.specs,
-    }));
-
     res.json({
       success: true,
-      count: formatted.length,
-      data: formatted,
+      count: services.length,
+      data: services.map(formatService),
     });
   } catch (error) {
     next(error);
@@ -43,10 +49,7 @@ export const getService = async (
 
     res.json({
       success: true,
-      data: {
-        ...service,
-        specs: typeof service.specs === "string" ? JSON.parse(service.specs) : service.specs,
-      },
+      data: formatService(service),
     });
   } catch (error) {
     next(error);

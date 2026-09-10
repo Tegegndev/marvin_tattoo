@@ -64,19 +64,27 @@ model PortfolioPiece {
 
 // 4. Studio Services Catalog
 model Service {
-  id               String           @id @default(uuid())
-  disciplineNumber String           // "01", "02", "03", etc.
-  title            String
-  subtitle         String
-  description      String
-  category         String           // TATTOO, PMU, PIERCING, REMOVAL
-  imageUrl         String
-  iconName         String           // skull, pen-fancy, edit_note, layers, colorize, syringe, shield-alt
-  specs            String           // JSON string of specs array { label, value }
-  sortOrder        Int              @default(0)
-  portfolioPieces  PortfolioPiece[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  id                  String           @id @default(uuid())
+  disciplineNumber    String           // "01", "02", "03", etc.
+  title               String
+  subtitle            String
+  description         String           @db.Text
+  longDescription     String?          @db.Text
+  category            String           // TATTOO, PMU, PIERCING, REMOVAL
+  imageUrl            String           @db.Text
+  iconName            String           // skull, pen-fancy, edit_note, layers, colorize, syringe, shield-alt
+  accentColor         String?          @default("primary")
+  specs               String           @db.Text // JSON string of specs array { label, value }
+  processSteps        String?          @db.Text // JSON string of process steps { step, title, description }
+  pricingTiers        String?          @db.Text // JSON string of pricing tiers { tier, price, description }
+  faqs                String?          @db.Text // JSON string of FAQs { question, answer }
+  prepGuidelines      String?          @db.Text // JSON string of prep guidelines array
+  aftercareGuidelines String?          @db.Text // JSON string of aftercare guidelines array
+  galleryImages       String?          @db.Text // JSON string of gallery images array
+  sortOrder           Int              @default(0)
+  portfolioPieces     PortfolioPiece[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 // 5. Studio Shop Products & Merchandise

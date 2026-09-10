@@ -395,7 +395,7 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
     id: 'piece-02',
     title: 'Custom Script "Abdul S"',
-    serviceId: 'custom-lettering',
+    serviceId: 'lettering-script',
     category: 'neo-traditional',
     categoryLabel: 'Lettering & Fine-Line Script',
     artist: 'Marvin',
@@ -412,7 +412,7 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
     id: 'piece-03',
     title: 'Spider Blackwork & Navel Piercing',
-    serviceId: 'body-piercings',
+    serviceId: 'body-piercing',
     category: 'piercing',
     categoryLabel: 'Piercing & Blackwork',
     artist: 'Marvin',
@@ -480,7 +480,7 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
     id: 'piece-07',
     title: 'Botanical Fine-Line Micro Floral',
-    serviceId: 'fine-line-script',
+    serviceId: 'minimalist-fineline',
     category: 'micro-detail',
     categoryLabel: 'Minimalist & Fine-Line Botanicals',
     artist: 'Elena Kostas',
@@ -498,7 +498,7 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
     id: 'piece-08',
     title: 'Gothic Blackletter "Loyalty & Faith"',
-    serviceId: 'custom-lettering',
+    serviceId: 'lettering-script',
     category: 'neo-traditional',
     categoryLabel: 'Lettering & Gothic Script',
     artist: 'Marvin',
@@ -549,7 +549,7 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
     id: 'piece-11',
     title: 'Titanium Ear Cartilage & Conch Curation',
-    serviceId: 'body-piercings',
+    serviceId: 'body-piercing',
     category: 'piercing',
     categoryLabel: 'Precision Body Piercings',
     artist: 'Marvin',
@@ -566,7 +566,7 @@ export const PORTFOLIO_DATA: PortfolioPiece[] = [
   {
     id: 'piece-12',
     title: 'Nd:YAG Laser Lightening & Keloid Clearance',
-    serviceId: 'laser-keloid',
+    serviceId: 'laser-keloids-removal',
     category: 'coverup',
     categoryLabel: 'Laser & Skin Clearance',
     artist: 'Marvin',

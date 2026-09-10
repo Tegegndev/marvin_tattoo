@@ -112,7 +112,7 @@ async function main() {
   });
   console.log("✅ Site settings singleton synchronized.");
 
-  // 3. Seed Services Catalog
+  // 3. Seed All 8 Rich Services Catalog
   const services = [
     {
       id: "realism-portraits",
@@ -120,51 +120,147 @@ async function main() {
       title: "Realism & Portraits",
       subtitle: "Photo-Realistic Artistry",
       description:
-        "High-detail black-and-grey and photo-realistic memorial, face, wildlife, and classical sculpture pieces rendered with deep contrast and smooth tonal gradients.",
+        "Specializing in lifelike portraits, memorial pieces, wildlife, and classical sculptures in black-and-grey. Each piece is designed to flow naturally with your anatomy and retain deep contrast as it heals.",
+      longDescription:
+        "Specializing in lifelike portraits, memorial pieces, wildlife, and classical sculptures in black-and-grey. Each piece is designed to flow naturally with your anatomy and retain deep contrast as it heals.",
       category: "TATTOO",
       imageUrl: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=1000&q=80",
       iconName: "skull",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Technique", value: "High-Detail Black & Grey" },
         { label: "Subject", value: "Portraits, Statues & Wildlife" },
         { label: "Session Type", value: "Half & Full Day Sessions" },
         { label: "Pigment", value: "Dynamic & Silverback Greywash" },
       ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Consultation & High-Res Curation", description: "We evaluate reference photos for lighting contrast, skin tone compatibility, and anatomical placement." },
+        { step: "02", title: "Digital Rendering & Stencil Mapping", description: "Custom digital rendering and precision thermal stencil application to ensure distortion-free proportions." },
+        { step: "03", title: "Needle Pass & Gradient Inking", description: "Low-impact rotary inking with micro-bugpin needles to build smooth gradients without skin trauma." },
+        { step: "04", title: "Medical Seal & Healed Checkup", description: "Application of hypoallergenic polyurethane dermal film for optimal 7-day sterile healing." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Small / Single Subject", price: "UGX 250,000 - 450,000", description: "Compact portrait or high-detail animal subject (3-4 hours)." },
+        { tier: "Half-Day Session", price: "UGX 600,000 - 900,000", description: "Forearm or calf portrait with soft background blending (5-6 hours)." },
+        { tier: "Full-Day Large Piece", price: "UGX 1,200,000+", description: "Full sleeve panel, chest, or backpiece composition (8+ hours)." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "What photo references work best for realism portraits?", answer: "High-resolution, well-lit photos with clear shadows and sharp facial features yield the highest quality tattoo results." },
+        { question: "How many sessions does a realism portrait take?", answer: "Most single portraits are completed in one 5 to 7 hour session. Larger multi-figure compositions or full sleeves may take multiple sessions." },
+        { question: "Does black and grey realism fade easily?", answer: "We saturate deep carbon blacks as structural anchors, preventing the piece from lightening or losing contrast over the years." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Moisturize the target area twice daily for 5 days prior to your session.",
+        "Get a full 8 hours of sleep and eat a good meal before arriving.",
+        "Avoid alcohol, aspirin, and blood thinners 24 hours prior to your appointment.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Keep the protective dermal film on for 3 to 5 days unless leaking occurs.",
+        "Wash gently with warm water and fragrance-free antibacterial soap.",
+        "Apply a thin layer of specialized tattoo balm 2-3 times daily for 3 weeks.",
+        "Avoid swimming pools, saunas, and direct sunlight for at least 4 weeks.",
+      ]),
+      galleryImages: JSON.stringify([
+        "/images/portfolio/portrait-elder-woman.png",
+        "/images/portfolio/back-portrait-man.png",
+        "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=800&q=80",
+      ]),
       sortOrder: 1,
     },
     {
-      id: "fine-line-script",
+      id: "minimalist-fineline",
       disciplineNumber: "02",
       title: "Minimalist & Fine-Line",
       subtitle: "Delicate Precision Marking",
       description:
-        "Delicate geometric shapes, botanical florals, micro-tattoos, continuous line art, and clean subtle markings tailored to anatomical curves.",
+        "Clean single-needle fine lines, delicate botanical florals, subtle geometric accents, and micro-tattoos crafted with steady hand control.",
+      longDescription:
+        "Clean single-needle fine lines, delicate botanical florals, subtle geometric accents, and micro-tattoos crafted with steady hand control.",
       category: "TATTOO",
       imageUrl: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?auto=format&fit=crop&w=1000&q=80",
       iconName: "edit_note",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Technique", value: "Single Needle 0.25mm Bugpin" },
         { label: "Style", value: "Botanical & Continuous Line" },
         { label: "Healing", value: "Fast & Clean Zero Blowout" },
         { label: "Longevity", value: "Spaced for Sharp Aging" },
       ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Micro-Design & Curve Fitting", description: "Drafting thin vector linework matched to the natural flex lines of wrists, ribs, or collarbones." },
+        { step: "02", title: "Precision Needle Calibration", description: "Using 01RL to 03RL bugpin cartridges on ultra-low voltage for effortless ink flow." },
+        { step: "03", title: "Single-Pass Execution", description: "Continuous single-pass line control with zero needle drag or subcutaneous blowout." },
+        { step: "04", title: "Clean Shield Protection", description: "Medical second-skin wrap to seal delicate lines from friction and environmental debris." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Micro / Minimalist", price: "UGX 150,000 - 250,000", description: "Single symbol, micro floral, or 1-2 inch fine-line motif." },
+        { tier: "Medium Fine-Line Floral", price: "UGX 300,000 - 500,000", description: "Detailed botanical branch, geometric mandala, or forearm wrap." },
+        { tier: "Large Fine-Line Composition", price: "UGX 600,000+", description: "Multi-branch spine piece, ribcage botanical, or delicate sleeve." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "Do fine line tattoos blur over time?", answer: "We account for natural skin expansion by spacing delicate lines properly and inking at the optimal dermal depth, preventing ink spread." },
+        { question: "How long does a fine line tattoo take to heal?", answer: "Because trauma to the skin is minimal, fine-line tattoos typically heal completely within 10 to 14 days." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Keep the skin well moisturized and exfoliated.",
+        "Wear loose-fitting clothing that allows easy access to the tattoo site.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Moisturize lightly with unscented aftercare lotion.",
+        "Never scratch or pick at microscopic peeling flakes.",
+      ]),
+      galleryImages: JSON.stringify([
+        "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?auto=format&fit=crop&w=800&q=80",
+        "/images/portfolio/script-abdul-collarbone.png",
+        "/images/portfolio/spider-navel-piercing.png",
+      ]),
       sortOrder: 2,
     },
     {
-      id: "custom-lettering",
+      id: "lettering-script",
       disciplineNumber: "03",
       title: "Lettering & Script",
       subtitle: "Custom Typography & Calligraphy",
       description:
-        "Freehand custom typography, Chicano cursive, Gothic blackletter, names, and meaningful quotes drawn to flow naturally across the skin.",
+        "Freehand custom lettering, Chicano cursive, sharp Gothic Old English, names, and meaningful quotes shaped to the contours of your body.",
+      longDescription:
+        "Freehand custom lettering, Chicano cursive, sharp Gothic Old English, names, and meaningful quotes shaped to the contours of your body.",
       category: "TATTOO",
       imageUrl: "https://images.unsplash.com/photo-1562962230-16e4623d36e6?auto=format&fit=crop&w=1000&q=80",
       iconName: "edit_note",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Design", value: "100% Freehand & Custom Draft" },
         { label: "Style", value: "Chicano, Gothic & Calligraphy" },
         { label: "Placement", value: "Collarbone, Forearm & Ribs" },
         { label: "Longevity", value: "Spaced for Sharp Aging" },
+      ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Typographic Consultation", description: "Selecting font aesthetics, phrasing, letter kerning, and skin placement." },
+        { step: "02", title: "Freehand Marker Mapping", description: "Marvin hand-draws custom script directly on the skin with surgical skin markers." },
+        { step: "03", title: "Solid Line & Whip Shading", description: "Inking crisp contours and smooth gradient fills inside blackletter flourishes." },
+        { step: "04", title: "Sanitary Wrap & Verification", description: "Sterile seal and aftercare guidance for crisp letter retention." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Short Phrase / Name", price: "UGX 180,000 - 300,000", description: "Single word, name, or short wrist / collarbone quote." },
+        { tier: "Chicano / Gothic Chest or Forearm", price: "UGX 350,000 - 600,000", description: "Bold custom blackletter or cursive typography." },
+        { tier: "Full Back / Torso Typography", price: "UGX 750,000+", description: "Large arched backpiece or stomach gothic script." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "Can Marvin write my script freehand on my skin?", answer: "Yes! Marvin is renowned for freehand lettering, custom drafting letters to perfectly match your body muscle contours." },
+        { question: "How do you keep small letters legible as they age?", answer: "We maintain proper line spacing and open loops so letters remain clear and readable for decades." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Double-check spelling, punctuation, and wording prior to session.",
+        "Arrive well-rested and hydrated.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Gently wash with unscented soap twice daily.",
+        "Apply thin coat of healing ointment for the first 2 weeks.",
+      ]),
+      galleryImages: JSON.stringify([
+        "/images/portfolio/script-abdul-collarbone.png",
+        "https://images.unsplash.com/photo-1562962230-16e4623d36e6?auto=format&fit=crop&w=800&q=80",
       ]),
       sortOrder: 3,
     },
@@ -174,15 +270,43 @@ async function main() {
       title: "Traditional & Tribal",
       subtitle: "Bold Blackwork & Flash",
       description:
-        "Deep saturated solid blackwork, Polynesian and African tribal patterns, bold geometric armor, and classic timeless flash art.",
+        "Solid saturated blackwork, African & Polynesian heritage patterns, geometric armor, and bold classic flash art.",
+      longDescription:
+        "Solid saturated blackwork, African & Polynesian heritage patterns, geometric armor, and bold classic flash art.",
       category: "TATTOO",
       imageUrl: "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?auto=format&fit=crop&w=1000&q=80",
       iconName: "layers",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Style", value: "Polynesian, Tribal & Flash" },
         { label: "Pigment", value: "Opaque Triple Black" },
         { label: "Impact", value: "High Contrast & Heavy Lines" },
         { label: "Coverage", value: "Full Sleeves, Armor & Backpieces" },
+      ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Pattern & Symmetry Layout", description: "Aligning traditional geometric patterns to flow naturally with muscular anatomy." },
+        { step: "02", title: "Heavy Outline Pass", description: "Pulling thick, solid, punchy outlines using heavy round shaders." },
+        { step: "03", title: "Solid Jet-Black Packing", description: "Even, saturation-packed black fills without skin chew or patchy spots." },
+        { step: "04", title: "Sterile Shield Wrap", description: "Protective dressing for heavy ink saturation recovery." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Flash / Small Pattern", price: "UGX 200,000 - 350,000", description: "Traditional motif or 3-4 inch tribal symbol." },
+        { tier: "Armband / Half-Sleeve Pattern", price: "UGX 500,000 - 850,000", description: "Geometric band or solid shoulder cap." },
+        { tier: "Full Sleeve / Back Armor", price: "UGX 1,200,000+", description: "Full Polynesian, African, or heavy blackwork sleeve." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "Will solid black tribal tattoos stay dark black?", answer: "Yes! We use premium Dynamic and Kuro Sumi Triple Black pigments known worldwide for staying rich jet black without turning blue or green." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Eat well before the appointment; solid blackwork requires high energy.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Ensure the tattoo is kept clean and dry.",
+        "Moisturize with quality tattoo butter 3 times a day once peeling starts.",
+      ]),
+      galleryImages: JSON.stringify([
+        "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?auto=format&fit=crop&w=800&q=80",
+        "/images/portfolio/spider-navel-piercing.png",
       ]),
       sortOrder: 4,
     },
@@ -192,15 +316,43 @@ async function main() {
       title: "Cover-Ups & Restorations",
       subtitle: "Reworking & Concealing Old Ink",
       description:
-        "Masterfully reworking, blending, or fully concealing faded, poorly done, or unwanted old tattoos with strategic custom cover designs.",
+        "Smart cover designs and rework restorations for faded, unwanted, or poorly executed old tattoos and scar camouflage.",
+      longDescription:
+        "Smart cover designs and rework restorations for faded, unwanted, or poorly executed old tattoos and scar camouflage.",
       category: "TATTOO",
       imageUrl: "https://images.unsplash.com/photo-1590246814883-57833748b615?auto=format&fit=crop&w=1000&q=80",
       iconName: "layers",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Consult", value: "In-Person Skin Evaluation" },
         { label: "Technique", value: "Strategic Contrast & Blending" },
         { label: "Outcome", value: "Complete Fresh Tattoo" },
         { label: "Sessions", value: "Layered Multi-Pass Coverage" },
+      ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Ink & Scar Evaluation", description: "In-person inspection of pigment density, scar tissue, and surrounding skin tone." },
+        { step: "02", title: "Custom Concealment Design", description: "Drafting dark focal points directly over old lines with dynamic open flow." },
+        { step: "03", title: "Layered Base Inking", description: "First pass neutralization and structural shading over old ink." },
+        { step: "04", title: "Detailing & Polish Pass", description: "Refining highlights and textures after full healing for 100% concealment." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Small Cover-Up / Touch-up", price: "UGX 250,000 - 450,000", description: "Covering small names, symbols, or faded linework." },
+        { tier: "Medium Restoration", price: "UGX 550,000 - 900,000", description: "Concealing forearm or shoulder pieces with fresh art." },
+        { tier: "Complex Large Cover", price: "UGX 1,100,000+", description: "Multi-session full coverage piece." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "Do I need laser removal before getting a cover-up?", answer: "In most cases, no. Marvin designs custom artwork that directly conceals old ink. For extremely dark solid black tattoos, 1-2 laser lightening passes may be advised." },
+        { question: "Will the old tattoo show through after healing?", answer: "No. Our layered contrast technique ensures the old ink is permanently disguised into the new composition." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Take clear well-lit photos of the existing tattoo to send before consultation.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Follow standard aftercare strictly to allow proper ink layering.",
+      ]),
+      galleryImages: JSON.stringify([
+        "https://images.unsplash.com/photo-1590246814883-57833748b615?auto=format&fit=crop&w=800&q=80",
+        "/images/portfolio/portrait-elder-woman.png",
       ]),
       sortOrder: 5,
     },
@@ -210,64 +362,157 @@ async function main() {
       title: "Semi-Permanent Makeup",
       subtitle: "Microblading, Lips & Camouflage",
       description:
-        "Microblading & ombré powder brows, pink lip blush / neutralization, stretch marks camouflage, and aesthetic permanent makeup.",
+        "Aesthetic cosmetic enhancement including microblading, ombré powder brows, lip blush tinting, and stretch mark / scar camouflage.",
+      longDescription:
+        "Aesthetic cosmetic enhancement including microblading, ombré powder brows, lip blush tinting, and stretch mark / scar camouflage.",
       category: "PMU",
       imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1000&q=80",
       iconName: "edit_note",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Brows", value: "Microblading & Ombré Powder" },
         { label: "Lips", value: "Pink Lips Blush & Neutralize" },
         { label: "Skin", value: "Stretch Marks & Scar Camouflage" },
         { label: "Longevity", value: "18 to 36 Months Retention" },
       ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Facial Symmetry & Color Mapping", description: "Mapping brow/lip proportions with golden ratio calipers and skin tone pigment selection." },
+        { step: "02", title: "Topical Numbing Comfort", description: "Application of medical-grade topical lidocaine for a pain-free, relaxed experience." },
+        { step: "03", title: "Micro-Pigment Implantation", description: "Delicate hair-stroke or velvet powder mist implantation into the upper dermis." },
+        { step: "04", title: "6-Week Perfection Touch-Up", description: "Complimentary follow-up session to ensure vibrant retention and flawless finish." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Microblading / Ombré Brows", price: "UGX 350,000 - 550,000", description: "Complete brow shaping, initial session + aftercare pack." },
+        { tier: "Lip Blush / Neutralization", price: "UGX 400,000 - 650,000", description: "Full pink lip tinting or dark lip neutralization." },
+        { tier: "Stretch Mark Camouflage", price: "UGX 500,000+", description: "Skin-tone matched pigment camouflage per zone." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "Does PMU hurt?", answer: "We apply effective topical numbing cream before and during the procedure, keeping discomfort minimal." },
+        { question: "How long does lip blush or microblading last?", answer: "Results typically last 1.5 to 3 years depending on skin type and aftercare." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Do not wax or tint brows 3 days prior to appointment.",
+        "Hydrate your lips with balm for 48 hours prior to lip blush sessions.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Keep area dry from direct shower streams for 7 days.",
+        "Apply supplied healing cream thinly twice daily.",
+      ]),
+      galleryImages: JSON.stringify([
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
+        "/images/portfolio/spider-navel-piercing.png",
+      ]),
       sortOrder: 6,
     },
     {
-      id: "body-piercings",
+      id: "body-piercing",
       disciplineNumber: "07",
       title: "Precision Body Piercing",
       subtitle: "Ear, Facial, Dermals & Body",
       description:
-        "Sterile ear piercings (lobe, helix, tragus, conch, industrial), facial/oral (septum, nose, smiley, lip), navel, back/surface dermals, nipple & Christina piercings in implant-grade titanium.",
+        "Sterile ear, facial, oral, navel, surface microdermals, and body piercings with implant-grade ASTM F-136 titanium jewelry.",
+      longDescription:
+        "Sterile ear, facial, oral, navel, surface microdermals, and body piercings with implant-grade ASTM F-136 titanium jewelry.",
       category: "PIERCING",
       imageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1000&q=80",
       iconName: "colorize",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Jewelry", value: "ASTM F-136 Titanium Suite" },
         { label: "Dermals", value: "Back & Surface Anchor Mods" },
         { label: "Hygiene", value: "Aseptic Single-Use Blades" },
         { label: "Aftercare", value: "Sterile Saline Recovery Kit" },
       ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Anatomy Check & Jewelry Selection", description: "Evaluating cartilage/skin anatomy and selecting mirror-polished ASTM F-136 titanium studs." },
+        { step: "02", title: "Surgical Sterilization & Dotting", description: "Skin antiseptic prep and precise caliper dot placement for optimal balance." },
+        { step: "03", title: "Single-Use Needle Insertion", description: "Fast, smooth needle insertion and instant threadless jewelry installation." },
+        { step: "04", title: "Saline Aftercare Pack", description: "Sterile saline spray provided with step-by-step cleaning guidance." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Standard Ear / Nose Piercing", price: "UGX 50,000 - 100,000", description: "Lobe, helix, tragus, nostril with basic titanium jewelry." },
+        { tier: "Cartilage / Facial / Navel", price: "UGX 100,000 - 180,000", description: "Septum, conch, industrial, smiley, navel, or tongue." },
+        { tier: "Surface Anchor / Microdermal", price: "UGX 150,000 - 250,000", description: "Back dimples, chest dermal, or intimate piercing." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "Do you use piercing guns?", answer: "Never. We only use single-use tri-beveled surgical needles, which cause zero blunt tissue trauma and ensure clean, rapid healing." },
+        { question: "Is the starter jewelry safe for sensitive skin?", answer: "Yes, all our starter jewelry is made of implant-grade titanium (ASTM F-136), which is 100% hypoallergenic and nickel-free." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Eat a healthy meal 1 hour before your appointment to keep blood sugar stable.",
+        "Avoid caffeine and aspirin right before the session.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Spray with sterile saline solution twice daily.",
+        "Do not twist, touch, or rotate the jewelry during healing.",
+        "Sleep on a travel pillow to avoid pressure on fresh ear piercings.",
+      ]),
+      galleryImages: JSON.stringify([
+        "/images/portfolio/spider-navel-piercing.png",
+        "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
+      ]),
       sortOrder: 7,
     },
     {
-      id: "laser-keloid",
+      id: "laser-keloids-removal",
       disciplineNumber: "08",
       title: "Laser & Keloids Removal",
       subtitle: "Safe Fading & Skin Clearance",
       description:
-        "Advanced laser tattoo removal to lighten ink for cover-ups or complete removal, alongside certified keloid removal treatments.",
+        "Targeted laser tattoo fading for cover-ups or removal, alongside certified treatment protocols for ear and body keloids.",
+      longDescription:
+        "Targeted laser tattoo fading for cover-ups or removal, alongside certified treatment protocols for ear and body keloids.",
       category: "REMOVAL",
       imageUrl: "https://images.unsplash.com/photo-1512290900672-1f02e1a3ef78?auto=format&fit=crop&w=1000&q=80",
       iconName: "colorize",
+      accentColor: "primary",
       specs: JSON.stringify([
         { label: "Laser Tech", value: "Safe Pigment Lightening" },
         { label: "Keloids", value: "Safe Removal Protocol" },
         { label: "Recovery", value: "Comprehensive Skin Aftercare" },
         { label: "Outcome", value: "Clean Canvas for New Tattoos" },
       ]),
+      processSteps: JSON.stringify([
+        { step: "01", title: "Dermal & Pigment Assessment", description: "Assessing ink depth, skin type (Fitzpatrick scale), and keloid tissue structure." },
+        { step: "02", title: "Targeted Laser Pulse Pass", description: "Q-switched laser pulses shattering pigment into microscopic particles." },
+        { step: "03", title: "Cooling & Soothing Barrier", description: "Immediate cryo-cooling and soothing antibacterial recovery gel application." },
+        { step: "04", title: "Progressive Healing Schedule", description: "Scheduling treatment passes 6-8 weeks apart for complete lymphatic clearance." },
+      ]),
+      pricingTiers: JSON.stringify([
+        { tier: "Small Tattoo Laser Session", price: "UGX 120,000 - 200,000", description: "Per session for 1-2 inch tattoo fading." },
+        { tier: "Medium Tattoo Laser Session", price: "UGX 250,000 - 450,000", description: "Per session for forearm or shoulder piece." },
+        { tier: "Keloid Removal Treatment", price: "UGX 200,000 - 500,000", description: "Clinical keloid treatment protocol." },
+      ]),
+      faqs: JSON.stringify([
+        { question: "How many sessions are needed to remove a tattoo?", answer: "Fading for a cover-up typically takes 2 to 4 sessions. Complete removal takes 5 to 8 sessions depending on ink depth and colors." },
+        { question: "Is laser removal safe on dark skin?", answer: "Yes. We calibrate wavelength and pulse duration specifically to protect melanin and prevent hyperpigmentation." },
+      ]),
+      prepGuidelines: JSON.stringify([
+        "Avoid sun exposure and tanning beds for 4 weeks before treatment.",
+      ]),
+      aftercareGuidelines: JSON.stringify([
+        "Keep the treated area clean and cool; apply cold compress if warm.",
+        "Apply prescribed healing ointment and do not pick at any light scabbing.",
+      ]),
+      galleryImages: JSON.stringify([
+        "https://images.unsplash.com/photo-1512290900672-1f02e1a3ef78?auto=format&fit=crop&w=800&q=80",
+        "/images/portfolio/portrait-elder-woman.png",
+      ]),
       sortOrder: 8,
     },
   ];
 
-  await prisma.service.deleteMany({});
   for (const service of services) {
-    await prisma.service.create({ data: service });
+    await prisma.service.upsert({
+      where: { id: service.id },
+      update: service,
+      create: service,
+    });
   }
-  console.log(`✅ Seeded/Refreshed ${services.length} studio service disciplines.`);
+  console.log(`✅ Seeded/Synchronized ${services.length} studio service disciplines with full specs, process, pricing & FAQs.`);
 
 
-  // 4. Seed Portfolio Pieces
+  // 4. Seed All 12 Portfolio Pieces
   const pieces = [
     {
       id: "piece-01",
@@ -275,6 +520,9 @@ async function main() {
       serviceId: "realism-portraits",
       category: "dark-realism",
       categoryLabel: "Memorial Realism & Mother Tribute",
+      artist: "Marvin",
+      healingState: "Healed & Fresh Tribute",
+      cycle: "healed",
       zone: "Forearm",
       flashId: "MOM-701",
       imageUrl: "/images/portfolio/portrait-elder-woman.png",
@@ -288,9 +536,12 @@ async function main() {
     {
       id: "piece-02",
       title: 'Custom Script "Abdul S"',
-      serviceId: "custom-lettering",
+      serviceId: "lettering-script",
       category: "neo-traditional",
       categoryLabel: "Lettering & Fine-Line Script",
+      artist: "Marvin",
+      healingState: "Fresh Ink",
+      cycle: "fresh",
       zone: "Collarbone",
       flashId: "#420-AS",
       imageUrl: "/images/portfolio/script-abdul-collarbone.png",
@@ -304,9 +555,12 @@ async function main() {
     {
       id: "piece-03",
       title: "Spider Blackwork & Navel Piercing",
-      serviceId: "body-piercings",
+      serviceId: "body-piercing",
       category: "piercing",
       categoryLabel: "Piercing & Blackwork",
+      artist: "Marvin",
+      healingState: "Healed Curation",
+      cycle: "healed",
       zone: "Abdomen / Navel",
       flashId: "#515-SP",
       imageUrl: "/images/portfolio/spider-navel-piercing.png",
@@ -323,6 +577,9 @@ async function main() {
       serviceId: "realism-portraits",
       category: "dark-realism",
       categoryLabel: "Dark Realism & Portraits",
+      artist: "Marvin",
+      healingState: "Fresh Ink",
+      cycle: "fresh",
       zone: "Backpiece",
       flashId: "#830-BP",
       imageUrl: "/images/portfolio/back-portrait-man.png",
@@ -339,6 +596,9 @@ async function main() {
       serviceId: "semi-permanent-makeup",
       category: "micro-detail",
       categoryLabel: "Cosmetic Eyebrow PMU",
+      artist: "Marvin",
+      healingState: "Fresh Treatment",
+      cycle: "fresh",
       zone: "Face & Brow",
       flashId: "#202-PMU",
       imageUrl: "/images/portfolio/cosmetic-eyebrow-pmu.png",
@@ -355,6 +615,9 @@ async function main() {
       serviceId: "realism-portraits",
       category: "dark-realism",
       categoryLabel: "Dark Realism & Heavy Shading",
+      artist: "Marvin",
+      healingState: "Healed 8 Months",
+      cycle: "healed",
       zone: "Chest",
       flashId: "#882-CR",
       imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDw-LC5T3Qbuh7cVBwh64V7VAoe8Ji5bovK8uNUZ4_v3NsbJb85T29qes9hXL9_P8_1PBf4wfVbpQ_jhbL7XRLNg8w6HEDLrcJAX0s-fEqouRmmSgnmSX4qP-JFofp3EYwIAzGx2qwAD2dLADwjsqU0HiGAmtiB23NnoxvWdaDOCmJsCexXeKQls6PGxa9d3IKZH2vpMnHSv2iHvMuWAVnCpD0quFwqf3o3NX5hf9o8wD-qFGjCUh9oDQ",
@@ -368,9 +631,12 @@ async function main() {
     {
       id: "piece-07",
       title: "Botanical Fine-Line Micro Floral",
-      serviceId: "fine-line-script",
+      serviceId: "minimalist-fineline",
       category: "micro-detail",
       categoryLabel: "Minimalist & Fine-Line Botanicals",
+      artist: "Elena Kostas",
+      healingState: "Healed 4 Months",
+      cycle: "healed",
       zone: "Wrist & Forearm",
       flashId: "#109-FL",
       imageUrl: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?auto=format&fit=crop&w=1000&q=80",
@@ -384,9 +650,12 @@ async function main() {
     {
       id: "piece-08",
       title: 'Gothic Blackletter "Loyalty & Faith"',
-      serviceId: "custom-lettering",
+      serviceId: "lettering-script",
       category: "neo-traditional",
       categoryLabel: "Lettering & Gothic Script",
+      artist: "Marvin",
+      healingState: "Fresh Ink",
+      cycle: "fresh",
       zone: "Chest & Sternum",
       flashId: "#773-GS",
       imageUrl: "https://images.unsplash.com/photo-1562962230-16e4623d36e6?auto=format&fit=crop&w=1000&q=80",
@@ -403,6 +672,9 @@ async function main() {
       serviceId: "traditional-tribal",
       category: "dark-realism",
       categoryLabel: "Traditional & Tribal Blackwork",
+      artist: "Marvin",
+      healingState: "Healed 1 Year",
+      cycle: "healed",
       zone: "Shoulder & Arm",
       flashId: "#904-TR",
       imageUrl: "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?auto=format&fit=crop&w=1000&q=80",
@@ -419,6 +691,9 @@ async function main() {
       serviceId: "coverups-restorations",
       category: "coverup",
       categoryLabel: "Cover-Ups & Tattoo Restorations",
+      artist: "Marvin",
+      healingState: "Healed Complete Cover",
+      cycle: "healed",
       zone: "Upper Arm",
       flashId: "#612-CU",
       imageUrl: "https://images.unsplash.com/photo-1590246814883-57833748b615?auto=format&fit=crop&w=1000&q=80",
@@ -432,9 +707,12 @@ async function main() {
     {
       id: "piece-11",
       title: "Titanium Ear Cartilage & Conch Curation",
-      serviceId: "body-piercings",
+      serviceId: "body-piercing",
       category: "piercing",
       categoryLabel: "Precision Body Piercings",
+      artist: "Marvin",
+      healingState: "Healed Curation",
+      cycle: "healed",
       zone: "Ear (Conch & Helix)",
       flashId: "#314-PC",
       imageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1000&q=80",
@@ -448,9 +726,12 @@ async function main() {
     {
       id: "piece-12",
       title: "Nd:YAG Laser Lightening & Keloid Clearance",
-      serviceId: "laser-keloid",
+      serviceId: "laser-keloids-removal",
       category: "coverup",
       categoryLabel: "Laser & Skin Clearance",
+      artist: "Marvin",
+      healingState: "Session 3 Progress",
+      cycle: "healed",
       zone: "Forearm & Skin",
       flashId: "#105-LS",
       imageUrl: "https://images.unsplash.com/photo-1512290900672-1f02e1a3ef78?auto=format&fit=crop&w=1000&q=80",
@@ -463,18 +744,22 @@ async function main() {
     },
   ];
 
-  await prisma.portfolioPiece.deleteMany({});
   for (const piece of pieces) {
-    await prisma.portfolioPiece.create({ data: piece });
+    await prisma.portfolioPiece.upsert({
+      where: { id: piece.id },
+      update: piece,
+      create: piece,
+    });
   }
-  console.log(`✅ Seeded/Refreshed ${pieces.length} portfolio pieces.`);
+  console.log(`✅ Seeded/Synchronized ${pieces.length} portfolio pieces with linked service relations.`);
 
   // 5. Seed Shop Products
   const products = [
     {
+      id: "prod-01",
       name: "Rotary Pen Machine",
       category: "Hard Goods",
-      price: 2750000.0, // UGX (~$740 USD)
+      price: 2750000.0,
       currency: "UGX",
       description:
         "Wireless, cordless rotary pen with a 4.0mm stroke — reliable for dense blackwork and clean lining.",
@@ -491,9 +776,10 @@ async function main() {
       sortOrder: 1,
     },
     {
+      id: "prod-02",
       name: "Aftercare Balm",
       category: "Aftercare",
-      price: 95000.0, // UGX (~$28 USD)
+      price: 95000.0,
       currency: "UGX",
       description:
         "Cold-pressed calendula and shea butter. No petroleum — a sterile barrier that keeps new ink protected.",
@@ -510,9 +796,10 @@ async function main() {
       sortOrder: 2,
     },
     {
+      id: "prod-03",
       name: "Cartridge Needles (Box of 20)",
       category: "Needles",
-      price: 160000.0, // UGX (~$46 USD)
+      price: 160000.0,
       currency: "UGX",
       description:
         "316L stainless steel, pre-sterilized with safety membrane to prevent backflow.",
@@ -529,9 +816,10 @@ async function main() {
       sortOrder: 3,
     },
     {
+      id: "prod-04",
       name: "Titanium Daith Clicker",
       category: "Titanium Jewelry",
-      price: 310000.0, // UGX (~$85 USD)
+      price: 310000.0,
       currency: "UGX",
       description:
         "Mirror-polished implant-grade titanium with black onyx accents and secure hinge closure.",
@@ -550,31 +838,18 @@ async function main() {
   ];
 
   for (const prod of products) {
-    const existing = await prisma.product.findFirst({
-      where: {
-        OR: [
-          { name: prod.name },
-          { name: prod.name === "Rotary Pen Machine" ? "Wireless Rotary Pen Machine" : prod.name },
-          { name: prod.name === "Aftercare Balm" ? "Clinical Tattoo Aftercare Balm" : prod.name },
-          { name: prod.name === "Cartridge Needles (Box of 20)" ? "Sterile Cartridge Needles (Box of 20)" : prod.name },
-        ],
-      },
+    await prisma.product.upsert({
+      where: { id: prod.id },
+      update: prod,
+      create: prod,
     });
-
-    if (existing) {
-      await prisma.product.update({
-        where: { id: existing.id },
-        data: prod,
-      });
-    } else {
-      await prisma.product.create({ data: prod });
-    }
   }
   console.log(`✅ Seeded/Synchronized ${products.length} shop items.`);
 
   // 6. Seed Testimonials
   const reviews = [
     {
+      id: "t-1",
       name: "Brian K.",
       role: "Dark Realism & Sleeve",
       stars: 5,
@@ -584,6 +859,7 @@ async function main() {
       approved: true,
     },
     {
+      id: "t-2",
       name: "Patricia N.",
       role: "Fine-Line & Script",
       stars: 5,
@@ -593,6 +869,7 @@ async function main() {
       approved: true,
     },
     {
+      id: "t-3",
       name: "Denis M.",
       role: "Tattoo Cover-Up",
       stars: 5,
@@ -602,6 +879,7 @@ async function main() {
       approved: true,
     },
     {
+      id: "t-4",
       name: "Sandra A.",
       role: "Titanium Ear Piercing",
       stars: 5,
@@ -611,6 +889,7 @@ async function main() {
       approved: true,
     },
     {
+      id: "t-5",
       name: "Joshua T.",
       role: "Custom Script & Lettering",
       stars: 5,
@@ -620,6 +899,7 @@ async function main() {
       approved: true,
     },
     {
+      id: "t-6",
       name: "Ritah K.",
       role: "Minimalist Micro-Tattoo",
       stars: 5,
@@ -630,15 +910,19 @@ async function main() {
     },
   ];
 
-  await prisma.testimonial.deleteMany({});
   for (const review of reviews) {
-    await prisma.testimonial.create({ data: review });
+    await prisma.testimonial.upsert({
+      where: { id: review.id },
+      update: review,
+      create: review,
+    });
   }
   console.log(`✅ Seeded/Refreshed ${reviews.length} client testimonials.`);
 
   // 7. Seed Team Members / Artists & Piercers
   const teamMembers = [
     {
+      id: "marvin",
       slug: "marvin",
       name: "Marvin",
       title: "Founder & Master Tattoo Artist",
@@ -654,6 +938,7 @@ async function main() {
       sortOrder: 1,
     },
     {
+      id: "elena-kostas",
       slug: "elena-kostas",
       name: "Elena Kostas",
       title: "Senior Tattoo Artist",
@@ -669,6 +954,7 @@ async function main() {
       sortOrder: 2,
     },
     {
+      id: "s-choi",
       slug: "s-choi",
       name: "S. Choi",
       title: "Piercing Specialist",
@@ -686,24 +972,15 @@ async function main() {
   ];
 
   for (const member of teamMembers) {
-    const existing = await prisma.member.findFirst({
-      where: {
-        OR: [{ slug: member.slug }, { name: member.name }],
-      },
+    await prisma.member.upsert({
+      where: { slug: member.slug },
+      update: member,
+      create: member,
     });
-
-    if (existing) {
-      await prisma.member.update({
-        where: { id: existing.id },
-        data: member,
-      });
-    } else {
-      await prisma.member.create({ data: member });
-    }
   }
   console.log(`✅ Seeded/Synchronized ${teamMembers.length} team members.`);
 
-  console.log("✨ Database Seeding Completed Successfully!");
+  console.log("✨ Database Seeding & Migration Completed Successfully!");
 }
 
 main()
@@ -714,5 +991,6 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
 
 
