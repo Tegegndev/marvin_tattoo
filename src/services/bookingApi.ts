@@ -2,6 +2,8 @@ import { BookingPayload, BookingRecord, BookingResponse } from '../types';
 import { apiUrl } from '../config/api';
 
 const STORAGE_KEY = 'marvin_tattoos_bookings_db';
+const USER_BOOKINGS_KEY = 'marvin_user_bookings';
+const LAST_BOOKING_KEY = 'marvin_last_booking';
 
 const INITIAL_BOOKINGS: BookingRecord[] = [
   {
@@ -40,7 +42,7 @@ const INITIAL_BOOKINGS: BookingRecord[] = [
   }
 ];
 
-const getLocalBookings = (): BookingRecord[] => {
+export const getLocalBookings = (): BookingRecord[] => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) {
@@ -53,11 +55,40 @@ const getLocalBookings = (): BookingRecord[] => {
   }
 };
 
-const saveLocalBookings = (records: BookingRecord[]) => {
+export const getUserBookings = (): BookingRecord[] => {
+  try {
+    const data = localStorage.getItem(USER_BOOKINGS_KEY);
+    return data ? (JSON.parse(data) as BookingRecord[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const getLastBooking = (): BookingRecord | null => {
+  try {
+    const data = localStorage.getItem(LAST_BOOKING_KEY);
+    return data ? (JSON.parse(data) as BookingRecord) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const saveLocalBookings = (records: BookingRecord[]) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
   } catch (err) {
     console.error('Failed to persist bookings to localStorage:', err);
+  }
+};
+
+export const saveUserBooking = (record: BookingRecord) => {
+  try {
+    const userList = getUserBookings();
+    const filtered = userList.filter((b) => b.referenceCode !== record.referenceCode && b.id !== record.id);
+    localStorage.setItem(USER_BOOKINGS_KEY, JSON.stringify([record, ...filtered]));
+    localStorage.setItem(LAST_BOOKING_KEY, JSON.stringify(record));
+  } catch (err) {
+    console.error('Failed to persist user booking to localStorage:', err);
   }
 };
 
@@ -108,6 +139,7 @@ export const bookingApi = {
 
         const currentList = getLocalBookings();
         saveLocalBookings([newRecord, ...currentList]);
+        saveUserBooking(newRecord);
 
         return {
           success: true,
@@ -143,6 +175,7 @@ export const bookingApi = {
 
     const currentList = getLocalBookings();
     saveLocalBookings([newRecord, ...currentList]);
+    saveUserBooking(newRecord);
 
     return {
       success: true,
