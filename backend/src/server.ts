@@ -15,14 +15,7 @@ const app = express();
 app.use((typeof helmet === "function" ? helmet : (helmet as any)?.default || helmet)({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      const allowed = [env.CLIENT_URL, "http://localhost:5173", "http://localhost:3000"];
-      if (allowed.includes(origin) || origin.endsWith(".vercel.app")) {
-        return callback(null, true);
-      }
-      return callback(null, true);
-    },
+    origin: true, // Allow all origins dynamically with credentials
     credentials: true,
   })
 );
