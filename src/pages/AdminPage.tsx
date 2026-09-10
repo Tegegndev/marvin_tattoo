@@ -103,8 +103,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [adminUser, setAdminUser] = useState<any>(null);
-  const [loginEmail, setLoginEmail] = useState<string>('admin@marvintattoos.com');
-  const [loginPassword, setLoginPassword] = useState<string>('MarvinStudio2026!');
+  const [loginEmail, setLoginEmail] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string>('');
 
@@ -1231,7 +1231,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/30 transition-all placeholder:text-zinc-500"
-                placeholder="admin@marvintattoos.com"
+                placeholder="admin@yourdomain.com"
               />
             </div>
 
