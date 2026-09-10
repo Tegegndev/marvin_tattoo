@@ -306,24 +306,5 @@ export function printReceipt(data: OrderReceiptData): void {
     printWindow.document.open();
     printWindow.document.write(html);
     printWindow.document.close();
-  } else {
-    // If pop-up is blocked, trigger direct HTML blob download
-    downloadReceiptHTML(data);
   }
-}
-
-/**
- * Downloads the receipt as an HTML file directly to the user's device.
- */
-export function downloadReceiptHTML(data: OrderReceiptData): void {
-  const html = generateReceiptHTML(data);
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Marvin_Tattoos_Receipt_${data.orderNumber}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }

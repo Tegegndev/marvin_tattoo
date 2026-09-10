@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CartItem, PageView } from '../types';
 import { Icons8 } from '../components/Icons8';
 import { createShopOrder, initializePayment } from '../services/apiClient';
-import { printReceipt, downloadReceiptHTML, OrderReceiptData } from '../utils/receiptGenerator';
+import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -638,76 +638,48 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </p>
                 </div>
 
-                {/* Important Notice: Download Receipt to Track Status */}
-                <div className="p-6 bg-gradient-to-b from-noir-850 to-noir-950 border-2 border-gold/40 rounded-xl max-w-xl mx-auto text-left space-y-4 shadow-xl">
+                {/* Download Receipt to Track Status */}
+                <div className="p-6 bg-noir-850 border border-gold/40 rounded-xl max-w-xl mx-auto text-left space-y-4 shadow-lg">
                   <div className="flex items-start gap-3.5">
                     <div className="w-10 h-10 rounded-lg bg-gold/15 border border-gold/40 text-gold flex items-center justify-center shrink-0 mt-0.5">
                       <Icons8 name="file-invoice" size={22} />
                     </div>
                     <div>
                       <h4 className="font-title-editorial text-base text-bone uppercase">
-                        Download Your Official Order Receipt
+                        Official Order Receipt
                       </h4>
                       <p className="font-body-sm text-xs text-bone-dim mt-1 leading-relaxed">
-                        Please save or print your receipt now. You will need your <strong className="text-gold">Order Reference ({createdOrder?.orderNumber})</strong> to track live fulfillment with our concierge or present upon studio pickup.
+                        Print or save your PDF receipt to track your order status with our studio concierge.
                       </p>
                     </div>
                   </div>
 
-                  {/* Receipt Action Buttons */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const receiptData: OrderReceiptData = {
-                          orderNumber: createdOrder?.orderNumber || 'ORD-STUDIO',
-                          clientName: shippingData.fullName || 'Valued Client',
-                          clientPhone: shippingData.phone,
-                          clientEmail: shippingData.email,
-                          deliveryMethod,
-                          deliveryAddress: shippingData.address,
-                          deliveryNotes: shippingData.notes,
-                          paymentMethod,
-                          items: cart,
-                          subtotal,
-                          dispatchFee,
-                          total,
-                          createdAt: new Date(),
-                        };
-                        printReceipt(receiptData);
-                      }}
-                      className="w-full py-3 bg-gold hover:bg-gold-light text-noir-950 font-label-caps text-xs uppercase tracking-wider font-bold transition-all rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                    >
-                      <Icons8 name="print" size={15} />
-                      <span>Print / PDF Receipt</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const receiptData: OrderReceiptData = {
-                          orderNumber: createdOrder?.orderNumber || 'ORD-STUDIO',
-                          clientName: shippingData.fullName || 'Valued Client',
-                          clientPhone: shippingData.phone,
-                          clientEmail: shippingData.email,
-                          deliveryMethod,
-                          deliveryAddress: shippingData.address,
-                          deliveryNotes: shippingData.notes,
-                          paymentMethod,
-                          items: cart,
-                          subtotal,
-                          dispatchFee,
-                          total,
-                          createdAt: new Date(),
-                        };
-                        downloadReceiptHTML(receiptData);
-                      }}
-                      className="w-full py-3 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-wider transition-colors border border-noir-700 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <Icons8 name="download" size={15} className="text-gold" />
-                      <span>Save Receipt File (.html)</span>
-                    </button>
-                  </div>
+                  {/* Single Clean Print / PDF Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const receiptData: OrderReceiptData = {
+                        orderNumber: createdOrder?.orderNumber || 'ORD-STUDIO',
+                        clientName: shippingData.fullName || 'Valued Client',
+                        clientPhone: shippingData.phone,
+                        clientEmail: shippingData.email,
+                        deliveryMethod,
+                        deliveryAddress: shippingData.address,
+                        deliveryNotes: shippingData.notes,
+                        paymentMethod,
+                        items: cart,
+                        subtotal,
+                        dispatchFee,
+                        total,
+                        createdAt: new Date(),
+                      };
+                      printReceipt(receiptData);
+                    }}
+                    className="w-full py-3.5 bg-gold hover:bg-gold-light text-noir-950 font-label-caps text-xs uppercase tracking-wider font-bold transition-all rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <Icons8 name="print" size={16} />
+                    <span>Download / Print PDF Receipt</span>
+                  </button>
                 </div>
 
                 {/* Quick Copy Ref Button */}
