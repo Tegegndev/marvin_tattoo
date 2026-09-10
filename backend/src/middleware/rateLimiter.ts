@@ -1,7 +1,10 @@
 import rateLimit from "express-rate-limit";
 
 // Rate limiter for sensitive public intake (bookings & guest orders)
-export const bookingLimiter = rateLimit({
+// @ts-ignore
+const createLimiter: any = typeof rateLimit === "function" ? rateLimit : (rateLimit as any)?.default || rateLimit;
+
+export const bookingLimiter = createLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 15, // Limit each IP to 15 requests per windowMs
   message: {
@@ -13,7 +16,7 @@ export const bookingLimiter = rateLimit({
 });
 
 // Rate limiter for admin authentication
-export const authLimiter = rateLimit({
+export const authLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
   max: 10, // 10 login attempts per 15 mins
   message: {
@@ -23,3 +26,4 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
