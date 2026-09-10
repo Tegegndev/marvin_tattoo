@@ -1,4 +1,4 @@
-export type PageView = 'home' | 'services' | 'service-detail' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare' | 'admin' | 'checkout';
+export type PageView = 'home' | 'services' | 'service-detail' | 'portfolio' | 'about' | 'booking' | 'equipment' | 'location' | 'socials' | 'aftercare' | 'admin' | 'checkout' | 'track-order';
 
 export interface ServiceProcessStep {
   step: string;

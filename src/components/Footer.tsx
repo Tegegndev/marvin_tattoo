@@ -7,10 +7,12 @@ import { fetchSiteSettings, DEFAULT_SITE_SETTINGS } from '../services/apiClient'
 interface FooterProps {
   onNavigate: (page: PageView) => void;
   onOpenVerify: () => void;
+  onTrackOrder?: (orderNumber: string) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
   const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+  const [trackingNumber, setTrackingNumber] = useState<string>('');
 
   useEffect(() => {
     fetchSiteSettings().then(setSettings).catch(() => {});
@@ -117,14 +119,41 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <p className="font-body-sm text-body-sm text-bone-muted leading-relaxed">
               Saturday walk-in flash spots open at 10:45 AM, first come first served. Custom sleeves and cover-ups require a booked consultation.
             </p>
-            <div className="p-3.5 bg-noir-850 space-y-1.5 border border-noir-700">
-              <div className="flex items-center gap-1.5 text-gold font-label-caps text-label-caps uppercase tracking-wider font-bold">
-                <Icons8 name="shield-alt" size={16} />
-                <span>Sterilization Guarantee</span>
+            {/* Senior-Dev Order Tracking Widget */}
+            <div className="pt-2 space-y-2">
+              <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone flex items-center gap-1.5">
+                <Icons8 name="search" size={13} className="text-crimson-light" />
+                <span>Track Studio Order</span>
               </div>
-              <p className="font-body-sm text-body-sm text-bone-dim leading-relaxed">
-                Hospital-grade autoclave sterilization, single-use needle cartridges, and medical-grade sanitation protocols for every session.
-              </p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (trackingNumber.trim()) {
+                    if (onTrackOrder) {
+                      onTrackOrder(trackingNumber.trim());
+                    } else {
+                      onNavigate('track-order');
+                    }
+                  }
+                }}
+                className="flex items-center gap-1.5"
+              >
+                <input
+                  type="text"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder="e.g. ORD-2026-..."
+                  className="w-full px-3 py-2 bg-noir-850 border border-noir-700 text-bone text-xs font-mono uppercase focus:outline-none focus:border-crimson placeholder:font-sans placeholder:text-bone-muted/40 rounded transition-colors"
+                />
+                <button
+                  type="submit"
+                  className="px-3.5 py-2 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] uppercase tracking-wider rounded transition-colors flex items-center gap-1 cursor-pointer shrink-0 font-bold"
+                  aria-label="Track order"
+                >
+                  <span>Track</span>
+                  <Icons8 name="arrow-right" size={11} />
+                </button>
+              </form>
             </div>
           </div>
 
@@ -162,39 +191,39 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="grid grid-cols-2 gap-1 font-label-caps text-label-caps uppercase text-bone-dim">
                 <button
                   onClick={() => onNavigate('about')}
-                  className="text-left hover:text-bone transition-colors py-1"
+                  className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   About
                 </button>
                 <button
                   onClick={() => onNavigate('portfolio')}
-                  className="text-left hover:text-bone transition-colors py-1"
+                  className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   Portfolio
                 </button>
                 <button
                   onClick={() => onNavigate('aftercare')}
-                  className="text-left hover:text-bone transition-colors py-1 text-gold font-semibold"
+                  className="text-left hover:text-bone transition-colors py-1 text-gold font-semibold cursor-pointer"
                 >
                   Aftercare
                 </button>
                 <button
                   onClick={() => onNavigate('equipment')}
-                  className="text-left hover:text-bone transition-colors py-1"
+                  className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   Shop
                 </button>
                 <button
                   onClick={() => onNavigate('location')}
-                  className="text-left hover:text-bone transition-colors py-1"
+                  className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   Location
                 </button>
                 <button
-                  onClick={() => onNavigate('booking')}
-                  className="text-left hover:text-bone transition-colors py-1"
+                  onClick={() => onNavigate('track-order')}
+                  className="text-left hover:text-crimson-light transition-colors py-1 font-semibold cursor-pointer"
                 >
-                  Book
+                  Track Order
                 </button>
               </div>
             </div>
@@ -207,16 +236,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             © 2026 MARVIN TATTOOS &amp; PIERCINGS. ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-bone-dim">
-            <button onClick={() => onNavigate('aftercare')} className="hover:text-bone text-gold font-semibold transition-colors">
+            <button onClick={() => onNavigate('track-order')} className="hover:text-crimson-light text-bone font-semibold transition-colors cursor-pointer">
+              Track Order
+            </button>
+            <button onClick={() => onNavigate('aftercare')} className="hover:text-bone text-gold font-semibold transition-colors cursor-pointer">
               Aftercare Guide
             </button>
-            <button onClick={() => onNavigate('location')} className="hover:text-bone transition-colors">
+            <button onClick={() => onNavigate('location')} className="hover:text-bone transition-colors cursor-pointer">
               Studio Location
             </button>
-            <button onClick={() => onNavigate('about')} className="hover:text-bone transition-colors">
+            <button onClick={() => onNavigate('about')} className="hover:text-bone transition-colors cursor-pointer">
               Hygiene Standards
             </button>
-            <button onClick={() => onNavigate('booking')} className="hover:text-bone transition-colors">
+            <button onClick={() => onNavigate('booking')} className="hover:text-bone transition-colors cursor-pointer">
               Book Terms
             </button>
           </div>

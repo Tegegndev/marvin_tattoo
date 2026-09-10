@@ -16,6 +16,7 @@ import { EquipmentPage } from './pages/EquipmentPage';
 import { LocationPage } from './pages/LocationPage';
 import { AftercarePage } from './pages/AftercarePage';
 import { CheckoutPage } from './pages/CheckoutPage';
+import { TrackOrderPage } from './pages/TrackOrderPage';
 import { AdminPage } from './pages/AdminPage';
 import { SERVICES_DATA } from './data/atelierData';
 import { Preloader } from './components/Preloader';
@@ -36,6 +37,7 @@ export function App() {
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
   const [isVerifyOpen, setIsVerifyOpen] = useState<boolean>(false);
   const [bookingPreselectedPiece, setBookingPreselectedPiece] = useState<PortfolioPiece | null>(null);
+  const [trackingOrderNumber, setTrackingOrderNumber] = useState<string>('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -227,6 +229,13 @@ export function App() {
               />
             )}
 
+            {currentPage === 'track-order' && (
+              <TrackOrderPage
+                initialOrderNumber={trackingOrderNumber}
+                onNavigate={setCurrentPage}
+              />
+            )}
+
             {currentPage === 'admin' && (
               <AdminPage onNavigate={setCurrentPage} />
             )}
@@ -235,7 +244,14 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <Footer onNavigate={setCurrentPage} onOpenVerify={() => setIsVerifyOpen(true)} />
+      <Footer
+        onNavigate={setCurrentPage}
+        onOpenVerify={() => setIsVerifyOpen(true)}
+        onTrackOrder={(orderNum) => {
+          setTrackingOrderNumber(orderNum);
+          setCurrentPage('track-order');
+        }}
+      />
 
       {/* Modals */}
       <ArtworkModal

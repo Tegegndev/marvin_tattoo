@@ -319,6 +319,16 @@ export async function createShopOrder(orderData: {
   return json.data;
 }
 
+export async function trackOrder(orderNumber: string): Promise<any> {
+  const cleanNumber = encodeURIComponent(orderNumber.trim().toUpperCase());
+  const res = await fetch(apiUrl(`/api/orders/track/${cleanNumber}`));
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Order not found. Please verify your reference number.");
+  }
+  return json.data;
+}
+
 export async function initializePayment(data: {
   orderId?: string;
   orderNumber?: string;
