@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PageView, PortfolioPiece, ProductItem, CartItem } from './types';
+import { PageView, PortfolioPiece, ProductItem, CartItem, ServiceItem } from './types';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ArtworkModal } from './components/ArtworkModal';
@@ -19,6 +19,7 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { TrackOrderPage } from './pages/TrackOrderPage';
 import { AdminPage } from './pages/AdminPage';
 import { SERVICES_DATA } from './data/atelierData';
+import { fetchServices } from './services/apiClient';
 import { Preloader } from './components/Preloader';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -37,6 +38,8 @@ export function App() {
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
   const [isVerifyOpen, setIsVerifyOpen] = useState<boolean>(false);
   const [bookingPreselectedPiece, setBookingPreselectedPiece] = useState<PortfolioPiece | null>(null);
+  const [bookingPreselectedService, setBookingPreselectedService] = useState<ServiceItem | null>(null);
+  const [bookingPreselectedTier, setBookingPreselectedTier] = useState<string | null>(null);
   const [trackingOrderNumber, setTrackingOrderNumber] = useState<string>('');
 
   useEffect(() => {
@@ -89,6 +92,8 @@ export function App() {
 
   const handleBookSimilar = (piece: PortfolioPiece) => {
     setBookingPreselectedPiece(piece);
+    setBookingPreselectedService(null);
+    setBookingPreselectedTier(null);
     setCurrentPage('booking');
     setSelectedArtwork(null);
   };
@@ -98,23 +103,17 @@ export function App() {
     setCurrentPage('service-detail');
   };
 
-  const handleBookService = (serviceId: string) => {
-    const s = SERVICES_DATA.find((item) => item.id === serviceId);
-    if (s) {
-      setBookingPreselectedPiece({
-        id: s.id,
-        title: s.title,
-        category: 'dark-realism',
-        categoryLabel: `${s.title} (${s.subtitle})`,
-        artist: 'Marvin',
-        healingState: 'Consultation & Mapping',
-        cycle: 'fresh',
-        zone: s.specs.find((sp) => sp.label.toLowerCase().includes('placement') || sp.label.toLowerCase().includes('coverage'))?.value || 'Custom Placement',
-        flashId: `DISC-${s.disciplineNumber}`,
-        image: s.image,
-        description: s.description,
-      });
-    }
+  const handleBookService = async (serviceId: string, tierName?: string) => {
+    let matchedService: ServiceItem | undefined = SERVICES_DATA.find((item) => item.id === serviceId);
+    try {
+      const liveServices = await fetchServices();
+      const liveMatch = liveServices.find((item) => item.id === serviceId);
+      if (liveMatch) matchedService = liveMatch;
+    } catch {}
+
+    setBookingPreselectedService(matchedService || null);
+    setBookingPreselectedTier(tierName || null);
+    setBookingPreselectedPiece(null);
     setCurrentPage('booking');
   };
 
@@ -191,6 +190,8 @@ export function App() {
             {currentPage === 'booking' && (
               <BookingPage
                 initialPiece={bookingPreselectedPiece}
+                initialService={bookingPreselectedService}
+                initialTier={bookingPreselectedTier}
                 onNavigate={setCurrentPage}
                 onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
               />

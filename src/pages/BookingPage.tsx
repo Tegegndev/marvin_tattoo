@@ -1,34 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { PageView, PortfolioPiece, BookingServiceType, BookingSize, BookingTimeSlot, BookingRecord, ArtistProfile } from '../types';
+import { PageView, PortfolioPiece, ServiceItem, BookingServiceType, BookingSize, BookingTimeSlot, BookingRecord, ArtistProfile } from '../types';
 import { ARTISTS_DATA, MARVIN_DIRECT_PHONE, WHATSAPP_NUMBER } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
 import { bookingApi } from '../services/bookingApi';
-import { fetchMembers } from '../services/apiClient';
+import { fetchMembers, fetchServices } from '../services/apiClient';
 import confetti from 'canvas-confetti';
-
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BookingPageProps {
   initialPiece?: PortfolioPiece | null;
+  initialService?: ServiceItem | null;
+  initialTier?: string | null;
   onNavigate: (page: PageView) => void;
   onOpenWhatsApp: () => void;
 }
 
+function mapServiceToBookingType(serviceIdOrCat?: string): BookingServiceType {
+  if (!serviceIdOrCat) return 'custom_tattoo';
+  const s = serviceIdOrCat.toLowerCase();
+  if (s.includes('realism') || s.includes('portrait')) return 'realism_portrait';
+  if (s.includes('minimalist') || s.includes('fine-line') || s.includes('fineline')) return 'fine_line';
+  if (s.includes('lettering') || s.includes('script')) return 'lettering_script';
+  if (s.includes('tribal') || s.includes('traditional')) return 'tribal_traditional';
+  if (s.includes('coverup') || s.includes('cover_up') || s.includes('cover-up') || s.includes('restoration')) return 'cover_up';
+  if (s.includes('pmu') || s.includes('makeup') || s.includes('semi-permanent')) return 'pmu_makeup';
+  if (s.includes('piercing')) return 'body_piercing';
+  if (s.includes('keloid')) return 'keloid_removal';
+  if (s.includes('laser') || s.includes('removal')) return 'laser_removal';
+  return 'custom_tattoo';
+}
+
 export const BookingPage: React.FC<BookingPageProps> = ({
   initialPiece,
+  initialService,
+  initialTier,
   onNavigate,
   onOpenWhatsApp
 }) => {
   // Form State
-  const [serviceType, setServiceType] = useState<BookingServiceType>(
-    initialPiece?.category === 'piercing' ? 'body_piercing' : 'custom_tattoo'
+  const [serviceType, setServiceType] = useState<BookingServiceType>(() => {
+    if (initialService) return mapServiceToBookingType(initialService.id || initialService.category);
+    if (initialPiece) return mapServiceToBookingType(initialPiece.serviceId || initialPiece.category);
+    return 'custom_tattoo';
+  });
+
+  const [selectedServiceObj, setSelectedServiceObj] = useState<ServiceItem | null>(initialService || null);
+  const [selectedTierName, setSelectedTierName] = useState<string | null>(initialTier || null);
+
+  const [placement, setPlacement] = useState<string>(
+    initialPiece?.zone || (initialService?.id?.includes('piercing') ? 'Ear (Lobe, Helix, Tragus, Conch, Industrial)' : 'Forearm / Wrist')
   );
-  const [placement, setPlacement] = useState<string>(initialPiece?.zone || 'Forearm');
-  const [approximateSize, setApproximateSize] = useState<BookingSize>(
-    initialPiece?.category === 'piercing' ? 'piercing_std' : 'medium'
-  );
-  const [description, setDescription] = useState<string>(
-    initialPiece ? `Project inspired by piece: "${initialPiece.title}" (Ref #${initialPiece.flashId || initialPiece.id}).` : ''
-  );
+  
+  const [approximateSize, setApproximateSize] = useState<BookingSize>(() => {
+    if (initialTier?.toLowerCase().includes('full day')) return 'full_day';
+    if (initialTier?.toLowerCase().includes('half day') || initialTier?.toLowerCase().includes('sleeve')) return 'large';
+    if (initialTier?.toLowerCase().includes('flash') || initialTier?.toLowerCase().includes('minimal')) return 'small';
+    if (initialPiece?.category === 'piercing' || initialService?.id?.includes('piercing') || initialService?.id?.includes('pmu')) return 'piercing_std';
+    return 'medium';
+  });
+
+  const [description, setDescription] = useState<string>(() => {
+    if (initialService) {
+      return `Booking for: ${initialService.title}${initialTier ? ` (${initialTier})` : ''}.\n\n• Project Concept: `;
+    }
+    if (initialPiece) {
+      return `Project inspired by artwork: "${initialPiece.title}" (Ref #${initialPiece.flashId || initialPiece.id}).\n\n• Project Details: `;
+    }
+    return '';
+  });
+
   const [artistId, setArtistId] = useState<string>(
     initialPiece?.artist ? (initialPiece.artist.toLowerCase().includes('marvin') ? 'marvin' : 'any') : 'marvin'
   );
@@ -73,6 +113,45 @@ export const BookingPage: React.FC<BookingPageProps> = ({
       });
   }, []);
 
+  // Sync state when props change
+  useEffect(() => {
+    if (initialService) {
+      const bType = mapServiceToBookingType(initialService.id || initialService.category);
+      setServiceType(bType);
+      setSelectedServiceObj(initialService);
+      setSelectedTierName(initialTier || null);
+
+      if (bType === 'body_piercing') {
+        setPlacement('Ear (Lobe, Helix, Tragus, Conch, Industrial)');
+        setApproximateSize('piercing_std');
+      } else if (bType === 'pmu_makeup') {
+        setPlacement('Eyebrows (Microblading / Ombré PMU)');
+        setApproximateSize('piercing_std');
+      } else if (bType === 'cover_up') {
+        setPlacement('Forearm / Wrist');
+        setApproximateSize('medium');
+      }
+
+      if (initialTier) {
+        if (initialTier.toLowerCase().includes('full day')) setApproximateSize('full_day');
+        else if (initialTier.toLowerCase().includes('half day') || initialTier.toLowerCase().includes('sleeve')) setApproximateSize('large');
+        else if (initialTier.toLowerCase().includes('flash') || initialTier.toLowerCase().includes('minimal')) setApproximateSize('small');
+        setDescription(`Booking for: ${initialService.title} (${initialTier}).\n\n• Project Concept: `);
+      } else {
+        setDescription(`Booking for: ${initialService.title} (${initialService.subtitle || ''}).\n\n• Project Concept: `);
+      }
+    } else if (initialPiece) {
+      const bType = mapServiceToBookingType(initialPiece.serviceId || initialPiece.category);
+      setServiceType(bType);
+      if (initialPiece.zone) {
+        setPlacement(initialPiece.zone);
+      }
+      if (initialPiece.category === 'piercing') {
+        setApproximateSize('piercing_std');
+      }
+      setDescription(`Project inspired by artwork: "${initialPiece.title}" (Ref #${initialPiece.flashId || initialPiece.id}).\n\n• Project Details: `);
+    }
+  }, [initialService, initialPiece, initialTier]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -122,10 +201,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({
       if (response.success && response.booking) {
         setConfirmedBooking(response.booking);
         confetti({
-          particleCount: 80,
-          spread: 60,
+          particleCount: 90,
+          spread: 70,
           origin: { y: 0.6 },
-          colors: ['#991b1b', '#94a3b8', '#f8fafc']
+          colors: ['#991b1b', '#d4af37', '#f8fafc']
         });
       } else {
         setErrorMessage(response.message || 'Unable to submit booking request. Please check your inputs.');
@@ -171,12 +250,6 @@ Looking forward to hearing from you!`;
 
   const serviceOptions: { id: BookingServiceType; label: string; sub: string; icon: string }[] = [
     {
-      id: 'custom_tattoo',
-      label: 'Custom Tattoo',
-      sub: 'Bespoke design drawn for your body and anatomy',
-      icon: 'pen-fancy'
-    },
-    {
       id: 'realism_portrait',
       label: 'Realism & Portraits',
       sub: 'High-detail black & grey photo-realism',
@@ -202,7 +275,7 @@ Looking forward to hearing from you!`;
     },
     {
       id: 'cover_up',
-      label: 'Cover-Up & Rework',
+      label: 'Cover-Up & Restorations',
       sub: 'Concealing, blending, or restoring old ink',
       icon: 'shield-alt'
     },
@@ -215,19 +288,13 @@ Looking forward to hearing from you!`;
     {
       id: 'body_piercing',
       label: 'Precision Body Piercing',
-      sub: 'Ear, facial, dermals, navel, nipple & body mods',
+      sub: 'Ear, facial, dermals, navel & titanium mods',
       icon: 'syringe'
     },
     {
       id: 'laser_removal',
-      label: 'Laser Tattoo Removal',
-      sub: 'Safe pigment fading & complete ink removal',
-      icon: 'colorize'
-    },
-    {
-      id: 'keloid_removal',
-      label: 'Keloids Removal',
-      sub: 'Certified skin treatment and safe removal',
+      label: 'Laser & Keloids Removal',
+      sub: 'Safe pigment fading & keloid clearance',
       icon: 'magic'
     }
   ];
@@ -237,7 +304,7 @@ Looking forward to hearing from you!`;
     { id: 'medium', label: 'Medium (4–6")', detail: 'Forearm, calf, shoulder, palm-sized pieces' },
     { id: 'large', label: 'Large (7–10")', detail: 'Half-sleeve, thigh, chest, ribcage' },
     { id: 'full_day', label: 'Full Day / Multi-Session', detail: 'Full sleeve, backpiece, large dark realism' },
-    { id: 'piercing_std', label: 'Standard Treatment / Piercing', detail: 'Single/multi piercing or PMU/laser treatment' }
+    { id: 'piercing_std', label: 'Standard Procedure', detail: 'Single/multi piercing or PMU/laser session' }
   ];
 
   const placementOptions = [
@@ -258,6 +325,83 @@ Looking forward to hearing from you!`;
     'Other / Custom Placement'
   ];
 
+  // Dynamic Prompt Guidance based on active service
+  const getServiceGuidance = (type: BookingServiceType) => {
+    switch (type) {
+      case 'cover_up':
+        return {
+          title: 'Cover-Up & Rework Specifics',
+          icon: 'shield-alt',
+          tips: [
+            'Describe the existing tattoo (how old it is, and if it is very dark black or faded).',
+            'Mention your target replacement idea (dark realism, floral, or heavy blackwork work best).',
+            'Please upload a well-lit photo of your current tattoo below for the artists to assess coverage.'
+          ]
+        };
+      case 'body_piercing':
+        return {
+          title: 'Body Piercing Anatomy Specifics',
+          icon: 'syringe',
+          tips: [
+            'Specify the exact anatomical location (e.g. Septum, Conch, Tragus, Navel, Surface Dermal, Nipple).',
+            'All initial piercings use mirror-polished implant-grade titanium (ASTM F-136).',
+            'Mention if you have had a previous piercing in this spot or any scar tissue.'
+          ]
+        };
+      case 'pmu_makeup':
+        return {
+          title: 'Semi-Permanent Cosmetic Specifics',
+          icon: 'edit_note',
+          tips: [
+            'Specify your preferred treatment: Powder Ombré Brows, Lip Blush Neutralization, or Stretch Mark Camouflage.',
+            'Mention if you have prior microblading or permanent makeup pigment in the target area.',
+            'Describe your desired intensity (natural soft tint vs defined density).'
+          ]
+        };
+      case 'laser_removal':
+      case 'keloid_removal':
+        return {
+          title: 'Laser / Skin Clearance Specifics',
+          icon: 'magic',
+          tips: [
+            'Detail the keloid location and approximate size in centimeters, or the tattoo ink colors to be faded.',
+            'Mention any prior treatments (steroid injections, cryo, or previous laser sessions).',
+            'Upload a clear close-up image of the target area below.'
+          ]
+        };
+      case 'lettering_script':
+        return {
+          title: 'Lettering & Script Specifics',
+          icon: 'edit_note',
+          tips: [
+            'Type out the exact wording, names, quotes, or numbers with correct spelling/capitalization.',
+            'Specify preferred script aesthetic (Old English Gothic, Chicano script, or delicate cursive).'
+          ]
+        };
+      case 'fine_line':
+        return {
+          title: 'Minimalist & Fine-Line Specifics',
+          icon: 'pen-fancy',
+          tips: [
+            'Mention the desired dimensions in centimeters or inches.',
+            'Single needle work requires flat, stable placement areas (forearm, bicep, collarbone, ankle).'
+          ]
+        };
+      default:
+        return {
+          title: 'Custom Project Specifics',
+          icon: 'skull',
+          tips: [
+            'Describe your core concept, mood, and key symbolic visual elements.',
+            'Specify if you want high-contrast dark realism, atmospheric backgrounds, or custom filigree.',
+            'Upload reference photos or moodboards below to assist our artists in composing your stencil.'
+          ]
+        };
+    }
+  };
+
+  const activeGuidance = getServiceGuidance(serviceType);
+
   return (
     <div className="w-full pt-20 bg-noir-950 min-h-screen text-bone">
       {/* Header Banner */}
@@ -265,7 +409,7 @@ Looking forward to hearing from you!`;
         <div className="max-w-6xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-crimson" />
+              <span className="w-2 h-2 rounded-full bg-crimson animate-pulse" />
               <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] font-bold">
                 STUDIO APPOINTMENT DESK
               </span>
@@ -297,7 +441,7 @@ Looking forward to hearing from you!`;
               <button
                 type="button"
                 onClick={onOpenWhatsApp}
-                className="px-4 py-2 bg-noir-800 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-400 font-label-caps text-xs uppercase font-bold transition-all shrink-0 flex items-center gap-1.5"
+                className="px-4 py-2 bg-noir-800 hover:bg-noir-750 text-bone border border-noir-700 hover:border-slate-400 font-label-caps text-xs uppercase font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Chat</span>
                 <Icons8 name="external-link-alt" size={12} />
@@ -348,7 +492,6 @@ Looking forward to hearing from you!`;
                     {artists.find(a => a.id === confirmedBooking.artistId || a.slug === confirmedBooking.artistId)?.name || 'First Available Artist'}
                   </span>
                 </div>
-
                 <div className="flex justify-between py-1.5">
                   <span className="text-bone-dim">Contact</span>
                   <span className="text-bone font-bold">{confirmedBooking.phone} · {confirmedBooking.email}</span>
@@ -360,7 +503,7 @@ Looking forward to hearing from you!`;
                 <button
                   type="button"
                   onClick={() => sendWhatsAppBookingSummary(confirmedBooking)}
-                  className="w-full sm:w-1/2 py-3.5 bg-emerald-800 hover:bg-emerald-700 text-bone font-label-caps text-xs uppercase font-bold tracking-wider transition-all flex items-center justify-center gap-2 border border-emerald-600"
+                  className="w-full sm:w-1/2 py-3.5 bg-emerald-800 hover:bg-emerald-700 text-bone font-label-caps text-xs uppercase font-bold tracking-wider transition-all flex items-center justify-center gap-2 border border-emerald-600 cursor-pointer"
                 >
                   <Icons8 name="whatsapp" size={16} />
                   <span>Send to WhatsApp</span>
@@ -369,7 +512,7 @@ Looking forward to hearing from you!`;
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-full sm:w-1/2 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone border border-noir-700 font-label-caps text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-1/2 py-3.5 bg-noir-850 hover:bg-noir-800 text-bone border border-noir-700 font-label-caps text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Book Another Session</span>
                 </button>
@@ -378,7 +521,7 @@ Looking forward to hearing from you!`;
               <div className="text-center pt-2">
                 <button
                   onClick={() => onNavigate('home')}
-                  className="font-label-caps text-[11px] text-bone-dim hover:text-bone uppercase tracking-wider transition-colors"
+                  className="font-label-caps text-[11px] text-bone-dim hover:text-bone uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   ← Return to Home Atelier
                 </button>
@@ -395,6 +538,43 @@ Looking forward to hearing from you!`;
                 </div>
               )}
 
+              {/* DYNAMIC SERVICE PRE-SELECTED BANNER */}
+              {selectedServiceObj && (
+                <div className="p-5 bg-gradient-to-r from-noir-900 via-noir-850 to-noir-900 border-2 border-crimson/40 rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg shadow-crimson/10">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={selectedServiceObj.image}
+                      alt={selectedServiceObj.title}
+                      className="w-14 h-14 object-cover rounded bg-noir-950 border border-noir-700 shrink-0"
+                    />
+                    <div className="space-y-0.5">
+                      <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-widest block font-bold">
+                        Pre-selected Atelier Discipline {selectedServiceObj.disciplineNumber ? `0${selectedServiceObj.disciplineNumber}` : ''}
+                      </span>
+                      <h3 className="font-title-editorial text-base sm:text-lg text-bone uppercase font-bold">
+                        {selectedServiceObj.title}
+                      </h3>
+                      {selectedTierName && (
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-gold/15 border border-gold/40 rounded text-gold text-[11px] font-label-data">
+                          <Icons8 name="tag" size={11} />
+                          <span>Option: {selectedTierName}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedServiceObj(null);
+                      setSelectedTierName(null);
+                    }}
+                    className="text-xs font-label-caps uppercase text-bone-muted hover:text-bone underline self-start sm:self-center cursor-pointer"
+                  >
+                    Change Discipline
+                  </button>
+                </div>
+              )}
+
               {/* 01. SERVICE & PLACEMENT */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b border-noir-700/80">
@@ -406,7 +586,7 @@ Looking forward to hearing from you!`;
                   </h2>
                 </div>
 
-                {/* Service Type 4-Card Selector */}
+                {/* Service Type 8-Card Selector */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {serviceOptions.map((opt) => {
                     const isSelected = serviceType === opt.id;
@@ -422,7 +602,7 @@ Looking forward to hearing from you!`;
                           } else if (opt.id === 'pmu_makeup') {
                             setApproximateSize('piercing_std');
                             setPlacement('Eyebrows (Microblading / Ombré PMU)');
-                          } else if (opt.id === 'laser_removal' || opt.id === 'keloid_removal') {
+                          } else if (opt.id === 'laser_removal') {
                             setApproximateSize('medium');
                             setPlacement('Forearm / Wrist');
                           } else if (approximateSize === 'piercing_std') {
@@ -430,9 +610,9 @@ Looking forward to hearing from you!`;
                             setPlacement('Forearm / Wrist');
                           }
                         }}
-                        className={`p-5 text-left border rounded-sm transition-all duration-200 flex flex-col justify-between h-full ${
+                        className={`p-5 text-left border rounded-sm transition-all duration-200 flex flex-col justify-between h-full cursor-pointer ${
                           isSelected
-                            ? 'bg-noir-800 border-crimson ring-1 ring-crimson'
+                            ? 'bg-noir-800 border-crimson ring-1 ring-crimson shadow-md shadow-crimson/10'
                             : 'bg-noir-900 border-noir-700 hover:border-slate-500'
                         }`}
                       >
@@ -447,7 +627,7 @@ Looking forward to hearing from you!`;
                               </span>
                             )}
                           </div>
-                          <span className="font-title-editorial text-base text-bone font-bold block pt-1">
+                          <span className="font-title-editorial text-sm sm:text-base text-bone font-bold block pt-1">
                             {opt.label}
                           </span>
                           <p className="font-body-sm text-xs text-bone-muted leading-relaxed">
@@ -464,7 +644,7 @@ Looking forward to hearing from you!`;
                   {/* Body Area */}
                   <div className="space-y-2">
                     <label htmlFor="placement-select" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
-                      Body Placement Area *
+                      Target Body Placement *
                     </label>
                     <select
                       id="placement-select"
@@ -483,7 +663,7 @@ Looking forward to hearing from you!`;
                   {/* Approximate Size */}
                   <div className="space-y-2">
                     <label htmlFor="size-select" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
-                      Approximate Size Scale *
+                      Approximate Size &amp; Session Scale *
                     </label>
                     <select
                       id="size-select"
@@ -501,38 +681,51 @@ Looking forward to hearing from you!`;
                 </div>
               </div>
 
-              {/* 02. PROJECT CONCEPT & REFERENCE PHOTO */}
+              {/* 02. PROJECT CONCEPT & ADAPTIVE DETAILS */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b border-noir-700/80">
                   <span className="font-label-caps text-xs text-crimson-light px-2.5 py-0.5 bg-noir-850 border border-crimson/40 font-bold">
                     STEP 02
                   </span>
                   <h2 className="font-headline-sm text-xl text-bone uppercase font-bold">
-                    Project Concept &amp; References
+                    Project Details &amp; Reference Upload
                   </h2>
                 </div>
 
                 <div className="p-6 bg-noir-900 border border-noir-700 rounded-sm space-y-6">
+                  {/* Dynamic Adaptive Guidance Box */}
+                  <div className="p-4 bg-noir-850 border-l-2 border-gold rounded-r space-y-2">
+                    <div className="flex items-center gap-2 text-gold font-label-caps text-xs uppercase font-bold tracking-wider">
+                      <Icons8 name={activeGuidance.icon} size={15} />
+                      <span>{activeGuidance.title}</span>
+                    </div>
+                    <ul className="space-y-1 text-xs text-bone-muted list-disc list-inside font-body-sm leading-relaxed">
+                      {activeGuidance.tips.map((tip, idx) => (
+                        <li key={idx}>{tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+
                   {/* Concept Description */}
                   <div className="space-y-2">
                     <label htmlFor="project-description" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
-                      Describe Your Idea / Subject Details *
+                      Describe Your Project / Subject Specifications *
                     </label>
                     <textarea
                       id="project-description"
                       required
-                      rows={4}
+                      rows={5}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="E.g. Dark realism lion portrait on forearm with gothic filigree accents, black & grey shading, approximately 6 inches..."
-                      className="w-full p-4 bg-noir-950 border border-noir-700 text-bone placeholder:text-bone-dim font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm resize-y min-h-[100px]"
+                      placeholder="E.g. Full dark realism portrait of a lion with baroque filigree, black & grey shading, approximately 6 inches on outer forearm..."
+                      className="w-full p-4 bg-noir-950 border border-noir-700 text-bone placeholder:text-bone-dim font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm resize-y min-h-[120px]"
                     />
                   </div>
 
                   {/* Reference Image Upload with Preview */}
                   <div>
                     <label className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold mb-2">
-                      Reference Photo / Placement Photo (Optional)
+                      Reference Photo / Existing Ink Photo (Optional)
                     </label>
                     
                     {referenceFileName ? (
@@ -554,7 +747,7 @@ Looking forward to hearing from you!`;
                               {referenceFileName}
                             </span>
                             <span className="font-label-data text-xs text-emerald-400 block">
-                              Ready for upload with booking payload
+                              Attached for artist review
                             </span>
                           </div>
                         </div>
@@ -562,7 +755,7 @@ Looking forward to hearing from you!`;
                         <button
                           type="button"
                           onClick={removeUploadedFile}
-                          className="px-3 py-1.5 bg-noir-850 hover:bg-crimson text-bone font-label-caps text-xs uppercase border border-noir-700 transition-colors shrink-0"
+                          className="px-3 py-1.5 bg-noir-850 hover:bg-crimson text-bone font-label-caps text-xs uppercase border border-noir-700 transition-colors shrink-0 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -581,10 +774,10 @@ Looking forward to hearing from you!`;
                         />
                         <Icons8 name="cloud-upload-alt" size={28} className="text-bone-dim group-hover:text-crimson-light transition-colors mx-auto mb-2" />
                         <span className="font-title-editorial text-sm text-bone block mb-1">
-                          Click to upload reference image
+                          Click to upload reference image or existing tattoo photo
                         </span>
                         <span className="font-body-sm text-xs text-bone-dim block">
-                          PNG, JPG, WEBP or PDF up to 25MB. Visual references help our artists gauge scale and details.
+                          PNG, JPG, WEBP or PDF up to 25MB. Visual references help our artists gauge scale, coverage, and placement.
                         </span>
                       </label>
                     )}
@@ -609,7 +802,7 @@ Looking forward to hearing from you!`;
                   <button
                     type="button"
                     onClick={() => setArtistId('any')}
-                    className={`p-4 border rounded-sm text-left transition-all flex flex-col justify-between ${
+                    className={`p-4 border rounded-sm text-left transition-all flex flex-col justify-between cursor-pointer ${
                       artistId === 'any'
                         ? 'bg-noir-800 border-crimson ring-1 ring-crimson'
                         : 'bg-noir-900 border-noir-700 hover:border-slate-500'
@@ -623,7 +816,7 @@ Looking forward to hearing from you!`;
                         First Available Artist
                       </span>
                       <p className="font-body-sm text-xs text-bone-dim">
-                        Best match for your style &amp; date
+                        Best match for your chosen discipline &amp; date
                       </p>
                     </div>
                   </button>
@@ -636,8 +829,7 @@ Looking forward to hearing from you!`;
                         key={art.id}
                         type="button"
                         onClick={() => setArtistId(art.slug || art.id)}
-
-                        className={`p-4 border rounded-sm text-left transition-all flex flex-col justify-between ${
+                        className={`p-4 border rounded-sm text-left transition-all flex flex-col justify-between cursor-pointer ${
                           isSelected
                             ? 'bg-noir-800 border-crimson ring-1 ring-crimson'
                             : 'bg-noir-900 border-noir-700 hover:border-slate-500'
@@ -649,73 +841,71 @@ Looking forward to hearing from you!`;
                             alt={art.name}
                             className="w-10 h-10 rounded-full object-cover border border-noir-700 shrink-0"
                           />
-                          <div className="min-w-0">
+                          <div>
                             <span className="font-title-editorial text-sm text-bone font-bold block truncate">
                               {art.name}
                             </span>
-                            <span className="font-label-caps text-[9px] text-crimson-light uppercase block truncate font-bold">
-                              {art.specialty}
+                            <span className="font-label-caps text-[10px] text-crimson-light block truncate uppercase">
+                              {art.role}
                             </span>
                           </div>
                         </div>
-                        <span className="font-label-data text-[11px] text-bone-dim pt-2 border-t border-noir-700/70 block">
-                          {art.experience} Craft
-                        </span>
+                        <p className="font-body-sm text-xs text-bone-dim line-clamp-2">
+                          {art.specialty}
+                        </p>
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Date & Time Slot Grid */}
+                {/* Date and Time Slot */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-noir-900 border border-noir-700 rounded-sm">
                   <div className="space-y-2">
-                    <label htmlFor="session-date" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold flex items-center gap-1.5">
-                      <Icons8 name="calendar-alt" size={14} className="text-gold" />
+                    <label htmlFor="preferred-date" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
                       Preferred Date *
                     </label>
                     <input
-                      id="session-date"
+                      id="preferred-date"
                       type="date"
                       required
-                      min={getDefaultDate()}
+                      min={new Date().toISOString().split('T')[0]}
                       value={preferredDate}
                       onChange={(e) => setPreferredDate(e.target.value)}
-                      className="w-full px-4 py-3 bg-noir-950 border border-noir-700 text-bone font-label-data text-sm focus:outline-none focus:border-crimson rounded-sm"
+                      className="w-full px-4 py-3 bg-noir-950 border border-noir-700 text-bone font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="session-time" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold flex items-center gap-1.5">
-                      <Icons8 name="clock" size={14} className="text-gold" />
-                      Preferred Time Slot *
+                    <label htmlFor="time-slot" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
+                      Preferred Session Slot *
                     </label>
                     <select
-                      id="session-time"
+                      id="time-slot"
                       value={preferredTimeSlot}
                       onChange={(e) => setPreferredTimeSlot(e.target.value as BookingTimeSlot)}
-                      className="w-full px-4 py-3 bg-noir-950 border border-noir-700 text-bone font-body-md text-sm focus:outline-none focus:border-crimson rounded-sm"
+                      className="w-full px-4 py-3 bg-noir-950 border border-noir-700 text-bone font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm"
                     >
-                      <option value="morning">Morning Slot (11:00 AM)</option>
-                      <option value="afternoon">Afternoon Slot (2:00 PM)</option>
-                      <option value="evening">Evening Slot (5:00 PM)</option>
+                      <option value="morning">Morning (10:00 AM – 1:00 PM)</option>
+                      <option value="afternoon">Afternoon (1:30 PM – 5:00 PM)</option>
+                      <option value="evening">Evening (5:30 PM – 8:00 PM)</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              {/* 04. CLIENT CONTACT & SUBMISSION */}
+              {/* 04. CLIENT CONTACT DETAILS */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b border-noir-700/80">
                   <span className="font-label-caps text-xs text-crimson-light px-2.5 py-0.5 bg-noir-850 border border-crimson/40 font-bold">
                     STEP 04
                   </span>
                   <h2 className="font-headline-sm text-xl text-bone uppercase font-bold">
-                    Your Contact Details
+                    Client Contact Information
                   </h2>
                 </div>
 
                 <div className="p-6 bg-noir-900 border border-noir-700 rounded-sm space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-1.5">
                       <label htmlFor="client-name" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
                         Full Name *
@@ -726,14 +916,14 @@ Looking forward to hearing from you!`;
                         required
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="e.g. Sandra Nabirye"
-                        className="w-full px-3.5 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson rounded-sm"
+                        placeholder="e.g. Samuel Mukasa"
+                        className="w-full px-4 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label htmlFor="client-phone" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
-                        WhatsApp / Phone *
+                        Phone Number (WhatsApp) *
                       </label>
                       <input
                         id="client-phone"
@@ -741,8 +931,8 @@ Looking forward to hearing from you!`;
                         required
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+256 705 748774"
-                        className="w-full px-3.5 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson rounded-sm"
+                        placeholder="+256 700 000000"
+                        className="w-full px-4 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm"
                       />
                     </div>
 
@@ -757,51 +947,49 @@ Looking forward to hearing from you!`;
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="client@example.com"
-                        className="w-full px-3.5 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson rounded-sm"
+                        className="w-full px-4 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-md text-sm focus:outline-none focus:border-crimson transition-colors rounded-sm"
                       />
                     </div>
                   </div>
 
-                  {/* Special Notes */}
                   <div className="space-y-1.5 pt-2">
                     <label htmlFor="client-notes" className="font-label-caps text-xs text-bone-dim uppercase tracking-wider block font-bold">
-                      Additional Notes / Inquiries (Optional)
+                      Medical / Skin Notes (Optional)
                     </label>
                     <input
                       id="client-notes"
                       type="text"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="E.g. First tattoo, skin allergies, or specific questions..."
-                      className="w-full px-3.5 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-crimson rounded-sm"
+                      placeholder="e.g. Skin sensitivity, allergy to specific numbing creams, first tattoo session..."
+                      className="w-full px-4 py-2.5 bg-noir-950 border border-noir-700 text-bone font-body-md text-xs focus:outline-none focus:border-crimson transition-colors rounded-sm"
                     />
                   </div>
                 </div>
+              </div>
 
-                {/* Submit Button & Policies */}
-                <div className="space-y-4 pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-4 bg-crimson hover:bg-crimson-hover disabled:opacity-50 text-bone font-label-caps text-xs uppercase tracking-[0.2em] font-bold transition-all shadow-xl border border-crimson/40 flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span className="w-4 h-4 border-2 border-bone border-t-transparent rounded-full animate-spin" />
-                        <span>Transmitting Request to Studio...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Icons8 name="calendar-check" size={18} />
-                        <span>Submit Booking Request</span>
-                      </>
-                    )}
-                  </button>
-
-                  <p className="font-body-sm text-xs text-bone-dim text-center leading-relaxed max-w-2xl mx-auto">
-                    By submitting, our team will review your project specs and contact you via WhatsApp / Phone to confirm session timing and provide preparation instructions.
-                  </p>
-                </div>
+              {/* Submit Action */}
+              <div className="space-y-4 pt-4">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-crimson hover:bg-crimson-hover disabled:opacity-50 text-bone font-label-caps text-sm uppercase tracking-[0.2em] font-bold transition-all btn-gothic-glow border border-crimson/40 rounded-sm flex items-center justify-center gap-3 shadow-xl cursor-pointer"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Icons8 name="spinner" size={18} className="animate-spin" />
+                      <span>Logging Booking Request...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Submit Appointment Request</span>
+                      <Icons8 name="arrow-right" size={16} />
+                    </>
+                  )}
+                </button>
+                <p className="text-center font-label-data text-xs text-bone-dim">
+                  No payment is charged now. Our studio concierge reviews each booking to verify sizing, placement, and time requirements.
+                </p>
               </div>
             </form>
           )}

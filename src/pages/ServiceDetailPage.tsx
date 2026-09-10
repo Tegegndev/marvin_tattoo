@@ -9,7 +9,7 @@ interface ServiceDetailPageProps {
   serviceId: string | null;
   onNavigate: (page: PageView) => void;
   onSelectService: (serviceId: string) => void;
-  onBookService: (serviceId: string) => void;
+  onBookService: (serviceId: string, tierName?: string) => void;
   onSelectPiece?: (piece: PortfolioPiece) => void;
 }
 
@@ -328,8 +328,8 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                   </div>
 
                   <button
-                    onClick={() => onBookService(currentService.id)}
-                    className="w-full py-3 bg-noir-850 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-wider border border-noir-700 hover:border-crimson transition-all text-center font-bold"
+                    onClick={() => onBookService(currentService.id, tier.tier)}
+                    className="w-full py-3 bg-noir-850 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-wider border border-noir-700 hover:border-crimson transition-all text-center font-bold cursor-pointer"
                   >
                     Select Option
                   </button>
