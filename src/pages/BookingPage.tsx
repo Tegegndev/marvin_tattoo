@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { PageView, PortfolioPiece, ServiceItem, BookingServiceType, BookingSize, BookingTimeSlot, BookingRecord, ArtistProfile } from '../types';
-import { ARTISTS_DATA, WHATSAPP_NUMBER } from '../data/atelierData';
+import { PageView, PortfolioPiece, ServiceItem, BookingServiceType, BookingRecord } from '../types';
+import { WHATSAPP_NUMBER } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
 import { bookingApi } from '../services/bookingApi';
-import { fetchMembers } from '../services/apiClient';
 import confetti from 'canvas-confetti';
 
 interface BookingPageProps {
@@ -15,7 +14,7 @@ interface BookingPageProps {
 }
 
 function mapServiceToBookingType(serviceIdOrCat?: string): BookingServiceType {
-  if (!serviceIdOrCat) return 'custom_tattoo';
+  if (!serviceIdOrCat) return 'realism_portrait';
   const s = serviceIdOrCat.toLowerCase();
   if (s.includes('realism') || s.includes('portrait')) return 'realism_portrait';
   if (s.includes('minimalist') || s.includes('fine-line') || s.includes('fineline')) return 'fine_line';
@@ -28,6 +27,18 @@ function mapServiceToBookingType(serviceIdOrCat?: string): BookingServiceType {
   return 'custom_tattoo';
 }
 
+const SERVICES_LIST = [
+  { id: 'realism_portrait', label: 'Realism & Portraits' },
+  { id: 'minimalist_fineline', label: 'Minimalist & Fine-Line' },
+  { id: 'lettering_script', label: 'Lettering & Script' },
+  { id: 'traditional_tribal', label: 'Traditional & Tribal' },
+  { id: 'coverups_restorations', label: 'Cover-Ups & Restorations' },
+  { id: 'semi_permanent_makeup', label: 'Semi-Permanent Makeup (PMU)' },
+  { id: 'body_piercing', label: 'Precision Body Piercing' },
+  { id: 'laser_keloids_removal', label: 'Laser & Keloids Clearance' },
+  { id: 'custom_tattoo', label: 'Other Custom Project' },
+];
+
 export const BookingPage: React.FC<BookingPageProps> = ({
   initialPiece,
   initialService,
@@ -35,40 +46,18 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   onNavigate,
   onOpenWhatsApp
 }) => {
-  // Form State
-  const [serviceType, setServiceType] = useState<BookingServiceType>(() => {
-    if (initialService) return mapServiceToBookingType(initialService.id || initialService.category);
+  const [serviceType, setServiceType] = useState<string>(() => {
+    if (initialService?.id) return initialService.id.replace(/-/g, '_');
     if (initialPiece) return mapServiceToBookingType(initialPiece.serviceId || initialPiece.category);
-    return 'custom_tattoo';
+    return 'realism_portrait';
   });
 
-  const [selectedServiceObj, setSelectedServiceObj] = useState<ServiceItem | null>(initialService || null);
-  const [selectedTierName, setSelectedTierName] = useState<string | null>(initialTier || null);
-
-  const [placement, setPlacement] = useState<string>(
-    initialPiece?.zone || (initialService?.id?.includes('piercing') ? 'Ear (Lobe, Helix, Tragus, Conch)' : 'Forearm / Arm')
-  );
-  
-  const [approximateSize, setApproximateSize] = useState<BookingSize>(() => {
-    if (initialTier?.toLowerCase().includes('full day')) return 'full_day';
-    if (initialTier?.toLowerCase().includes('half day') || initialTier?.toLowerCase().includes('sleeve')) return 'large';
-    if (initialTier?.toLowerCase().includes('flash') || initialTier?.toLowerCase().includes('minimal')) return 'small';
-    if (initialPiece?.category === 'piercing' || initialService?.id?.includes('piercing') || initialService?.id?.includes('pmu')) return 'piercing_std';
-    return 'medium';
-  });
-
-  const [description, setDescription] = useState<string>(() => {
-    if (initialService) {
-      return `Service: ${initialService.title}${initialTier ? ` (${initialTier})` : ''}`;
-    }
-    if (initialPiece) {
-      return `Design: ${initialPiece.title} (Ref #${initialPiece.flashId || initialPiece.id})`;
-    }
+  const [notes, setNotes] = useState<string>(() => {
+    if (initialTier) return `Preferred Option: ${initialTier}`;
+    if (initialPiece) return `Design Reference: ${initialPiece.title} (#${initialPiece.flashId || initialPiece.id})`;
     return '';
   });
 
-  const [artistId, setArtistId] = useState<string>('marvin');
-  
   const getDefaultDate = () => {
     const d = new Date();
     d.setDate(d.getDate() + 2);
@@ -76,63 +65,29 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   };
 
   const [preferredDate, setPreferredDate] = useState<string>(getDefaultDate());
-  const [preferredTimeSlot, setPreferredTimeSlot] = useState<BookingTimeSlot>('afternoon');
+  const [preferredTimeSlot, setPreferredTimeSlot] = useState<'morning' | 'afternoon' | 'evening'>('afternoon');
 
-  // Client Details
+  // Contact Info
   const [fullName, setFullName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [notes, setNotes] = useState<string>('');
 
-  // File Reference
+  // Image Upload
   const [referenceFileName, setReferenceFileName] = useState<string>('');
   const [referenceFilePreview, setReferenceFilePreview] = useState<string>('');
 
-  // Status
+  // State
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const [artists, setArtists] = useState<ArtistProfile[]>(ARTISTS_DATA);
-
-  useEffect(() => {
-    fetchMembers(true)
-      .then((data) => {
-        if (data && data.length > 0) setArtists(data);
-      })
-      .catch(() => {});
-  }, []);
-
-  // Sync with incoming props
   useEffect(() => {
     if (initialService) {
-      const bType = mapServiceToBookingType(initialService.id || initialService.category);
-      setServiceType(bType);
-      setSelectedServiceObj(initialService);
-      setSelectedTierName(initialTier || null);
-
-      if (bType === 'body_piercing') {
-        setPlacement('Ear (Lobe, Helix, Tragus, Conch)');
-        setApproximateSize('piercing_std');
-      } else if (bType === 'pmu_makeup') {
-        setPlacement('Eyebrows (Microblading / Ombré)');
-        setApproximateSize('piercing_std');
-      }
-
-      if (initialTier) {
-        if (initialTier.toLowerCase().includes('full day')) setApproximateSize('full_day');
-        else if (initialTier.toLowerCase().includes('half day') || initialTier.toLowerCase().includes('sleeve')) setApproximateSize('large');
-        else if (initialTier.toLowerCase().includes('flash') || initialTier.toLowerCase().includes('minimal')) setApproximateSize('small');
-        setDescription(`Service: ${initialService.title} (${initialTier})`);
-      } else {
-        setDescription(`Service: ${initialService.title}`);
-      }
+      setServiceType(initialService.id.replace(/-/g, '_'));
+      if (initialTier) setNotes(`Preferred Option: ${initialTier}`);
     } else if (initialPiece) {
-      const bType = mapServiceToBookingType(initialPiece.serviceId || initialPiece.category);
-      setServiceType(bType);
-      if (initialPiece.zone) setPlacement(initialPiece.zone);
-      if (initialPiece.category === 'piercing') setApproximateSize('piercing_std');
-      setDescription(`Design: ${initialPiece.title} (Ref #${initialPiece.flashId || initialPiece.id})`);
+      setServiceType(mapServiceToBookingType(initialPiece.serviceId || initialPiece.category));
+      setNotes(`Design Reference: ${initialPiece.title} (#${initialPiece.flashId || initialPiece.id})`);
     }
   }, [initialService, initialPiece, initialTier]);
 
@@ -140,23 +95,12 @@ export const BookingPage: React.FC<BookingPageProps> = ({
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setReferenceFileName(file.name);
-      
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = () => {
-          setReferenceFilePreview(reader.result as string);
-        };
+        reader.onload = () => setReferenceFilePreview(reader.result as string);
         reader.readAsDataURL(file);
-      } else {
-        setReferenceFilePreview('');
       }
     }
-  };
-
-  const removeUploadedFile = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setReferenceFileName('');
-    setReferenceFilePreview('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -164,21 +108,23 @@ export const BookingPage: React.FC<BookingPageProps> = ({
     setErrorMessage('');
     setIsSubmitting(true);
 
+    const selectedServiceLabel = SERVICES_LIST.find((s) => s.id === serviceType)?.label || serviceType;
+
     try {
       const response = await bookingApi.createBooking({
-        serviceType,
-        placement,
-        approximateSize,
-        description: description || `Service booking: ${serviceType.replace('_', ' ')}`,
-        artistId,
+        serviceType: serviceType as any,
+        placement: 'Discussed on WhatsApp',
+        approximateSize: 'medium',
+        description: notes ? `Service: ${selectedServiceLabel}. Notes: ${notes}` : `Service: ${selectedServiceLabel}`,
+        artistId: 'marvin',
         preferredDate,
         preferredTimeSlot,
         fullName,
         phone,
         email,
-        notes: notes.trim() || undefined,
+        notes: notes || undefined,
         referenceFileName: referenceFileName || undefined,
-        referenceFilePreview: referenceFilePreview || undefined
+        referenceFilePreview: referenceFilePreview || undefined,
       });
 
       if (response.success && response.booking) {
@@ -187,115 +133,65 @@ export const BookingPage: React.FC<BookingPageProps> = ({
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#991b1b', '#d4af37', '#f8fafc']
+          colors: ['#991b1b', '#d4af37', '#f8fafc'],
         });
       } else {
         setErrorMessage(response.message || 'Unable to submit booking. Please verify your details.');
       }
     } catch {
-      setErrorMessage('Network error. Please try again or reach out on WhatsApp.');
+      setErrorMessage('Network error. Please try again or reach out directly on WhatsApp.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const resetForm = () => {
-    setConfirmedBooking(null);
-    setDescription('');
-    setFullName('');
-    setPhone('');
-    setEmail('');
-    setNotes('');
-    setReferenceFileName('');
-    setReferenceFilePreview('');
-    setErrorMessage('');
-  };
-
   const sendWhatsAppBookingSummary = (record: BookingRecord) => {
-    const artistName = artists.find(a => a.id === record.artistId || a.slug === record.artistId)?.name || 'Studio Artist';
+    const selectedServiceLabel = SERVICES_LIST.find((s) => s.id === record.serviceType)?.label || record.serviceType;
     const message = `Hello Marvin Tattoos Atelier! 
-I just submitted an appointment request online.
+I just submitted a booking request online.
 
 • Reference Code: ${record.referenceCode}
-• Service: ${record.serviceType.replace('_', ' ').toUpperCase()}
-• Placement: ${record.placement} (${record.approximateSize})
-• Preferred Date: ${record.preferredDate} (${record.preferredTimeSlot})
-• Artist: ${artistName}
+• Service: ${selectedServiceLabel}
+• Preferred Date: ${record.preferredDate} (${record.preferredTimeSlot.toUpperCase()})
 • Client: ${record.fullName} (${record.phone})
+${notes ? `• Notes: ${notes}` : ''}
 
-Note: ${record.description}
+Looking forward to discussing the design and finalizing my appointment slot.`;
 
-Looking forward to discussing the design and confirmation.`;
-
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  const serviceOptions: { id: BookingServiceType; label: string; icon: string }[] = [
-    { id: 'realism_portrait', label: 'Realism & Portraits', icon: 'skull' },
-    { id: 'fine_line', label: 'Minimalist & Fine-Line', icon: 'pen-fancy' },
-    { id: 'lettering_script', label: 'Lettering & Script', icon: 'edit_note' },
-    { id: 'tribal_traditional', label: 'Traditional & Tribal', icon: 'layers' },
-    { id: 'cover_up', label: 'Cover-Up & Restorations', icon: 'shield-alt' },
-    { id: 'pmu_makeup', label: 'Semi-Permanent Makeup', icon: 'edit_note' },
-    { id: 'body_piercing', label: 'Body Piercing', icon: 'syringe' },
-    { id: 'laser_removal', label: 'Laser & Keloid Clearance', icon: 'magic' },
-  ];
-
-  const placementOptions = [
-    'Forearm / Arm',
-    'Full Sleeve / Half Sleeve',
-    'Chest / Ribs / Sternum',
-    'Back / Shoulder',
-    'Neck / Collarbone',
-    'Thigh / Leg / Calf / Ankle',
-    'Hands / Fingers',
-    'Ear (Lobe, Helix, Tragus, Conch)',
-    'Facial (Nose, Septum, Eyebrow, Lip)',
-    'Eyebrows / Lips (PMU)',
-    'Body Piercing (Navel, Dermal, Nipple)',
-    'Other / Custom Placement'
-  ];
-
-  const sizeOptions: { id: BookingSize; label: string }[] = [
-    { id: 'small', label: 'Small (2–3 inches)' },
-    { id: 'medium', label: 'Medium (4–6 inches)' },
-    { id: 'large', label: 'Large (Half-sleeve / Thigh / Chest)' },
-    { id: 'full_day', label: 'Full Day / Multi-Session (Full sleeve / Back)' },
-    { id: 'piercing_std', label: 'Single / Standard Procedure' },
-  ];
-
   return (
-    <div className="w-full pt-28 pb-24 px-4 sm:px-6 lg:px-12 max-w-4xl mx-auto min-h-[85vh] text-bone">
-      {/* Top Header */}
-      <div className="mb-8 border-b border-noir-800 pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div className="w-full pt-28 pb-24 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto min-h-[85vh] text-bone">
+      {/* Header */}
+      <div className="mb-8 border-b border-noir-800 pb-6 flex items-end justify-between gap-4">
         <div>
           <button
             onClick={() => onNavigate('services')}
             className="inline-flex items-center gap-2 text-xs font-label-caps uppercase text-bone-muted hover:text-crimson-light transition-colors mb-2 cursor-pointer"
           >
             <Icons8 name="arrow-left" size={13} />
-            <span>View All Services</span>
+            <span>View Services</span>
           </button>
-          <h1 className="font-title-editorial text-2xl sm:text-3xl lg:text-4xl text-bone uppercase tracking-tight">
+          <h1 className="font-title-editorial text-2xl sm:text-3xl text-bone uppercase tracking-tight">
             Book Appointment
           </h1>
-          <p className="font-body-sm text-xs sm:text-sm text-bone-dim mt-1">
-            Choose your service and fill in your details. Our artist will contact you on WhatsApp to discuss your design.
+          <p className="font-body-sm text-xs text-bone-dim mt-1">
+            Choose your service and contact details. Our artist will discuss all design details and confirm your slot on WhatsApp.
           </p>
         </div>
 
         <button
           type="button"
           onClick={onOpenWhatsApp}
-          className="px-4 py-2 bg-noir-900 hover:bg-noir-850 border border-noir-700 text-bone text-xs font-label-caps uppercase tracking-wider rounded-lg flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+          className="px-3.5 py-2 bg-noir-900 hover:bg-noir-850 border border-noir-700 text-bone text-xs font-label-caps uppercase rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
         >
           <Icons8 name="whatsapp" size={15} className="text-emerald-400" />
-          <span>Quick WhatsApp</span>
+          <span>WhatsApp</span>
         </button>
       </div>
 
-      {/* CONFIRMED STATE */}
+      {/* Confirmation View */}
       {confirmedBooking ? (
         <div className="bg-noir-900 border border-emerald-500/40 p-8 sm:p-10 text-center space-y-6 rounded-xl shadow-2xl">
           <div className="w-16 h-16 rounded-full bg-emerald-950/60 border border-emerald-500 text-emerald-400 flex items-center justify-center mx-auto">
@@ -304,43 +200,50 @@ Looking forward to discussing the design and confirmation.`;
 
           <div className="space-y-1">
             <span className="font-label-caps text-xs text-emerald-400 uppercase tracking-widest font-bold block">
-              Appointment Request Logged
+              Booking Request Received
             </span>
             <h2 className="font-title-editorial text-2xl text-bone uppercase">
               Ref #{confirmedBooking.referenceCode}
             </h2>
             <p className="font-body-sm text-sm text-bone-dim max-w-md mx-auto">
-              Thank you, <strong className="text-bone">{confirmedBooking.fullName}</strong>. Our artist will contact you at <strong className="text-gold">{confirmedBooking.phone}</strong> to confirm your slot and details.
+              Thank you, <strong className="text-bone">{confirmedBooking.fullName}</strong>. Our artist will contact you at <strong className="text-gold">{confirmedBooking.phone}</strong> on WhatsApp.
             </p>
           </div>
 
-          <div className="p-4 bg-noir-850 border border-noir-750 rounded-lg max-w-lg mx-auto text-left font-label-data text-xs space-y-2">
+          <div className="p-4 bg-noir-850 border border-noir-750 rounded-lg text-left font-label-data text-xs space-y-2">
             <div className="flex justify-between text-bone-dim">
               <span>Service:</span>
-              <span className="text-bone font-medium uppercase">{confirmedBooking.serviceType.replace('_', ' ')}</span>
-            </div>
-            <div className="flex justify-between text-bone-dim">
-              <span>Placement:</span>
-              <span className="text-bone">{confirmedBooking.placement}</span>
+              <span className="text-bone font-medium">
+                {SERVICES_LIST.find((s) => s.id === confirmedBooking.serviceType)?.label || confirmedBooking.serviceType}
+              </span>
             </div>
             <div className="flex justify-between text-bone-dim">
               <span>Preferred Date:</span>
               <span className="text-bone">{confirmedBooking.preferredDate} ({confirmedBooking.preferredTimeSlot.toUpperCase()})</span>
             </div>
+            <div className="flex justify-between text-bone-dim">
+              <span>Client:</span>
+              <span className="text-bone">{confirmedBooking.fullName} ({confirmedBooking.phone})</span>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button
               type="button"
               onClick={() => sendWhatsAppBookingSummary(confirmedBooking)}
               className="flex-1 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-label-caps text-xs uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-950/40"
             >
               <Icons8 name="whatsapp" size={16} />
-              <span>Message on WhatsApp</span>
+              <span>Chat with Artist on WhatsApp</span>
             </button>
             <button
               type="button"
-              onClick={resetForm}
+              onClick={() => {
+                setConfirmedBooking(null);
+                setNotes('');
+                setReferenceFileName('');
+                setReferenceFilePreview('');
+              }}
               className="flex-1 py-3.5 bg-noir-800 hover:bg-noir-750 text-bone font-label-caps text-xs uppercase tracking-widest border border-noir-700 rounded-lg cursor-pointer"
             >
               Book Another Session
@@ -348,222 +251,122 @@ Looking forward to discussing the design and confirmation.`;
           </div>
         </div>
       ) : (
-        /* SIMPLE INTAKE FORM */
-        <form onSubmit={handleSubmit} className="space-y-8">
+        /* Clean 1-Card Booking Form */
+        <form onSubmit={handleSubmit} className="bg-noir-900 border border-noir-800 rounded-xl p-6 sm:p-8 space-y-6 shadow-xl">
           {errorMessage && (
-            <div className="p-4 bg-red-950/60 border border-red-800 text-red-200 text-xs rounded-lg flex items-center gap-2">
+            <div className="p-3.5 bg-red-950/60 border border-red-800 text-red-200 text-xs rounded-lg flex items-center gap-2">
               <Icons8 name="exclamation-circle" size={16} className="shrink-0 text-red-400" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* Pre-selected Indicator */}
-          {selectedServiceObj && (
-            <div className="p-4 bg-noir-900 border border-crimson/50 rounded-xl flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <img
-                  src={selectedServiceObj.image}
-                  alt={selectedServiceObj.title}
-                  className="w-12 h-12 object-cover rounded bg-noir-950 border border-noir-700 shrink-0"
-                />
-                <div>
-                  <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-wider block font-bold">
-                    Selected Service
-                  </span>
-                  <h3 className="font-title-editorial text-sm sm:text-base text-bone uppercase">
-                    {selectedServiceObj.title}
-                  </h3>
-                  {selectedTierName && (
-                    <span className="text-gold text-xs font-label-data">Option: {selectedTierName}</span>
-                  )}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedServiceObj(null);
-                  setSelectedTierName(null);
-                }}
-                className="text-[11px] text-bone-muted hover:text-bone underline font-label-caps uppercase cursor-pointer"
-              >
-                Change
-              </button>
-            </div>
-          )}
-
-          {/* 1. Service Selection (Grid) */}
-          <div className="bg-noir-900 border border-noir-800 rounded-xl p-6 space-y-4">
-            <label className="block font-label-caps text-xs uppercase text-bone tracking-wider font-bold">
-              1. Select Service Discipline *
+          {/* 1. Service Type */}
+          <div>
+            <label className="block font-label-caps text-xs uppercase text-bone tracking-wider font-bold mb-1.5">
+              Service Type *
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {serviceOptions.map((opt) => {
-                const isSelected = serviceType === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => {
-                      setServiceType(opt.id);
-                      if (opt.id === 'body_piercing') {
-                        setPlacement('Ear (Lobe, Helix, Tragus, Conch)');
-                        setApproximateSize('piercing_std');
-                      } else if (opt.id === 'pmu_makeup') {
-                        setPlacement('Eyebrows / Lips (PMU)');
-                        setApproximateSize('piercing_std');
-                      }
-                    }}
-                    className={`p-3 text-left border rounded-lg transition-all flex flex-col justify-between cursor-pointer ${
-                      isSelected
-                        ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
-                        : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
-                    }`}
-                  >
-                    <Icons8 name={opt.icon} size={18} className={isSelected ? 'text-crimson-light mb-2' : 'text-bone-muted mb-2'} />
-                    <span className="font-label-caps text-xs uppercase font-bold leading-tight">
-                      {opt.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Placement & Size Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Body Placement *
-                </label>
-                <select
-                  value={placement}
-                  onChange={(e) => setPlacement(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                >
-                  {placementOptions.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Approximate Size *
-                </label>
-                <select
-                  value={approximateSize}
-                  onChange={(e) => setApproximateSize(e.target.value as BookingSize)}
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                >
-                  {sizeOptions.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <select
+              value={serviceType}
+              onChange={(e) => setServiceType(e.target.value)}
+              className="w-full px-4 py-3 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson transition-colors"
+            >
+              {SERVICES_LIST.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* 2. Client Contact Info */}
-          <div className="bg-noir-900 border border-noir-800 rounded-xl p-6 space-y-4">
-            <label className="block font-label-caps text-xs uppercase text-bone tracking-wider font-bold">
-              2. Your Contact Information *
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Full Name *
-                </label>
-                <input
-                  required
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Samuel Mukasa"
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                />
-              </div>
-
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Phone (WhatsApp) *
-                </label>
-                <input
-                  required
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+256 700 000000"
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                />
-              </div>
-
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Email Address *
-                </label>
-                <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="client@example.com"
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                />
-              </div>
+          {/* 2. Client Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                Full Name *
+              </label>
+              <input
+                required
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="e.g. Samuel Mukasa"
+                className="w-full px-4 py-2.5 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson"
+              />
             </div>
-
-            {/* Date & Time Slot */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Preferred Date *
-                </label>
-                <input
-                  type="date"
-                  required
-                  min={new Date().toISOString().split('T')[0]}
-                  value={preferredDate}
-                  onChange={(e) => setPreferredDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                />
-              </div>
-
-              <div>
-                <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                  Preferred Time *
-                </label>
-                <select
-                  value={preferredTimeSlot}
-                  onChange={(e) => setPreferredTimeSlot(e.target.value as BookingTimeSlot)}
-                  className="w-full px-3.5 py-2.5 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson"
-                >
-                  <option value="morning">Morning (10:00 AM – 1:00 PM)</option>
-                  <option value="afternoon">Afternoon (1:30 PM – 5:00 PM)</option>
-                  <option value="evening">Evening (5:30 PM – 8:00 PM)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. Notes & Reference Photo (Optional) */}
-          <div className="bg-noir-900 border border-noir-800 rounded-xl p-6 space-y-4">
-            <label className="block font-label-caps text-xs uppercase text-bone tracking-wider font-bold">
-              3. Idea &amp; Reference (Optional)
-            </label>
 
             <div>
-              <label className="block font-label-caps text-[11px] uppercase text-bone-dim mb-1">
-                Brief Idea / Notes
+              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                Phone Number (WhatsApp) *
+              </label>
+              <input
+                required
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+256 700 000000"
+                className="w-full px-4 py-2.5 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                Email Address *
+              </label>
+              <input
+                required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="client@example.com"
+                className="w-full px-4 py-2.5 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson"
+              />
+            </div>
+          </div>
+
+          {/* 3. Schedule Preference */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                Preferred Date *
+              </label>
+              <input
+                type="date"
+                required
+                min={new Date().toISOString().split('T')[0]}
+                value={preferredDate}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                className="w-full px-4 py-2.5 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson"
+              />
+            </div>
+
+            <div>
+              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                Preferred Time *
+              </label>
+              <select
+                value={preferredTimeSlot}
+                onChange={(e) => setPreferredTimeSlot(e.target.value as any)}
+                className="w-full px-4 py-2.5 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson"
+              >
+                <option value="morning">Morning (10:00 AM – 1:00 PM)</option>
+                <option value="afternoon">Afternoon (1:30 PM – 5:00 PM)</option>
+                <option value="evening">Evening (5:30 PM – 8:00 PM)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* 4. Notes & Reference Photo */}
+          <div className="space-y-4 pt-1">
+            <div>
+              <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1">
+                Project Idea / Placement Notes (Optional)
               </label>
               <textarea
                 rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Briefly describe your idea or custom request..."
-                className="w-full p-3 bg-noir-850 border border-noir-700 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson resize-y"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Briefly describe what you want (placement, style, or size)..."
+                className="w-full p-3 bg-noir-850 border border-noir-750 text-bone text-xs font-body-sm rounded-lg focus:outline-none focus:border-crimson resize-y"
               />
             </div>
 
@@ -581,24 +384,29 @@ Looking forward to discussing the design and confirmation.`;
                   </div>
                   <button
                     type="button"
-                    onClick={removeUploadedFile}
+                    onClick={() => {
+                      setReferenceFileName('');
+                      setReferenceFilePreview('');
+                    }}
                     className="text-xs text-red-400 hover:text-red-300 font-label-caps uppercase cursor-pointer"
                   >
                     Remove
                   </button>
                 </div>
               ) : (
-                <label className="p-4 bg-noir-850 border border-dashed border-noir-700 hover:border-slate-500 rounded-lg block text-center transition-colors cursor-pointer">
+                <label className="p-3.5 bg-noir-850 border border-dashed border-noir-700 hover:border-slate-500 rounded-lg block text-center transition-colors cursor-pointer">
                   <input type="file" accept="image/*,.pdf" onChange={handleFileUpload} className="sr-only" />
-                  <Icons8 name="cloud-upload-alt" size={20} className="text-bone-muted mx-auto mb-1" />
-                  <span className="text-xs text-bone-dim block">Upload reference image (optional)</span>
+                  <span className="text-xs text-bone-dim flex items-center justify-center gap-1.5">
+                    <Icons8 name="cloud-upload-alt" size={16} className="text-bone-muted" />
+                    <span>Upload reference image / photo (optional)</span>
+                  </span>
                 </label>
               )}
             </div>
           </div>
 
-          {/* Submit Action */}
-          <div className="space-y-3 pt-2">
+          {/* Submit */}
+          <div className="pt-2 space-y-3">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -617,7 +425,7 @@ Looking forward to discussing the design and confirmation.`;
               )}
             </button>
             <p className="text-center text-[11px] text-bone-dim">
-              No deposit charged right now. Our resident artist will review and contact you on WhatsApp to finalize sizing and confirm your slot.
+              No deposit charged right now. Our artist will discuss all details and confirm your slot on WhatsApp.
             </p>
           </div>
         </form>
