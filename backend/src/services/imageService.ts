@@ -1,16 +1,13 @@
 import sharp from "sharp";
 import path from "path";
 import fs from "fs";
+import { getUploadDir } from "../config/multer.js";
 
 export async function processAndSaveImage(
   file: Express.Multer.File,
   prefix: string = "media"
 ): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "uploads");
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
+  const uploadDir = getUploadDir();
   const filename = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1e6)}.webp`;
   const outputPath = path.join(uploadDir, filename);
 
@@ -22,7 +19,9 @@ export async function processAndSaveImage(
 
     // Remove the raw uncompressed temporary file
     if (fs.existsSync(file.path) && file.path !== outputPath) {
-      fs.unlinkSync(file.path);
+      try {
+        fs.unlinkSync(file.path);
+      } catch {}
     }
 
     return `/uploads/${filename}`;
@@ -39,7 +38,7 @@ export function deleteLocalImage(imageRelativeUrl: string): void {
   }
 
   const filename = path.basename(imageRelativeUrl);
-  const filePath = path.join(process.cwd(), "uploads", filename);
+  const filePath = path.join(getUploadDir(), filename);
 
   if (fs.existsSync(filePath)) {
     try {
@@ -49,3 +48,4 @@ export function deleteLocalImage(imageRelativeUrl: string): void {
     }
   }
 }
+

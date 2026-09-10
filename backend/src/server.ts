@@ -23,8 +23,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+import { getUploadDir } from "./config/multer.js";
+
 // Serve static uploaded assets
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+try {
+  app.use("/uploads", express.static(getUploadDir()));
+} catch {}
 
 // Mount API routes
 app.use("/api", router);
