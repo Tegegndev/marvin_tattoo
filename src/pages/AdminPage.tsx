@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { PageView, SiteSettingData, ClientUserData, ServiceItem, ArtistProfile } from '../types';
+import { PageView, SiteSettingData, ClientUserData, ServiceItem, ArtistProfile, SocialLink } from '../types';
 import { Icons8 } from '../components/Icons8';
 import {
   Inbox,
@@ -48,6 +48,11 @@ import {
   PenTool,
   Lock,
   Key,
+  ChevronUp,
+  ChevronDown,
+  RotateCcw,
+  Share2,
+  Globe,
 } from 'lucide-react';
 import {
   adminLogin,
@@ -102,6 +107,21 @@ interface AdminPageProps {
 type TabType = 'bookings' | 'users' | 'services' | 'team' | 'shop' | 'portfolio' | 'reviews' | 'settings';
 type ShopSubTab = 'products' | 'categories' | 'orders';
 
+const SOCIAL_PLATFORMS: { id: string; label: string; icon: string; prefix: string; placeholder: string }[] = [
+  { id: 'instagram', label: 'Instagram', icon: 'instagram', prefix: 'https://instagram.com/Marvintattoos256', placeholder: 'https://instagram.com/username' },
+  { id: 'tiktok', label: 'TikTok', icon: 'tiktok', prefix: 'https://tiktok.com/@Marvintattoos256', placeholder: 'https://tiktok.com/@username' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: 'whatsapp', prefix: 'https://wa.me/256705748774', placeholder: 'https://wa.me/256...' },
+  { id: 'facebook', label: 'Facebook', icon: 'facebook', prefix: 'https://facebook.com/marvintattoosug', placeholder: 'https://facebook.com/page' },
+  { id: 'youtube', label: 'YouTube', icon: 'youtube', prefix: 'https://youtube.com/@', placeholder: 'https://youtube.com/@channel' },
+  { id: 'twitter', label: 'X (Twitter)', icon: 'twitter', prefix: 'https://x.com/', placeholder: 'https://x.com/handle' },
+  { id: 'threads', label: 'Threads', icon: 'threads', prefix: 'https://threads.net/@', placeholder: 'https://threads.net/@handle' },
+  { id: 'pinterest', label: 'Pinterest', icon: 'pinterest', prefix: 'https://pinterest.com/', placeholder: 'https://pinterest.com/profile' },
+  { id: 'telegram', label: 'Telegram', icon: 'telegram', prefix: 'https://t.me/', placeholder: 'https://t.me/channel' },
+  { id: 'snapchat', label: 'Snapchat', icon: 'snapchat', prefix: 'https://snapchat.com/add/', placeholder: 'https://snapchat.com/add/username' },
+  { id: 'linkedin', label: 'LinkedIn', icon: 'linkedin', prefix: 'https://linkedin.com/company/', placeholder: 'https://linkedin.com/in/profile' },
+  { id: 'maps', label: 'Google Maps', icon: 'map-pin', prefix: 'https://maps.google.com/?q=New+Pioneer+Mall+Kampala', placeholder: 'https://maps.google.com/?q=...' },
+  { id: 'website', label: 'Custom Website', icon: 'globe', prefix: 'https://', placeholder: 'https://example.com' },
+];
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const { settings: globalSettings, saveSettings: saveGlobalSettings, refreshSettings } = useSettings();
@@ -786,6 +806,77 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       alert(err.message || 'Failed to update site settings');
     } finally {
       setSavingSettings(false);
+    }
+  };
+
+  const handleAddSocialLink = (platformId?: string) => {
+    const plat = SOCIAL_PLATFORMS.find((p) => p.id === platformId) || SOCIAL_PLATFORMS[0];
+    const newLink: SocialLink = {
+      id: `soc-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      platform: plat.id,
+      label: plat.label,
+      url: plat.prefix,
+      icon: plat.icon,
+      active: true,
+    };
+    setSettings((prev) => ({
+      ...prev,
+      socialLinks: [...(prev.socialLinks || []), newLink],
+    }));
+    showToast(`Added ${plat.label} channel`);
+  };
+
+  const handleRemoveSocialLink = (index: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      socialLinks: (prev.socialLinks || []).filter((_, i) => i !== index),
+    }));
+    showToast('Social channel removed');
+  };
+
+  const handleMoveSocialLink = (index: number, direction: 'up' | 'down') => {
+    const list = [...(settings.socialLinks || [])];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIndex];
+    list[targetIndex] = temp;
+    setSettings((prev) => ({ ...prev, socialLinks: list }));
+  };
+
+  const handleUpdateSocialLink = (index: number, field: keyof SocialLink, value: any) => {
+    const list = [...(settings.socialLinks || [])];
+    if (!list[index]) return;
+
+    if (field === 'platform') {
+      const plat = SOCIAL_PLATFORMS.find((p) => p.id === value);
+      if (plat) {
+        list[index] = {
+          ...list[index],
+          platform: plat.id,
+          icon: plat.icon,
+          label:
+            !list[index].label || SOCIAL_PLATFORMS.some((sp) => sp.label === list[index].label)
+              ? plat.label
+              : list[index].label,
+        };
+      } else {
+        list[index] = { ...list[index], platform: value };
+      }
+    } else {
+      list[index] = { ...list[index], [field]: value };
+    }
+
+    setSettings((prev) => ({ ...prev, socialLinks: list }));
+  };
+
+  const handleResetSocialLinks = () => {
+    if (window.confirm('Reset all social links to studio standard defaults?')) {
+      setSettings((prev) => ({
+        ...prev,
+        socialLinks: DEFAULT_SITE_SETTINGS.socialLinks,
+      }));
+      showToast('Reset social links to defaults');
     }
   };
 
@@ -3701,40 +3792,191 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
 
-                {/* 6. Social Channels */}
-                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 shadow-sm">
-                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-red-400" />
-                    <span>6. Social Channels &amp; Links</span>
+                {/* 6. Social Channels & Links */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Share2 className="w-4 h-4 text-red-400" />
+                      <div>
+                        <span className="text-xs font-semibold text-white uppercase tracking-wider block">
+                          6. Social Channels &amp; Atelier Links
+                        </span>
+                        <span className="text-[11px] text-zinc-400">
+                          Manage external links displayed in the website footer. Toggle visibility, edit labels/URLs, reorder, or add new channels.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleAddSocialLink()}
+                        className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Link</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleResetSocialLinks}
+                        className="px-2.5 py-1.5 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded-lg text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Restore Default Socials"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Reset Defaults</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {(settings.socialLinks || []).map((soc, idx) => (
-                    <div key={soc.id || idx} className="flex items-center gap-3 p-3 bg-[#12141c] rounded-lg border border-zinc-800">
-                      <div className="flex items-center gap-2 w-36 shrink-0">
-                        <input
-                          type="checkbox"
-                          checked={soc.active}
-                          onChange={(e) => {
-                            const updated = [...(settings.socialLinks || [])];
-                            updated[idx] = { ...soc, active: e.target.checked };
-                            setSettings({ ...settings, socialLinks: updated });
-                          }}
-                          className="accent-red-600 cursor-pointer rounded"
-                        />
-                        <span className="text-xs font-semibold text-white truncate">{soc.label}</span>
-                      </div>
-                      <input
-                        type="url"
-                        value={soc.url}
-                        onChange={(e) => {
-                          const updated = [...(settings.socialLinks || [])];
-                          updated[idx] = { ...soc, url: e.target.value };
-                          setSettings({ ...settings, socialLinks: updated });
-                        }}
-                        className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-md text-white text-xs focus:outline-none focus:border-red-500 font-mono"
-                      />
+                  {/* Quick Preset Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider mr-1">
+                      Quick Add:
+                    </span>
+                    {SOCIAL_PLATFORMS.slice(0, 7).map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleAddSocialLink(p.id)}
+                        className="px-2.5 py-1 bg-[#12141c] hover:bg-zinc-800 border border-zinc-700/70 hover:border-red-500/60 text-[11px] text-zinc-300 hover:text-white rounded-md flex items-center gap-1.5 transition-all cursor-pointer"
+                      >
+                        <Icons8 name={p.icon === 'tiktok' ? 'simple-icons:tiktok' : p.icon === 'threads' ? 'simple-icons:threads' : p.icon} size={12} />
+                        <span>+{p.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Items List */}
+                  {(!settings.socialLinks || settings.socialLinks.length === 0) ? (
+                    <div className="py-8 text-center bg-[#12141c] rounded-xl border border-zinc-800 space-y-2">
+                      <Globe className="w-6 h-6 text-zinc-600 mx-auto" />
+                      <p className="text-xs text-zinc-400">No social links configured.</p>
+                      <button
+                        type="button"
+                        onClick={handleResetSocialLinks}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded-lg font-medium cursor-pointer"
+                      >
+                        Load Standard Studio Links
+                      </button>
                     </div>
-                  ))}
+                  ) : (
+                    <div className="space-y-2.5">
+                      {settings.socialLinks.map((soc, idx) => {
+                        const platMeta = SOCIAL_PLATFORMS.find((p) => p.id === soc.platform) || {
+                          id: soc.platform || 'website',
+                          label: soc.label || 'Website',
+                          icon: soc.icon || 'globe',
+                          prefix: 'https://',
+                          placeholder: 'https://...',
+                        };
+                        const iconName =
+                          soc.icon === 'tiktok' || soc.platform === 'tiktok'
+                            ? 'simple-icons:tiktok'
+                            : soc.icon === 'threads' || soc.platform === 'threads'
+                            ? 'simple-icons:threads'
+                            : soc.icon || platMeta.icon || 'globe';
+
+                        return (
+                          <div
+                            key={soc.id || idx}
+                            className={`p-3 rounded-xl border transition-all flex flex-col md:flex-row md:items-center gap-3 ${
+                              soc.active
+                                ? 'bg-[#12141c] border-zinc-700/90'
+                                : 'bg-[#12141c]/40 border-zinc-800/60 opacity-60'
+                            }`}
+                          >
+                            {/* Left: Active Toggle + Platform Icon + Select */}
+                            <div className="flex items-center gap-2.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateSocialLink(idx, 'active', !soc.active)}
+                                className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors flex items-center gap-1 ${
+                                  soc.active
+                                    ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800'
+                                    : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                                }`}
+                                title={soc.active ? 'Active - Visible on site' : 'Hidden - Click to enable'}
+                              >
+                                <span className={`w-1.5 h-1.5 rounded-full ${soc.active ? 'bg-emerald-400' : 'bg-zinc-500'}`} />
+                                <span>{soc.active ? 'Visible' : 'Hidden'}</span>
+                              </button>
+
+                              <div className="w-7 h-7 rounded-lg bg-[#181a24] border border-zinc-700/80 flex items-center justify-center text-zinc-200 shrink-0">
+                                <Icons8 name={iconName} size={15} />
+                              </div>
+
+                              <select
+                                value={soc.platform || 'instagram'}
+                                onChange={(e) => handleUpdateSocialLink(idx, 'platform', e.target.value)}
+                                className="px-2.5 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-medium focus:outline-none focus:border-red-500 cursor-pointer"
+                              >
+                                {SOCIAL_PLATFORMS.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Middle: Label & URL */}
+                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 flex-1">
+                              <div className="sm:col-span-4">
+                                <input
+                                  type="text"
+                                  value={soc.label}
+                                  placeholder="Display Label"
+                                  onChange={(e) => handleUpdateSocialLink(idx, 'label', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                                />
+                              </div>
+                              <div className="sm:col-span-8">
+                                <input
+                                  type="url"
+                                  value={soc.url}
+                                  placeholder={platMeta.placeholder || 'https://...'}
+                                  onChange={(e) => handleUpdateSocialLink(idx, 'url', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Right: Actions (Move Up, Move Down, Remove) */}
+                            <div className="flex items-center gap-1 shrink-0 self-end md:self-center">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveSocialLink(idx, 'up')}
+                                className="p-1.5 rounded-lg bg-[#181a24] hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                title="Move Up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+
+                              <button
+                                type="button"
+                                disabled={idx === (settings.socialLinks || []).length - 1}
+                                onClick={() => handleMoveSocialLink(idx, 'down')}
+                                className="p-1.5 rounded-lg bg-[#181a24] hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                title="Move Down"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveSocialLink(idx)}
+                                className="p-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/60 hover:border-red-600 transition-colors cursor-pointer"
+                                title="Remove Link"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 <button

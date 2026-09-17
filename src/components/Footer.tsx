@@ -35,8 +35,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
     return () => window.removeEventListener('storage', refreshHistory);
   }, []);
 
-  const getSocialIcon = (icon: string) => {
-    switch (icon) {
+  const getSocialIcon = (icon?: string, platform?: string) => {
+    const key = (icon || platform || '').toLowerCase();
+    switch (key) {
       case 'instagram':
         return <Icons8 name="instagram" size={16} className="group-hover:text-crimson-light transition-colors" />;
       case 'tiktok':
@@ -46,13 +47,30 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
       case 'facebook':
         return <Icons8 name="facebook" size={16} className="group-hover:text-crimson-light transition-colors" />;
       case 'whatsapp':
-        return <Icons8 name="phone" size={14} className="group-hover:text-crimson-light transition-colors" />;
+        return <Icons8 name="whatsapp" size={15} className="group-hover:text-crimson-light transition-colors" />;
+      case 'twitter':
+      case 'x':
+        return <Icons8 name="twitter" size={15} className="group-hover:text-crimson-light transition-colors" />;
+      case 'threads':
+        return <Icons8 name="simple-icons:threads" size={14} className="group-hover:text-crimson-light transition-colors" />;
+      case 'pinterest':
+        return <Icons8 name="pinterest" size={15} className="group-hover:text-crimson-light transition-colors" />;
+      case 'telegram':
+        return <Icons8 name="telegram" size={15} className="group-hover:text-crimson-light transition-colors" />;
+      case 'snapchat':
+        return <Icons8 name="snapchat" size={15} className="group-hover:text-crimson-light transition-colors" />;
+      case 'linkedin':
+        return <Icons8 name="linkedin" size={15} className="group-hover:text-crimson-light transition-colors" />;
+      case 'maps':
+      case 'map-pin':
+      case 'google-maps':
+        return <Icons8 name="map-marker-alt" size={15} className="group-hover:text-crimson-light transition-colors" />;
       default:
         return <Icons8 name="globe" size={14} className="group-hover:text-crimson-light transition-colors" />;
     }
   };
 
-  const activeSocials = (settings.socialLinks || []).filter((s) => s.active);
+  const activeSocials = (settings.socialLinks || []).filter((s) => s.active && s.url && s.url.trim());
 
   return (
     <footer className="w-full bg-noir-950 border-t border-noir-700/40">
