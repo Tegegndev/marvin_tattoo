@@ -26,7 +26,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const cached = localStorage.getItem(SETTINGS_STORAGE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
-          return { ...DEFAULT_SITE_SETTINGS, ...parsed };
+          const merged = { ...DEFAULT_SITE_SETTINGS, ...parsed };
+          if (!merged.socialLinks || merged.socialLinks.length === 0) {
+            merged.socialLinks = DEFAULT_SITE_SETTINGS.socialLinks;
+          }
+          return merged;
         }
       } catch {
         // fallback to default
@@ -48,8 +52,16 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setLoading(true);
       const data = await fetchSiteSettings();
       if (data && data.studioName) {
-        setSettings(data);
-        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(data));
+        const merged: SiteSettingData = {
+          ...DEFAULT_SITE_SETTINGS,
+          ...data,
+          socialLinks:
+            data.socialLinks && data.socialLinks.length > 0
+              ? data.socialLinks
+              : DEFAULT_SITE_SETTINGS.socialLinks,
+        };
+        setSettings(merged);
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(merged));
       }
     } catch (err) {
       console.warn('Failed to refresh site settings:', err);
@@ -60,7 +72,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const saveSettings = useCallback(async (payload: Partial<SiteSettingData>): Promise<SiteSettingData> => {
     const updated = await adminUpdateSettings(payload);
-    const merged = { ...DEFAULT_SITE_SETTINGS, ...updated };
+    const merged: SiteSettingData = {
+      ...DEFAULT_SITE_SETTINGS,
+      ...updated,
+      socialLinks:
+        updated.socialLinks && updated.socialLinks.length > 0
+          ? updated.socialLinks
+          : DEFAULT_SITE_SETTINGS.socialLinks,
+    };
     setSettings(merged);
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(merged));
     

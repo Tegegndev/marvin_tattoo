@@ -2,6 +2,49 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "../config/database.js";
 import { processAndSaveImage, deleteLocalImage } from "../services/imageService.js";
 
+export const DEFAULT_SOCIAL_LINKS = [
+  {
+    id: "soc-1",
+    platform: "instagram",
+    label: "Instagram (@Marvintattoos256)",
+    url: "https://instagram.com/Marvintattoos256",
+    icon: "instagram",
+    active: true,
+  },
+  {
+    id: "soc-2",
+    platform: "tiktok",
+    label: "TikTok (@Marvintattoos256)",
+    url: "https://tiktok.com/@Marvintattoos256",
+    icon: "tiktok",
+    active: true,
+  },
+  {
+    id: "soc-3",
+    platform: "whatsapp",
+    label: "WhatsApp",
+    url: "https://wa.me/256705748774",
+    icon: "whatsapp",
+    active: true,
+  },
+  {
+    id: "soc-4",
+    platform: "facebook",
+    label: "Facebook",
+    url: "https://facebook.com/marvintattoosug",
+    icon: "facebook",
+    active: true,
+  },
+  {
+    id: "soc-5",
+    platform: "maps",
+    label: "Google Maps",
+    url: "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
+    icon: "map-pin",
+    active: true,
+  },
+];
+
 export const getSettings = async (
   _req: Request,
   res: Response,
@@ -34,48 +77,7 @@ export const getSettings = async (
             { day: "Monday - Saturday", hours: "10:00 AM - 8:00 PM" },
             { day: "Sunday", hours: "By Appointment Only" },
           ]),
-          socialLinks: JSON.stringify([
-            {
-              id: "soc-1",
-              platform: "instagram",
-              label: "Instagram (@Marvintattoos256)",
-              url: "https://instagram.com/Marvintattoos256",
-              icon: "instagram",
-              active: true,
-            },
-            {
-              id: "soc-2",
-              platform: "tiktok",
-              label: "TikTok (@Marvintattoos256)",
-              url: "https://tiktok.com/@Marvintattoos256",
-              icon: "tiktok",
-              active: true,
-            },
-            {
-              id: "soc-3",
-              platform: "whatsapp",
-              label: "WhatsApp",
-              url: "https://wa.me/256705748774",
-              icon: "whatsapp",
-              active: true,
-            },
-            {
-              id: "soc-4",
-              platform: "facebook",
-              label: "Facebook",
-              url: "https://facebook.com/marvintattoosug",
-              icon: "facebook",
-              active: true,
-            },
-            {
-              id: "soc-5",
-              platform: "maps",
-              label: "Google Maps",
-              url: "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
-              icon: "map-pin",
-              active: true,
-            },
-          ]),
+          socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
         },
       });
     }
@@ -84,18 +86,21 @@ export const getSettings = async (
       if (!val) return fallback;
       if (typeof val === "object") return val;
       try {
-        return JSON.parse(val);
+        const parsed = JSON.parse(val);
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback;
       } catch {
         return fallback;
       }
     };
+
+    const parsedSocials = parseSafe(settings.socialLinks, DEFAULT_SOCIAL_LINKS);
 
     res.json({
       success: true,
       data: {
         ...settings,
         openingHours: parseSafe(settings.openingHours, []),
-        socialLinks: parseSafe(settings.socialLinks, []),
+        socialLinks: parsedSocials,
       },
     });
   } catch (error) {
@@ -203,7 +208,7 @@ export const updateSettings = async (
       data: {
         ...updated,
         openingHours: parseSafe(updated.openingHours, []),
-        socialLinks: parseSafe(updated.socialLinks, []),
+        socialLinks: parseSafe(updated.socialLinks, DEFAULT_SOCIAL_LINKS),
       },
     });
   } catch (error) {

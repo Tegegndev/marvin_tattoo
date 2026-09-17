@@ -222,14 +222,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [loadingOrders, setLoadingOrders] = useState<boolean>(false);
 
   // Settings State
-  const [settings, setSettings] = useState<SiteSettingData>(globalSettings || DEFAULT_SITE_SETTINGS);
+  const [settings, setSettings] = useState<SiteSettingData>(() => ({
+    ...(globalSettings || DEFAULT_SITE_SETTINGS),
+    socialLinks:
+      globalSettings?.socialLinks && globalSettings.socialLinks.length > 0
+        ? globalSettings.socialLinks
+        : DEFAULT_SITE_SETTINGS.socialLinks,
+  }));
   const [savingSettings, setSavingSettings] = useState<boolean>(false);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string>('');
 
   useEffect(() => {
     if (globalSettings && globalSettings.studioName) {
-      setSettings(globalSettings);
+      setSettings({
+        ...globalSettings,
+        socialLinks:
+          globalSettings.socialLinks && globalSettings.socialLinks.length > 0
+            ? globalSettings.socialLinks
+            : DEFAULT_SITE_SETTINGS.socialLinks,
+      });
     }
   }, [globalSettings]);
 
@@ -775,7 +787,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     try {
       await refreshSettings();
       const data = await fetchSiteSettings();
-      setSettings(data);
+      setSettings({
+        ...data,
+        socialLinks:
+          data.socialLinks && data.socialLinks.length > 0
+            ? data.socialLinks
+            : DEFAULT_SITE_SETTINGS.socialLinks,
+      });
     } catch (err) {
       console.error('Failed to load settings:', err);
     }

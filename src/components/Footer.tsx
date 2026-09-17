@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PageView } from '../types';
 import { LOGO_URL, SERVICES_DATA } from '../data/atelierData';
 import { Icons8 } from './Icons8';
-import { getUserOrders } from '../services/apiClient';
+import { getUserOrders, DEFAULT_SITE_SETTINGS } from '../services/apiClient';
 import { getUserBookings } from '../services/bookingApi';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -70,7 +70,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
     }
   };
 
-  const activeSocials = (settings.socialLinks || []).filter((s) => s.active && s.url && s.url.trim());
+  const rawSocials = (settings.socialLinks && settings.socialLinks.length > 0)
+    ? settings.socialLinks
+    : DEFAULT_SITE_SETTINGS.socialLinks;
+
+  const activeSocials = rawSocials.filter((s) => s.active && s.url && s.url.trim());
+  const displaySocials = activeSocials.length > 0
+    ? activeSocials
+    : DEFAULT_SITE_SETTINGS.socialLinks.filter((s) => s.active);
 
   return (
     <footer className="w-full bg-noir-950 border-t border-noir-700/40">
@@ -489,7 +496,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
               Follow Us
             </div>
             <ul className="space-y-2 font-label-data text-label-data uppercase">
-              {activeSocials.map((social) => (
+              {displaySocials.map((social) => (
                 <li key={social.id}>
                   <a
                     href={social.url}
