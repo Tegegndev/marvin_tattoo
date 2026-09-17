@@ -15,7 +15,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
 }) => {
   const [topic, setTopic] = useState<'consultation' | 'piercing' | 'aftercare' | 'walkin'>('consultation');
   const [message, setMessage] = useState(
-    prefilledMessage || "Hi, I'd like to ask about booking a custom tattoo session at Marvin Tattoos Atelier."
+    prefilledMessage || "Hi, I'd like to ask about booking a custom tattoo session at Marvin Tattoos Studio."
   );
   const [copied, setCopied] = useState(false);
 

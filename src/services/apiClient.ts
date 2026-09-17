@@ -14,10 +14,10 @@ import { apiUrl, formatImageUrl } from "../config/api";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
   id: "studio_config",
-  studioName: "Marvin Tattoos & Piercing Atelier",
+  studioName: "Marvin Tattoo Studio",
   heroStatement: "Clean Lines. Heavy Blackwork. Made to Age Well.",
   heroSubtext:
-    "Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.",
+    "Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.",
   heroBannerUrl: HERO_IMAGE,
   heroOpacity: 0.45,
   announcementActive: false,
@@ -25,7 +25,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
   primaryPhone: MARVIN_DIRECT_PHONE,
   whatsappNumber: "+256705748774",
   contactEmail: "info@marvintattoos.com",
-  physicalAddress: "Level 5, New Pioneer Mall, Burton St, Kampala, Uganda",
+  physicalAddress: "New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala",
   googleMapsUrl: "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
   openingHours: [
     { day: "Monday - Saturday", hours: "10:00 AM - 8:00 PM" },
@@ -35,16 +35,16 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
     {
       id: "soc-1",
       platform: "instagram",
-      label: "Instagram",
-      url: "https://instagram.com/marvin_tattoos",
+      label: "Instagram (@Marvintattoos256)",
+      url: "https://instagram.com/Marvintattoos256",
       icon: "instagram",
       active: true,
     },
     {
       id: "soc-2",
       platform: "tiktok",
-      label: "TikTok",
-      url: "https://tiktok.com/@marvintattoos",
+      label: "TikTok (@Marvintattoos256)",
+      url: "https://tiktok.com/@Marvintattoos256",
       icon: "tiktok",
       active: true,
     },

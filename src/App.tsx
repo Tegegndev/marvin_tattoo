@@ -35,7 +35,7 @@ const PageLoaderFallback = () => (
       />
     </div>
     <span className="font-label-caps text-[10px] uppercase text-bone-muted tracking-[0.25em] mt-4 animate-pulse">
-      Loading Marvin Atelier...
+      Loading Marvin Tattoo Studio...
     </span>
   </div>
 );
@@ -264,14 +264,16 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <Footer
-        onNavigate={setCurrentPage}
-        onOpenVerify={() => setIsVerifyOpen(true)}
-        onTrackOrder={(orderNum) => {
-          setTrackingOrderNumber(orderNum);
-          setCurrentPage('track-order');
-        }}
-      />
+      {currentPage !== 'admin' && (
+        <Footer
+          onNavigate={setCurrentPage}
+          onOpenVerify={() => setIsVerifyOpen(true)}
+          onTrackOrder={(orderNum) => {
+            setTrackingOrderNumber(orderNum);
+            setCurrentPage('track-order');
+          }}
+        />
+      )}
 
       {/* Modals */}
       <ArtworkModal

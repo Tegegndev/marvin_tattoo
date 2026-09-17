@@ -280,7 +280,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
                       <div className="py-6 text-center space-y-2 bg-noir-850/60 rounded-xl border border-noir-800">
                         <Icons8 name="calendar-alt" size={24} className="mx-auto text-bone-muted" />
                         <p className="font-body-sm text-xs text-bone-dim">
-                          No tattoo or piercing appointments booked on this device yet.
+                          No tattoo appointments booked on this device yet.
                         </p>
                         <button
                           type="button"
@@ -324,7 +324,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
                               <div className="pt-1 border-t border-noir-800">
                                 <a
                                   href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                                    `Hello Marvin Tattoos Atelier! Inquiring about my booking appointment Ref #${bkg.referenceCode} (${serviceTitle}) on ${bkg.preferredDate}.`
+                                    `Hello Marvin Tattoos Studio! Inquiring about my booking appointment Ref #${bkg.referenceCode} (${serviceTitle}) on ${bkg.preferredDate}.`
                                   )}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -353,16 +353,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
           <div className="space-y-5">
             <div className="space-y-3">
               <img
-                alt="Marvin Tattoos Wordmark Logo"
+                alt="Marvin Tattoo Studio Logo"
                 className="h-16 sm:h-20 md:h-24 w-auto object-contain filter drop-shadow-lg select-none"
                 src={LOGO_URL}
               />
               <div className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold">
-                Tattoo &amp; Piercing Studio · Kampala
+                Marvin Tattoo Studio · Kampala
               </div>
             </div>
             <p className="font-body-sm text-sm text-bone-muted leading-relaxed">
-              Custom dark realism, heavy script, cover-ups, and titanium body piercing in Kampala, Uganda with hospital-grade sterilization.
+              Custom dark realism, heavy script, cover-ups, and bespoke tattoo artistry in Kampala, Uganda with hospital-grade sterilization.
             </p>
             <div className="flex items-center gap-2 pt-1">
               <span className="w-2 h-2 rounded-full bg-gold shrink-0 animate-pulse" />
@@ -541,7 +541,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
         {/* Bottom Legal */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-noir-700/30">
           <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone-dim text-center md:text-left">
-            © 2026 MARVIN TATTOOS &amp; PIERCINGS. ALL RIGHTS RESERVED.
+            © 2026 MARVIN TATTOO STUDIO (@MARVINTATTOOS256). ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-bone-dim">
             <button onClick={() => onNavigate('track-order')} className="hover:text-crimson-light text-bone font-semibold transition-colors cursor-pointer">

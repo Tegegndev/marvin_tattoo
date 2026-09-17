@@ -153,7 +153,7 @@ export async function notifyCustomerBookingReceived(booking: {
   });
 
   const message = [
-    `✨ *MARVIN TATTOOS & PIERCING ATELIER*`,
+    `✨ *MARVIN TATTOO STUDIO*`,
     ``,
     `Hello *${booking.clientName}*,`,
     `We have received your booking request!`,
@@ -165,7 +165,7 @@ export async function notifyCustomerBookingReceived(booking: {
     ``,
     `Our master artist will review your intake details and message you here to confirm.`,
     ``,
-    `📍 *Studio:* Level 5, New Pioneer Mall, Burton St, Kampala`,
+    `📍 *Studio:* New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala`,
     `📞 *Direct Line:* +256 705 748 774`,
   ].join('\n');
 
@@ -207,9 +207,9 @@ export async function notifyAdminNewOrder(order: {
 }
 
 /**
- * 4. Customer Confirmation: Send shop order receipt to customer on WhatsApp
+ * Send order confirmation WhatsApp notification
  */
-export async function notifyCustomerOrderReceived(order: {
+export async function sendOrderConfirmationWhatsApp(order: {
   orderNumber: string;
   clientName: string;
   clientPhone: string;
@@ -218,10 +218,10 @@ export async function notifyCustomerOrderReceived(order: {
   itemsText?: string;
 }) {
   const message = [
-    `🛍️ *MARVIN TATTOOS ATELIER — ORDER RECEIPT*`,
+    `🛍️ *MARVIN TATTOO STUDIO — ORDER RECEIPT*`,
     ``,
     `Hello *${order.clientName}*,`,
-    `Thank you for shopping with Marvin Tattoos Atelier!`,
+    `Thank you for shopping with Marvin Tattoo Studio!`,
     ``,
     `*Order Number:* ${order.orderNumber}`,
     `*Total:* UGX ${order.totalAmount.toLocaleString()}`,
@@ -230,7 +230,7 @@ export async function notifyCustomerOrderReceived(order: {
     ``,
     `Our dispatch team is preparing your package. If you need any assistance, reply directly to this chat.`,
     ``,
-    `📍 *Studio Pickup:* Level 5, New Pioneer Mall, Burton St, Kampala`,
+    `📍 *Studio Pickup:* New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala`,
   ]
     .filter(Boolean)
     .join('\n');

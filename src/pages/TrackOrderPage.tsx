@@ -210,7 +210,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                   { stepNum: 1, title: 'Order Logged', desc: 'Recorded in atelier ledger' },
                   { stepNum: 2, title: 'Payment & Verification', desc: 'Payment approved & checked' },
                   { stepNum: 3, title: 'Sterilization & Packing', desc: 'Sealed in sterile pack' },
-                  { stepNum: 4, title: order.deliveryMethod === 'STUDIO_PICKUP' ? 'Ready for Pickup' : 'Dispatched / Delivered', desc: order.deliveryMethod === 'STUDIO_PICKUP' ? 'Level 5 Pioneer Mall' : 'En route via courier' },
+                  { stepNum: 4, title: order.deliveryMethod === 'STUDIO_PICKUP' ? 'Ready for Pickup' : 'Dispatched / Delivered', desc: order.deliveryMethod === 'STUDIO_PICKUP' ? 'New Pioneer Mall, Shop Pi55, Level 5' : 'En route via courier' },
                 ].map((s) => {
                   const isCurrent = statusInfo && statusInfo.step === s.stepNum;
                   const isPassed = statusInfo && statusInfo.step > s.stepNum;
@@ -265,7 +265,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                 </p>
                 <p className="text-bone-dim">
                   {order.deliveryMethod === 'STUDIO_PICKUP'
-                    ? 'Level 5, New Pioneer Mall, Kampala'
+                    ? 'New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala'
                     : order.deliveryAddress || 'Address on record'}
                 </p>
                 <p className="text-emerald-400 uppercase text-[11px] pt-0.5">

@@ -31,6 +31,29 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const navLinks: { id: PageView; label: string }[] = [
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
@@ -49,19 +72,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           : 'bg-noir-950/80 backdrop-blur-sm border-b border-noir-800/40'
       }`}
     >
-      <div className="h-20 max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
-        {/* Brand Logo Only */}
+      <div className="h-16 sm:h-20 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
+        {/* Brand Logo */}
         <button
           onClick={() => {
             onNavigate('home');
             setMobileMenuOpen(false);
           }}
-          className="flex items-center shrink-0 focus:outline-none group py-2"
-          aria-label="Marvin Tattoos Atelier Home"
+          className="flex items-center shrink-0 focus:outline-none group py-1 sm:py-2"
+          aria-label="Marvin Tattoo Studio Home"
         >
           <img
-            alt="Marvin Tattoos"
-            className="h-10 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105 brightness-110"
+            alt="Marvin Tattoo Studio"
+            className="h-9 sm:h-11 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             src={LOGO_URL}
           />
         </button>
@@ -96,11 +119,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Action CTAs */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 shrink-0">
           {/* WhatsApp Direct Line */}
           <button
             onClick={onOpenWhatsApp}
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-2 bg-noir-900 hover:bg-noir-850 text-bone-dim hover:text-bone font-label-caps text-[11px] uppercase tracking-wider transition-all duration-200 border border-noir-700 rounded-sm"
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-2 bg-noir-900 hover:bg-noir-850 text-bone-dim hover:text-bone font-label-caps text-[11px] uppercase tracking-wider transition-all duration-200 border border-noir-700 rounded-sm shrink-0"
             title="Chat on WhatsApp"
           >
             <Icons8 name="whatsapp" size={14} className="text-emerald-400" />
@@ -110,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Cart Icon */}
           <button
             onClick={onOpenCart}
-            className="relative p-2.5 bg-noir-900 hover:bg-noir-850 text-bone transition-all duration-200 border border-noir-700 rounded-sm flex items-center justify-center"
+            className="relative p-2 sm:p-2.5 bg-noir-900 hover:bg-noir-850 text-bone transition-all duration-200 border border-noir-700 rounded-sm flex items-center justify-center shrink-0"
             aria-label="Open Equipment Cart"
           >
             <Icons8 name="shopping-bag" size={16} className="text-slate-300" />
@@ -121,23 +144,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* Book Appointment CTA */}
+          {/* Book Appointment CTA (Responsive: icon-only on <360px, "Book" on 360-640px, "Book Session" on >=640px) */}
           <button
             onClick={() => {
               onNavigate('booking');
               setMobileMenuOpen(false);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] font-bold uppercase tracking-widest transition-all duration-200 border border-crimson-light/30 shadow-sm rounded-sm"
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-2 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] font-bold uppercase tracking-wider sm:tracking-widest transition-all duration-200 border border-crimson-light/30 shadow-sm rounded-sm shrink-0"
+            aria-label="Book Session"
           >
             <Icons8 name="calendar-check" size={14} />
             <span className="hidden sm:inline">Book Session</span>
-            <span className="sm:hidden">Book</span>
+            <span className="hidden min-[360px]:inline sm:hidden">Book</span>
           </button>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-bone hover:text-white transition-colors focus:outline-none"
+            className="md:hidden p-1.5 sm:p-2 text-bone hover:text-white transition-colors focus:outline-none shrink-0"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <Icons8 name="times" size={22} /> : <Icons8 name="bars" size={22} />}
@@ -148,49 +172,62 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Menu Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden bg-noir-950/98 border-b border-noir-700 px-6 py-5 flex flex-col gap-3 shadow-2xl"
-          >
-            {navLinks.map((link) => {
-              const isActive = currentPage === link.id || (link.id === 'services' && currentPage === 'service-detail');
-              return (
+          <>
+            {/* Backdrop for closing menu */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="md:hidden fixed inset-0 top-16 sm:top-20 bg-black/60 backdrop-blur-sm z-40"
+            />
+
+            {/* Scrollable Drawer */}
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25 }}
+              className="md:hidden relative z-50 bg-noir-950/98 border-b border-noir-700 px-4 sm:px-6 py-5 flex flex-col gap-3 shadow-2xl overflow-y-auto max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-5rem)]"
+            >
+              {navLinks.map((link) => {
+                const isActive = currentPage === link.id || (link.id === 'services' && currentPage === 'service-detail');
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => {
+                      onNavigate(link.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center justify-between py-2.5 text-left font-label-caps text-sm uppercase tracking-wider transition-colors ${
+                      isActive
+                        ? 'text-white font-bold border-l-2 border-slate-300 pl-3 bg-noir-900/60'
+                        : 'text-bone-muted hover:text-bone pl-3'
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {isActive && (
+                      <span className="text-xs text-slate-300">●</span>
+                    )}
+                  </button>
+                );
+              })}
+
+              <div className="pt-3 mt-2 border-t border-noir-700/80 flex flex-col gap-2.5">
                 <button
-                  key={link.id}
                   onClick={() => {
-                    onNavigate(link.id);
+                    onOpenWhatsApp();
                     setMobileMenuOpen(false);
                   }}
-                  className={`flex items-center justify-between py-2.5 text-left font-label-caps text-sm uppercase tracking-wider transition-colors ${
-                    isActive
-                      ? 'text-white font-bold border-l-2 border-slate-300 pl-3 bg-noir-900/60'
-                      : 'text-bone-muted hover:text-bone pl-3'
-                  }`}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-noir-900 hover:bg-noir-850 text-bone border border-noir-700 text-xs font-label-caps uppercase tracking-wider transition-colors"
                 >
-                  <span>{link.label}</span>
-                  {isActive && (
-                    <span className="text-xs text-slate-300">●</span>
-                  )}
+                  <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
+                  <span>WhatsApp Studio Consult</span>
                 </button>
-              );
-            })}
-
-            <div className="pt-3 mt-2 border-t border-noir-700/80 flex flex-col gap-2.5">
-              <button
-                onClick={() => {
-                  onOpenWhatsApp();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-noir-900 hover:bg-noir-850 text-bone border border-noir-700 text-xs font-label-caps uppercase tracking-wider transition-colors"
-              >
-                <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
-                <span>WhatsApp Studio Consult</span>
-              </button>
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>

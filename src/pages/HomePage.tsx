@@ -41,13 +41,13 @@ const MarvinPortraitLens: React.FC = () => {
         <div className="flex items-end justify-between">
           <div>
             <span className="font-label-caps text-[10px] text-crimson-light uppercase tracking-widest block">
-              Tattoo &amp; Piercing Shop · Kampala, Uganda
+              Marvin Tattoo Studio · Kampala, Uganda
             </span>
             <h3 className="font-headline-sm text-2xl sm:text-3xl text-bone uppercase font-bold tracking-tight">
               Marvin
             </h3>
             <p className="font-body-sm text-xs text-bone-muted leading-tight">
-              Master Tattoo Artist &amp; Piercing Specialist
+              Founder &amp; Master Tattoo Artist
             </p>
           </div>
           <div className="text-right">
@@ -185,11 +185,11 @@ export const HomePage: React.FC<HomePageProps> = ({
               {/* Provenance Badge */}
               <div className="inline-flex items-center gap-3 px-3.5 py-1.5 bg-noir-850 border border-crimson/40">
                 <span className="font-label-caps text-xs text-crimson-light tracking-[0.25em] uppercase font-bold">
-                  MARVIN TATTOOS
+                  MARVIN TATTOO STUDIO
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-crimson-light" />
                 <span className="font-label-data text-xs text-bone-muted uppercase tracking-wider">
-                  Tattoo and piercing shop in Kampala, Uganda · EST. 2014
+                  Custom tattoo studio in Kampala, Uganda · EST. 2014
                 </span>
               </div>
 
@@ -658,7 +658,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Client Feedback &amp; Stories
               </h2>
               <p className="font-body-md text-sm text-bone-muted max-w-xl">
-                Real experiences from clients in Kampala — healed custom tattoos, fine-line ink, cover-ups, and sterile piercings.
+                Real experiences from clients in Kampala — healed custom tattoos, fine-line ink, cover-ups, and dark realism.
               </p>
             </div>
 
@@ -767,7 +767,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-7 flex flex-col bg-noir-850 overflow-hidden border border-noir-700">
               <div className="w-full h-80 sm:h-96 relative bg-noir-950 overflow-hidden">
                 <iframe
-                  title="Marvin Tattoos Kampala Google Map"
+                  title="Marvin Tattoo Studio Kampala Google Map"
                   src="https://maps.google.com/maps?q=New%20Pioneer%20Mall,%20Burton%20St,%20Kampala,%20Uganda&t=&z=16&ie=UTF8&iwloc=&output=embed"
                   className="w-full h-full border-0"
                   loading="lazy"
@@ -776,17 +776,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <div className="absolute top-3 left-3 pointer-events-none z-10">
                   <span className="font-label-caps text-[11px] uppercase bg-noir-950/90 backdrop-blur-md px-3 py-1.5 text-bone border border-noir-700/80 flex items-center gap-1.5 shadow-lg font-bold">
                     <span className="w-2 h-2 rounded-full bg-crimson animate-pulse" />
-                    Marvin Tattoos · Kampala Studio
+                    Marvin Tattoo Studio · Kampala
                   </span>
                 </div>
               </div>
               <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-noir-850 border-t border-noir-700">
                 <div className="space-y-1">
                   <div className="font-title-editorial text-base uppercase text-bone font-bold">
-                    New Pioneer Mall, Burton St
+                    New Pioneer Mall, Shop No. Pi55
                   </div>
                   <div className="font-body-sm text-xs text-bone-muted">
-                    Level 5, Shop No. Pi55 · Kampala, Uganda
+                    Level 5, Burton Street · Kampala, Uganda
                   </div>
                   <div className="pt-1">
                     <a
@@ -846,10 +846,10 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 <div className="p-3.5 bg-noir-900 border-l-2 border-gold space-y-1">
                   <div className="font-label-caps text-xs uppercase text-gold font-bold">
-                    Walk-Ins &amp; Same-Day Piercings
+                    Walk-Ins &amp; Custom Flash
                   </div>
                   <p className="font-body-sm text-xs text-bone-dim leading-relaxed">
-                    Walk-in piercings and small custom flash tattoos accepted daily. Large blackwork sleeves, portraits, and cover-ups require a booked consultation.
+                    Walk-in consultations and small custom flash tattoos accepted daily. Large blackwork sleeves, portraits, and cover-ups require a booked consultation.
                   </p>
                 </div>
               </div>

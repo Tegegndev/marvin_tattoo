@@ -150,7 +150,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     ]).catch((err) => console.error('Order WhatsApp notifications error:', err));
 
     const whatsAppMessage = encodeURIComponent(
-      `Hello Marvin Tattoos Atelier! I have placed an aftercare / shop order.\n\n*Order No:* ${orderNumber}\n*Client:* ${validated.clientName}\n*Phone:* ${validated.clientPhone}\n*Delivery:* ${validated.deliveryMethod}\n*Payment:* ${validated.paymentMethod}\n*Total:* UGX ${calculatedTotal.toLocaleString()}\n\n*Items:*\n${itemsSummary}`
+      `Hello Marvin Tattoo Studio! I have placed an aftercare / shop order.\n\n*Order No:* ${orderNumber}\n*Client:* ${validated.clientName}\n*Phone:* ${validated.clientPhone}\n*Delivery:* ${validated.deliveryMethod}\n*Payment:* ${validated.paymentMethod}\n*Total:* UGX ${calculatedTotal.toLocaleString()}\n\n*Items:*\n${itemsSummary}`
     );
     const directWhatsAppUrl = `https://wa.me/256705748774?text=${whatsAppMessage}`;
 

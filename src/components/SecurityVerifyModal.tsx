@@ -15,6 +15,10 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
   const [verifyResult, setVerifyResult] = useState<'verified' | 'imposter' | null>(null);
 
   const officialHandles = [
+    '@marvintattoos256',
+    'marvintattoos256',
+    '@marvin_tattoos',
+    'marvin_tattoos',
     '@marvin_atelier',
     'marvin_atelier',
     '@marvintattoos.official',
@@ -95,7 +99,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                     setInputHandle(e.target.value);
                     setVerifyResult(null);
                   }}
-                  placeholder="e.g. @marvin_atelier or +256 705 748774"
+                  placeholder="e.g. @Marvintattoos256 or +256 705 748774"
                   className="flex-1 px-3 py-2 bg-noir-850 border border-noir-700 text-bone font-body-sm text-sm focus:outline-none focus:border-noir-600"
                 />
                 <button
@@ -121,7 +125,7 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
                     Verified — Official Account
                   </span>
                   <p className="font-body-sm text-xs text-bone-muted">
-                    This is an official Marvin Tattoos account or contact number.
+                    This is an official Marvin Tattoos Studio account or contact number.
                   </p>
                 </div>
               </motion.div>
@@ -153,11 +157,11 @@ export const SecurityVerifyModal: React.FC<SecurityVerifyModalProps> = ({
               <div className="space-y-1 font-label-data text-xs">
                 <div className="flex justify-between p-2 bg-noir-850">
                   <span className="text-bone">Instagram:</span>
-                  <span className="text-crimson-light font-bold">@marvin_atelier</span>
+                  <span className="text-crimson-light font-bold">@Marvintattoos256</span>
                 </div>
                 <div className="flex justify-between p-2 bg-noir-850">
                   <span className="text-bone">TikTok:</span>
-                  <span className="text-crimson-light font-bold">@marvintattoos.official</span>
+                  <span className="text-crimson-light font-bold">@Marvintattoos256</span>
                 </div>
                 <div className="flex justify-between p-2 bg-noir-850">
                   <span className="text-bone">WhatsApp / Phone:</span>

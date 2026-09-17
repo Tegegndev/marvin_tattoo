@@ -63,7 +63,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         clientPhone: shippingData.phone,
         clientEmail: shippingData.email,
         deliveryMethod,
-        deliveryAddress: deliveryMethod === 'KAMPALA_DISPATCH' ? shippingData.address : 'Studio Pickup (Level 5, New Pioneer Mall)',
+        deliveryAddress: deliveryMethod === 'KAMPALA_DISPATCH' ? shippingData.address : 'Studio Pickup (New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala)',
         deliveryNotes: shippingData.notes || undefined,
         paymentMethod,
         items: cart.map((item) => ({
@@ -180,7 +180,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           </h1>
           <p className="font-label-data text-xs text-bone-dim mt-1 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Kampala Atelier Studio · Level 5, New Pioneer Mall</span>
+            <span>Kampala Studio · New Pioneer Mall, Shop No. Pi55, Level 5</span>
           </p>
         </div>
 
@@ -337,7 +337,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                           </span>
                         </div>
                         <p className="text-xs text-bone-dim leading-relaxed">
-                          Pick up directly at Marvin Tattoos Atelier, Level 5, New Pioneer Mall. Ready within 1–2 hours.
+                          Pick up directly at Marvin Tattoo Studio, New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala. Ready within 1–2 hours.
                         </p>
                       </div>
                       <div className="mt-4 pt-3 border-t border-noir-800 text-[11px] text-bone-muted flex items-center gap-1.5">
@@ -728,7 +728,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <div className="flex justify-between text-bone-dim">
                     <span>Fulfillment:</span>
                     <span className="text-gold">
-                      {deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup (Level 5 Pioneer Mall)' : `Kampala Dispatch: ${shippingData.address || 'Address on file'}`}
+                      {deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup (New Pioneer Mall, Shop Pi55, Level 5)' : `Kampala Dispatch: ${shippingData.address || 'Address on file'}`}
                     </span>
                   </div>
                   <div className="flex justify-between text-bone-dim">

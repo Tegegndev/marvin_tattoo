@@ -93,7 +93,7 @@ export async function createBooking(req: Request, res: Response): Promise<void> 
     ]).catch((err) => console.error('Booking WhatsApp notifications error:', err));
 
     const whatsAppMessage = encodeURIComponent(
-      `Hello Marvin Tattoos Atelier! I have submitted a consultation/booking request.\n\n*Ref Code:* ${referenceCode}\n*Name:* ${validated.clientName}\n*Service:* ${validated.serviceType}\n*Placement:* ${validated.placement}\n*Preferred Date:* ${new Date(validated.preferredDate).toLocaleDateString()}`
+      `Hello Marvin Tattoo Studio! I have submitted a consultation/booking request.\n\n*Ref Code:* ${referenceCode}\n*Name:* ${validated.clientName}\n*Service:* ${validated.serviceType}\n*Placement:* ${validated.placement}\n*Preferred Date:* ${new Date(validated.preferredDate).toLocaleDateString()}`
     );
     const directWhatsAppUrl = `https://wa.me/256705748774?text=${whatsAppMessage}`;
 

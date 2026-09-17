@@ -37,7 +37,7 @@ export function generateReceiptHTML(data: OrderReceiptData): string {
 
   const fulfillmentLabel =
     data.deliveryMethod === 'STUDIO_PICKUP'
-      ? 'Studio Pickup (Level 5, New Pioneer Mall, Kampala)'
+      ? 'Studio Pickup (New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala)'
       : `Kampala Dispatch: ${data.deliveryAddress || 'Address on record'}`;
 
   const itemsHtml = data.items
@@ -222,10 +222,10 @@ export function generateReceiptHTML(data: OrderReceiptData): string {
   <div class="receipt-container">
     <div class="header">
       <div>
-        <h1 class="brand-title">Marvin Tattoos Atelier</h1>
+        <h1 class="brand-title">Marvin Tattoo Studio</h1>
         <div class="brand-sub">Official Order &amp; Fulfillment Receipt</div>
         <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">
-          Level 5, New Pioneer Mall, Kampala, Uganda · +256 704 779919
+          New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala · +256 705 748774
         </div>
       </div>
       <div class="order-badge">
@@ -245,7 +245,7 @@ export function generateReceiptHTML(data: OrderReceiptData): string {
       <div class="info-block">
         <h4>Fulfillment &amp; Payment</h4>
         <p><strong>Method:</strong> ${data.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Kampala Dispatch'}</p>
-        <p><strong>Location:</strong> ${data.deliveryMethod === 'STUDIO_PICKUP' ? 'Level 5 New Pioneer Mall' : data.deliveryAddress || 'Kampala Delivery'}</p>
+        <p><strong>Location:</strong> ${data.deliveryMethod === 'STUDIO_PICKUP' ? 'New Pioneer Mall, Shop Pi55, Level 5' : data.deliveryAddress || 'Kampala Delivery'}</p>
         <p><strong>Payment:</strong> ${paymentLabel}</p>
       </div>
     </div>

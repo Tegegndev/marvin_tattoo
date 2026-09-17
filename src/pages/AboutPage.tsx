@@ -109,14 +109,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
                     The Hand Behind The Ink: Marvin
                   </h1>
                   <p className="font-title-editorial text-base italic text-gold mb-5">
-                    Founder, Master Tattoo Artist &amp; Piercing Specialist
+                    Founder &amp; Master Tattoo Artist
                   </p>
                   <div className="space-y-4 font-body-md text-sm text-bone-muted leading-relaxed">
                     <p>
-                      With over 14 years of professional tattoo and body piercing experience in Kampala, Marvin has built a reputation for high-detail black-and-grey realism, custom typography, clean fine-line work, and complete cover-up transformations.
+                      With over 14 years of professional custom tattoo mastery in Kampala, Marvin has built a reputation for high-detail black-and-grey realism, custom typography, clean fine-line work, and complete cover-up transformations.
                     </p>
                     <p>
-                      He founded Marvin Tattoos in 2014 with one core standard: every tattoo must flow naturally with the body's anatomy, heal solid for life, and be executed under strict hospital-grade sterilization protocols.
+                      He founded Marvin Tattoo Studio in 2014 with one core standard: every tattoo must flow naturally with the body's anatomy, heal solid for life, and be executed under strict hospital-grade sterilization protocols.
                     </p>
                   </div>
                 </div>
@@ -250,7 +250,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenWhatsApp
               THE ARTISTS
             </span>
             <h2 className="font-headline-xl text-3xl sm:text-4xl text-bone uppercase font-bold">
-              Our Tattoo &amp; Piercing Team
+              Our Tattoo Artists &amp; Specialists
             </h2>
             <p className="font-body-md text-sm text-bone-muted">
               Each artist has their own style and specialties. Pick the one that fits your idea.

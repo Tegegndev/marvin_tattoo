@@ -37,10 +37,10 @@ export const LocationPage: React.FC<LocationPageProps> = ({
             </span>
           </div>
           <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-            Tattoo and Piercing Shop in Kampala, Uganda
+            Marvin Tattoo Studio in Kampala, Uganda
           </h1>
           <p className="font-body-md text-sm text-bone-muted max-w-2xl leading-relaxed">
-            Private consultation rooms, dedicated sterile piercing suites, and medical-grade hygiene protocols throughout.
+            Private consultation rooms, sterile tattooing suites, and medical-grade hygiene protocols throughout.
           </p>
         </div>
       </section>
@@ -53,7 +53,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
             <div className="lg:col-span-7 bg-noir-850 overflow-hidden border border-noir-700 flex flex-col justify-between">
               <div className="w-full h-80 sm:h-96 relative bg-noir-950 overflow-hidden">
                 <iframe
-                  title="Marvin Tattoos Kampala Google Map Embed"
+                  title="Marvin Tattoo Studio Kampala Google Map Embed"
                   src="https://maps.google.com/maps?q=New%20Pioneer%20Mall,%20Burton%20St,%20Kampala,%20Uganda&t=&z=16&ie=UTF8&iwloc=&output=embed"
                   className="w-full h-full border-0"
                   loading="lazy"
@@ -62,7 +62,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                 <div className="absolute top-3 left-3 pointer-events-none z-10">
                   <span className="font-label-caps text-[11px] uppercase bg-noir-950/90 backdrop-blur-md px-3 py-1.5 text-bone border border-noir-700/80 flex items-center gap-1.5 shadow-lg font-bold">
                     <span className="w-2 h-2 rounded-full bg-crimson animate-pulse" />
-                    Marvin Tattoos · Kampala Studio
+                    Marvin Tattoo Studio · Kampala
                   </span>
                 </div>
               </div>

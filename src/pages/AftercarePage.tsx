@@ -715,7 +715,7 @@ export const AftercarePage: React.FC<AftercarePageProps> = ({ onNavigate }) => {
                   </p>
                 </div>
                 <div className="pt-2 text-[11px] text-gold font-semibold flex items-center gap-1">
-                  <span>Level 5, New Pioneer Mall</span>
+                  <span>New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala</span>
                 </div>
               </div>
             </div>

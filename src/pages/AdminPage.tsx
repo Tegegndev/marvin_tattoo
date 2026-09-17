@@ -1340,11 +1340,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
             <div>
               <div className="text-xs font-semibold text-white tracking-tight flex items-center gap-1.5">
-                <span>Marvin Atelier</span>
+                <span>Marvin Tattoo Studio</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               </div>
               <span className="text-[11px] text-zinc-400 block">
-                Pioneer Mall L5 · Kampala
+                New Pioneer Mall, Shop Pi55, L5 · Kampala
               </span>
             </div>
           </div>
@@ -1855,7 +1855,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 onClick={() =>
                                   openWhatsApp(
                                     b.clientPhone,
-                                    `Hello ${b.clientName}! This is Marvin from Marvin Tattoos Atelier regarding your booking request [${b.referenceCode}]. We are pleased to confirm your session at New Pioneer Mall, Level 5.`
+                                    `Hello ${b.clientName}! This is Marvin from Marvin Tattoo Studio regarding your booking request [${b.referenceCode}]. We are pleased to confirm your session at New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala.`
                                   )
                                 }
                                 className="px-3 py-1.5 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded-lg text-xs transition-colors flex items-center gap-1.5 font-medium"
@@ -3857,7 +3857,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 onClick={() =>
                   openWhatsApp(
                     inspectBooking.clientPhone,
-                    `Hello ${inspectBooking.clientName}! This is Marvin from Marvin Tattoos regarding your booking [${inspectBooking.referenceCode}]. We look forward to seeing you at New Pioneer Mall Level 5.`
+                    `Hello ${inspectBooking.clientName}! This is Marvin from Marvin Tattoo Studio regarding your booking [${inspectBooking.referenceCode}]. We look forward to seeing you at New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala.`
                   )
                 }
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
