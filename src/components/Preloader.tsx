@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LOGO_URL } from '../data/atelierData';
+import { useSettings } from '../context/SettingsContext';
 
 interface PreloaderProps {
   onComplete: () => void;
 }
 
 export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
+  const { settings } = useSettings();
   const [isFinished, setIsFinished] = useState<boolean>(false);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
             >
               <img
                 src={LOGO_URL}
-                alt="Marvin Tattoo Studio"
+                alt={settings.studioName || 'Marvin Tattoo Studio'}
                 className="w-36 h-auto md:w-44 object-contain filter drop-shadow-[0_0_35px_rgba(255,255,255,0.18)]"
               />
             </motion.div>

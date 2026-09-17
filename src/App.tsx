@@ -25,20 +25,25 @@ const CheckoutPage = lazy(() => import('./pages/CheckoutPage').then((m) => ({ de
 const TrackOrderPage = lazy(() => import('./pages/TrackOrderPage').then((m) => ({ default: m.TrackOrderPage })));
 const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
 
-const PageLoaderFallback = () => (
-  <div className="w-full min-h-[65vh] flex flex-col items-center justify-center pt-28 pb-20 text-center">
-    <div className="relative flex items-center justify-center">
-      <div className="w-12 h-12 rounded-full border-2 border-noir-800 border-t-crimson animate-spin" />
-      <div
-        className="absolute w-6 h-6 rounded-full border border-gold/40 border-b-transparent animate-spin"
-        style={{ animationDirection: 'reverse', animationDuration: '0.8s' }}
-      />
+import { useSettings } from './context/SettingsContext';
+
+const PageLoaderFallback = () => {
+  const { settings } = useSettings();
+  return (
+    <div className="w-full min-h-[65vh] flex flex-col items-center justify-center pt-28 pb-20 text-center">
+      <div className="relative flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-2 border-noir-800 border-t-crimson animate-spin" />
+        <div
+          className="absolute w-6 h-6 rounded-full border border-gold/40 border-b-transparent animate-spin"
+          style={{ animationDirection: 'reverse', animationDuration: '0.8s' }}
+        />
+      </div>
+      <span className="font-label-caps text-[10px] uppercase text-bone-muted tracking-[0.25em] mt-4 animate-pulse">
+        Loading {settings.studioName || 'Studio'}...
+      </span>
     </div>
-    <span className="font-label-caps text-[10px] uppercase text-bone-muted tracking-[0.25em] mt-4 animate-pulse">
-      Loading Marvin Tattoo Studio...
-    </span>
-  </div>
-);
+  );
+};
 
 export function App() {
   const [isLoading, setIsLoading] = useState<boolean>(true);

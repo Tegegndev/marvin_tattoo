@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { PageView, SiteSettingData } from '../types';
+import React from 'react';
+import { PageView } from '../types';
 import { Icons8 } from '../components/Icons8';
-import { fetchSiteSettings, DEFAULT_SITE_SETTINGS } from '../services/apiClient';
+import { DEFAULT_SITE_SETTINGS } from '../services/apiClient';
+import { useSettings } from '../context/SettingsContext';
 
 interface LocationPageProps {
   onNavigate: (page: PageView) => void;
@@ -13,11 +14,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
   onNavigate,
   onOpenWhatsApp,
 }) => {
-  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
-
-  useEffect(() => {
-    fetchSiteSettings().then(setSettings).catch(() => {});
-  }, []);
+  const { settings } = useSettings();
 
   const phoneDisplay = settings.primaryPhone || '+256 705 748774';
   const phoneTel = phoneDisplay.replace(/\s+/g, '');
@@ -37,7 +34,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
             </span>
           </div>
           <h1 className="font-headline-xl text-3xl sm:text-4xl md:text-5xl text-bone uppercase font-bold">
-            Marvin Tattoo Studio in Kampala, Uganda
+            {settings.studioName || 'Marvin Tattoo Studio'} in Kampala, Uganda
           </h1>
           <p className="font-body-md text-sm text-bone-muted max-w-2xl leading-relaxed">
             Private consultation rooms, sterile tattooing suites, and medical-grade hygiene protocols throughout.
@@ -62,7 +59,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({
                 <div className="absolute top-3 left-3 pointer-events-none z-10">
                   <span className="font-label-caps text-[11px] uppercase bg-noir-950/90 backdrop-blur-md px-3 py-1.5 text-bone border border-noir-700/80 flex items-center gap-1.5 shadow-lg font-bold">
                     <span className="w-2 h-2 rounded-full bg-crimson animate-pulse" />
-                    Marvin Tattoo Studio · Kampala
+                    {settings.studioName || 'Marvin Tattoo Studio'} · Kampala
                   </span>
                 </div>
               </div>

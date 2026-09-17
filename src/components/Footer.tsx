@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { PageView, SiteSettingData } from '../types';
-import { LOGO_URL, SERVICES_DATA, WHATSAPP_NUMBER } from '../data/atelierData';
+import { PageView } from '../types';
+import { LOGO_URL, SERVICES_DATA } from '../data/atelierData';
 import { Icons8 } from './Icons8';
-import { fetchSiteSettings, DEFAULT_SITE_SETTINGS, getUserOrders } from '../services/apiClient';
+import { getUserOrders } from '../services/apiClient';
 import { getUserBookings } from '../services/bookingApi';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSettings } from '../context/SettingsContext';
 
 interface FooterProps {
   onNavigate: (page: PageView) => void;
@@ -14,7 +15,7 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
-  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+  const { settings } = useSettings();
   const [trackingNumber, setTrackingNumber] = useState<string>('');
   const [userOrders, setUserOrders] = useState<any[]>([]);
   const [userBookings, setUserBookings] = useState<any[]>([]);
@@ -27,7 +28,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
   };
 
   useEffect(() => {
-    fetchSiteSettings().then(setSettings).catch(() => {});
     refreshHistory();
 
     // Listen for storage updates across tabs/actions
@@ -323,8 +323,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
 
                               <div className="pt-1 border-t border-noir-800">
                                 <a
-                                  href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                                    `Hello Marvin Tattoos Studio! Inquiring about my booking appointment Ref #${bkg.referenceCode} (${serviceTitle}) on ${bkg.preferredDate}.`
+                                  href={`https://wa.me/${(settings.whatsappNumber || settings.primaryPhone || '+256705748774').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                                    `Hello ${settings.studioName || 'Marvin Tattoo Studio'}! Inquiring about my booking appointment Ref #${bkg.referenceCode} (${serviceTitle}) on ${bkg.preferredDate}.`
                                   )}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -353,12 +353,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
           <div className="space-y-5">
             <div className="space-y-3">
               <img
-                alt="Marvin Tattoo Studio Logo"
+                alt={`${settings.studioName || 'Marvin Tattoo Studio'} Logo`}
                 className="h-16 sm:h-20 md:h-24 w-auto object-contain filter drop-shadow-lg select-none"
                 src={LOGO_URL}
               />
               <div className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold">
-                Marvin Tattoo Studio · Kampala
+                {settings.studioName || 'Marvin Tattoo Studio'} · Kampala
               </div>
             </div>
             <p className="font-body-sm text-sm text-bone-muted leading-relaxed">
@@ -541,7 +541,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
         {/* Bottom Legal */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-noir-700/30">
           <div className="font-label-caps text-label-caps uppercase tracking-widest text-bone-dim text-center md:text-left">
-            © 2026 MARVIN TATTOO STUDIO (@MARVINTATTOOS256). ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} {(settings.studioName || 'MARVIN TATTOO STUDIO').toUpperCase()} (@MARVINTATTOOS256). ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-bone-dim">
             <button onClick={() => onNavigate('track-order')} className="hover:text-crimson-light text-bone font-semibold transition-colors cursor-pointer">

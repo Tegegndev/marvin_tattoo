@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icons8 } from './Icons8';
+import { useSettings } from '../context/SettingsContext';
 
 interface WhatsAppModalProps {
   isOpen: boolean;
@@ -13,14 +14,15 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
   onClose,
   prefilledMessage
 }) => {
+  const { settings } = useSettings();
   const [topic, setTopic] = useState<'consultation' | 'piercing' | 'aftercare' | 'walkin'>('consultation');
   const [message, setMessage] = useState(
-    prefilledMessage || "Hi, I'd like to ask about booking a custom tattoo session at Marvin Tattoos Studio."
+    prefilledMessage || `Hi, I'd like to ask about booking a custom tattoo session at ${settings.studioName || 'Marvin Tattoo Studio'}.`
   );
   const [copied, setCopied] = useState(false);
 
-  const phone = '+256 705 748774';
-  const cleanPhone = '256705748774';
+  const phone = settings.whatsappNumber || settings.primaryPhone || '+256 705 748774';
+  const cleanPhone = phone.replace(/[^0-9]/g, '') || '256705748774';
 
   const handleLaunchWhatsApp = () => {
     const encoded = encodeURIComponent(message);

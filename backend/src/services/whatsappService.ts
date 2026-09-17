@@ -237,3 +237,5 @@ export async function sendOrderConfirmationWhatsApp(order: {
 
   return sendWhatsAppMessage(order.clientPhone, message);
 }
+
+export const notifyCustomerOrderReceived = sendOrderConfirmationWhatsApp;

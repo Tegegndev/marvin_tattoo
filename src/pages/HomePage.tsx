@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageView, PortfolioPiece, ProductItem, ServiceItem, SiteSettingData, Testimonial } from '../types';
+import { PageView, PortfolioPiece, ProductItem, ServiceItem, Testimonial } from '../types';
 import { SERVICES_DATA, PORTFOLIO_DATA, PRODUCTS_DATA, TESTIMONIALS_DATA, HERO_IMAGE } from '../data/atelierData';
 import { Icons8 } from '../components/Icons8';
 import {
-  fetchSiteSettings,
   fetchPortfolioPieces,
   fetchServices,
   fetchTestimonials,
   fetchProducts,
-  DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
+import { useSettings } from '../context/SettingsContext';
 
 interface HomePageProps {
   onNavigate: (page: PageView) => void;
@@ -72,7 +71,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onAddToCart,
   onOpenWhatsApp,
 }) => {
-  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+  const { settings } = useSettings();
   const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
   const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
   const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>(TESTIMONIALS_DATA);
@@ -82,7 +81,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchSiteSettings().then(setSettings).catch(() => {});
     fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
     fetchServices().then(setServicesList).catch(() => {});
     fetchTestimonials().then(setTestimonialsList).catch(() => {});
@@ -185,7 +183,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               {/* Provenance Badge */}
               <div className="inline-flex items-center gap-3 px-3.5 py-1.5 bg-noir-850 border border-crimson/40">
                 <span className="font-label-caps text-xs text-crimson-light tracking-[0.25em] uppercase font-bold">
-                  MARVIN TATTOO STUDIO
+                  {settings.studioName || 'MARVIN TATTOO STUDIO'}
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-crimson-light" />
                 <span className="font-label-data text-xs text-bone-muted uppercase tracking-wider">

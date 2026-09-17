@@ -93,6 +93,7 @@ import {
   fetchServices,
   DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
+import { useSettings } from '../context/SettingsContext';
 
 interface AdminPageProps {
   onNavigate: (page: PageView) => void;
@@ -103,6 +104,7 @@ type ShopSubTab = 'products' | 'categories' | 'orders';
 
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
+  const { settings: globalSettings, saveSettings: saveGlobalSettings, refreshSettings } = useSettings();
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [adminUser, setAdminUser] = useState<any>(null);
@@ -200,10 +202,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [loadingOrders, setLoadingOrders] = useState<boolean>(false);
 
   // Settings State
-  const [settings, setSettings] = useState<SiteSettingData>(DEFAULT_SITE_SETTINGS);
+  const [settings, setSettings] = useState<SiteSettingData>(globalSettings || DEFAULT_SITE_SETTINGS);
   const [savingSettings, setSavingSettings] = useState<boolean>(false);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string>('');
+
+  useEffect(() => {
+    if (globalSettings && globalSettings.studioName) {
+      setSettings(globalSettings);
+    }
+  }, [globalSettings]);
 
   // Portfolio State
   const [portfolioPieces, setPortfolioPieces] = useState<any[]>([]);
@@ -745,6 +753,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // 3. Settings Handlers
   const loadSettings = async () => {
     try {
+      await refreshSettings();
       const data = await fetchSiteSettings();
       setSettings(data);
     } catch (err) {
@@ -765,13 +774,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       const payload: SiteSettingData = {
         ...settings,
+        studioName: settings.studioName?.trim() || 'Marvin Tattoo Studio',
         heroBannerUrl: currentHeroUrl,
       };
 
-      const updated = await adminUpdateSettings(payload);
+      const updated = await saveGlobalSettings(payload);
       setSettings(updated);
       setHeroImageFile(null);
-      showToast('Studio settings saved & published');
+      showToast('Studio settings saved & published everywhere');
     } catch (err: any) {
       alert(err.message || 'Failed to update site settings');
     } finally {
@@ -1336,15 +1346,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-red-600/15 border border-red-600/40 flex items-center justify-center font-bold text-red-400 text-xs">
-              M
+              {(settings.studioName || 'M').charAt(0).toUpperCase()}
             </div>
             <div>
               <div className="text-xs font-semibold text-white tracking-tight flex items-center gap-1.5">
-                <span>Marvin Tattoo Studio</span>
+                <span>{settings.studioName || 'Marvin Tattoo Studio'}</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               </div>
-              <span className="text-[11px] text-zinc-400 block">
-                New Pioneer Mall, Shop Pi55, L5 · Kampala
+              <span className="text-[11px] text-zinc-400 block truncate max-w-[130px]">
+                {settings.physicalAddress || 'New Pioneer Mall, Shop Pi55, L5 · Kampala'}
               </span>
             </div>
           </div>
@@ -3480,192 +3490,262 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {activeTab === 'settings' && (
             <div className="space-y-6 max-w-4xl text-xs">
               <form onSubmit={handleSaveSettings} className="space-y-6">
-                {/* Hero Visual Block */}
-              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-red-400" />
-                  <span>1. Hero Banner Visual &amp; Darkness Opacity</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                  <div className="md:col-span-5 h-48 bg-[#12141c] border border-zinc-800 rounded-lg overflow-hidden relative">
-                    <img
-                      src={heroImagePreview || settings.heroBannerUrl}
-                      alt="Hero Preview"
-                      className="w-full h-full object-cover"
-                    />
-                    <div
-                      className="absolute inset-0 bg-black pointer-events-none transition-opacity"
-                      style={{ opacity: settings.heroOpacity }}
-                    />
-                    <span className="absolute bottom-2 left-2 px-2.5 py-1 bg-[#181a24]/90 backdrop-blur-sm border border-zinc-700 text-[10px] text-zinc-200 rounded font-medium">
-                      Live Hero Preview
-                    </span>
+                {/* 1. Studio Identity & Brand Name */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-red-400" />
+                    <span>1. Studio Identity &amp; Branding</span>
                   </div>
 
-                  <div className="md:col-span-7 space-y-4">
-                    <div>
-                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">
-                        Upload New Banner Photo (Sharp WebP / JPEG)
+                  <div>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                      Studio Brand Name (Applied everywhere across website, navbar, footer &amp; tabs)
+                    </label>
+                    <input
+                      type="text"
+                      value={settings.studioName || ''}
+                      onChange={(e) => setSettings({ ...settings, studioName: e.target.value })}
+                      placeholder="e.g. Marvin Tattoo Studio"
+                      className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-red-500"
+                      required
+                    />
+                    <p className="text-[11px] text-zinc-400 mt-1">
+                      Changing this updates the brand name in real time across the live site, header, footer, page titles, and appointment notifications.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 2. Announcement & Flash Bar */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-red-400" />
+                    <span>2. Studio Announcement &amp; Flash Notice Bar</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="announcementActive"
+                        checked={Boolean(settings.announcementActive)}
+                        onChange={(e) => setSettings({ ...settings, announcementActive: e.target.checked })}
+                        className="accent-red-600 cursor-pointer rounded w-4 h-4"
+                      />
+                      <label htmlFor="announcementActive" className="text-xs text-zinc-200 font-medium cursor-pointer">
+                        Enable Top Announcement Banner across the website
                       </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            const f = e.target.files[0];
-                            setHeroImageFile(f);
-                            setHeroImagePreview(URL.createObjectURL(f));
-                          }
-                        }}
-                        className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
-                      />
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-xs text-zinc-300 mb-1 font-medium">
-                        <span>Overlay Darkness Opacity</span>
-                        <span className="text-red-400 font-bold font-mono">{Math.round(settings.heroOpacity * 100)}%</span>
-                      </div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">Announcement Message</label>
                       <input
-                        type="range"
-                        min="0.1"
-                        max="0.85"
-                        step="0.05"
-                        value={settings.heroOpacity}
-                        onChange={(e) =>
-                          setSettings({ ...settings, heroOpacity: parseFloat(e.target.value) })
-                        }
-                        className="w-full accent-red-600 cursor-pointer"
+                        type="text"
+                        value={settings.announcementText || ''}
+                        onChange={(e) => setSettings({ ...settings, announcementText: e.target.value })}
+                        placeholder="e.g. 🔥 Saturday Walk-In Flash Day: 10:45 AM | No Booking Required!"
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                       />
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Statements */}
-              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-red-400" />
-                  <span>2. Hero Editorial Statements</span>
+                {/* 3. Hero Visual Block */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-red-400" />
+                    <span>3. Hero Banner Visual &amp; Darkness Opacity</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div className="md:col-span-5 h-48 bg-[#12141c] border border-zinc-800 rounded-lg overflow-hidden relative">
+                      <img
+                        src={heroImagePreview || settings.heroBannerUrl}
+                        alt="Hero Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <div
+                        className="absolute inset-0 bg-black pointer-events-none transition-opacity"
+                        style={{ opacity: settings.heroOpacity }}
+                      />
+                      <span className="absolute bottom-2 left-2 px-2.5 py-1 bg-[#181a24]/90 backdrop-blur-sm border border-zinc-700 text-[10px] text-zinc-200 rounded font-medium">
+                        Live Hero Preview
+                      </span>
+                    </div>
+
+                    <div className="md:col-span-7 space-y-4">
+                      <div>
+                        <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                          Upload New Banner Photo (Sharp WebP / JPEG)
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              const f = e.target.files[0];
+                              setHeroImageFile(f);
+                              setHeroImagePreview(URL.createObjectURL(f));
+                            }
+                          }}
+                          className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs text-zinc-300 mb-1 font-medium">
+                          <span>Overlay Darkness Opacity</span>
+                          <span className="text-red-400 font-bold font-mono">{Math.round(settings.heroOpacity * 100)}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="0.85"
+                          step="0.05"
+                          value={settings.heroOpacity}
+                          onChange={(e) =>
+                            setSettings({ ...settings, heroOpacity: parseFloat(e.target.value) })
+                          }
+                          className="w-full accent-red-600 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Headline Statement</label>
-                  <input
-                    type="text"
-                    value={settings.heroStatement}
-                    onChange={(e) => setSettings({ ...settings, heroStatement: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">Subtext Description</label>
-                  <textarea
-                    rows={2}
-                    value={settings.heroSubtext}
-                    onChange={(e) => setSettings({ ...settings, heroSubtext: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
-                  />
-                </div>
-              </div>
-
-              {/* Studio Info */}
-              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
-                  <Building className="w-4 h-4 text-red-400" />
-                  <span>3. Studio Contacts &amp; Coordinates</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Studio Desk Phone</label>
-                    <input
-                      type="text"
-                      value={settings.primaryPhone}
-                      onChange={(e) => setSettings({ ...settings, primaryPhone: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
-                    />
+                {/* 4. Hero Editorial Statements */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-red-400" />
+                    <span>4. Hero Editorial Statements</span>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">WhatsApp Direct Line</label>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Headline Statement</label>
                     <input
                       type="text"
-                      value={settings.whatsappNumber}
-                      onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Physical Address</label>
-                    <input
-                      type="text"
-                      value={settings.physicalAddress}
-                      onChange={(e) => setSettings({ ...settings, physicalAddress: e.target.value })}
+                      value={settings.heroStatement || ''}
+                      onChange={(e) => setSettings({ ...settings, heroStatement: e.target.value })}
                       className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Google Maps URL</label>
-                    <input
-                      type="text"
-                      value={settings.googleMapsUrl}
-                      onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  <div>
+                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">Subtext Description</label>
+                    <textarea
+                      rows={2}
+                      value={settings.heroSubtext || ''}
+                      onChange={(e) => setSettings({ ...settings, heroSubtext: e.target.value })}
+                      className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* Social Channels */}
-              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 shadow-sm">
-                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-red-400" />
-                  <span>4. Social Channels &amp; Links</span>
+                {/* 5. Studio Contacts & Coordinates */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <Building className="w-4 h-4 text-red-400" />
+                    <span>5. Studio Contacts &amp; Coordinates</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">Studio Desk Phone</label>
+                      <input
+                        type="text"
+                        value={settings.primaryPhone || ''}
+                        onChange={(e) => setSettings({ ...settings, primaryPhone: e.target.value })}
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">WhatsApp Direct Line</label>
+                      <input
+                        type="text"
+                        value={settings.whatsappNumber || ''}
+                        onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">Studio Contact Email</label>
+                      <input
+                        type="email"
+                        value={settings.contactEmail || ''}
+                        onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
+                        placeholder="info@marvintattoos.com"
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">Physical Address</label>
+                      <input
+                        type="text"
+                        value={settings.physicalAddress || ''}
+                        onChange={(e) => setSettings({ ...settings, physicalAddress: e.target.value })}
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">Google Maps URL</label>
+                      <input
+                        type="text"
+                        value={settings.googleMapsUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {settings.socialLinks.map((soc, idx) => (
-                  <div key={soc.id || idx} className="flex items-center gap-3 p-3 bg-[#12141c] rounded-lg border border-zinc-800">
-                    <div className="flex items-center gap-2 w-36 shrink-0">
+                {/* 6. Social Channels */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-3 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-red-400" />
+                    <span>6. Social Channels &amp; Links</span>
+                  </div>
+
+                  {(settings.socialLinks || []).map((soc, idx) => (
+                    <div key={soc.id || idx} className="flex items-center gap-3 p-3 bg-[#12141c] rounded-lg border border-zinc-800">
+                      <div className="flex items-center gap-2 w-36 shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={soc.active}
+                          onChange={(e) => {
+                            const updated = [...(settings.socialLinks || [])];
+                            updated[idx] = { ...soc, active: e.target.checked };
+                            setSettings({ ...settings, socialLinks: updated });
+                          }}
+                          className="accent-red-600 cursor-pointer rounded"
+                        />
+                        <span className="text-xs font-semibold text-white truncate">{soc.label}</span>
+                      </div>
                       <input
-                        type="checkbox"
-                        checked={soc.active}
+                        type="url"
+                        value={soc.url}
                         onChange={(e) => {
-                          const updated = [...settings.socialLinks];
-                          updated[idx] = { ...soc, active: e.target.checked };
+                          const updated = [...(settings.socialLinks || [])];
+                          updated[idx] = { ...soc, url: e.target.value };
                           setSettings({ ...settings, socialLinks: updated });
                         }}
-                        className="accent-red-600 cursor-pointer rounded"
+                        className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-md text-white text-xs focus:outline-none focus:border-red-500 font-mono"
                       />
-                      <span className="text-xs font-semibold text-white truncate">{soc.label}</span>
                     </div>
-                    <input
-                      type="url"
-                      value={soc.url}
-                      onChange={(e) => {
-                        const updated = [...settings.socialLinks];
-                        updated[idx] = { ...soc, url: e.target.value };
-                        setSettings({ ...settings, socialLinks: updated });
-                      }}
-                      className="flex-1 px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-md text-white text-xs focus:outline-none focus:border-red-500 font-mono"
-                    />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <button
-                type="submit"
-                disabled={savingSettings}
-                className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-red-950/40 flex items-center gap-2"
-              >
-                <Check className="w-4 h-4" />
-                <span>{savingSettings ? 'Deploying...' : 'Save & Deploy Changes'}</span>
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={savingSettings}
+                  className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-red-950/40 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{savingSettings ? 'Deploying...' : 'Save & Deploy Changes'}</span>
+                </button>
+              </form>
 
             {/* Section 5: Admin Security & Password Change */}
             <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm max-w-4xl">

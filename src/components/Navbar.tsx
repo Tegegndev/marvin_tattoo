@@ -3,6 +3,7 @@ import { PageView } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icons8 } from './Icons8';
 import { LOGO_URL } from '../data/atelierData';
+import { useSettings } from '../context/SettingsContext';
 
 interface NavbarProps {
   currentPage: PageView;
@@ -20,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCart,
   onOpenWhatsApp,
 }) => {
+  const { settings } = useSettings();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -72,6 +74,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           : 'bg-noir-950/80 backdrop-blur-sm border-b border-noir-800/40'
       }`}
     >
+      {/* Announcement Banner if active */}
+      {settings.announcementActive && settings.announcementText && (
+        <div className="w-full bg-crimson text-bone py-1 px-4 text-center text-[11px] font-label-caps uppercase tracking-widest border-b border-crimson-light/40 flex items-center justify-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+          <span>{settings.announcementText}</span>
+        </div>
+      )}
+
       <div className="h-16 sm:h-20 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Logo */}
         <button
@@ -80,10 +90,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             setMobileMenuOpen(false);
           }}
           className="flex items-center shrink-0 focus:outline-none group py-1 sm:py-2"
-          aria-label="Marvin Tattoo Studio Home"
+          aria-label={`${settings.studioName || 'Marvin Tattoo Studio'} Home`}
         >
           <img
-            alt="Marvin Tattoo Studio"
+            alt={settings.studioName || 'Marvin Tattoo Studio'}
             className="h-9 sm:h-11 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             src={LOGO_URL}
           />

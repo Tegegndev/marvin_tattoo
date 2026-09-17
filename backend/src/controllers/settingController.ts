@@ -80,18 +80,22 @@ export const getSettings = async (
       });
     }
 
+    const parseSafe = (val: any, fallback: any = []) => {
+      if (!val) return fallback;
+      if (typeof val === "object") return val;
+      try {
+        return JSON.parse(val);
+      } catch {
+        return fallback;
+      }
+    };
+
     res.json({
       success: true,
       data: {
         ...settings,
-        openingHours:
-          typeof settings.openingHours === "string"
-            ? JSON.parse(settings.openingHours)
-            : settings.openingHours,
-        socialLinks:
-          typeof settings.socialLinks === "string"
-            ? JSON.parse(settings.socialLinks)
-            : settings.socialLinks,
+        openingHours: parseSafe(settings.openingHours, []),
+        socialLinks: parseSafe(settings.socialLinks, []),
       },
     });
   } catch (error) {
@@ -121,10 +125,12 @@ export const updateSettings = async (
       socialLinks,
     } = req.body;
 
+    const trimmedStudioName = typeof studioName === "string" ? studioName.trim() : undefined;
+
     const updated = await prisma.siteSetting.upsert({
       where: { id: "studio_config" },
       update: {
-        ...(studioName && { studioName }),
+        ...(trimmedStudioName ? { studioName: trimmedStudioName } : {}),
         ...(heroStatement && { heroStatement }),
         ...(heroSubtext !== undefined && { heroSubtext }),
         ...(heroOpacity !== undefined && {
@@ -155,7 +161,7 @@ export const updateSettings = async (
       },
       create: {
         id: "studio_config",
-        studioName: studioName || "Marvin Tattoo Studio",
+        studioName: trimmedStudioName || "Marvin Tattoo Studio",
         heroStatement:
           heroStatement || "Clean Lines. Heavy Blackwork. Made to Age Well.",
         heroSubtext: heroSubtext || "",
@@ -181,13 +187,23 @@ export const updateSettings = async (
       },
     });
 
+    const parseSafe = (val: any, fallback: any = []) => {
+      if (!val) return fallback;
+      if (typeof val === "object") return val;
+      try {
+        return JSON.parse(val);
+      } catch {
+        return fallback;
+      }
+    };
+
     res.json({
       success: true,
       message: "Studio settings updated successfully",
       data: {
         ...updated,
-        openingHours: JSON.parse(updated.openingHours),
-        socialLinks: JSON.parse(updated.socialLinks),
+        openingHours: parseSafe(updated.openingHours, []),
+        socialLinks: parseSafe(updated.socialLinks, []),
       },
     });
   } catch (error) {
