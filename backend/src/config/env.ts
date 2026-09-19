@@ -17,4 +17,6 @@ export const env = {
   META_WHATSAPP_TOKEN: process.env.META_WHATSAPP_TOKEN || "",
   META_WHATSAPP_PHONE_NUMBER_ID: process.env.META_WHATSAPP_PHONE_NUMBER_ID || "",
   META_WHATSAPP_API_VERSION: process.env.META_WHATSAPP_API_VERSION || "v21.0",
+  IMAGE_BUCKET_URL: process.env.IMAGE_BUCKET_URL || "https://images.tegegn.com.et",
+  IMAGE_BUCKET_API_KEY: process.env.IMAGE_BUCKET_API_KEY || "",
 };

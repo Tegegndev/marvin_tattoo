@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting Marvin Tattoos Atelier Database Seeding...");
+  console.log(" Starting Marvin Tattoos Atelier Database Seeding...");
 
   // 1. Seed Marvin Admin Account
   const existingAdmin = await prisma.admin.findUnique({
@@ -20,9 +20,9 @@ async function main() {
         name: "Master Marvin",
       },
     });
-    console.log(`✅ Admin account created: ${admin.email} (Password: MarvinStudio2026!)`);
+    console.log(` Admin account created: ${admin.email} (Password: MarvinStudio2026!)`);
   } else {
-    console.log("ℹ️ Admin account already exists, skipping creation.");
+    console.log("ℹ Admin account already exists, skipping creation.");
   }
 
   // 2. Seed Default Site Configuration (Singleton)
@@ -81,7 +81,7 @@ async function main() {
       heroStatement: "Clean Lines. Heavy Blackwork. Made to Age Well.",
       heroSubtext:
         "Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.",
-      heroBannerUrl: "/images/hero-banner.png",
+      heroBannerUrl: "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
       heroOpacity: 0.45,
       primaryPhone: "+256705748774",
       whatsappNumber: "+256705748774",
@@ -97,7 +97,7 @@ async function main() {
       heroStatement: "Clean Lines. Heavy Blackwork. Made to Age Well.",
       heroSubtext:
         "Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.",
-      heroBannerUrl: "/images/hero-banner.png",
+      heroBannerUrl: "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
       heroOpacity: 0.45,
       announcementActive: false,
       announcementText: null,
@@ -161,8 +161,8 @@ async function main() {
         "Avoid swimming pools, saunas, and direct sunlight for at least 4 weeks.",
       ]),
       galleryImages: JSON.stringify([
-        "/images/portfolio/portrait-elder-woman.png",
-        "/images/portfolio/back-portrait-man.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826349_back-portrait-man_54b71acab7c9cecf.png",
         "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=800&q=80",
       ]),
       sortOrder: 1,
@@ -211,8 +211,8 @@ async function main() {
       ]),
       galleryImages: JSON.stringify([
         "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?auto=format&fit=crop&w=800&q=80",
-        "/images/portfolio/script-abdul-collarbone.png",
-        "/images/portfolio/spider-navel-piercing.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826346_script-abdul-collarbone_e1ab970708f4d4a5.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
       ]),
       sortOrder: 2,
     },
@@ -259,7 +259,7 @@ async function main() {
         "Apply thin coat of healing ointment for the first 2 weeks.",
       ]),
       galleryImages: JSON.stringify([
-        "/images/portfolio/script-abdul-collarbone.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826346_script-abdul-collarbone_e1ab970708f4d4a5.png",
         "https://images.unsplash.com/photo-1562962230-16e4623d36e6?auto=format&fit=crop&w=800&q=80",
       ]),
       sortOrder: 3,
@@ -306,7 +306,7 @@ async function main() {
       ]),
       galleryImages: JSON.stringify([
         "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?auto=format&fit=crop&w=800&q=80",
-        "/images/portfolio/spider-navel-piercing.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
       ]),
       sortOrder: 4,
     },
@@ -352,7 +352,7 @@ async function main() {
       ]),
       galleryImages: JSON.stringify([
         "https://images.unsplash.com/photo-1590246814883-57833748b615?auto=format&fit=crop&w=800&q=80",
-        "/images/portfolio/portrait-elder-woman.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
       ]),
       sortOrder: 5,
     },
@@ -400,7 +400,7 @@ async function main() {
       ]),
       galleryImages: JSON.stringify([
         "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
-        "/images/portfolio/spider-navel-piercing.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
       ]),
       sortOrder: 6,
     },
@@ -448,7 +448,7 @@ async function main() {
         "Sleep on a travel pillow to avoid pressure on fresh ear piercings.",
       ]),
       galleryImages: JSON.stringify([
-        "/images/portfolio/spider-navel-piercing.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
         "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
       ]),
       sortOrder: 7,
@@ -496,7 +496,7 @@ async function main() {
       ]),
       galleryImages: JSON.stringify([
         "https://images.unsplash.com/photo-1512290900672-1f02e1a3ef78?auto=format&fit=crop&w=800&q=80",
-        "/images/portfolio/portrait-elder-woman.png",
+        "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
       ]),
       sortOrder: 8,
     },
@@ -532,7 +532,7 @@ async function main() {
       cycle: "healed",
       zone: "Forearm",
       flashId: "MOM-701",
-      imageUrl: "/images/portfolio/portrait-elder-woman.png",
+      imageUrl: "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
       description:
         "A heartfelt tribute to motherhood — high-detail black-and-grey photo-realism with soft skin transitions, expressive warmth, and intricate patterned headwrap texturing crafted to hold its clarity and sentiment over a lifetime.",
       duration: "6 Hours Single Session",
@@ -551,7 +551,7 @@ async function main() {
       cycle: "fresh",
       zone: "Collarbone",
       flashId: "#420-AS",
-      imageUrl: "/images/portfolio/script-abdul-collarbone.png",
+      imageUrl: "https://images.tegegn.com.et/uploads/portfolio/1789826346_script-abdul-collarbone_e1ab970708f4d4a5.png",
       description:
         "Clean single-needle cursive calligraphy script tattooed precisely along the collarbone contour.",
       duration: "1.5 Hours Single Needle",
@@ -570,7 +570,7 @@ async function main() {
       cycle: "healed",
       zone: "Abdomen / Navel",
       flashId: "#515-SP",
-      imageUrl: "/images/portfolio/spider-navel-piercing.png",
+      imageUrl: "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
       description:
         "Solid black widow silhouette tattoo on lower hip paired with an implant-grade titanium crystal navel barbell.",
       duration: "2 Hours Session",
@@ -589,7 +589,7 @@ async function main() {
       cycle: "fresh",
       zone: "Backpiece",
       flashId: "#830-BP",
-      imageUrl: "/images/portfolio/back-portrait-man.png",
+      imageUrl: "https://images.tegegn.com.et/uploads/portfolio/1789826349_back-portrait-man_54b71acab7c9cecf.png",
       description:
         "Detailed black-and-grey memorial portrait positioned centered on the upper back between the scapulae.",
       duration: "7 Hours Session",
@@ -608,7 +608,7 @@ async function main() {
       cycle: "fresh",
       zone: "Face & Brow",
       flashId: "#202-PMU",
-      imageUrl: "/images/portfolio/cosmetic-eyebrow-pmu.png",
+      imageUrl: "https://images.tegegn.com.et/uploads/portfolio/1789826347_cosmetic-eyebrow-pmu_ef2585dee08a45cf.png",
       description:
         "Semi-permanent cosmetic brow shading and ombré contouring done with sterile micro-pigment technique.",
       duration: "2 Hours PMU",
@@ -934,7 +934,7 @@ async function main() {
       name: "Marvin",
       title: "Founder & Master Tattoo Artist",
       role: "Master Tattoo Artist & Piercing Specialist since 2014",
-      avatar: "/images/marvin-founder.png",
+      avatar: "https://images.tegegn.com.et/uploads/team/1789826344_marvin-founder_b2cc1a27311c8a00.png",
       experience: "14+ Years",
       specialty: "Dark Realism, Memorial Portraits & Heavy Script",
       slotsRemaining: 4,
