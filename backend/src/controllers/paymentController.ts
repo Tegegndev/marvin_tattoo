@@ -58,7 +58,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
 
     // Generate unique UUID v4 reference for MarzPay collection
     const reference = crypto.randomUUID();
-    const formattedPhone = validated.phoneNumber ? formatPhoneNumber(validated.phoneNumber) : null;
+    const formattedPhone = validated.phoneNumber ? formatPhoneNumber(validated.phoneNumber) : order.clientPhone;
 
     let gatewayResult;
 
@@ -66,6 +66,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       gatewayResult = await collectCard({
         amount: order.totalAmount,
         reference,
+        phoneNumber: formattedPhone,
         country: 'UG',
         currency: order.currency || 'UGX',
         description: `Order #${order.orderNumber} - Marvin Tattoo Atelier`,
@@ -79,7 +80,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
     } else {
       gatewayResult = await collectMobileMoney({
         amount: order.totalAmount,
-        phoneNumber: formattedPhone || order.clientPhone,
+        phoneNumber: formattedPhone,
         reference,
         country: 'UG',
         currency: order.currency || 'UGX',
@@ -93,8 +94,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       });
     }
 
-    const initialStatus = gatewayResult.status === 'completed' ? 'SUCCESS' : 'PENDING';
-
+    // All initiated collections strictly start as PENDING
     const transaction = await prisma.paymentTransaction.create({
       data: {
         orderId: order.id,
@@ -105,14 +105,14 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
         currency: order.currency,
         paymentMethod: validated.paymentMethod,
         phoneNumber: formattedPhone,
-        status: initialStatus,
+        status: 'PENDING',
       },
     });
 
     const instruction =
       validated.paymentMethod === 'CARD'
-        ? 'Redirecting to secure card payment gateway...'
-        : `A payment prompt has been dispatched to ${formattedPhone || validated.phoneNumber}. Please authorize on your handset by entering your secret PIN.`;
+        ? 'Please proceed to the secure 3D-Secure card payment gateway.'
+        : `A payment prompt has been dispatched to ${formattedPhone}. Please authorize on your handset by entering your secret PIN.`;
 
     res.json({
       success: true,
@@ -121,7 +121,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
         transactionId: transaction.id,
         merchantTxRef: reference,
         uuid: gatewayResult.uuid,
-        status: initialStatus,
+        status: 'PENDING',
         instruction,
         authUrl: gatewayResult.redirectUrl || null,
         isSandbox: gatewayResult.isSandbox || env.MARZPAY_MODE === 'sandbox',
@@ -157,7 +157,7 @@ export async function verifyPayment(req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // If already marked SUCCESS
+    // 1. If already verified SUCCESS in database
     if (transaction.status === 'SUCCESS') {
       res.json({
         success: true,
@@ -171,9 +171,23 @@ export async function verifyPayment(req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // MarzPay Gateway Verification
-    if (transaction.gateway === 'MARZPAY' && transaction.gatewayRef) {
-      const statusRes = await getCollectionStatus(transaction.gatewayRef);
+    // 2. If already marked FAILED in database
+    if (transaction.status === 'FAILED') {
+      res.json({
+        success: true,
+        data: {
+          status: 'FAILED',
+          orderNumber: transaction.order.orderNumber,
+          reason: 'Transaction has failed or was cancelled.',
+        },
+      });
+      return;
+    }
+
+    // 3. MarzPay Gateway Live Verification
+    if (transaction.gateway === 'MARZPAY') {
+      const queryRef = transaction.merchantTxRef || transaction.gatewayRef || ref;
+      const statusRes = await getCollectionStatus(queryRef, transaction.phoneNumber);
 
       if (statusRes.status === 'completed') {
         const updatedTx = await prisma.paymentTransaction.update({
@@ -211,27 +225,35 @@ export async function verifyPayment(req: Request, res: Response): Promise<void> 
           data: { status: 'FAILED' },
         });
 
+        await prisma.order.update({
+          where: { id: transaction.orderId },
+          data: { paymentStatus: 'FAILED' },
+        });
+
         res.json({
           success: true,
           data: {
             status: 'FAILED',
             orderNumber: transaction.order.orderNumber,
+            reason: statusRes.reason || 'Transaction was declined by subscriber or bank.',
           },
         });
         return;
       }
 
+      // Still pending / processing
       res.json({
         success: true,
         data: {
-          status: 'PROCESSING',
+          status: 'PENDING',
           orderNumber: transaction.order.orderNumber,
+          reason: statusRes.reason || 'Payment awaiting authorization on handset / 3D-Secure portal.',
         },
       });
       return;
     }
 
-    // Legacy Flutterwave verification fallback
+    // 4. Legacy Flutterwave verification fallback
     if (transaction.gatewayRef && env.FLW_SECRET_KEY) {
       const flwCheck = await verifyFlutterwaveTransaction(transaction.gatewayRef);
       if (flwCheck.success) {
@@ -263,37 +285,7 @@ export async function verifyPayment(req: Request, res: Response): Promise<void> 
       }
     }
 
-    // Mock development auto-approval if no keys configured
-    if (!env.MARZPAY_API_KEY && !env.FLW_SECRET_KEY) {
-      const updatedTx = await prisma.paymentTransaction.update({
-        where: { id: transaction.id },
-        data: {
-          status: 'SUCCESS',
-          paidAt: new Date(),
-          providerTxId: `MOCK-${Date.now()}`,
-        },
-      });
-
-      await prisma.order.update({
-        where: { id: transaction.orderId },
-        data: {
-          paymentStatus: 'SUCCESS',
-          orderStatus: 'PROCESSING',
-        },
-      });
-
-      res.json({
-        success: true,
-        data: {
-          status: 'SUCCESS',
-          paidAt: updatedTx.paidAt,
-          orderNumber: transaction.order.orderNumber,
-          isMock: true,
-        },
-      });
-      return;
-    }
-
+    // Default: Strictly remain in current database status, NEVER fake approve
     res.json({
       success: true,
       data: {
@@ -325,7 +317,6 @@ export async function handleMarzPayWebhook(req: Request, res: Response): Promise
     }
 
     const body = req.body;
-    // MarzPay can send direct callback or { data: ... } wrapper
     const payload = body.data || body;
     const eventType = body.event_type || payload.event_type || '';
     const tx = payload.transaction || {};
@@ -349,7 +340,7 @@ export async function handleMarzPayWebhook(req: Request, res: Response): Promise
       });
 
       if (transaction) {
-        if (eventType === 'collection.completed' || status === 'completed' || status === 'success') {
+        if (eventType === 'collection.completed' || status === 'completed' || status === 'success' || status === 'successful') {
           await prisma.paymentTransaction.update({
             where: { id: transaction.id },
             data: {
@@ -380,6 +371,13 @@ export async function handleMarzPayWebhook(req: Request, res: Response): Promise
               rawWebhookPayload: JSON.stringify(body),
             },
           });
+
+          await prisma.order.update({
+            where: { id: transaction.orderId },
+            data: {
+              paymentStatus: 'FAILED',
+            },
+          });
         }
       }
     }
@@ -395,7 +393,6 @@ export async function handleMarzPayWebhook(req: Request, res: Response): Promise
  * Handle legacy Flutterwave webhook
  */
 export async function handleWebhook(req: Request, res: Response): Promise<void> {
-  // If MarzPay webhook headers are detected, delegate
   if (req.headers['x-marzpay-signature'] || req.body?.event_type?.startsWith('collection.')) {
     return handleMarzPayWebhook(req, res);
   }

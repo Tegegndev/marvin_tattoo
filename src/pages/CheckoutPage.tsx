@@ -97,7 +97,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   const handleManualVerify = async () => {
     if (!activeTxRef) {
-      handleCompletePaymentConfirmation();
+      setVerifyError('No active payment reference found. Please return to checkout.');
       return;
     }
     setIsVerifying(true);
@@ -107,13 +107,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       if (res?.status === 'SUCCESS') {
         handleCompletePaymentConfirmation();
       } else if (res?.status === 'FAILED') {
-        setVerifyError('Payment authorization was declined or cancelled. Please try again.');
+        setVerifyError(res.reason || 'Payment authorization was declined or cancelled. Please try again.');
       } else {
-        // In sandbox or manual confirmation
-        handleCompletePaymentConfirmation();
+        // Still pending / processing - strictly inform user, never auto-approve
+        setVerifyError(
+          paymentMethod === 'CARD'
+            ? 'Card payment not yet confirmed by gateway. Please complete the 3D-Secure authorization in the portal and try again.'
+            : 'Payment authorization not yet detected from your mobile handset. Please enter your PIN on your phone screen, then check again.'
+        );
       }
     } catch {
-      handleCompletePaymentConfirmation();
+      setVerifyError('Unable to connect to verification service. Please try again.');
     } finally {
       setIsVerifying(false);
     }
@@ -661,12 +665,21 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
 
                 {verifyError && (
-                  <div className="p-4 bg-red-950/70 border border-red-800 text-red-300 text-sm font-body-sm rounded-lg flex items-start gap-3 max-w-xl mx-auto text-left">
-                    <Icons8 name="exclamation-circle" size={18} className="shrink-0 mt-0.5 text-red-400" />
-                    <div>
-                      <p className="font-bold">Payment Notice</p>
-                      <p className="text-xs text-red-300/90 mt-0.5">{verifyError}</p>
+                  <div className="p-4 bg-red-950/70 border border-red-800 text-red-300 text-sm font-body-sm rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 max-w-xl mx-auto text-left">
+                    <div className="flex items-start gap-3">
+                      <Icons8 name="exclamation-circle" size={18} className="shrink-0 mt-0.5 text-red-400" />
+                      <div>
+                        <p className="font-bold">Payment Notice</p>
+                        <p className="text-xs text-red-300/90 mt-0.5">{verifyError}</p>
+                      </div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setCheckoutStep('checkout')}
+                      className="px-3 py-1.5 bg-red-900/80 hover:bg-red-800 text-white text-xs font-label-caps uppercase rounded shrink-0 transition-colors cursor-pointer border border-red-700/60"
+                    >
+                      Change / Retry
+                    </button>
                   </div>
                 )}
 
@@ -766,7 +779,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     ) : (
                       <>
                         <Icons8 name="check" size={14} />
-                        <span>I Have Approved The PIN Prompt</span>
+                        <span>{paymentMethod === 'CARD' ? 'Check Card Payment Status' : 'I Have Approved The PIN Prompt'}</span>
                       </>
                     )}
                   </button>

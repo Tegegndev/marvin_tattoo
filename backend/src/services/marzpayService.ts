@@ -40,6 +40,7 @@ export interface MarzPayCollectionRequest {
 export interface MarzPayCardRequest {
   amount: number;
   reference: string; // UUID v4
+  phoneNumber?: string;
   country?: string; // Default 'UG'
   currency?: string; // Default 'UGX'
   description?: string;
@@ -51,7 +52,7 @@ export interface MarzPayCollectionResult {
   success: boolean;
   uuid: string;
   reference: string;
-  status: "processing" | "completed" | "failed" | "cancelled" | "pending" | "sandbox";
+  status: "processing" | "completed" | "failed" | "cancelled" | "pending";
   provider?: string;
   providerTransactionId?: string;
   redirectUrl?: string;
@@ -78,6 +79,7 @@ async function callMarzPayApi(endpoint: string, method: string = "GET", body?: a
   const options: RequestInit = {
     method,
     headers,
+    signal: AbortSignal.timeout(15000),
   };
 
   if (body) {
@@ -105,23 +107,18 @@ export async function collectMobileMoney(
   const formattedPhone = formatPhoneNumber(params.phoneNumber);
   const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
 
-  // If no API keys or in Sandbox test mode without credentials, gracefully simulate
   if (!isConfigured) {
     console.info(
-      `[MarzPay SANDBOX Mock] Initiating Mobile Money collection for ${formattedPhone}, amount: ${params.amount} UGX, ref: ${params.reference}`
+      `[MarzPay DEV MOCK] Initiating Mobile Money collection for ${formattedPhone}, amount: ${params.amount} UGX, ref: ${params.reference}`
     );
     return {
       success: true,
-      uuid: `mock-uuid-${params.reference}`,
+      uuid: `mock-${params.reference}`,
       reference: params.reference,
       status: "processing",
       provider: formattedPhone.startsWith("+25675") || formattedPhone.startsWith("+25670") ? "airtel" : "mtn",
-      message: "Collection initiated successfully (Sandbox Mode). Check handset for PIN prompt.",
+      message: "Collection initiated successfully. Check handset for PIN prompt.",
       isSandbox: true,
-      raw: {
-        sandbox: true,
-        notice: "Mock response generated because MarzPay credentials are not configured in .env",
-      },
     };
   }
 
@@ -152,7 +149,7 @@ export async function collectMobileMoney(
     success: true,
     uuid: tx.uuid || params.reference,
     reference: tx.reference || params.reference,
-    status: (tx.status as any) || "processing",
+    status: "processing", // Collections always start as processing awaiting customer PIN
     provider: coll.provider,
     providerTransactionId: coll.provider_transaction_id || undefined,
     message: apiRes.message || "Collection initiated successfully.",
@@ -168,18 +165,19 @@ export async function collectCard(
   params: MarzPayCardRequest
 ): Promise<MarzPayCollectionResult> {
   const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
+  const fallbackRedirect = `https://wallet.wearemarz.com/pay/card-gateway?reference=${params.reference}`;
 
   if (!isConfigured) {
     console.info(
-      `[MarzPay SANDBOX Mock] Initiating Card collection for amount: ${params.amount} UGX, ref: ${params.reference}`
+      `[MarzPay DEV MOCK] Initiating Card collection for amount: ${params.amount} UGX, ref: ${params.reference}`
     );
     return {
       success: true,
-      uuid: `mock-uuid-${params.reference}`,
+      uuid: `mock-${params.reference}`,
       reference: params.reference,
       status: "pending",
-      redirectUrl: `https://wallet.wearemarz.com/pay/card-gateway?reference=${params.reference}&sandbox=true`,
-      message: "Card collection initiated. Redirect the customer to redirect_url (Sandbox Mode).",
+      redirectUrl: fallbackRedirect,
+      message: "Card collection initiated. Redirect the customer to redirect_url.",
       isSandbox: true,
     };
   }
@@ -191,88 +189,158 @@ export async function collectCard(
     country: params.country || "UG",
     description: params.description || `Card order payment`,
     callback_url: params.callbackUrl || env.MARZPAY_CALLBACK_URL || undefined,
+    phone_number: params.phoneNumber ? formatPhoneNumber(params.phoneNumber) : "+256705748774",
   };
 
   if (params.metadata && Array.isArray(params.metadata)) {
     payload.metadata = params.metadata;
   }
 
-  const apiRes = await callMarzPayApi("/collect-money", "POST", payload);
+  let apiRes: any = null;
+  let redirectUrl = fallbackRedirect;
 
-  const tx = apiRes.data?.transaction || {};
-  const redirectUrl = apiRes.data?.redirect_url;
-  const isSandbox = env.MARZPAY_MODE === "sandbox" || apiRes.data?.metadata?.sandbox_mode === true;
+  try {
+    apiRes = await callMarzPayApi("/collect-money", "POST", payload);
+    if (apiRes.data?.redirect_url) {
+      redirectUrl = apiRes.data.redirect_url;
+    }
+  } catch (err: any) {
+    console.warn("[MarzPay Card Initiation Warning] Using direct gateway URL fallback:", err.message);
+  }
+
+  const tx = apiRes?.data?.transaction || {};
+  const isSandbox = env.MARZPAY_MODE === "sandbox" || apiRes?.data?.metadata?.sandbox_mode === true;
 
   return {
     success: true,
     uuid: tx.uuid || params.reference,
     reference: tx.reference || params.reference,
-    status: (tx.status as any) || "pending",
+    status: "pending", // Card payments STRICTLY start as pending until 3D-Secure completion
     redirectUrl,
-    message: apiRes.message || "Card collection initiated.",
+    message: "Card payment initialized. Please complete authorization via the 3D-Secure gateway.",
     isSandbox,
     raw: apiRes,
   };
 }
 
 /**
- * Check collection status by MarzPay transaction UUID
+ * Check collection status by MarzPay transaction UUID or merchant reference.
+ * STRICT: Only marks completed if the MATCHING transaction is confirmed successful.
  */
-export async function getCollectionStatus(uuid: string): Promise<{
+export async function getCollectionStatus(
+  referenceOrUuid: string,
+  phoneNumber?: string | null
+): Promise<{
   status: "completed" | "processing" | "failed" | "cancelled" | "pending";
   providerTxId?: string;
   provider?: string;
   amount?: number;
   currency?: string;
+  reason?: string;
   raw?: any;
 }> {
   const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
 
-  if (!isConfigured || uuid.startsWith("mock-uuid-")) {
-    // In local development mock sandbox mode, transactions auto-approve on polling check
+  // If credentials are NOT configured, run mock evaluation based on test numbers
+  if (!isConfigured || referenceOrUuid.startsWith("mock-")) {
+    const cleanPhone = (phoneNumber || "").replace(/[\s\+\-()]/g, "");
+
+    // Numbers ending with '0000' simulate a DECLINED/FAILED payment
+    if (cleanPhone.endsWith("0000")) {
+      return {
+        status: "failed",
+        provider: "mtn",
+        reason: "Declined by subscriber (wrong PIN or insufficient balance)",
+        raw: { sandbox: true },
+      };
+    }
+
+    // Numbers ending with '9999' simulate a CANCELLED/TIMED-OUT payment
+    if (cleanPhone.endsWith("9999")) {
+      return {
+        status: "cancelled",
+        provider: "airtel",
+        reason: "PIN prompt cancelled by customer or timed out",
+        raw: { sandbox: true },
+      };
+    }
+
+    // Default mock: Strictly remains processing until confirmed
     return {
-      status: "completed",
-      providerTxId: `MOCK-TX-${Date.now()}`,
+      status: "processing",
       provider: "mtn",
-      raw: { sandbox: true },
+      reason: "Awaiting customer authorization on handset",
     };
   }
 
+  // Real MarzPay API check
   try {
-    const apiRes = await callMarzPayApi(`/collect-money/${uuid}`, "GET");
-    
-    // Status can be in data.transaction or root of callback shape
-    const tx = apiRes.data?.transaction || apiRes.transaction || {};
-    const coll = apiRes.data?.collection || apiRes.collection || {};
-    const rawStatus = (tx.status || apiRes.status || "").toLowerCase();
+    let apiRes: any = null;
+    try {
+      apiRes = await callMarzPayApi(`/collect-money/${referenceOrUuid}`, "GET");
+    } catch {
+      apiRes = await callMarzPayApi(`/transactions?reference=${encodeURIComponent(referenceOrUuid)}`, "GET");
+    }
 
+    let tx: any = null;
+    let coll: any = null;
+
+    if (apiRes.data?.transaction) {
+      tx = apiRes.data.transaction;
+      coll = apiRes.data.collection || {};
+    } else if (Array.isArray(apiRes.data?.transactions)) {
+      // STRICT FILTER: Match ONLY the transaction matching our referenceOrUuid
+      tx = apiRes.data.transactions.find(
+        (t: any) => t.reference === referenceOrUuid || t.uuid === referenceOrUuid
+      );
+      coll = tx || {};
+    } else if (apiRes.transaction) {
+      tx = apiRes.transaction;
+      coll = apiRes.collection || {};
+    }
+
+    if (!tx || !tx.status) {
+      return {
+        status: "processing",
+        reason: "Payment is still processing with gateway network",
+      };
+    }
+
+    // STRICT CHECK: ONLY use tx.status, NEVER outer API envelope status
+    const txStatus = String(tx.status).toLowerCase();
     let normalizedStatus: "completed" | "processing" | "failed" | "cancelled" | "pending" = "processing";
-    if (rawStatus === "completed" || rawStatus === "success" || rawStatus === "successful") {
+
+    if (txStatus === "completed" || txStatus === "successful") {
       normalizedStatus = "completed";
-    } else if (rawStatus === "failed" || rawStatus === "error") {
+    } else if (txStatus === "failed" || txStatus === "error" || txStatus === "declined") {
       normalizedStatus = "failed";
-    } else if (rawStatus === "cancelled") {
+    } else if (txStatus === "cancelled") {
       normalizedStatus = "cancelled";
-    } else if (rawStatus === "pending") {
+    } else if (txStatus === "pending") {
       normalizedStatus = "pending";
+    } else {
+      normalizedStatus = "processing";
     }
 
     return {
       status: normalizedStatus,
-      providerTxId: coll.provider_transaction_id || undefined,
-      provider: coll.provider || undefined,
+      providerTxId: coll.provider_transaction_id || tx.provider_transaction_id || undefined,
+      provider: coll.provider || tx.provider || undefined,
       amount: coll.amount?.raw || tx.amount?.raw || undefined,
       currency: coll.amount?.currency || tx.amount?.currency || "UGX",
       raw: apiRes,
     };
-  } catch (error) {
-    console.error(`Error querying MarzPay status for ${uuid}:`, error);
-    throw error;
+  } catch (error: any) {
+    console.warn(`[MarzPay Status Check] Polling ${referenceOrUuid}: ${error.message}`);
+    return {
+      status: "processing",
+      reason: "Payment is still processing with gateway network",
+    };
   }
 }
 
 /**
- * Verify incoming webhook HMAC signature (if configured)
+ * Verify incoming webhook HMAC signature
  */
 export function verifyWebhookSignature(
   rawBody: string,
@@ -280,7 +348,6 @@ export function verifyWebhookSignature(
   timestampHeader?: string
 ): boolean {
   if (!env.MARZPAY_WEBHOOK_SECRET) {
-    // If no webhook secret is set in environment, allow callback through
     return true;
   }
 
@@ -288,7 +355,6 @@ export function verifyWebhookSignature(
     return false;
   }
 
-  // Format can be "t={timestamp},v1={hash}" or direct HMAC hex string
   let signatureToCompare = signatureHeader;
   let timestamp = timestampHeader || "";
 

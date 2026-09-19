@@ -547,6 +547,7 @@ export async function verifyPayment(txRef: string): Promise<{
   paidAt?: string;
   orderNumber?: string;
   providerTxId?: string;
+  reason?: string;
   isMock?: boolean;
 }> {
   try {
@@ -558,12 +559,12 @@ export async function verifyPayment(txRef: string): Promise<{
       }
     }
   } catch (err) {
-    console.warn("Backend /api/payments/verify fallback:", err);
+    console.warn("Backend /api/payments/verify connection error:", err);
   }
+  // Strictly return PENDING if verification did not explicitly succeed
   return {
-    status: "SUCCESS",
-    paidAt: new Date().toISOString(),
-    isMock: true,
+    status: "PENDING",
+    reason: "Awaiting gateway confirmation",
   };
 }
 
