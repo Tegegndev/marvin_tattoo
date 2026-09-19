@@ -234,7 +234,7 @@ export const updateHeroImage = async (
       where: { id: "studio_config" },
     });
 
-    if (existing && existing.heroBannerUrl.startsWith("/uploads/")) {
+    if (existing && existing.heroBannerUrl) {
       deleteLocalImage(existing.heroBannerUrl);
     }
 

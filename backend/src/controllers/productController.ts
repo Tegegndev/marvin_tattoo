@@ -128,7 +128,7 @@ export async function updateProduct(req: Request, res: Response): Promise<void> 
     let imageUrl = existing.imageUrl;
     if (req.file) {
       imageUrl = await processAndSaveImage(req.file, 'product');
-      if (existing.imageUrl && existing.imageUrl.startsWith('/uploads/')) {
+      if (existing.imageUrl) {
         deleteLocalImage(existing.imageUrl);
       }
     } else if (req.body.imageUrl !== undefined && req.body.imageUrl !== '') {
