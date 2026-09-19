@@ -22,11 +22,11 @@ function formatSpecsString(specsInput: any): string {
 }
 
 const productSchema = z.object({
-  name: z.string().min(2, 'Product name is required'),
-  category: z.string().min(2, 'Category is required'),
+  name: z.string().min(1, 'Product name is required'),
+  category: z.string().min(1, 'Category is required'),
   price: z.coerce.number().positive('Price must be positive'),
   currency: z.string().default('UGX'),
-  description: z.string().min(5, 'Description is required'),
+  description: z.string().optional().default(''),
   imageUrl: z.string().optional(),
   inStock: z.preprocess((val) => val === true || val === 'true', z.boolean()).default(true),
   stockCount: z.coerce.number().int().min(0).default(10),
