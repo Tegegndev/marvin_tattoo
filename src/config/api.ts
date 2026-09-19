@@ -3,15 +3,14 @@ import type { SyntheticEvent } from "react";
 
 /**
  * Global API configuration using Vite Environment Variables
- * If VITE_API_URL is not set, it defaults to "" (relative path, using current domain or Vite proxy)
- * Example: VITE_API_URL=https://api.yourdomain.com
  */
-
 export const API_BASE_URL: string = (
   (import.meta.env.VITE_API_URL as string | undefined) ||
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
   ""
 ).replace(/\/+$/, "");
+
+export const CDN_BASE_URL: string = "https://images.tegegn.com.et";
 
 export const PLACEHOLDERS = {
   hero: "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
@@ -30,6 +29,8 @@ const LEGACY_IMAGE_MAP: Record<string, string> = {
   "/images/portfolio/back-portrait-man.png": "https://images.tegegn.com.et/uploads/portfolio/1789826349_back-portrait-man_54b71acab7c9cecf.png",
   "/images/portfolio/portrait-elder-woman.png": "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
   "/images/portfolio/spider-navel-piercing.png": "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
+  "/logo.png": "https://images.tegegn.com.et/uploads/branding/1789826352_logo_93aae80f6e7e2507.png",
+  "/logo-black.png": "https://images.tegegn.com.et/uploads/branding/1789826353_logo-black_2c9e69789b595c45.png",
 };
 
 /**
@@ -53,11 +54,12 @@ export function formatImageUrl(
 
   const trimmed = url.trim();
 
-  // Check legacy mapping first
+  // 1. Check direct legacy mapping
   if (LEGACY_IMAGE_MAP[trimmed]) {
     return LEGACY_IMAGE_MAP[trimmed];
   }
 
+  // 2. If it's already an absolute or blob/data URL, keep as is
   if (
     trimmed.startsWith("http://") ||
     trimmed.startsWith("https://") ||
@@ -67,10 +69,15 @@ export function formatImageUrl(
     return trimmed;
   }
 
-  if (trimmed.startsWith("/uploads") && API_BASE_URL) {
-    return `${API_BASE_URL}${trimmed}`;
+  // 3. If it starts with /uploads/ or uploads/, route to self-hosted cPanel CDN
+  if (trimmed.startsWith("/uploads/")) {
+    return `${CDN_BASE_URL}${trimmed}`;
+  }
+  if (trimmed.startsWith("uploads/")) {
+    return `${CDN_BASE_URL}/${trimmed}`;
   }
 
+  // 4. Default relative paths
   return trimmed;
 }
 
@@ -82,7 +89,9 @@ export function handleImageError(
   fallback: string = PLACEHOLDERS.portfolio
 ): void {
   const target = e.currentTarget;
-  if (target.src !== fallback) {
-    target.src = fallback;
+  if (!target || target.src === fallback) {
+    return;
   }
+  target.onerror = null; // Prevent secondary error loop
+  target.src = fallback;
 }

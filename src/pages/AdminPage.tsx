@@ -1009,7 +1009,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       formData.append('featured', String(pieceFeatured));
       if (pieceImageFile) {
         formData.append('image', pieceImageFile);
-      } else if (pieceImagePreview && pieceImagePreview.startsWith('http')) {
+      } else if (pieceImagePreview && !pieceImagePreview.startsWith('data:')) {
         formData.append('imageUrl', pieceImagePreview);
       }
 
@@ -1103,6 +1103,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       formData.append('specs', prodSpecs);
       if (prodImageFile) {
         formData.append('image', prodImageFile);
+      } else if (prodImagePreview && !prodImagePreview.startsWith('data:')) {
+        formData.append('imageUrl', prodImagePreview);
       }
 
       if (editingProductId) {
