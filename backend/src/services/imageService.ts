@@ -18,7 +18,7 @@ async function uploadToRemoteBucket(
 
   try {
     const formData = new FormData();
-    const blob = new Blob([buffer], { type: "image/webp" });
+    const blob = new Blob([new Uint8Array(buffer)], { type: "image/webp" });
     formData.append("image", blob, originalFilename);
     formData.append("folder", folder);
 

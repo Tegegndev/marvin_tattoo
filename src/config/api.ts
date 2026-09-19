@@ -69,12 +69,12 @@ export function formatImageUrl(
     return trimmed;
   }
 
-  // 3. If it starts with /uploads/ or uploads/, route to self-hosted cPanel CDN
+  // 3. If it starts with /uploads/ or uploads/, route to backend API server static assets
   if (trimmed.startsWith("/uploads/")) {
-    return `${CDN_BASE_URL}${trimmed}`;
+    return API_BASE_URL ? `${API_BASE_URL}${trimmed}` : trimmed;
   }
   if (trimmed.startsWith("uploads/")) {
-    return `${CDN_BASE_URL}/${trimmed}`;
+    return API_BASE_URL ? `${API_BASE_URL}/${trimmed}` : `/${trimmed}`;
   }
 
   // 4. Default relative paths
