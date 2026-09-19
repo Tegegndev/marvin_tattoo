@@ -165,7 +165,6 @@ export async function collectCard(
   params: MarzPayCardRequest
 ): Promise<MarzPayCollectionResult> {
   const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
-  const fallbackRedirect = `https://wallet.wearemarz.com/pay/card-gateway?reference=${params.reference}`;
 
   if (!isConfigured) {
     console.info(
@@ -176,8 +175,8 @@ export async function collectCard(
       uuid: `mock-${params.reference}`,
       reference: params.reference,
       status: "pending",
-      redirectUrl: fallbackRedirect,
-      message: "Card collection initiated. Redirect the customer to redirect_url.",
+      redirectUrl: undefined,
+      message: "Card collection initiated in Sandbox Mode.",
       isSandbox: true,
     };
   }
@@ -197,15 +196,15 @@ export async function collectCard(
   }
 
   let apiRes: any = null;
-  let redirectUrl = fallbackRedirect;
+  let redirectUrl: string | undefined = undefined;
 
   try {
     apiRes = await callMarzPayApi("/collect-money", "POST", payload);
-    if (apiRes.data?.redirect_url) {
+    if (apiRes?.data?.redirect_url) {
       redirectUrl = apiRes.data.redirect_url;
     }
   } catch (err: any) {
-    console.warn("[MarzPay Card Initiation Warning] Using direct gateway URL fallback:", err.message);
+    console.warn("[MarzPay Card Initiation Warning]:", err.message);
   }
 
   const tx = apiRes?.data?.transaction || {};
@@ -216,7 +215,7 @@ export async function collectCard(
     uuid: tx.uuid || params.reference,
     reference: tx.reference || params.reference,
     status: "pending", // Card payments STRICTLY start as pending until 3D-Secure completion
-    redirectUrl,
+    redirectUrl, // ONLY present if real MarzPay returns a verified redirect URL
     message: "Card payment initialized. Please complete authorization via the 3D-Secure gateway.",
     isSandbox,
     raw: apiRes,

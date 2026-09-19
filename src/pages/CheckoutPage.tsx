@@ -683,7 +683,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 )}
 
-                {/* Card Redirect Action (if method is CARD) */}
+                {/* Card Gateway Live Redirect (when provided by gateway in Live mode) */}
                 {paymentMethod === 'CARD' && cardAuthUrl && (
                   <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-4 text-left">
                     <div className="flex items-center justify-between border-b border-noir-800 pb-3">
@@ -705,6 +705,83 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       <span>Open Card Payment Gateway</span>
                       <Icons8 name="external-link-alt" size={14} />
                     </a>
+                  </div>
+                )}
+
+                {/* Card Sandbox Test Terminal (active when MarzPay is in Sandbox mode without hosted web URL) */}
+                {paymentMethod === 'CARD' && !cardAuthUrl && (
+                  <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-4 text-left">
+                    <div className="flex items-center justify-between border-b border-noir-800 pb-3">
+                      <span className="font-label-caps text-xs uppercase text-bone font-bold">Sandbox Card Terminal</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/40 font-label-data uppercase">
+                        MarzPay Test Env
+                      </span>
+                    </div>
+                    <p className="text-xs text-bone-dim leading-relaxed">
+                      MarzPay hosted web card portals are active in <strong>Live Mode</strong>. In this Sandbox environment, test your payment pipeline below:
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setIsVerifying(true);
+                          setVerifyError('');
+                          try {
+                            await fetch('/api/payments/marzpay/webhook', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                event_type: 'collection.completed',
+                                transaction: { reference: activeTxRef, status: 'completed', amount: { raw: total, currency: 'UGX' } },
+                                collection: { provider: 'card', provider_transaction_id: `VISA-TEST-${Date.now()}` }
+                              }),
+                            });
+                            const check = await verifyPayment(activeTxRef);
+                            if (check.status === 'SUCCESS') {
+                              handleCompletePaymentConfirmation();
+                            }
+                          } catch (e: any) {
+                            setVerifyError(e.message || 'Simulation failed');
+                          } finally {
+                            setIsVerifying(false);
+                          }
+                        }}
+                        className="py-2.5 px-3 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 rounded-lg text-xs font-label-caps uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Icons8 name="check" size={13} />
+                        <span>Simulate 3DS Approval</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setIsVerifying(true);
+                          setVerifyError('');
+                          try {
+                            await fetch('/api/payments/marzpay/webhook', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                event_type: 'collection.failed',
+                                transaction: { reference: activeTxRef, status: 'failed' }
+                              }),
+                            });
+                            const check = await verifyPayment(activeTxRef);
+                            if (check.status === 'FAILED') {
+                              setVerifyError('Card payment authorization was declined by issuing bank (Sandbox simulation).');
+                            }
+                          } catch (e: any) {
+                            setVerifyError(e.message || 'Simulation failed');
+                          } finally {
+                            setIsVerifying(false);
+                          }
+                        }}
+                        className="py-2.5 px-3 bg-red-950/80 hover:bg-red-900 border border-red-500/50 text-red-300 rounded-lg text-xs font-label-caps uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Icons8 name="times" size={13} />
+                        <span>Simulate Card Declined</span>
+                      </button>
+                    </div>
                   </div>
                 )}
 
