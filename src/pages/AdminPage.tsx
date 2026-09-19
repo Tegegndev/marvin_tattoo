@@ -98,6 +98,7 @@ import {
   fetchServices,
   DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
+import { formatImageUrl, handleImageError, PLACEHOLDERS } from '../config/api';
 import { useSettings } from '../context/SettingsContext';
 
 interface AdminPageProps {
@@ -2353,9 +2354,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         {/* Artwork Banner */}
                         <div className="relative aspect-[16/10] bg-[#12141c] overflow-hidden">
                           <img
-                            src={service.imageUrl || service.image || '/images/hero.webp'}
+                            src={formatImageUrl(service.imageUrl || service.image, PLACEHOLDERS.service)}
                             alt={service.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95 group-hover:brightness-100"
+                            onError={(e) => handleImageError(e, PLACEHOLDERS.service)}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-black/60" />
 
@@ -2587,12 +2589,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         {/* Member Photo & Top Badges */}
                         <div className="relative h-64 bg-[#12141c] overflow-hidden">
                           <img
-                            src={member.avatar || '/images/marvin-founder.png'}
+                            src={formatImageUrl(member.avatar, PLACEHOLDERS.avatar)}
                             alt={member.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/images/marvin-founder.png';
-                            }}
+                            onError={(e) => handleImageError(e, PLACEHOLDERS.avatar)}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-black/40" />
 
@@ -2900,9 +2900,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         >
                           <div className="h-40 bg-[#12141c] relative overflow-hidden">
                             <img
-                              src={prod.image || prod.imageUrl}
+                              src={formatImageUrl(prod.image || prod.imageUrl, PLACEHOLDERS.product)}
                               alt={prod.name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => handleImageError(e, PLACEHOLDERS.product)}
                             />
                             <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#181a24]/90 backdrop-blur-sm border border-zinc-700 text-[10px] text-red-400 font-medium rounded capitalize">
                               {prod.category}
@@ -3439,9 +3440,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         {/* Artwork Image Box */}
                         <div className="h-52 bg-[#12141c] relative overflow-hidden cursor-pointer" onClick={() => openEditArtworkModal(p)}>
                           <img
-                            src={p.image || p.imageUrl}
+                            src={formatImageUrl(p.image || p.imageUrl, PLACEHOLDERS.portfolio)}
                             alt={p.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => handleImageError(e, PLACEHOLDERS.portfolio)}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#181a24] via-transparent to-transparent opacity-80" />
 
@@ -3668,9 +3670,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                     <div className="md:col-span-5 h-48 bg-[#12141c] border border-zinc-800 rounded-lg overflow-hidden relative">
                       <img
-                        src={heroImagePreview || settings.heroBannerUrl}
+                        src={formatImageUrl(heroImagePreview || settings.heroBannerUrl, PLACEHOLDERS.hero)}
                         alt="Hero Preview"
                         className="w-full h-full object-cover"
+                        onError={(e) => handleImageError(e, PLACEHOLDERS.hero)}
                       />
                       <div
                         className="absolute inset-0 bg-black pointer-events-none transition-opacity"
@@ -4166,9 +4169,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </span>
                   <div className="max-h-60 overflow-hidden rounded-xl border border-zinc-800 bg-[#12141c]">
                     <img
-                      src={inspectBooking.referenceImage}
+                      src={formatImageUrl(inspectBooking.referenceImage, PLACEHOLDERS.portfolio)}
                       alt="Reference"
                       className="w-full h-auto object-contain"
+                      onError={(e) => handleImageError(e, PLACEHOLDERS.portfolio)}
                     />
                   </div>
                 </div>
@@ -4385,10 +4389,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         src={
                           pieceImageFile
                             ? URL.createObjectURL(pieceImageFile)
-                            : pieceImagePreview
+                            : formatImageUrl(pieceImagePreview, PLACEHOLDERS.portfolio)
                         }
                         alt="Artwork Preview"
                         className="w-full h-full object-cover"
+                        onError={(e) => handleImageError(e, PLACEHOLDERS.portfolio)}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#12141c] via-transparent to-transparent opacity-80" />
 
@@ -4898,9 +4903,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {serviceImagePreview && (
                   <div className="mb-2 flex items-center gap-3 p-2.5 bg-[#12141c] border border-zinc-800 rounded-lg">
                     <img
-                      src={serviceImagePreview}
+                      src={formatImageUrl(serviceImagePreview, PLACEHOLDERS.service)}
                       alt="Service Preview"
                       className="w-16 h-12 object-cover rounded-lg border border-zinc-700"
+                      onError={(e) => handleImageError(e, PLACEHOLDERS.service)}
                     />
                     <div className="text-xs text-zinc-400">
                       <p className="text-zinc-200 font-semibold">Current Image</p>
@@ -5135,9 +5141,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {memberAvatarPreview && (
                   <div className="flex items-center gap-3 p-2.5 bg-[#181a24] rounded-lg border border-zinc-700/80">
                     <img
-                      src={memberAvatarPreview}
+                      src={formatImageUrl(memberAvatarPreview, PLACEHOLDERS.avatar)}
                       alt="Avatar Preview"
                       className="w-16 h-16 object-cover rounded-full border border-zinc-600"
+                      onError={(e) => handleImageError(e, PLACEHOLDERS.avatar)}
                     />
                     <div className="text-xs text-zinc-400">
                       <p className="text-zinc-200 font-semibold">Current Avatar</p>
@@ -5341,9 +5348,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {prodImagePreview && (
                   <div className="mb-2 flex items-center gap-3 p-2.5 bg-[#12141c] border border-zinc-800 rounded-lg">
                     <img
-                      src={prodImagePreview}
+                      src={formatImageUrl(prodImagePreview, PLACEHOLDERS.product)}
                       alt="Product Preview"
                       className="w-14 h-14 object-cover rounded-lg border border-zinc-700"
+                      onError={(e) => handleImageError(e, PLACEHOLDERS.product)}
                     />
                     <div className="text-xs text-zinc-400">
                       <p className="text-zinc-200 font-semibold">Current Image</p>
