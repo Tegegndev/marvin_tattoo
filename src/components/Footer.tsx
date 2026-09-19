@@ -7,6 +7,7 @@ import { getUserBookings } from '../services/bookingApi';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
+import { formatImageUrl } from '../config/api';
 
 interface FooterProps {
   onNavigate: (page: PageView) => void;
@@ -380,7 +381,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
               <img
                 alt={`${settings.studioName || 'Marvin Tattoo Studio'} Logo`}
                 className="h-16 sm:h-20 md:h-24 w-auto object-contain filter drop-shadow-lg select-none"
-                src={LOGO_URL}
+                src={formatImageUrl(settings.logoUrl || LOGO_URL)}
               />
               <div className="font-label-caps text-xs text-crimson-light uppercase tracking-[0.25em] font-bold">
                 {settings.studioName || 'Marvin Tattoo Studio'} · Kampala

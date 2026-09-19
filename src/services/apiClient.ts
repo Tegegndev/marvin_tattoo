@@ -19,6 +19,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
   heroSubtext:
     "Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.",
   heroBannerUrl: HERO_IMAGE,
+  heroPortraitUrl: "/images/marvin-founder.png",
   heroOpacity: 0.45,
   announcementActive: false,
   announcementText: null,
@@ -31,6 +32,11 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
     { day: "Monday - Saturday", hours: "10:00 AM - 8:00 PM" },
     { day: "Sunday", hours: "By Appointment Only" },
   ],
+  logoUrl: "/logo.svg",
+  metaTitle: "Marvin Tattoos & Piercing Atelier | Kampala, Uganda",
+  metaDescription:
+    "Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.",
+  ogImageUrl: "",
   socialLinks: [
     {
       id: "soc-1",
@@ -479,21 +485,37 @@ export async function initializePayment(data: {
   orderNumber?: string;
   paymentMethod: "MTN_MOMO" | "AIRTEL_MONEY" | "CARD";
   phoneNumber: string;
-}): Promise<any> {
+}): Promise<{
+  transactionId?: string;
+  merchantTxRef?: string;
+  uuid?: string;
+  status?: string;
+  instruction?: string;
+  authUrl?: string | null;
+  isSandbox?: boolean;
+  paymentMethod?: string;
+}> {
   try {
     const res = await fetch(apiUrl("/api/payments/initialize"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+
     if (res.ok) {
       const json = await res.json();
       if (json.success && json.data) {
         return json.data;
       }
+    } else {
+      const errJson = await res.json().catch(() => null);
+      throw new Error(errJson?.message || `Payment request failed with status ${res.status}`);
     }
-  } catch (err) {
-    console.warn("Backend /api/payments/initialize unavailable, fallback to simulated USSD prompt:", err);
+  } catch (err: any) {
+    if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
+      throw err;
+    }
+    console.warn("Backend /api/payments/initialize offline, fallback to simulated prompt:", err);
   }
 
   const promptText =
@@ -501,7 +523,7 @@ export async function initializePayment(data: {
       ? `A USSD push notification has been sent to ${data.phoneNumber}. Please enter your MTN MoMo PIN to complete payment.`
       : data.paymentMethod === "AIRTEL_MONEY"
       ? `An Airtel Money prompt has been sent to ${data.phoneNumber}. Please authorize the transaction on your handset.`
-      : `Payment gateway initialized for Card checkout. Please confirm the security OTP from your bank.`;
+      : `Payment gateway initialized for Card checkout. Please complete authorization.`;
 
   // Update order in local storage if present
   if (data.orderNumber) {
@@ -513,18 +535,25 @@ export async function initializePayment(data: {
   }
 
   return {
-    success: true,
+    merchantTxRef: `TX-LOCAL-${Date.now()}`,
+    status: "PENDING",
     instruction: promptText,
-    txRef: `tx-${Date.now()}`,
+    isSandbox: true,
   };
 }
 
-export async function verifyPayment(txRef: string): Promise<any> {
+export async function verifyPayment(txRef: string): Promise<{
+  status: "SUCCESS" | "PROCESSING" | "FAILED" | "PENDING";
+  paidAt?: string;
+  orderNumber?: string;
+  providerTxId?: string;
+  isMock?: boolean;
+}> {
   try {
     const res = await fetch(apiUrl(`/api/payments/verify/${txRef}`));
     if (res.ok) {
       const json = await res.json();
-      if (json.success) {
+      if (json.success && json.data) {
         return json.data;
       }
     }
@@ -532,9 +561,9 @@ export async function verifyPayment(txRef: string): Promise<any> {
     console.warn("Backend /api/payments/verify fallback:", err);
   }
   return {
-    status: "SUCCESSFUL",
-    verified: true,
-    txRef,
+    status: "SUCCESS",
+    paidAt: new Date().toISOString(),
+    isMock: true,
   };
 }
 
@@ -741,6 +770,54 @@ export async function adminUploadHeroImage(file: File): Promise<string> {
     throw new Error(json.message || "Failed to upload hero image");
   }
   return formatImageUrl(json.heroBannerUrl || json.imageUrl);
+}
+
+export async function adminUploadHeroPortrait(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("heroPortrait", file);
+  const res = await fetch(apiUrl("/api/settings/hero-portrait"), {
+    method: "POST",
+    headers: getAuthHeaders(),
+    credentials: "include",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to upload founder portrait");
+  }
+  return formatImageUrl(json.heroPortraitUrl || json.imageUrl);
+}
+
+export async function adminUploadLogo(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("logo", file);
+  const res = await fetch(apiUrl("/api/settings/logo"), {
+    method: "POST",
+    headers: getAuthHeaders(),
+    credentials: "include",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to upload logo");
+  }
+  return formatImageUrl(json.logoUrl || json.imageUrl);
+}
+
+export async function adminUploadOgImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("ogImage", file);
+  const res = await fetch(apiUrl("/api/settings/og-image"), {
+    method: "POST",
+    headers: getAuthHeaders(),
+    credentials: "include",
+    body: formData,
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to upload social share image");
+  }
+  return formatImageUrl(json.ogImageUrl || json.imageUrl);
 }
 
 export async function adminCreatePortfolioPiece(formData: FormData): Promise<any> {

@@ -10,6 +10,7 @@ import {
   fetchProducts,
 } from '../services/apiClient';
 import { useSettings } from '../context/SettingsContext';
+import { formatImageUrl, PLACEHOLDERS } from '../config/api';
 
 interface HomePageProps {
   onNavigate: (page: PageView) => void;
@@ -22,14 +23,14 @@ interface HomePageProps {
 }
 
 // Founder Portrait: Black & White by default, Full Color Reveal on Hover
-const MarvinPortraitLens: React.FC = () => {
+const MarvinPortraitLens: React.FC<{ portraitUrl?: string }> = ({ portraitUrl }) => {
   return (
     <div 
       className="relative w-full h-[480px] sm:h-[540px] lg:h-[600px] bg-noir-900 border border-noir-700 overflow-hidden group select-none cursor-pointer"
     >
       {/* Marvin's Portrait: High-Contrast Black & White by default, Full Vibrant Color on hover */}
       <img
-        src="/images/marvin-founder.png"
+        src={formatImageUrl(portraitUrl || "/images/marvin-founder.png", PLACEHOLDERS.avatar)}
         alt="Marvin - Founder & Resident Tattooist"
         className="absolute inset-0 w-full h-full object-cover object-[center_15%] scale-110 filter grayscale contrast-125 brightness-95 transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:scale-[1.14]"
       />
@@ -167,7 +168,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div
           className="absolute inset-0 w-full h-full bg-cover mix-blend-luminosity scale-105 pointer-events-none transition-transform duration-1000 ease-out"
           style={{
-            backgroundImage: `url('${settings.heroBannerUrl || HERO_IMAGE}')`,
+            backgroundImage: `url('${formatImageUrl(settings.heroBannerUrl || HERO_IMAGE, PLACEHOLDERS.hero)}')`,
             backgroundPosition: 'center 30%',
             opacity: settings.heroOpacity ?? 0.45,
           }}
@@ -280,7 +281,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Right Column: Marvin's Portrait Interactive Lens (5 Cols) */}
             <div className="lg:col-span-5 flex justify-center">
-              <MarvinPortraitLens />
+              <MarvinPortraitLens portraitUrl={settings.heroPortraitUrl} />
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import {
   initializePayment,
   verifyPayment,
   handleWebhook,
+  handleMarzPayWebhook,
 } from "../controllers/paymentController.js";
 
 export const paymentRouter = Router();
@@ -11,5 +12,6 @@ export const paymentRouter = Router();
 paymentRouter.post("/initialize", initializePayment);
 paymentRouter.get("/verify/:txRef", verifyPayment);
 
-// Webhook endpoint (Flutterwave / MTN / Airtel)
+// Webhook endpoints
 paymentRouter.post("/webhook", handleWebhook);
+paymentRouter.post("/marzpay/webhook", handleMarzPayWebhook);

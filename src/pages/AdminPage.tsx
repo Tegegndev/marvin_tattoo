@@ -80,6 +80,9 @@ import {
   adminDeleteMember,
   adminUpdateSettings,
   adminUploadHeroImage,
+  adminUploadHeroPortrait,
+  adminUploadLogo,
+  adminUploadOgImage,
   adminCreatePortfolioPiece,
   adminUpdatePortfolioPiece,
   adminDeletePortfolioPiece,
@@ -100,6 +103,7 @@ import {
 } from '../services/apiClient';
 import { formatImageUrl, handleImageError, PLACEHOLDERS } from '../config/api';
 import { useSettings } from '../context/SettingsContext';
+import { LOGO_URL } from '../data/atelierData';
 
 interface AdminPageProps {
   onNavigate: (page: PageView) => void;
@@ -233,6 +237,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [savingSettings, setSavingSettings] = useState<boolean>(false);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string>('');
+  const [heroPortraitFile, setHeroPortraitFile] = useState<File | null>(null);
+  const [heroPortraitPreview, setHeroPortraitPreview] = useState<string>('');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string>('');
+  const [ogImageFile, setOgImageFile] = useState<File | null>(null);
+  const [ogImagePreview, setOgImagePreview] = useState<string>('');
 
   useEffect(() => {
     if (globalSettings && globalSettings.studioName) {
@@ -805,26 +815,100 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setSavingSettings(true);
     try {
       let currentHeroUrl = settings.heroBannerUrl;
+      let currentHeroPortraitUrl = settings.heroPortraitUrl;
+      let currentLogoUrl = settings.logoUrl;
+      let currentOgImageUrl = settings.ogImageUrl;
 
       if (heroImageFile) {
         const uploadedUrl = await adminUploadHeroImage(heroImageFile);
         currentHeroUrl = uploadedUrl;
       }
 
+      if (heroPortraitFile) {
+        const uploadedPortrait = await adminUploadHeroPortrait(heroPortraitFile);
+        currentHeroPortraitUrl = uploadedPortrait;
+      }
+
+      if (logoFile) {
+        const uploadedLogo = await adminUploadLogo(logoFile);
+        currentLogoUrl = uploadedLogo;
+      }
+
+      if (ogImageFile) {
+        const uploadedOg = await adminUploadOgImage(ogImageFile);
+        currentOgImageUrl = uploadedOg;
+      }
+
       const payload: SiteSettingData = {
         ...settings,
         studioName: settings.studioName?.trim() || 'Marvin Tattoo Studio',
         heroBannerUrl: currentHeroUrl,
+        heroPortraitUrl: currentHeroPortraitUrl,
+        logoUrl: currentLogoUrl,
+        ogImageUrl: currentOgImageUrl,
+        openingHours: settings.openingHours || [],
       };
 
       const updated = await saveGlobalSettings(payload);
       setSettings(updated);
       setHeroImageFile(null);
+      setHeroPortraitFile(null);
+      setLogoFile(null);
+      setOgImageFile(null);
       showToast('Studio settings saved & published everywhere');
     } catch (err: any) {
       alert(err.message || 'Failed to update site settings');
     } finally {
       setSavingSettings(false);
+    }
+  };
+
+  const handleAddOpeningHour = (day: string = 'Monday - Friday', hours: string = '10:00 AM - 8:00 PM') => {
+    setSettings((prev) => ({
+      ...prev,
+      openingHours: [...(prev.openingHours || []), { day, hours }],
+    }));
+    showToast(`Added schedule row: ${day}`);
+  };
+
+  const handleUpdateOpeningHour = (index: number, field: 'day' | 'hours', value: string) => {
+    setSettings((prev) => {
+      const list = [...(prev.openingHours || [])];
+      if (list[index]) {
+        list[index] = { ...list[index], [field]: value };
+      }
+      return { ...prev, openingHours: list };
+    });
+  };
+
+  const handleRemoveOpeningHour = (index: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      openingHours: (prev.openingHours || []).filter((_, i) => i !== index),
+    }));
+    showToast('Schedule row removed');
+  };
+
+  const handleMoveOpeningHour = (index: number, direction: 'up' | 'down') => {
+    const list = [...(settings.openingHours || [])];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIndex];
+    list[targetIndex] = temp;
+    setSettings((prev) => ({ ...prev, openingHours: list }));
+  };
+
+  const handleResetOpeningHours = () => {
+    if (window.confirm('Reset studio operating hours to standard defaults?')) {
+      setSettings((prev) => ({
+        ...prev,
+        openingHours: [
+          { day: 'Monday - Saturday', hours: '10:00 AM - 8:00 PM' },
+          { day: 'Sunday', hours: 'By Appointment Only' },
+        ],
+      }));
+      showToast('Operating hours reset to default');
     }
   };
 
@@ -3626,6 +3710,67 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       Changing this updates the brand name in real time across the live site, header, footer, page titles, and appointment notifications.
                     </p>
                   </div>
+
+                  {/* Brand Logo Upload & Preview */}
+                  <div className="pt-3 border-t border-zinc-800/80">
+                    <label className="block text-xs text-zinc-300 font-medium mb-2">
+                      Studio Brand Logo (Navbar, Footer &amp; Preloader)
+                    </label>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                      {/* Logo Preview Box */}
+                      <div className="sm:col-span-5 h-24 bg-[#12141c] border border-zinc-700/80 rounded-lg p-3 flex items-center justify-center relative group">
+                        <img
+                          src={formatImageUrl(logoPreview || settings.logoUrl || LOGO_URL)}
+                          alt="Brand Logo Preview"
+                          className="max-h-full max-w-full object-contain filter drop-shadow-md"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.onerror = null;
+                            target.src = LOGO_URL;
+                          }}
+                        />
+                        <span className="absolute bottom-1 right-2 text-[9px] text-zinc-500 uppercase tracking-widest font-mono">
+                          Live Logo
+                        </span>
+                      </div>
+
+                      {/* File Input & Controls */}
+                      <div className="sm:col-span-7 space-y-2">
+                        <input
+                          type="file"
+                          accept="image/svg+xml,image/png,image/webp,image/jpeg"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              const f = e.target.files[0];
+                              setLogoFile(f);
+                              setLogoPreview(URL.createObjectURL(f));
+                            }
+                          }}
+                          className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2">
+                          <p className="text-[11px] text-zinc-400 flex-1">
+                            Recommended: Transparent SVG or PNG (horizontal mark, 200–500px).
+                          </p>
+                          {(logoPreview || (settings.logoUrl && settings.logoUrl !== '/logo.svg')) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLogoFile(null);
+                                setLogoPreview('');
+                                setSettings({ ...settings, logoUrl: '/logo.svg' });
+                                showToast('Reset to default studio logo');
+                              }}
+                              className="text-[10px] text-zinc-400 hover:text-red-400 underline cursor-pointer shrink-0"
+                            >
+                              Reset to Default
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* 2. Announcement & Flash Bar */}
@@ -3721,6 +3866,71 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           }
                           className="w-full accent-red-600 cursor-pointer"
                         />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Part B: Landing Page Featured Portrait (Founder Visual) */}
+                  <div className="pt-4 border-t border-zinc-800/80">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <label className="block text-xs text-zinc-200 font-semibold">
+                          Landing Page Featured Portrait (Founder Hero Visual)
+                        </label>
+                        <p className="text-[11px] text-zinc-400">
+                          Appears prominently beside the main headline on the home page with interactive black &amp; white to color hover reveal.
+                        </p>
+                      </div>
+                      {(heroPortraitPreview || (settings.heroPortraitUrl && settings.heroPortraitUrl !== '/images/marvin-founder.png')) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setHeroPortraitFile(null);
+                            setHeroPortraitPreview('');
+                            setSettings({ ...settings, heroPortraitUrl: '/images/marvin-founder.png' });
+                            showToast('Reset founder portrait to default');
+                          }}
+                          className="text-[10px] text-zinc-400 hover:text-red-400 underline cursor-pointer shrink-0"
+                        >
+                          Reset to Default
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                      <div className="md:col-span-4 h-48 sm:h-52 bg-[#12141c] border border-zinc-700/80 rounded-lg overflow-hidden relative group">
+                        <img
+                          src={formatImageUrl(heroPortraitPreview || settings.heroPortraitUrl || '/images/marvin-founder.png', PLACEHOLDERS.avatar)}
+                          alt="Founder Portrait Preview"
+                          className="w-full h-full object-cover object-[center_15%]"
+                          onError={(e) => handleImageError(e, PLACEHOLDERS.avatar)}
+                        />
+                        <span className="absolute bottom-2 left-2 px-2.5 py-1 bg-[#181a24]/90 backdrop-blur-sm border border-zinc-700 text-[10px] text-zinc-200 rounded font-medium">
+                          Portrait Preview
+                        </span>
+                      </div>
+
+                      <div className="md:col-span-8 space-y-3">
+                        <div>
+                          <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                            Upload New Portrait Photo (High-Resolution Portrait)
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                const f = e.target.files[0];
+                                setHeroPortraitFile(f);
+                                setHeroPortraitPreview(URL.createObjectURL(f));
+                              }
+                            }}
+                            className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
+                          />
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Recommended ratio: 4:5 or 3:4 portrait (min 800x1000px). Looks best with dramatic contrast and clean dark background.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -4000,6 +4210,255 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       })}
                     </div>
                   )}
+                </div>
+
+                {/* 7. Studio Operating & Working Hours */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-red-400" />
+                      <div>
+                        <span className="text-xs font-semibold text-white uppercase tracking-wider block">
+                          7. Studio Operating &amp; Working Hours
+                        </span>
+                        <span className="text-[11px] text-zinc-400">
+                          Configure live studio schedules displayed in the website footer and the Location/Studio page.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleAddOpeningHour()}
+                        className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Schedule</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleResetOpeningHours}
+                        className="px-2.5 py-1.5 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded-lg text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Restore Default Hours"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Reset Defaults</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quick Preset Chips */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider mr-1">
+                      Quick Add:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleAddOpeningHour('Monday - Saturday', '10:00 AM - 8:00 PM')}
+                      className="px-2.5 py-1 bg-[#12141c] hover:bg-zinc-800 border border-zinc-700/70 hover:border-red-500/60 text-[11px] text-zinc-300 hover:text-white rounded-md flex items-center gap-1 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3 text-red-400" />
+                      <span>Mon - Sat (10AM - 8PM)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddOpeningHour('Sunday', 'By Appointment Only')}
+                      className="px-2.5 py-1 bg-[#12141c] hover:bg-zinc-800 border border-zinc-700/70 hover:border-red-500/60 text-[11px] text-zinc-300 hover:text-white rounded-md flex items-center gap-1 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3 text-red-400" />
+                      <span>Sunday (Appointments)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddOpeningHour('Walk-In Fridays', '12:00 PM - 9:00 PM')}
+                      className="px-2.5 py-1 bg-[#12141c] hover:bg-zinc-800 border border-zinc-700/70 hover:border-red-500/60 text-[11px] text-zinc-300 hover:text-white rounded-md flex items-center gap-1 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3 text-red-400" />
+                      <span>Walk-In Fridays</span>
+                    </button>
+                  </div>
+
+                  {/* Operating Hours List */}
+                  {(!settings.openingHours || settings.openingHours.length === 0) ? (
+                    <div className="py-6 text-center bg-[#12141c] rounded-xl border border-zinc-800 space-y-2">
+                      <Clock className="w-6 h-6 text-zinc-600 mx-auto" />
+                      <p className="text-xs text-zinc-400">No working hours configured.</p>
+                      <button
+                        type="button"
+                        onClick={handleResetOpeningHours}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded-lg font-medium cursor-pointer"
+                      >
+                        Load Standard Schedule
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {settings.openingHours.map((row, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 bg-[#12141c] border border-zinc-700/90 rounded-xl flex flex-col sm:flex-row sm:items-center gap-3 transition-all"
+                        >
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="w-5 h-5 rounded-full bg-zinc-800 text-[10px] text-zinc-400 font-mono flex items-center justify-center font-bold">
+                              {idx + 1}
+                            </span>
+                            <span className="text-xs text-zinc-300 font-medium sm:hidden">Schedule Row</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 flex-1">
+                            <div className="sm:col-span-5">
+                              <input
+                                type="text"
+                                value={row.day}
+                                placeholder="Days (e.g. Monday - Saturday)"
+                                onChange={(e) => handleUpdateOpeningHour(idx, 'day', e.target.value)}
+                                className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-medium focus:outline-none focus:border-red-500"
+                              />
+                            </div>
+                            <div className="sm:col-span-7">
+                              <input
+                                type="text"
+                                value={row.hours}
+                                placeholder="Hours (e.g. 10:00 AM - 8:00 PM)"
+                                onChange={(e) => handleUpdateOpeningHour(idx, 'hours', e.target.value)}
+                                className="w-full px-3 py-1.5 bg-[#181a24] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Reorder and Delete Actions */}
+                          <div className="flex items-center gap-1 shrink-0 self-end sm:self-center">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => handleMoveOpeningHour(idx, 'up')}
+                              className="p-1.5 rounded-lg bg-[#181a24] hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                              title="Move Up"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={idx === (settings.openingHours || []).length - 1}
+                              onClick={() => handleMoveOpeningHour(idx, 'down')}
+                              className="p-1.5 rounded-lg bg-[#181a24] hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                              title="Move Down"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveOpeningHour(idx)}
+                              className="p-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/60 hover:border-red-600 transition-colors cursor-pointer"
+                              title="Remove Schedule Row"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 8. Search Engine Optimization (SEO) & Social Sharing */}
+                <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                  <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-red-400" />
+                    <span>8. Search Engine Optimization (SEO) &amp; Social Sharing Card</span>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="text-xs text-zinc-300 font-medium">
+                          Browser &amp; Google Search Title
+                        </label>
+                        <span className={`text-[10px] font-mono ${(settings.metaTitle || '').length > 60 ? 'text-amber-400' : 'text-zinc-500'}`}>
+                          {(settings.metaTitle || '').length}/60 chars (recommended)
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        value={settings.metaTitle || ''}
+                        onChange={(e) => setSettings({ ...settings, metaTitle: e.target.value })}
+                        placeholder="e.g. Marvin Tattoos & Piercing Atelier | Kampala, Uganda"
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-medium focus:outline-none focus:border-red-500"
+                      />
+                      <p className="text-[11px] text-zinc-400 mt-1">
+                        Appears as the primary title on Google search results and on browser tabs.
+                      </p>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="text-xs text-zinc-300 font-medium">
+                          Meta Description Snippet
+                        </label>
+                        <span className={`text-[10px] font-mono ${(settings.metaDescription || '').length > 160 ? 'text-amber-400' : 'text-zinc-500'}`}>
+                          {(settings.metaDescription || '').length}/160 chars
+                        </span>
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={settings.metaDescription || ''}
+                        onChange={(e) => setSettings({ ...settings, metaDescription: e.target.value })}
+                        placeholder="e.g. Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft."
+                        className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                      />
+                      <p className="text-[11px] text-zinc-400 mt-1">
+                        Short overview shown under search links on Google and in WhatsApp/social message cards.
+                      </p>
+                    </div>
+
+                    {/* OpenGraph Social Card Preview & Upload */}
+                    <div className="pt-3 border-t border-zinc-800/80">
+                      <label className="block text-xs text-zinc-300 font-medium mb-2">
+                        Social Share Card Image (WhatsApp, Facebook, Twitter Preview)
+                      </label>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                        <div className="sm:col-span-5 h-28 bg-[#12141c] border border-zinc-700/80 rounded-lg overflow-hidden relative group flex items-center justify-center">
+                          {ogImagePreview || settings.ogImageUrl || settings.heroBannerUrl ? (
+                            <img
+                              src={formatImageUrl(ogImagePreview || settings.ogImageUrl || settings.heroBannerUrl, PLACEHOLDERS.hero)}
+                              alt="Social Share Card"
+                              className="w-full h-full object-cover"
+                              onError={(e) => handleImageError(e, PLACEHOLDERS.hero)}
+                            />
+                          ) : (
+                            <div className="text-center p-3">
+                              <ImageIcon className="w-6 h-6 text-zinc-600 mx-auto mb-1" />
+                              <span className="text-[10px] text-zinc-500">Defaulting to Hero Photo</span>
+                            </div>
+                          )}
+                          <span className="absolute bottom-1 right-2 px-1.5 py-0.5 bg-black/80 rounded text-[9px] text-zinc-300 uppercase font-mono">
+                            OG Card
+                          </span>
+                        </div>
+
+                        <div className="sm:col-span-7 space-y-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                const f = e.target.files[0];
+                                setOgImageFile(f);
+                                setOgImagePreview(URL.createObjectURL(f));
+                              }
+                            }}
+                            className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-red-600 file:text-white file:text-xs file:font-medium file:rounded-lg file:cursor-pointer"
+                          />
+                          <p className="text-[11px] text-zinc-400">
+                            Recommended ratio: 1200x630 (1.91:1) PNG or WebP. Displays when your link is shared in chats.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <button

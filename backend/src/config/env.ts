@@ -19,4 +19,11 @@ export const env = {
   META_WHATSAPP_API_VERSION: process.env.META_WHATSAPP_API_VERSION || "v21.0",
   IMAGE_BUCKET_URL: process.env.IMAGE_BUCKET_URL || "https://images.tegegn.com.et",
   IMAGE_BUCKET_API_KEY: process.env.IMAGE_BUCKET_API_KEY || "",
+  MARZPAY_API_BASE: process.env.MARZPAY_API_BASE || "https://wallet.wearemarz.com/api/v1",
+  MARZPAY_API_KEY: process.env.MARZPAY_API_KEY || "",
+  MARZPAY_API_SECRET: process.env.MARZPAY_API_SECRET || "",
+  MARZPAY_WEBHOOK_SECRET: process.env.MARZPAY_WEBHOOK_SECRET || "",
+  MARZPAY_CALLBACK_URL: process.env.MARZPAY_CALLBACK_URL || "",
+  MARZPAY_MODE: process.env.MARZPAY_MODE || "sandbox",
 };
+

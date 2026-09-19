@@ -128,6 +128,11 @@ export const updateSettings = async (
       googleMapsUrl,
       openingHours,
       socialLinks,
+      logoUrl,
+      metaTitle,
+      metaDescription,
+      ogImageUrl,
+      heroPortraitUrl,
     } = req.body;
 
     const trimmedStudioName = typeof studioName === "string" ? studioName.trim() : undefined;
@@ -151,6 +156,11 @@ export const updateSettings = async (
         ...(contactEmail && { contactEmail }),
         ...(physicalAddress && { physicalAddress }),
         ...(googleMapsUrl && { googleMapsUrl }),
+        ...(heroPortraitUrl !== undefined && { heroPortraitUrl }),
+        ...(logoUrl !== undefined && { logoUrl }),
+        ...(metaTitle !== undefined && { metaTitle }),
+        ...(metaDescription !== undefined && { metaDescription }),
+        ...(ogImageUrl !== undefined && { ogImageUrl }),
         ...(openingHours !== undefined && {
           openingHours:
             typeof openingHours === "object"
@@ -181,6 +191,10 @@ export const updateSettings = async (
           physicalAddress || "New Pioneer Mall, Shop No. Pi55, Level 5, Burton Street, Kampala",
         googleMapsUrl:
           googleMapsUrl || "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
+        logoUrl: logoUrl || "/logo.svg",
+        metaTitle: metaTitle || "Marvin Tattoos & Piercing Atelier | Kampala, Uganda",
+        metaDescription: metaDescription || null,
+        ogImageUrl: ogImageUrl || null,
         openingHours:
           typeof openingHours === "object"
             ? JSON.stringify(openingHours)
@@ -255,6 +269,145 @@ export const updateHeroImage = async (
       success: true,
       message: "Hero banner image updated successfully",
       heroBannerUrl: updated.heroBannerUrl,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateLogo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: "A logo file is required",
+      });
+      return;
+    }
+
+    const existing = await prisma.siteSetting.findUnique({
+      where: { id: "studio_config" },
+    });
+
+    if (existing && existing.logoUrl && existing.logoUrl !== "/logo.svg") {
+      deleteLocalImage(existing.logoUrl);
+    }
+
+    const logoUrl = await processAndSaveImage(req.file, "logo");
+
+    const updated = await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: { logoUrl },
+      create: {
+        id: "studio_config",
+        logoUrl,
+        openingHours: "[]",
+        socialLinks: "[]",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Studio logo updated successfully",
+      logoUrl: updated.logoUrl,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateOgImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: "An ogImage file is required",
+      });
+      return;
+    }
+
+    const existing = await prisma.siteSetting.findUnique({
+      where: { id: "studio_config" },
+    });
+
+    if (existing && existing.ogImageUrl) {
+      deleteLocalImage(existing.ogImageUrl);
+    }
+
+    const ogImageUrl = await processAndSaveImage(req.file, "seo-og");
+
+    const updated = await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: { ogImageUrl },
+      create: {
+        id: "studio_config",
+        ogImageUrl,
+        openingHours: "[]",
+        socialLinks: "[]",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Social share image updated successfully",
+      ogImageUrl: updated.ogImageUrl,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateHeroPortrait = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: "A portrait image file is required",
+      });
+      return;
+    }
+
+    const existing = await prisma.siteSetting.findUnique({
+      where: { id: "studio_config" },
+    });
+
+    if (
+      existing &&
+      existing.heroPortraitUrl &&
+      existing.heroPortraitUrl !== "/images/marvin-founder.png"
+    ) {
+      deleteLocalImage(existing.heroPortraitUrl);
+    }
+
+    const heroPortraitUrl = await processAndSaveImage(req.file, "founder-portrait");
+
+    const updated = await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: { heroPortraitUrl },
+      create: {
+        id: "studio_config",
+        heroPortraitUrl,
+        openingHours: "[]",
+        socialLinks: "[]",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Landing page founder portrait updated successfully",
+      heroPortraitUrl: updated.heroPortraitUrl,
     });
   } catch (error) {
     next(error);

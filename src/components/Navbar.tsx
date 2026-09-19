@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Icons8 } from './Icons8';
 import { LOGO_URL } from '../data/atelierData';
 import { useSettings } from '../context/SettingsContext';
+import { formatImageUrl } from '../config/api';
 
 interface NavbarProps {
   currentPage: PageView;
@@ -95,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <img
             alt={settings.studioName || 'Marvin Tattoo Studio'}
             className="h-9 sm:h-11 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-            src={LOGO_URL}
+            src={formatImageUrl(settings.logoUrl || LOGO_URL)}
           />
         </button>
 

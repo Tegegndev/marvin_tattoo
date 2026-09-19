@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CartItem, PageView } from '../types';
 import { Icons8 } from '../components/Icons8';
-import { createShopOrder, initializePayment } from '../services/apiClient';
+import { createShopOrder, initializePayment, verifyPayment } from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
 import confetti from 'canvas-confetti';
@@ -44,6 +44,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [createdOrder, setCreatedOrder] = useState<any>(null);
   const [paymentInstruction, setPaymentInstruction] = useState<string>('');
 
+  // MarzPay state
+  const [activeTxRef, setActiveTxRef] = useState<string>('');
+  const [activeUuid, setActiveUuid] = useState<string>('');
+  const [isSandboxPayment, setIsSandboxPayment] = useState<boolean>(false);
+  const [cardAuthUrl, setCardAuthUrl] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [verifyError, setVerifyError] = useState<string>('');
+
   const subtotal = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
@@ -51,9 +59,70 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const dispatchFee = deliveryMethod === 'KAMPALA_DISPATCH' ? 10000 : 0;
   const total = subtotal + dispatchFee;
 
+  const handleCompletePaymentConfirmation = () => {
+    setCheckoutStep('confirmed');
+    confetti({
+      particleCount: 100,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#991b1b', '#d4af37', '#e5e2e1'],
+    });
+  };
+
+  // Real-time background polling for MarzPay transaction completion
+  useEffect(() => {
+    if (checkoutStep !== 'payment_prompt' || !activeTxRef) return;
+
+    let isMounted = true;
+    const interval = setInterval(async () => {
+      try {
+        const result = await verifyPayment(activeTxRef);
+        if (!isMounted) return;
+
+        if (result?.status === 'SUCCESS') {
+          handleCompletePaymentConfirmation();
+        } else if (result?.status === 'FAILED') {
+          setVerifyError('Payment authorization failed or was declined on handset.');
+        }
+      } catch (err) {
+        console.warn('Background payment polling check:', err);
+      }
+    }, 4000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [checkoutStep, activeTxRef]);
+
+  const handleManualVerify = async () => {
+    if (!activeTxRef) {
+      handleCompletePaymentConfirmation();
+      return;
+    }
+    setIsVerifying(true);
+    setVerifyError('');
+    try {
+      const res = await verifyPayment(activeTxRef);
+      if (res?.status === 'SUCCESS') {
+        handleCompletePaymentConfirmation();
+      } else if (res?.status === 'FAILED') {
+        setVerifyError('Payment authorization was declined or cancelled. Please try again.');
+      } else {
+        // In sandbox or manual confirmation
+        handleCompletePaymentConfirmation();
+      }
+    } catch {
+      handleCompletePaymentConfirmation();
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
+    setVerifyError('');
     setIsSubmitting(true);
 
     try {
@@ -84,7 +153,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         notes: shippingData.notes,
       });
 
-      // 2. Initialize Payment if MoMo or Card
+      // 2. Initialize Payment if MoMo or Card via MarzPay
       if (paymentMethod === 'MTN_MOMO' || paymentMethod === 'AIRTEL_MONEY' || paymentMethod === 'CARD') {
         const paymentRes = await initializePayment({
           orderNumber: orderResult.orderNumber,
@@ -92,18 +161,21 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           phoneNumber: shippingData.phone,
         });
 
+        const txRef = paymentRes.merchantTxRef || paymentRes.uuid || `TX-${orderResult.orderNumber}`;
+        setActiveTxRef(txRef);
+        setActiveUuid(paymentRes.uuid || '');
+        setIsSandboxPayment(Boolean(paymentRes.isSandbox));
+        setCardAuthUrl(paymentRes.authUrl || null);
+
         setPaymentInstruction(
-          paymentRes.instruction || 'Please authorize the payment prompt on your phone by entering your secret PIN.'
+          paymentRes.instruction ||
+            (paymentMethod === 'CARD'
+              ? 'Please proceed to secure card payment authorization.'
+              : 'Please authorize the payment prompt on your phone by entering your secret PIN.')
         );
         setCheckoutStep('payment_prompt');
       } else {
-        setCheckoutStep('confirmed');
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ['#991b1b', '#d4af37', '#e5e2e1'],
-        });
+        handleCompletePaymentConfirmation();
       }
     } catch (err: any) {
       console.error('Order creation error:', err);
@@ -111,16 +183,6 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleCompletePaymentConfirmation = () => {
-    setCheckoutStep('confirmed');
-    confetti({
-      particleCount: 100,
-      spread: 80,
-      origin: { y: 0.6 },
-      colors: ['#991b1b', '#d4af37', '#e5e2e1'],
-    });
   };
 
   const handleCopyOrderNumber = () => {
@@ -553,48 +615,118 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
-                className="bg-noir-900 border border-noir-800 rounded-xl p-8 sm:p-10 text-center space-y-8"
+                className="bg-noir-900 border border-noir-800 rounded-xl p-8 sm:p-10 text-center space-y-8 relative overflow-hidden"
               >
-                <div className="w-20 h-20 rounded-full bg-amber-500/15 border border-amber-500/50 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
-                  <Icons8 name="mobile-alt" size={40} />
+                {/* Sandbox Mode Indicator Banner */}
+                {isSandboxPayment && (
+                  <div className="bg-amber-500/10 border border-amber-500/40 text-amber-300 px-4 py-2 rounded-lg text-xs font-label-caps uppercase flex items-center justify-center gap-2 max-w-xl mx-auto">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                    <span>MarzPay Sandbox Mode · Safe Dev Environment (No Real Money Debited)</span>
+                  </div>
+                )}
+
+                {/* Gateway Provider Header Icon */}
+                <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full bg-crimson/10 animate-ping opacity-75" />
+                  <div className={`w-20 h-20 rounded-full flex items-center justify-center relative z-10 border ${
+                    paymentMethod === 'MTN_MOMO'
+                      ? 'bg-amber-500/15 border-amber-500/60 text-amber-400'
+                      : paymentMethod === 'AIRTEL_MONEY'
+                      ? 'bg-red-500/15 border-red-500/60 text-red-400'
+                      : 'bg-crimson/15 border-crimson/60 text-bone'
+                  }`}>
+                    {paymentMethod === 'CARD' ? (
+                      <Icons8 name="credit-card" size={38} className="text-crimson-light" />
+                    ) : (
+                      <Icons8 name="mobile-alt" size={38} />
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2 max-w-lg mx-auto">
-                  <span className="font-label-caps text-xs text-gold uppercase tracking-widest block font-bold">
-                    Mobile Payment Authorization
-                  </span>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="font-label-caps text-xs text-gold uppercase tracking-widest font-bold">
+                      {paymentMethod === 'CARD' ? 'Card Authorization' : 'Mobile Money Push Handshake'}
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-noir-800 text-bone-muted border border-noir-750 font-label-data uppercase">
+                      MarzPay Gateway
+                    </span>
+                  </div>
                   <h2 className="font-title-editorial text-2xl sm:text-3xl text-bone uppercase">
-                    Check Your Phone Screen
+                    {paymentMethod === 'CARD' ? 'Complete Card Checkout' : 'Check Your Phone Screen'}
                   </h2>
                   <p className="font-body-sm text-sm text-bone-dim leading-relaxed">
                     {paymentInstruction}
                   </p>
                 </div>
 
-                {/* Step Instructions */}
-                <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl text-left space-y-4 max-w-xl mx-auto">
-                  <div className="font-label-caps text-xs uppercase text-gold tracking-wider pb-2 border-b border-noir-800">
-                    Payment Instructions
+                {verifyError && (
+                  <div className="p-4 bg-red-950/70 border border-red-800 text-red-300 text-sm font-body-sm rounded-lg flex items-start gap-3 max-w-xl mx-auto text-left">
+                    <Icons8 name="exclamation-circle" size={18} className="shrink-0 mt-0.5 text-red-400" />
+                    <div>
+                      <p className="font-bold">Payment Notice</p>
+                      <p className="text-xs text-red-300/90 mt-0.5">{verifyError}</p>
+                    </div>
                   </div>
-                  <div className="flex items-start gap-3 text-sm text-bone-dim">
-                    <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                      1
-                    </span>
-                    <span>Unlock your mobile device to view the prompt from {paymentMethod === 'MTN_MOMO' ? 'MTN MoMo' : paymentMethod === 'AIRTEL_MONEY' ? 'Airtel Money' : 'Payment Gateway'}.</span>
+                )}
+
+                {/* Card Redirect Action (if method is CARD) */}
+                {paymentMethod === 'CARD' && cardAuthUrl && (
+                  <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-4 text-left">
+                    <div className="flex items-center justify-between border-b border-noir-800 pb-3">
+                      <span className="font-label-caps text-xs uppercase text-bone font-bold">3D Secure Card Gateway</span>
+                      <span className="text-xs text-emerald-400 font-label-data flex items-center gap-1">
+                        <Icons8 name="shield-alt" size={12} />
+                        <span>Encrypted SSL</span>
+                      </span>
+                    </div>
+                    <p className="text-xs text-bone-dim leading-relaxed">
+                      Click the button below to open the official MarzPay card authorization portal to complete your Visa or Mastercard transaction securely.
+                    </p>
+                    <a
+                      href={cardAuthUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-colors btn-gothic-glow rounded-xl flex items-center justify-center gap-2 font-bold cursor-pointer"
+                    >
+                      <span>Open Card Payment Gateway</span>
+                      <Icons8 name="external-link-alt" size={14} />
+                    </a>
                   </div>
-                  <div className="flex items-start gap-3 text-sm text-bone-dim">
-                    <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                      2
-                    </span>
-                    <span>Enter your mobile money PIN to authorize <strong className="text-bone">UGX {total.toLocaleString()}</strong>.</span>
+                )}
+
+                {/* Step Instructions for Mobile Money */}
+                {paymentMethod !== 'CARD' && (
+                  <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl text-left space-y-4 max-w-xl mx-auto">
+                    <div className="flex items-center justify-between pb-2 border-b border-noir-800">
+                      <span className="font-label-caps text-xs uppercase text-gold tracking-wider">
+                        Prompt Instructions ({paymentMethod === 'MTN_MOMO' ? 'MTN MoMo' : 'Airtel Money'})
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-label-data">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Awaiting Handset PIN</span>
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3 text-sm text-bone-dim">
+                      <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                        1
+                      </span>
+                      <span>Unlock your mobile device to view the push prompt from <strong className="text-bone">{paymentMethod === 'MTN_MOMO' ? 'MTN MoMo' : 'Airtel Money'}</strong>.</span>
+                    </div>
+                    <div className="flex items-start gap-3 text-sm text-bone-dim">
+                      <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                        2
+                      </span>
+                      <span>Enter your mobile money PIN to authorize <strong className="text-bone">UGX {total.toLocaleString()}</strong>.</span>
+                    </div>
+                    <div className="flex items-start gap-3 text-sm text-bone-dim">
+                      <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                        3
+                      </span>
+                      <span>The page will auto-confirm once your payment settles. You can also click the button below to verify immediately.</span>
+                    </div>
                   </div>
-                  <div className="flex items-start gap-3 text-sm text-bone-dim">
-                    <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                      3
-                    </span>
-                    <span>Click the confirmation button below once you have approved the prompt.</span>
-                  </div>
-                </div>
+                )}
 
                 {/* Reference Details */}
                 <div className="p-5 bg-noir-950 border border-noir-800 rounded-xl max-w-xl mx-auto text-left font-label-data text-xs space-y-2.5">
@@ -602,6 +734,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     <span>Order Reference:</span>
                     <span className="text-bone font-bold">{createdOrder?.orderNumber}</span>
                   </div>
+                  {activeTxRef && (
+                    <div className="flex justify-between text-bone-dim">
+                      <span>MarzPay TX Ref:</span>
+                      <span className="text-bone-muted font-mono text-[11px]">{activeTxRef}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-bone-dim">
                     <span>Target Phone:</span>
                     <span className="text-bone">{shippingData.phone}</span>
@@ -612,12 +750,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 </div>
 
+                {/* Actions */}
                 <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={handleCompletePaymentConfirmation}
-                    className="flex-1 py-4 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-colors btn-gothic-glow rounded-xl cursor-pointer"
+                    type="button"
+                    onClick={handleManualVerify}
+                    disabled={isVerifying}
+                    className="flex-1 py-4 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-colors btn-gothic-glow rounded-xl flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
-                    I Have Approved The PIN Prompt
+                    {isVerifying ? (
+                      <>
+                        <Icons8 name="spinner" size={16} className="animate-spin" />
+                        <span>Verifying Handshake...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icons8 name="check" size={14} />
+                        <span>I Have Approved The PIN Prompt</span>
+                      </>
+                    )}
                   </button>
                   {createdOrder?.directWhatsAppUrl && (
                     <a

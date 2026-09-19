@@ -170,6 +170,7 @@ export interface SiteSettingData {
   heroStatement: string;
   heroSubtext: string;
   heroBannerUrl: string;
+  heroPortraitUrl?: string;
   heroOpacity: number;
   announcementActive: boolean;
   announcementText?: string | null;
@@ -180,6 +181,10 @@ export interface SiteSettingData {
   googleMapsUrl: string;
   openingHours: { day: string; hours: string }[];
   socialLinks: SocialLink[];
+  logoUrl?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImageUrl?: string;
 }
 
 export interface ClientUserData {

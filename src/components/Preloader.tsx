@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LOGO_URL } from '../data/atelierData';
 import { useSettings } from '../context/SettingsContext';
+import { formatImageUrl } from '../config/api';
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -39,7 +40,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
               className="relative flex items-center justify-center"
             >
               <img
-                src={LOGO_URL}
+                src={formatImageUrl(settings.logoUrl || LOGO_URL)}
                 alt={settings.studioName || 'Marvin Tattoo Studio'}
                 className="w-36 h-auto md:w-44 object-contain filter drop-shadow-[0_0_35px_rgba(255,255,255,0.18)]"
               />

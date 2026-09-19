@@ -40,12 +40,52 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Apply document title when studioName changes
+  // Apply document title and SEO meta tags when settings change
   useEffect(() => {
-    if (typeof document !== 'undefined' && settings.studioName) {
-      document.title = settings.studioName;
+    if (typeof document !== 'undefined') {
+      const pageTitle = settings.metaTitle?.trim() || settings.studioName?.trim() || 'Marvin Tattoo Studio';
+      document.title = pageTitle;
+
+      // Update meta description
+      if (settings.metaDescription) {
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+          metaDesc = document.createElement('meta');
+          metaDesc.setAttribute('name', 'description');
+          document.head.appendChild(metaDesc);
+        }
+        metaDesc.setAttribute('content', settings.metaDescription);
+
+        let ogDesc = document.querySelector('meta[property="og:description"]');
+        if (!ogDesc) {
+          ogDesc = document.createElement('meta');
+          ogDesc.setAttribute('property', 'og:description');
+          document.head.appendChild(ogDesc);
+        }
+        ogDesc.setAttribute('content', settings.metaDescription);
+      }
+
+      // Update OG title
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) {
+        ogTitle = document.createElement('meta');
+        ogTitle.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitle);
+      }
+      ogTitle.setAttribute('content', pageTitle);
+
+      // Update OG image if provided
+      if (settings.ogImageUrl) {
+        let ogImg = document.querySelector('meta[property="og:image"]');
+        if (!ogImg) {
+          ogImg = document.createElement('meta');
+          ogImg.setAttribute('property', 'og:image');
+          document.head.appendChild(ogImg);
+        }
+        ogImg.setAttribute('content', settings.ogImageUrl);
+      }
     }
-  }, [settings.studioName]);
+  }, [settings.studioName, settings.metaTitle, settings.metaDescription, settings.ogImageUrl]);
 
   const refreshSettings = useCallback(async () => {
     try {

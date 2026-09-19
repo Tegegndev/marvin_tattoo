@@ -149,8 +149,10 @@ model PaymentTransaction {
   amount             Float
   currency           String    @default("UGX")
   paymentMethod      String    // MTN_MOMO, AIRTEL_MONEY, CARD, CASH
-  status             String    @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
-  rawWebhookPayload  String?   // JSON audit log
+  phoneNumber        String?   // Customer phone number used for prompt
+  providerTxId       String?   // Telco provider transaction ID (from MTN / Airtel callback)
+  status             String    @default("PENDING") // PENDING, PROCESSING, SUCCESS, FAILED, REFUNDED
+  rawWebhookPayload  String?   @db.Text
   paidAt             DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
@@ -175,6 +177,7 @@ model SiteSetting {
   heroStatement      String   @default("Clean Lines. Heavy Blackwork. Made to Age Well.")
   heroSubtext        String   @default("Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.")
   heroBannerUrl      String   @default("/images/hero-banner.png")
+  heroPortraitUrl    String?  @default("/images/marvin-founder.png")
   heroOpacity        Float    @default(0.45) // 0.0 to 1.0 overlay opacity
   announcementActive Boolean  @default(false)
   announcementText   String?
@@ -185,6 +188,10 @@ model SiteSetting {
   googleMapsUrl      String   @default("https://maps.google.com/?q=New+Pioneer+Mall+Kampala")
   openingHours       String   // JSON string of opening hours array
   socialLinks        String   // JSON string of social media links array
+  logoUrl            String?  @default("/logo.svg")
+  metaTitle          String?  @default("Marvin Tattoos & Piercing Atelier | Kampala, Uganda")
+  metaDescription    String?  @db.Text
+  ogImageUrl         String?
   updatedAt          DateTime @updatedAt
 }
 
