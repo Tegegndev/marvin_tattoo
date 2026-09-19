@@ -68,12 +68,17 @@ export async function sendWhatsAppMessage(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(5000),
     });
 
-    const data: any = await response.json();
+    const data: any = await response.json().catch(() => null);
 
     if (!response.ok) {
-      console.error('Meta WhatsApp Cloud API Error:', data);
+      if (data?.error?.code === 190) {
+        console.warn('⚠️ [Meta WhatsApp Cloud API] Access token expired (code 190). Update META_WHATSAPP_TOKEN in backend/.env or leave empty to disable.');
+      } else {
+        console.warn('⚠️ [Meta WhatsApp Cloud API Error]:', data?.error?.message || response.statusText);
+      }
       return {
         success: false,
         error: data?.error?.message || 'Meta API returned error',
@@ -84,7 +89,7 @@ export async function sendWhatsAppMessage(
     console.log(`⚡ [META WHATSAPP SENT] Message ID: ${messageId} to +${cleanPhone}`);
     return { success: true, messageId };
   } catch (error: any) {
-    console.error('sendWhatsAppMessage network error:', error);
+    console.warn(`⚠️ [Meta WhatsApp Cloud API] Dispatch skipped (${error.message || 'Timeout / Network error'}). Direct wa.me links remain fully functional.`);
     return { success: false, error: error.message || 'Network request failed' };
   }
 }
