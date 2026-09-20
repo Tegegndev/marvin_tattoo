@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageView, ServiceItem, PortfolioPiece } from '../types';
-import { SERVICES_DATA, PORTFOLIO_DATA, WHATSAPP_NUMBER } from '../data/atelierData';
+import { WHATSAPP_NUMBER } from '../data/atelierData';
 import { fetchServices, fetchPortfolioPieces } from '../services/apiClient';
 import { Icons8 } from '../components/Icons8';
+import { AtelierSpinner } from '../components/ContentPreloader';
 
 interface ServiceDetailPageProps {
   serviceId: string | null;
@@ -20,16 +21,45 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
   onBookService,
   onSelectPiece,
 }) => {
-  const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
-  const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
+  const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeCareTab, setActiveCareTab] = useState<'prep' | 'aftercare'>('prep');
 
   useEffect(() => {
-    fetchServices().then(setServicesList).catch(() => {});
-    fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
+    let mounted = true;
+    setLoading(true);
+
+    Promise.allSettled([
+      fetchServices(),
+      fetchPortfolioPieces()
+    ]).then(([servicesRes, portfolioRes]) => {
+      if (!mounted) return;
+      if (servicesRes.status === 'fulfilled') {
+        setServicesList(servicesRes.value);
+      }
+      if (portfolioRes.status === 'fulfilled') {
+        setPortfolioList(portfolioRes.value);
+      }
+      setLoading(false);
+    }).catch(() => {
+      if (mounted) setLoading(false);
+    });
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    return () => {
+      mounted = false;
+    };
   }, [serviceId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[75vh] flex flex-col items-center justify-center pt-28 pb-20 text-center px-4 bg-noir-950">
+        <AtelierSpinner message="Consulting live studio discipline ledger..." />
+      </div>
+    );
+  }
 
   // Find the active service or fallback to first
   const currentService = servicesList.find((s) => s.id === serviceId) || servicesList[0];

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageView, ServiceItem } from '../types';
-import { SERVICES_DATA } from '../data/atelierData';
 import { fetchServices } from '../services/apiClient';
+import { ServicesGridSkeleton } from '../components/ContentPreloader';
 import { Icons8 } from '../components/Icons8';
 
 interface ServicesPageProps {
@@ -15,11 +15,29 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
   onSelectService,
   onBookService,
 }) => {
-  const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
   useEffect(() => {
-    fetchServices().then(setServicesList).catch(() => {});
+    let mounted = true;
+    fetchServices()
+      .then((data) => {
+        if (mounted) {
+          setServicesList(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load services:', err);
+        if (mounted) {
+          setServicesList([]);
+          setLoading(false);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const categories = [
@@ -123,8 +141,19 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
 
       {/* 03. SERVICES GRID */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredServices.map((service) => (
+        {loading ? (
+          <ServicesGridSkeleton count={6} message="Loading atelier tattoo disciplines..." />
+        ) : filteredServices.length === 0 ? (
+          <div className="py-20 text-center space-y-3 border border-noir-800 rounded-xl bg-noir-900/40">
+            <Icons8 name="paint-brush" size={36} className="mx-auto text-bone-muted opacity-50" />
+            <h4 className="font-title-editorial text-lg text-bone uppercase">No Disciplines in this Category</h4>
+            <p className="font-body-sm text-xs text-bone-dim max-w-sm mx-auto">
+              Please choose another discipline category or book a bespoke consultation.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredServices.map((service) => (
             <article
               key={service.id}
               className="group flex flex-col bg-noir-900 border border-noir-700/80 hover:border-slate-400 transition-all duration-300 shadow-xl overflow-hidden justify-between"
@@ -218,7 +247,8 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               </div>
             </article>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       {/* 04. STUDIO STANDARDS ACCORDION BANNER */}

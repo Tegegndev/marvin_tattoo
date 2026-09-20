@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageView, PortfolioPiece, ServiceItem, BookingServiceType, BookingRecord } from '../types';
 import { SERVICES_DATA, WHATSAPP_NUMBER } from '../data/atelierData';
+import { fetchServices } from '../services/apiClient';
 import { Icons8 } from '../components/Icons8';
 import { bookingApi } from '../services/bookingApi';
 import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
@@ -77,18 +78,31 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   const [referenceFilePreview, setReferenceFilePreview] = useState<string>('');
 
   // State
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  useEffect(() => {
+    let mounted = true;
+    fetchServices().then((data) => {
+      if (mounted && data && data.length > 0) {
+        setServicesList(data);
+      }
+    }).catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const currentService =
-    SERVICES_DATA.find(
+    servicesList.find(
       (s) =>
         s.id === serviceType ||
         s.id === serviceType.replace(/_/g, '-') ||
         s.id.replace(/-/g, '_') === serviceType
     ) ||
-    (serviceType === 'custom_tattoo' ? CUSTOM_SERVICE_ITEM : SERVICES_DATA[0]);
+    (serviceType === 'custom_tattoo' ? CUSTOM_SERVICE_ITEM : servicesList[0] || SERVICES_DATA[0]);
 
   useEffect(() => {
     if (initialService) {
@@ -337,7 +351,7 @@ Looking forward to discussing the design and finalizing my appointment slot.`;
               onChange={(e) => setServiceType(e.target.value)}
               className="w-full px-4 py-3 bg-noir-850 border border-noir-750 text-bone text-sm font-body-sm rounded-lg focus:outline-none focus:border-crimson transition-colors cursor-pointer"
             >
-              {SERVICES_DATA.map((s) => (
+              {servicesList.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.disciplineNumber ? `${s.disciplineNumber}. ` : ''}{s.title} — {s.subtitle}
                 </option>

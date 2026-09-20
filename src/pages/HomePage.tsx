@@ -9,6 +9,7 @@ import {
   fetchTestimonials,
   fetchProducts,
 } from '../services/apiClient';
+import { ServicesGridSkeleton, ProductGridSkeleton } from '../components/ContentPreloader';
 import { useSettings } from '../context/SettingsContext';
 import { formatImageUrl, PLACEHOLDERS } from '../config/api';
 
@@ -71,21 +72,45 @@ export const HomePage: React.FC<HomePageProps> = ({
   onBookService,
   onAddToCart,
   onOpenWhatsApp,
+  onOpenVerify,
 }) => {
   const { settings } = useSettings();
   const [portfolioList, setPortfolioList] = useState<PortfolioPiece[]>(PORTFOLIO_DATA);
-  const [servicesList, setServicesList] = useState<ServiceItem[]>(SERVICES_DATA);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
+  const [loadingServices, setLoadingServices] = useState<boolean>(true);
   const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>(TESTIMONIALS_DATA);
-  const [productsList, setProductsList] = useState<ProductItem[]>(PRODUCTS_DATA);
+  const [productsList, setProductsList] = useState<ProductItem[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const [selectedServiceCategory, setSelectedServiceCategory] = useState<string>('ALL');
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchPortfolioPieces().then(setPortfolioList).catch(() => {});
-    fetchServices().then(setServicesList).catch(() => {});
-    fetchTestimonials().then(setTestimonialsList).catch(() => {});
-    fetchProducts().then(setProductsList).catch(() => {});
+    let mounted = true;
+    fetchPortfolioPieces().then((d) => mounted && setPortfolioList(d)).catch(() => {});
+    fetchTestimonials().then((d) => mounted && setTestimonialsList(d)).catch(() => {});
+
+    fetchServices()
+      .then((d) => {
+        if (mounted) {
+          setServicesList(d);
+          setLoadingServices(false);
+        }
+      })
+      .catch(() => mounted && setLoadingServices(false));
+
+    fetchProducts()
+      .then((d) => {
+        if (mounted) {
+          setProductsList(d);
+          setLoadingProducts(false);
+        }
+      })
+      .catch(() => mounted && setLoadingProducts(false));
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const scrollLeft = () => {
@@ -345,81 +370,89 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
 
           {/* 3-Column Luxury Service Matrix */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredServices.map((service) => (
-              <article
-                key={service.id}
-                className="group flex flex-col bg-noir-850 border border-noir-700/80 hover:border-slate-400/80 transition-all duration-300 hover:shadow-2xl hover:shadow-noir-950/80 overflow-hidden"
-              >
-                {/* Card Hero Image with Badges */}
-                <div
-                  onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
-                  className="w-full h-64 overflow-hidden bg-noir-950 relative border-b border-noir-700/60 cursor-pointer"
+          {loadingServices ? (
+            <ServicesGridSkeleton count={3} message="Consulting live tattoo disciplines..." />
+          ) : filteredServices.length === 0 ? (
+            <div className="py-16 text-center bg-noir-850 border border-noir-700/80">
+              <p className="font-label-caps text-sm text-bone-muted uppercase">No disciplines available in this category</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredServices.map((service) => (
+                <article
+                  key={service.id}
+                  className="group flex flex-col bg-noir-850 border border-noir-700/80 hover:border-slate-400/80 transition-all duration-300 hover:shadow-2xl hover:shadow-noir-950/80 overflow-hidden"
                 >
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover interactive-img-zoom filter grayscale group-hover:grayscale-0 contrast-110 brightness-95 group-hover:brightness-100 transition-all duration-700"
-                  />
-                  {/* Ambient Dark Gradient for Legibility */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/40 pointer-events-none" />
+                  {/* Card Hero Image with Badges */}
+                  <div
+                    onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                    className="w-full h-64 overflow-hidden bg-noir-950 relative border-b border-noir-700/60 cursor-pointer"
+                  >
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover interactive-img-zoom filter grayscale group-hover:grayscale-0 contrast-110 brightness-95 group-hover:brightness-100 transition-all duration-700"
+                    />
+                    {/* Ambient Dark Gradient for Legibility */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/40 pointer-events-none" />
 
-                  {/* Top Discipline Tag */}
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 backdrop-blur-md text-[11px] font-label-data uppercase tracking-wider text-bone-dim border border-noir-700/80 shadow-sm">
-                    Discipline // {service.disciplineNumber}
-                  </div>
-
-                  {/* Top Category Badge */}
-                  {service.category && (
-                    <div className="absolute top-3 right-3 px-2.5 py-1 bg-crimson/90 backdrop-blur-md text-[10px] font-label-caps uppercase tracking-wider text-bone font-bold border border-crimson/40">
-                      {service.category}
+                    {/* Top Discipline Tag */}
+                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/90 backdrop-blur-md text-[11px] font-label-data uppercase tracking-wider text-bone-dim border border-noir-700/80 shadow-sm">
+                      Discipline // {service.disciplineNumber}
                     </div>
-                  )}
 
-                  {/* Bottom Image Subtitle */}
-                  <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-label-data text-bone-muted bg-noir-950/85 backdrop-blur-sm px-3 py-1.5 border border-noir-700/60">
-                    <span className="truncate uppercase tracking-wider text-bone font-medium">{service.subtitle}</span>
-                    <div className="text-gold flex-shrink-0 ml-2">
-                      {getServiceIcon(service.iconName)}
+                    {/* Top Category Badge */}
+                    {service.category && (
+                      <div className="absolute top-3 right-3 px-2.5 py-1 bg-crimson/90 backdrop-blur-md text-[10px] font-label-caps uppercase tracking-wider text-bone font-bold border border-crimson/40">
+                        {service.category}
+                      </div>
+                    )}
+
+                    {/* Bottom Image Subtitle */}
+                    <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-label-data text-bone-muted bg-noir-950/85 backdrop-blur-sm px-3 py-1.5 border border-noir-700/60">
+                      <span className="truncate uppercase tracking-wider text-bone font-medium">{service.subtitle}</span>
+                      <div className="text-gold flex-shrink-0 ml-2">
+                        {getServiceIcon(service.iconName)}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Card Body */}
-                <div className="p-6 flex flex-col justify-between flex-grow space-y-6">
-                  <div>
-                    <h3
-                      onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
-                      className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors cursor-pointer"
-                    >
-                      {service.title}
-                    </h3>
+                  {/* Card Body */}
+                  <div className="p-6 flex flex-col justify-between flex-grow space-y-6">
+                    <div>
+                      <h3
+                        onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                        className="font-headline-sm text-2xl text-bone uppercase tracking-tight group-hover:text-white font-bold transition-colors cursor-pointer"
+                      >
+                        {service.title}
+                      </h3>
+                    </div>
+
+                    {/* Dual Action Buttons */}
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-noir-800">
+                      <button
+                        type="button"
+                        onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
+                        className="w-full py-2.5 px-3 bg-noir-900 hover:bg-noir-850 text-bone-muted hover:text-bone font-label-caps text-xs uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <span>Details</span>
+                        <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onBookService ? onBookService(service.id) : onNavigate('booking')}
+                        className="w-full py-2.5 px-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-wider border border-crimson/40 transition-all flex items-center justify-center gap-1.5 font-bold shadow-sm shadow-crimson/20"
+                      >
+                        <Icons8 name="calendar-check" size={12} />
+                        <span>Book</span>
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Dual Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-noir-800">
-                    <button
-                      type="button"
-                      onClick={() => onSelectService ? onSelectService(service.id) : onNavigate('services')}
-                      className="w-full py-2.5 px-3 bg-noir-900 hover:bg-noir-850 text-bone-muted hover:text-bone font-label-caps text-xs uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <span>Details</span>
-                      <Icons8 name="arrow-right" size={12} className="text-crimson-light" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => onBookService ? onBookService(service.id) : onNavigate('booking')}
-                      className="w-full py-2.5 px-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-wider border border-crimson/40 transition-all flex items-center justify-center gap-1.5 font-bold shadow-sm shadow-crimson/20"
-                    >
-                      <Icons8 name="calendar-check" size={12} />
-                      <span>Book</span>
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -581,58 +614,68 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             {/* Equipment Grid */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {productsList.slice(0, 2).map((prod) => {
-                const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
-                return (
-                  <div
-                    key={prod.id}
-                    className="bg-noir-850 p-5 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
-                  >
-                    <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700">
-                      <img
-                        src={prod.image}
-                        alt={prod.name}
-                        className={`w-full h-full object-cover ${isOutOfStock ? 'grayscale opacity-60' : 'interactive-img-zoom'}`}
-                      />
-                      {isOutOfStock && (
-                        <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-950/90 text-[10px] font-label-caps uppercase text-red-300 border border-red-700/50">
-                          Sold Out
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <span className="font-label-caps text-[10px] text-gold uppercase block">
-                        {prod.category}
-                      </span>
-                      <h4 className="font-title-editorial text-base text-bone uppercase mb-1 font-bold truncate">
-                        {prod.name}
-                      </h4>
-                      <p className="font-body-sm text-xs text-bone-dim mb-4 line-clamp-2">
-                        {prod.description}
-                      </p>
-                      <div className="flex items-center justify-between pt-3 border-t border-noir-700">
-                        <span className="font-label-data text-sm text-bone font-bold">
-                          {prod.currency === 'USD' || prod.currency === '$'
-                            ? `$${prod.price.toFixed(2)}`
-                            : `UGX ${prod.price.toLocaleString()}`}
-                        </span>
-                        <button
-                          onClick={() => !isOutOfStock && onAddToCart(prod)}
-                          disabled={isOutOfStock}
-                          className={`px-3.5 py-1.5 font-label-caps text-xs uppercase transition-colors border ${
-                            isOutOfStock
-                              ? 'bg-noir-900 text-bone-dim border-noir-800 cursor-not-allowed opacity-60'
-                              : 'bg-noir-800 hover:bg-noir-700 text-bone border-noir-700'
-                          }`}
-                        >
-                          {isOutOfStock ? 'Sold Out' : 'Add to Bag'}
-                        </button>
+            <div className="lg:col-span-7">
+              {loadingProducts ? (
+                <ProductGridSkeleton count={2} message="Loading studio equipment catalog..." />
+              ) : productsList.length === 0 ? (
+                <div className="py-12 text-center bg-noir-850 border border-noir-700">
+                  <p className="font-label-caps text-xs text-bone-muted uppercase">Equipment inventory currently updating</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {productsList.slice(0, 2).map((prod) => {
+                    const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
+                    return (
+                      <div
+                        key={prod.id}
+                        className="bg-noir-850 p-5 flex flex-col justify-between border border-noir-700 hover:border-slate-500 transition-colors"
+                      >
+                        <div className="w-full h-44 mb-3 overflow-hidden bg-noir-950 relative border border-noir-700">
+                          <img
+                            src={prod.image}
+                            alt={prod.name}
+                            className={`w-full h-full object-cover ${isOutOfStock ? 'grayscale opacity-60' : 'interactive-img-zoom'}`}
+                          />
+                          {isOutOfStock && (
+                            <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-950/90 text-[10px] font-label-caps uppercase text-red-300 border border-red-700/50">
+                              Sold Out
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <span className="font-label-caps text-[10px] text-gold uppercase block">
+                            {prod.category}
+                          </span>
+                          <h4 className="font-title-editorial text-base text-bone uppercase mb-1 font-bold truncate">
+                            {prod.name}
+                          </h4>
+                          <p className="font-body-sm text-xs text-bone-dim mb-4 line-clamp-2">
+                            {prod.description}
+                          </p>
+                          <div className="flex items-center justify-between pt-3 border-t border-noir-700">
+                            <span className="font-label-data text-sm text-bone font-bold">
+                              {prod.currency === 'USD' || prod.currency === '$'
+                                ? `$${prod.price.toFixed(2)}`
+                                : `UGX ${prod.price.toLocaleString()}`}
+                            </span>
+                            <button
+                              onClick={() => !isOutOfStock && onAddToCart(prod)}
+                              disabled={isOutOfStock}
+                              className={`px-3.5 py-1.5 font-label-caps text-xs uppercase transition-colors border ${
+                                isOutOfStock
+                                  ? 'bg-noir-900 text-bone-dim border-noir-800 cursor-not-allowed opacity-60'
+                                  : 'bg-noir-800 hover:bg-noir-700 text-bone border-noir-700'
+                              }`}
+                            >
+                              {isOutOfStock ? 'Sold Out' : 'Add to Bag'}
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

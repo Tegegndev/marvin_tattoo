@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageView, ProductItem } from '../types';
-import { PRODUCTS_DATA } from '../data/atelierData';
 import { fetchProducts } from '../services/apiClient';
+import { ProductGridSkeleton } from '../components/ContentPreloader';
 import { motion } from 'framer-motion';
 import { Icons8 } from '../components/Icons8';
 
@@ -15,12 +15,30 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
   onAddToCart,
   onOpenCart,
 }) => {
-  const [productList, setProductList] = useState<ProductItem[]>(PRODUCTS_DATA);
+  const [productList, setProductList] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [addedItemIds, setAddedItemIds] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchProducts().then(setProductList).catch(() => {});
+    let mounted = true;
+    fetchProducts()
+      .then((data) => {
+        if (mounted) {
+          setProductList(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load products:', err);
+        if (mounted) {
+          setProductList([]);
+          setLoading(false);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const categories = React.useMemo(() => {
@@ -98,18 +116,29 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <h3 className="font-headline-md text-xl uppercase text-bone font-bold">
-              Inventory Catalog ({filteredProducts.length})
+              {loading ? 'Loading Inventory...' : `Inventory Catalog (${filteredProducts.length})`}
             </h3>
             <span className="font-label-data text-xs text-bone-dim">
               Verified Studio Equipment
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((prod, idx) => {
-              const isAdded = addedItemIds.includes(prod.id);
-              const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
-              const isLowStock = !isOutOfStock && prod.stockCount !== undefined && prod.stockCount <= 5;
+          {loading ? (
+            <ProductGridSkeleton count={8} message="Curating studio equipment & inventory..." />
+          ) : filteredProducts.length === 0 ? (
+            <div className="py-20 text-center space-y-3 border border-noir-800 rounded-xl bg-noir-900/40">
+              <Icons8 name="shopping-bag" size={36} className="mx-auto text-bone-muted opacity-50" />
+              <h4 className="font-title-editorial text-lg text-bone uppercase">No Products in this Category</h4>
+              <p className="font-body-sm text-xs text-bone-dim max-w-sm mx-auto">
+                No items are currently listed in this category. Check back shortly or browse all supplies.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredProducts.map((prod, idx) => {
+                const isAdded = addedItemIds.includes(prod.id);
+                const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
+                const isLowStock = !isOutOfStock && prod.stockCount !== undefined && prod.stockCount <= 5;
 
               return (
                 <motion.div
@@ -201,7 +230,8 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                 </motion.div>
               );
             })}
-          </div>
+            </div>
+          )}
 
           {/* Floating Cart Notice Banner */}
           <div className="p-6 bg-noir-850 border border-gold/30 flex flex-col md:flex-row items-center justify-between gap-4">
