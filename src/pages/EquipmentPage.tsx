@@ -168,7 +168,9 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
 
                   <div className="pt-3 border-t border-noir-700/60 flex items-center justify-between">
                     <span className="font-label-data text-base text-bone font-bold">
-                      {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
+                      {prod.currency === 'USD' || prod.currency === '$'
+                        ? `$${prod.price.toFixed(2)}`
+                        : `UGX ${prod.price.toLocaleString()}`}
                     </span>
                     <button
                       onClick={() => !isOutOfStock && handleAdd(prod)}

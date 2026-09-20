@@ -613,7 +613,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </p>
                       <div className="flex items-center justify-between pt-3 border-t border-noir-700">
                         <span className="font-label-data text-sm text-bone font-bold">
-                          {prod.price > 1000 ? `UGX ${prod.price.toLocaleString()}` : `$${prod.price.toFixed(2)}`}
+                          {prod.currency === 'USD' || prod.currency === '$'
+                            ? `$${prod.price.toFixed(2)}`
+                            : `UGX ${prod.price.toLocaleString()}`}
                         </span>
                         <button
                           onClick={() => !isOutOfStock && onAddToCart(prod)}
