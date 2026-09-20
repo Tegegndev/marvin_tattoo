@@ -195,16 +195,18 @@ export async function collectCard(
     payload.metadata = params.metadata;
   }
 
-  let apiRes: any = null;
-  let redirectUrl: string | undefined = undefined;
+  const apiRes = await callMarzPayApi("/collect-money", "POST", payload);
+  const redirectUrl =
+    apiRes?.data?.redirect_url ||
+    apiRes?.data?.payment_url ||
+    apiRes?.data?.authorization_url ||
+    apiRes?.data?.checkout_url;
 
-  try {
-    apiRes = await callMarzPayApi("/collect-money", "POST", payload);
-    if (apiRes?.data?.redirect_url) {
-      redirectUrl = apiRes.data.redirect_url;
-    }
-  } catch (err: any) {
-    console.warn("[MarzPay Card Initiation Warning]:", err.message);
+  if (!redirectUrl) {
+    throw new Error(
+      apiRes?.message ||
+        "MarzPay card gateway did not return a payment redirect URL. Please check your MarzPay dashboard or use Mobile Money."
+    );
   }
 
   const tx = apiRes?.data?.transaction || {};
@@ -214,8 +216,8 @@ export async function collectCard(
     success: true,
     uuid: tx.uuid || params.reference,
     reference: tx.reference || params.reference,
-    status: "pending", // Card payments STRICTLY start as pending until 3D-Secure completion
-    redirectUrl, // ONLY present if real MarzPay returns a verified redirect URL
+    status: "pending",
+    redirectUrl,
     message: "Card payment initialized. Please complete authorization via the 3D-Secure gateway.",
     isSandbox,
     raw: apiRes,

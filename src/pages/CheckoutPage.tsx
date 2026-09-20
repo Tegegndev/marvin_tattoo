@@ -165,6 +165,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           phoneNumber: shippingData.phone,
         });
 
+        if (paymentMethod === 'CARD' && !paymentRes.authUrl) {
+          throw new Error(
+            paymentRes.instruction ||
+              'The card payment gateway did not return a 3D-Secure checkout link. Please try Mobile Money (MTN / Airtel) or contact the studio.'
+          );
+        }
+
         const txRef = paymentRes.merchantTxRef || paymentRes.uuid || `TX-${orderResult.orderNumber}`;
         setActiveTxRef(txRef);
         setActiveUuid(paymentRes.uuid || '');
