@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { PageView, CartItem } from '../types';
 import { Icons8 } from '../components/Icons8';
-import { trackOrder, initializePayment, verifyPayment } from '../services/apiClient';
+import {
+  trackOrder,
+  initializePayment,
+  verifyPayment,
+  fetchPublicPaymentMethods,
+  PublicPaymentMethods,
+} from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { formatPaymentError, UserFriendlyError } from '../utils/paymentErrors';
 import { detectCarrier, carrierToPaymentMethod, getCarrierName, CarrierType } from '../utils/carrierDetect';
@@ -28,6 +34,26 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
   const [payPhone, setPayPhone] = useState<string>('');
   const [isInitiatingPay, setIsInitiatingPay] = useState<boolean>(false);
   const [payModalStep, setPayModalStep] = useState<'choose' | 'waiting' | 'success'>('choose');
+  const [paymentMethodsConfig, setPaymentMethodsConfig] = useState<PublicPaymentMethods>({
+    momo: { enabled: true, configured: true },
+    card: { enabled: true, configured: true },
+    cash: { enabled: true, configured: true },
+    mode: 'live',
+  });
+
+  useEffect(() => {
+    fetchPublicPaymentMethods()
+      .then((cfg) => {
+        if (!cfg) return;
+        setPaymentMethodsConfig(cfg);
+        if (payMode === 'MOMO' && !cfg.momo.enabled && cfg.card.enabled) {
+          setPayMode('CARD');
+        } else if (payMode === 'CARD' && !cfg.card.enabled && cfg.momo.enabled) {
+          setPayMode('MOMO');
+        }
+      })
+      .catch((err) => console.warn('TrackOrder payment config fetch:', err));
+  }, []);
   const [activeTxRef, setActiveTxRef] = useState<string>('');
   const [cardAuthUrl, setCardAuthUrl] = useState<string | null>(null);
   const [instruction, setInstruction] = useState<string>('');
@@ -122,6 +148,39 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
   const handleInitiatePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!order) return;
+
+    if (payMode === 'MOMO') {
+      if (!paymentMethodsConfig.momo.enabled) {
+        setFormattedPayError({
+          title: 'Mobile Money Disabled',
+          description: 'Mobile Money payments are currently disabled by store administration.',
+        });
+        return;
+      }
+      if (!paymentMethodsConfig.momo.configured) {
+        setFormattedPayError({
+          title: 'Gateway Setup Required',
+          description: 'Mobile Money payment gateway is not configured yet with API credentials.',
+        });
+        return;
+      }
+    } else if (payMode === 'CARD') {
+      if (!paymentMethodsConfig.card.enabled) {
+        setFormattedPayError({
+          title: 'Card Payment Disabled',
+          description: 'Card payments are currently disabled by store administration.',
+        });
+        return;
+      }
+      if (!paymentMethodsConfig.card.configured) {
+        setFormattedPayError({
+          title: 'Gateway Setup Required',
+          description: 'Card payment gateway is not configured yet with API credentials.',
+        });
+        return;
+      }
+    }
+
     setIsInitiatingPay(true);
     setFormattedPayError(null);
     try {
@@ -640,11 +699,16 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                       <div className="space-y-2.5">
                         {/* 1. Mobile Money (MTN / Airtel) */}
                         <div
-                          onClick={() => setPayMode('MOMO')}
-                          className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
-                            payMode === 'MOMO'
-                              ? 'bg-amber-950/20 border-amber-500/70 text-bone ring-1 ring-amber-500/40'
-                              : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone'
+                          onClick={() => {
+                            if (!paymentMethodsConfig.momo.enabled) return;
+                            setPayMode('MOMO');
+                          }}
+                          className={`p-3.5 rounded-xl border text-left transition-all ${
+                            !paymentMethodsConfig.momo.enabled
+                              ? 'opacity-40 bg-noir-900 border-noir-800 cursor-not-allowed'
+                              : payMode === 'MOMO'
+                              ? 'bg-amber-950/20 border-amber-500/70 text-bone ring-1 ring-amber-500/40 cursor-pointer'
+                              : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone cursor-pointer'
                           }`}
                         >
                           <div className="flex items-start justify-between">
@@ -655,6 +719,15 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                                   <span className="w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-noir-900" />
                                 </span>
                                 <span>Mobile Money (MTN / Airtel)</span>
+                                {!paymentMethodsConfig.momo.enabled ? (
+                                  <span className="text-[10px] text-zinc-500 font-label-data uppercase px-2 py-0.5 rounded bg-noir-800 border border-noir-700">
+                                    Disabled
+                                  </span>
+                                ) : !paymentMethodsConfig.momo.configured ? (
+                                  <span className="text-[10px] text-amber-400 font-label-data uppercase px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/50">
+                                    Setup Required
+                                  </span>
+                                ) : null}
                               </div>
                               <p className="text-[11px] text-bone-dim">
                                 Direct push prompt sent to your phone. Network is auto-detected.
@@ -662,15 +735,15 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                             </div>
                             <div
                               className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                                payMode === 'MOMO' ? 'border-amber-400 bg-amber-400' : 'border-noir-600'
+                                payMode === 'MOMO' && paymentMethodsConfig.momo.enabled ? 'border-amber-400 bg-amber-400' : 'border-noir-600'
                               }`}
                             >
-                              {payMode === 'MOMO' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+                              {payMode === 'MOMO' && paymentMethodsConfig.momo.enabled && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
                             </div>
                           </div>
 
                           {/* Network detection tag inside option */}
-                          {payMode === 'MOMO' && (
+                          {payMode === 'MOMO' && paymentMethodsConfig.momo.enabled && (
                             <div className="mt-2.5 pt-2.5 border-t border-noir-800 flex flex-wrap items-center justify-between gap-2 text-[11px]">
                               <div className="flex items-center gap-1.5 text-bone">
                                 <span
@@ -704,26 +777,40 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
 
                         {/* 2. Visa / Mastercard */}
                         <div
-                          onClick={() => setPayMode('CARD')}
-                          className={`p-3.5 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                            payMode === 'CARD'
-                              ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
-                              : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone'
+                          onClick={() => {
+                            if (!paymentMethodsConfig.card.enabled) return;
+                            setPayMode('CARD');
+                          }}
+                          className={`p-3.5 rounded-xl border text-left transition-all flex items-start justify-between ${
+                            !paymentMethodsConfig.card.enabled
+                              ? 'opacity-40 bg-noir-900 border-noir-800 cursor-not-allowed'
+                              : payMode === 'CARD'
+                              ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50 cursor-pointer'
+                              : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone cursor-pointer'
                           }`}
                         >
                           <div className="space-y-1">
                             <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
                               <Icons8 name="credit-card" size={16} className="text-crimson-light shrink-0" />
                               <span>Visa / Mastercard</span>
+                              {!paymentMethodsConfig.card.enabled ? (
+                                <span className="text-[10px] text-zinc-500 font-label-data uppercase px-2 py-0.5 rounded bg-noir-800 border border-noir-700">
+                                  Disabled
+                                </span>
+                              ) : !paymentMethodsConfig.card.configured ? (
+                                <span className="text-[10px] text-amber-400 font-label-data uppercase px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/50">
+                                  Setup Required
+                                </span>
+                              ) : null}
                             </div>
                             <p className="text-[11px] text-bone-dim">Pay online with debit or credit card</p>
                           </div>
                           <div
                             className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                              payMode === 'CARD' ? 'border-crimson bg-crimson' : 'border-noir-600'
+                              payMode === 'CARD' && paymentMethodsConfig.card.enabled ? 'border-crimson bg-crimson' : 'border-noir-600'
                             }`}
                           >
-                            {payMode === 'CARD' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                            {payMode === 'CARD' && paymentMethodsConfig.card.enabled && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                           </div>
                         </div>
                       </div>

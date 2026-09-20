@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { env } from "../config/env.js";
+import { getResolvedPaymentConfig } from "./paymentConfigService.js";
 
 /**
  * Format any phone number into E.164 standard for Uganda / East Africa.
@@ -65,10 +66,15 @@ export interface MarzPayCollectionResult {
  * Helper to make authenticated requests to MarzPay Merchant API
  */
 async function callMarzPayApi(endpoint: string, method: string = "GET", body?: any): Promise<any> {
-  const base = env.MARZPAY_API_BASE.replace(/\/+$/, "");
+  const config = await getResolvedPaymentConfig();
+  const base = (config.marzpay.apiBase || env.MARZPAY_API_BASE).replace(/\/+$/, "");
   const url = `${base}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
-  const authString = Buffer.from(`${env.MARZPAY_API_KEY}:${env.MARZPAY_API_SECRET}`).toString("base64");
+  if (!config.marzpay.apiKey || !config.marzpay.apiSecret) {
+    throw new Error("MarzPay API credentials are not configured. Please set them in Admin Settings or .env.");
+  }
+
+  const authString = Buffer.from(`${config.marzpay.apiKey}:${config.marzpay.apiSecret}`).toString("base64");
 
   const headers: Record<string, string> = {
     Authorization: `Basic ${authString}`,
@@ -105,21 +111,10 @@ export async function collectMobileMoney(
   params: MarzPayCollectionRequest
 ): Promise<MarzPayCollectionResult> {
   const formattedPhone = formatPhoneNumber(params.phoneNumber);
-  const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
+  const config = await getResolvedPaymentConfig();
 
-  if (!isConfigured) {
-    console.info(
-      `[MarzPay DEV MOCK] Initiating Mobile Money collection for ${formattedPhone}, amount: ${params.amount} UGX, ref: ${params.reference}`
-    );
-    return {
-      success: true,
-      uuid: `mock-${params.reference}`,
-      reference: params.reference,
-      status: "processing",
-      provider: formattedPhone.startsWith("+25675") || formattedPhone.startsWith("+25670") ? "airtel" : "mtn",
-      message: "Collection initiated successfully. Check handset for PIN prompt.",
-      isSandbox: env.MARZPAY_MODE === "sandbox",
-    };
+  if (!config.marzpay.isConfigured) {
+    throw new Error("Mobile Money payment gateway is not configured. Please set API credentials in Admin Settings or contact support.");
   }
 
   const payload: Record<string, any> = {
@@ -143,7 +138,7 @@ export async function collectMobileMoney(
 
   const tx = apiRes.data?.transaction || {};
   const coll = apiRes.data?.collection || {};
-  const isSandbox = env.MARZPAY_MODE === "sandbox" || apiRes.data?.metadata?.sandbox_mode === true;
+  const isSandbox = config.marzpay.mode === "sandbox" || apiRes.data?.metadata?.sandbox_mode === true;
 
   return {
     success: true,
@@ -164,21 +159,10 @@ export async function collectMobileMoney(
 export async function collectCard(
   params: MarzPayCardRequest
 ): Promise<MarzPayCollectionResult> {
-  const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
+  const config = await getResolvedPaymentConfig();
 
-  if (!isConfigured) {
-    console.info(
-      `[MarzPay DEV MOCK] Initiating Card collection for amount: ${params.amount} UGX, ref: ${params.reference}`
-    );
-    return {
-      success: true,
-      uuid: `mock-${params.reference}`,
-      reference: params.reference,
-      status: "pending",
-      redirectUrl: undefined,
-      message: "Card payment initialized. Please complete authorization.",
-      isSandbox: env.MARZPAY_MODE === "sandbox",
-    };
+  if (!config.marzpay.isConfigured) {
+    throw new Error("Card payment gateway is not configured. Please set API credentials in Admin Settings or contact support.");
   }
 
   const payload: Record<string, any> = {
@@ -205,12 +189,12 @@ export async function collectCard(
   if (!redirectUrl) {
     throw new Error(
       apiRes?.message ||
-        "MarzPay card gateway did not return a payment redirect URL. Please check your MarzPay dashboard or use Mobile Money."
+        "Card gateway did not return a payment checkout URL. Please choose another payment method or contact support."
     );
   }
 
   const tx = apiRes?.data?.transaction || {};
-  const isSandbox = env.MARZPAY_MODE === "sandbox" || apiRes?.data?.metadata?.sandbox_mode === true;
+  const isSandbox = config.marzpay.mode === "sandbox" || apiRes?.data?.metadata?.sandbox_mode === true;
 
   return {
     success: true,
@@ -218,7 +202,7 @@ export async function collectCard(
     reference: tx.reference || params.reference,
     status: "pending",
     redirectUrl,
-    message: "Card payment initialized. Please complete authorization via the 3D-Secure gateway.",
+    message: "Card payment initialized. Please complete authorization.",
     isSandbox,
     raw: apiRes,
   };
@@ -230,7 +214,7 @@ export async function collectCard(
  */
 export async function getCollectionStatus(
   referenceOrUuid: string,
-  phoneNumber?: string | null
+  _phoneNumber?: string | null
 ): Promise<{
   status: "completed" | "processing" | "failed" | "cancelled" | "pending";
   providerTxId?: string;
@@ -240,38 +224,10 @@ export async function getCollectionStatus(
   reason?: string;
   raw?: any;
 }> {
-  const isConfigured = Boolean(env.MARZPAY_API_KEY && env.MARZPAY_API_SECRET);
+  const config = await getResolvedPaymentConfig();
 
-  // If credentials are NOT configured, run mock evaluation based on test numbers
-  if (!isConfigured || referenceOrUuid.startsWith("mock-")) {
-    const cleanPhone = (phoneNumber || "").replace(/[\s\+\-()]/g, "");
-
-    // Numbers ending with '0000' simulate a DECLINED/FAILED payment
-    if (cleanPhone.endsWith("0000")) {
-      return {
-        status: "failed",
-        provider: "mtn",
-        reason: "Declined by subscriber (wrong PIN or insufficient balance)",
-        raw: { sandbox: true },
-      };
-    }
-
-    // Numbers ending with '9999' simulate a CANCELLED/TIMED-OUT payment
-    if (cleanPhone.endsWith("9999")) {
-      return {
-        status: "cancelled",
-        provider: "airtel",
-        reason: "PIN prompt cancelled by customer or timed out",
-        raw: { sandbox: true },
-      };
-    }
-
-    // Default mock: Strictly remains processing until confirmed
-    return {
-      status: "processing",
-      provider: "mtn",
-      reason: "Awaiting customer authorization on handset",
-    };
+  if (!config.marzpay.isConfigured) {
+    throw new Error("Payment gateway is not configured. Please set API credentials in Admin Settings or contact support.");
   }
 
   // Real MarzPay API check

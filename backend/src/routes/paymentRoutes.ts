@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   initializePayment,
   verifyPayment,
+  getPaymentMethods,
   handleWebhook,
   handleMarzPayWebhook,
 } from "../controllers/paymentController.js";
@@ -9,6 +10,7 @@ import {
 export const paymentRouter = Router();
 
 // Public checkout & verification endpoints
+paymentRouter.get("/methods", getPaymentMethods);
 paymentRouter.post("/initialize", initializePayment);
 paymentRouter.get("/verify/:txRef", verifyPayment);
 

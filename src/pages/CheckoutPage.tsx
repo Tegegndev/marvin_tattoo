@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { CartItem, PageView } from '../types';
 import { Icons8 } from '../components/Icons8';
-import { createShopOrder, initializePayment, verifyPayment } from '../services/apiClient';
+import {
+  createShopOrder,
+  initializePayment,
+  verifyPayment,
+  fetchPublicPaymentMethods,
+  PublicPaymentMethods,
+} from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
 import { formatPaymentError, UserFriendlyError } from '../utils/paymentErrors';
@@ -29,6 +35,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [paymentMode, setPaymentMode] = useState<'MOMO' | 'CARD' | 'CASH'>('MOMO');
   const [momoCarrierOverride, setMomoCarrierOverride] = useState<CarrierType | null>(null);
   const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
+  const [paymentMethodsConfig, setPaymentMethodsConfig] = useState<PublicPaymentMethods>({
+    momo: { enabled: true, configured: true },
+    card: { enabled: true, configured: true },
+    cash: { enabled: true, configured: true },
+    mode: 'live',
+  });
 
   const [shippingData, setShippingData] = useState(() => {
     const saved = getSavedUserProfile();
@@ -145,12 +157,77 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
+  // Fetch live payment methods configuration from backend
+  useEffect(() => {
+    fetchPublicPaymentMethods()
+      .then((cfg) => {
+        if (!cfg) return;
+        setPaymentMethodsConfig(cfg);
+        // Switch default selection if current method is disabled
+        setPaymentMode((prev) => {
+          if (prev === 'MOMO' && !cfg.momo.enabled) {
+            return cfg.card.enabled ? 'CARD' : cfg.cash.enabled ? 'CASH' : 'MOMO';
+          }
+          if (prev === 'CARD' && !cfg.card.enabled) {
+            return cfg.momo.enabled ? 'MOMO' : cfg.cash.enabled ? 'CASH' : 'CARD';
+          }
+          if (prev === 'CASH' && !cfg.cash.enabled) {
+            return cfg.momo.enabled ? 'MOMO' : cfg.card.enabled ? 'CARD' : 'CASH';
+          }
+          return prev;
+        });
+      })
+      .catch((err) => console.warn('Could not load payment config:', err));
+  }, []);
+
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
     setFormattedError(null);
     setVerifyError('');
     setFormattedVerifyError(null);
+
+    // Validate payment method availability before creating order
+    if (paymentMode === 'MOMO') {
+      if (!paymentMethodsConfig.momo.enabled) {
+        setFormattedError({
+          title: 'Mobile Money Disabled',
+          description: 'Mobile Money payments are currently disabled by store administration. Please choose another payment option.',
+        });
+        return;
+      }
+      if (!paymentMethodsConfig.momo.configured) {
+        setFormattedError({
+          title: 'Payment Gateway Setup Required',
+          description: 'The Mobile Money payment gateway has not been configured with API credentials yet. Please choose Cash on Pickup or contact support.',
+        });
+        return;
+      }
+    } else if (paymentMode === 'CARD') {
+      if (!paymentMethodsConfig.card.enabled) {
+        setFormattedError({
+          title: 'Card Payment Disabled',
+          description: 'Card payments are currently disabled by store administration. Please select Mobile Money or Cash on Studio Pickup.',
+        });
+        return;
+      }
+      if (!paymentMethodsConfig.card.configured) {
+        setFormattedError({
+          title: 'Card Gateway Setup Required',
+          description: 'The card payment gateway has not been configured with API credentials yet. Please choose Mobile Money or Cash on Studio Pickup.',
+        });
+        return;
+      }
+    } else if (paymentMode === 'CASH') {
+      if (!paymentMethodsConfig.cash.enabled) {
+        setFormattedError({
+          title: 'Cash on Pickup Disabled',
+          description: 'Cash on Studio Pickup is currently disabled by store administration. Please choose another payment option.',
+        });
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -588,11 +665,16 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <div className="space-y-3">
                     {/* 1. Mobile Money (MTN / Airtel auto-detected) */}
                     <div
-                      onClick={() => setPaymentMode('MOMO')}
-                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                        paymentMode === 'MOMO'
-                          ? 'bg-amber-950/20 border-amber-500/70 text-bone ring-1 ring-amber-500/40'
-                          : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
+                      onClick={() => {
+                        if (!paymentMethodsConfig.momo.enabled) return;
+                        setPaymentMode('MOMO');
+                      }}
+                      className={`p-4 rounded-xl border text-left transition-all ${
+                        !paymentMethodsConfig.momo.enabled
+                          ? 'opacity-40 bg-noir-900 border-noir-800 cursor-not-allowed'
+                          : paymentMode === 'MOMO'
+                          ? 'bg-amber-950/20 border-amber-500/70 text-bone ring-1 ring-amber-500/40 cursor-pointer'
+                          : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600 cursor-pointer'
                       }`}
                     >
                       <div className="flex items-start justify-between">
@@ -603,6 +685,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                               <span className="w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-noir-900" />
                             </span>
                             <span>Mobile Money (MTN / Airtel)</span>
+                            {!paymentMethodsConfig.momo.enabled ? (
+                              <span className="text-[10px] text-zinc-500 font-label-data uppercase px-2 py-0.5 rounded bg-noir-800 border border-noir-700">
+                                Disabled
+                              </span>
+                            ) : !paymentMethodsConfig.momo.configured ? (
+                              <span className="text-[10px] text-amber-400 font-label-data uppercase px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/50">
+                                Setup Required
+                              </span>
+                            ) : null}
                           </div>
                           <p className="text-[11px] text-bone-dim">
                             Instant push prompt sent to your phone. Network is auto-detected from your number.
@@ -610,15 +701,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         </div>
                         <div
                           className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                            paymentMode === 'MOMO' ? 'border-amber-400 bg-amber-400' : 'border-noir-600'
+                            paymentMode === 'MOMO' && paymentMethodsConfig.momo.enabled ? 'border-amber-400 bg-amber-400' : 'border-noir-600'
                           }`}
                         >
-                          {paymentMode === 'MOMO' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+                          {paymentMode === 'MOMO' && paymentMethodsConfig.momo.enabled && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
                         </div>
                       </div>
 
                       {/* Dynamic Carrier Detection Line */}
-                      {paymentMode === 'MOMO' && (
+                      {paymentMode === 'MOMO' && paymentMethodsConfig.momo.enabled && (
                         <div className="mt-3 pt-3 border-t border-noir-800 flex flex-wrap items-center justify-between gap-2 text-[11px]">
                           <div className="flex items-center gap-1.5 text-bone">
                             <span
@@ -653,17 +744,31 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {/* 2. Visa / Mastercard */}
                       <div
-                        onClick={() => setPaymentMode('CARD')}
-                        className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                          paymentMode === 'CARD'
-                            ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
-                            : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
+                        onClick={() => {
+                          if (!paymentMethodsConfig.card.enabled) return;
+                          setPaymentMode('CARD');
+                        }}
+                        className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between ${
+                          !paymentMethodsConfig.card.enabled
+                            ? 'opacity-40 bg-noir-900 border-noir-800 cursor-not-allowed'
+                            : paymentMode === 'CARD'
+                            ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50 cursor-pointer'
+                            : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600 cursor-pointer'
                         }`}
                       >
                         <div className="space-y-1">
                           <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
                             <Icons8 name="credit-card" size={15} className="text-crimson-light" />
                             <span>Visa / Mastercard</span>
+                            {!paymentMethodsConfig.card.enabled ? (
+                              <span className="text-[10px] text-zinc-500 font-label-data uppercase px-2 py-0.5 rounded bg-noir-800 border border-noir-700">
+                                Disabled
+                              </span>
+                            ) : !paymentMethodsConfig.card.configured ? (
+                              <span className="text-[10px] text-amber-400 font-label-data uppercase px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/50">
+                                Setup Required
+                              </span>
+                            ) : null}
                           </div>
                           <p className="text-[11px] text-bone-dim">
                             Pay securely with debit or credit card
@@ -671,26 +776,36 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         </div>
                         <div
                           className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                            paymentMode === 'CARD' ? 'border-crimson bg-crimson' : 'border-noir-600'
+                            paymentMode === 'CARD' && paymentMethodsConfig.card.enabled ? 'border-crimson bg-crimson' : 'border-noir-600'
                           }`}
                         >
-                          {paymentMode === 'CARD' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                          {paymentMode === 'CARD' && paymentMethodsConfig.card.enabled && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                         </div>
                       </div>
 
                       {/* 3. Cash on Pickup */}
                       <div
-                        onClick={() => setPaymentMode('CASH')}
-                        className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                          paymentMode === 'CASH'
-                            ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
-                            : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
+                        onClick={() => {
+                          if (!paymentMethodsConfig.cash.enabled) return;
+                          setPaymentMode('CASH');
+                        }}
+                        className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between ${
+                          !paymentMethodsConfig.cash.enabled
+                            ? 'opacity-40 bg-noir-900 border-noir-800 cursor-not-allowed'
+                            : paymentMode === 'CASH'
+                            ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50 cursor-pointer'
+                            : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600 cursor-pointer'
                         }`}
                       >
                         <div className="space-y-1">
                           <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
                             <Icons8 name="money-bill-wave" size={15} className="text-crimson-light" />
                             <span>Cash on Pickup</span>
+                            {!paymentMethodsConfig.cash.enabled && (
+                              <span className="text-[10px] text-zinc-500 font-label-data uppercase px-2 py-0.5 rounded bg-noir-800 border border-noir-700">
+                                Disabled
+                              </span>
+                            )}
                           </div>
                           <p className="text-[11px] text-bone-dim">
                             Pay in cash or POS at our studio reception
@@ -698,10 +813,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         </div>
                         <div
                           className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                            paymentMode === 'CASH' ? 'border-crimson bg-crimson' : 'border-noir-600'
+                            paymentMode === 'CASH' && paymentMethodsConfig.cash.enabled ? 'border-crimson bg-crimson' : 'border-noir-600'
                           }`}
                         >
-                          {paymentMode === 'CASH' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                          {paymentMode === 'CASH' && paymentMethodsConfig.cash.enabled && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                         </div>
                       </div>
                     </div>

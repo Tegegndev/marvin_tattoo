@@ -560,6 +560,131 @@ export async function verifyPayment(txRef: string): Promise<{
   };
 }
 
+// ================= PAYMENT CONFIG & METHODS APIS ================= //
+
+export interface PublicPaymentMethods {
+  momo: { enabled: boolean; configured: boolean };
+  card: { enabled: boolean; configured: boolean };
+  cash: { enabled: boolean; configured: boolean };
+  mode: "live" | "sandbox" | string;
+}
+
+export async function fetchPublicPaymentMethods(): Promise<PublicPaymentMethods> {
+  try {
+    const res = await fetch(apiUrl("/api/payments/methods"));
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to fetch payment methods from backend:", err);
+  }
+  return {
+    momo: { enabled: true, configured: true },
+    card: { enabled: true, configured: true },
+    cash: { enabled: true, configured: true },
+    mode: "live",
+  };
+}
+
+export interface AdminPaymentConfig {
+  momoEnabled: boolean;
+  cardEnabled: boolean;
+  cashEnabled: boolean;
+  marzpay: {
+    apiKey: string;
+    effectiveApiKey: string;
+    apiKeyMasked: string;
+    apiKeySource: "db" | "env" | "missing";
+    apiSecret: string;
+    effectiveApiSecret: string;
+    apiSecretMasked: string;
+    apiSecretSource: "db" | "env" | "missing";
+    webhookSecret: string;
+    effectiveWebhookSecret: string;
+    webhookSecretMasked: string;
+    mode: string;
+    apiBase: string;
+    isConfigured: boolean;
+  };
+  flw: {
+    publicKey: string;
+    effectivePublicKey: string;
+    publicKeyMasked: string;
+    secretKey: string;
+    effectiveSecretKey: string;
+    secretKeyMasked: string;
+    source: "db" | "env" | "missing";
+    isConfigured: boolean;
+  };
+  paystack: {
+    secretKey: string;
+    effectiveSecretKey: string;
+    secretKeyMasked: string;
+    source: "db" | "env" | "missing";
+    isConfigured: boolean;
+  };
+  hasEnvDefaults: {
+    marzpayApiKey: boolean;
+    marzpayApiSecret: boolean;
+    marzpayMode: string;
+  };
+}
+
+export async function fetchAdminPaymentConfig(): Promise<AdminPaymentConfig> {
+  const res = await fetch(apiUrl("/api/settings/payment-config"), {
+    headers: getAuthHeaders(),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to load payment gateway settings");
+  }
+  return json.data;
+}
+
+export async function updateAdminPaymentConfig(data: Partial<{
+  momoEnabled: boolean;
+  cardEnabled: boolean;
+  cashEnabled: boolean;
+  marzpayApiKey: string;
+  marzpayApiSecret: string;
+  marzpayWebhookSecret: string;
+  marzpayMode: string;
+  marzpayApiBase: string;
+  flwPublicKey: string;
+  flwSecretKey: string;
+  paystackSecretKey: string;
+}>): Promise<AdminPaymentConfig> {
+  const res = await fetch(apiUrl("/api/settings/payment-config"), {
+    method: "PUT",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to update payment gateway settings");
+  }
+  return json.data;
+}
+
+export async function testAdminPaymentConnection(): Promise<{
+  success: boolean;
+  message: string;
+  details?: any;
+}> {
+  const res = await fetch(apiUrl("/api/settings/payment-config/test"), {
+    method: "POST",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Payment gateway connection test failed");
+  }
+  return json;
+}
+
 // ================= AUTH TOKEN HELPERS ================= //
 
 const TOKEN_KEY = "marvin_atelier_jwt_token";

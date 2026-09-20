@@ -54,6 +54,7 @@ import {
   Share2,
   Globe,
   Menu,
+  EyeOff,
 } from 'lucide-react';
 import {
   adminLogin,
@@ -100,6 +101,10 @@ import {
   fetchProducts,
   fetchTestimonials,
   fetchServices,
+  fetchAdminPaymentConfig,
+  updateAdminPaymentConfig,
+  testAdminPaymentConnection,
+  AdminPaymentConfig,
   DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
 import { formatImageUrl, handleImageError, PLACEHOLDERS } from '../config/api';
@@ -112,6 +117,7 @@ interface AdminPageProps {
 
 type TabType = 'bookings' | 'users' | 'services' | 'team' | 'shop' | 'portfolio' | 'reviews' | 'settings';
 type ShopSubTab = 'products' | 'categories' | 'orders';
+type SettingsSubTab = 'branding' | 'payments' | 'security';
 
 const SOCIAL_PLATFORMS: { id: string; label: string; icon: string; prefix: string; placeholder: string }[] = [
   { id: 'instagram', label: 'Instagram', icon: 'instagram', prefix: 'https://instagram.com/Marvintattoos256', placeholder: 'https://instagram.com/username' },
@@ -245,6 +251,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [ogImageFile, setOgImageFile] = useState<File | null>(null);
   const [ogImagePreview, setOgImagePreview] = useState<string>('');
+
+  // Payment Gateways & API Keys State
+  const [settingsSubTab, setSettingsSubTab] = useState<SettingsSubTab>('branding');
+  const [paymentConfig, setPaymentConfig] = useState<AdminPaymentConfig | null>(null);
+  const [paymentForm, setPaymentForm] = useState({
+    momoEnabled: true,
+    cardEnabled: true,
+    cashEnabled: true,
+    marzpayApiKey: '',
+    marzpayApiSecret: '',
+    marzpayWebhookSecret: '',
+    marzpayMode: 'live',
+    marzpayApiBase: '',
+    flwPublicKey: '',
+    flwSecretKey: '',
+    paystackSecretKey: '',
+  });
+  const [loadingPaymentConfig, setLoadingPaymentConfig] = useState<boolean>(false);
+  const [savingPaymentConfig, setSavingPaymentConfig] = useState<boolean>(false);
+  const [testingPaymentConn, setTestingPaymentConn] = useState<boolean>(false);
+  const [paymentStatusNotice, setPaymentStatusNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [showApiSecret, setShowApiSecret] = useState<boolean>(false);
 
   useEffect(() => {
     if (globalSettings && globalSettings.studioName) {
@@ -807,8 +835,75 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             ? data.socialLinks
             : DEFAULT_SITE_SETTINGS.socialLinks,
       });
+      await loadPaymentConfig();
     } catch (err) {
       console.error('Failed to load settings:', err);
+    }
+  };
+
+  const loadPaymentConfig = async () => {
+    setLoadingPaymentConfig(true);
+    try {
+      const data = await fetchAdminPaymentConfig();
+      setPaymentConfig(data);
+      setPaymentForm({
+        momoEnabled: data.momoEnabled,
+        cardEnabled: data.cardEnabled,
+        cashEnabled: data.cashEnabled,
+        marzpayApiKey: data.marzpay.apiKey || '',
+        marzpayApiSecret: data.marzpay.apiSecret || '',
+        marzpayWebhookSecret: data.marzpay.webhookSecret || '',
+        marzpayMode: data.marzpay.mode || 'live',
+        marzpayApiBase: data.marzpay.apiBase || '',
+        flwPublicKey: data.flw.publicKey || '',
+        flwSecretKey: data.flw.secretKey || '',
+        paystackSecretKey: data.paystack.secretKey || '',
+      });
+    } catch (err) {
+      console.error('Failed to load payment config:', err);
+    } finally {
+      setLoadingPaymentConfig(false);
+    }
+  };
+
+  const handleSavePaymentConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingPaymentConfig(true);
+    setPaymentStatusNotice(null);
+    try {
+      const updated = await updateAdminPaymentConfig(paymentForm);
+      setPaymentConfig(updated);
+      setPaymentStatusNotice({
+        type: 'success',
+        message: 'Payment configuration and API credentials saved and deployed successfully.',
+      });
+      showToast('Payment settings saved');
+    } catch (err: any) {
+      setPaymentStatusNotice({
+        type: 'error',
+        message: err.message || 'Failed to save payment settings.',
+      });
+    } finally {
+      setSavingPaymentConfig(false);
+    }
+  };
+
+  const handleTestPaymentConnection = async () => {
+    setTestingPaymentConn(true);
+    setPaymentStatusNotice(null);
+    try {
+      const res = await testAdminPaymentConnection();
+      setPaymentStatusNotice({
+        type: 'success',
+        message: res.message || 'Payment gateway connection verified successfully.',
+      });
+    } catch (err: any) {
+      setPaymentStatusNotice({
+        type: 'error',
+        message: err.message || 'Connection test failed.',
+      });
+    } finally {
+      setTestingPaymentConn(false);
     }
   };
 
@@ -3750,7 +3845,64 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           {/* ================= 6. HERO & SETTINGS STUDIO ================= */}
           {activeTab === 'settings' && (
             <div className="space-y-6 max-w-4xl text-xs">
-              <form onSubmit={handleSaveSettings} className="space-y-6">
+              {/* Settings Sub-Tab Navigation Bar */}
+              <div className="flex flex-wrap items-center gap-2 p-1.5 bg-[#181a24] border border-zinc-800 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setSettingsSubTab('branding')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    settingsSubTab === 'branding'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                  }`}
+                >
+                  <Tag className="w-3.5 h-3.5" />
+                  <span>Branding &amp; Studio Identity</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSettingsSubTab('payments');
+                    loadPaymentConfig();
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    settingsSubTab === 'payments'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                  }`}
+                >
+                  <CreditCard className="w-3.5 h-3.5" />
+                  <span>Payment Methods &amp; API Keys</span>
+                  {paymentConfig && (
+                    <span
+                      className={`ml-1 text-[9px] px-1.5 py-0.5 rounded font-mono uppercase ${
+                        paymentConfig.marzpay.isConfigured
+                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60'
+                          : 'bg-amber-950 text-amber-300 border border-amber-800/60'
+                      }`}
+                    >
+                      {paymentConfig.marzpay.isConfigured ? 'Ready' : 'Setup'}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSettingsSubTab('security')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    settingsSubTab === 'security'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                  }`}
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Master Password</span>
+                </button>
+              </div>
+
+              {settingsSubTab === 'branding' && (
+                <form onSubmit={handleSaveSettings} className="space-y-6">
                 {/* 1. Studio Identity & Brand Name */}
                 <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
                   <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center gap-2">
@@ -4534,95 +4686,559 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <span>{savingSettings ? 'Deploying...' : 'Save & Deploy Changes'}</span>
                 </button>
               </form>
+            )}
 
-            {/* Section 5: Admin Security & Password Change */}
-            <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm max-w-4xl">
-              <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-red-400" />
-                  <span>5. Admin Security &amp; Master Password</span>
-                </div>
-                <span className="text-[11px] text-zinc-400 font-mono">
-                  Account: {adminUser?.email || 'admin@marvintattoos.com'}
-                </span>
-              </div>
-
-              <form onSubmit={handlePasswordChange} className="space-y-4 max-w-xl">
-                {passwordStatus && (
+            {/* ================= PAYMENT METHODS & API KEYS TAB ================= */}
+            {settingsSubTab === 'payments' && (
+              <div className="space-y-6 max-w-4xl text-xs">
+                {/* Alert Notice if any */}
+                {paymentStatusNotice && (
                   <div
-                    className={`p-3 rounded-lg border text-xs flex items-center gap-2 ${
-                      passwordStatus.type === 'success'
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                        : 'bg-red-500/10 border-red-500/30 text-red-300'
+                    className={`p-4 rounded-xl border text-xs flex items-start gap-3 shadow-sm ${
+                      paymentStatusNotice.type === 'success'
+                        ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200'
+                        : 'bg-red-950/50 border-red-500/50 text-red-200'
                     }`}
                   >
-                    {passwordStatus.type === 'success' ? (
-                      <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                    {paymentStatusNotice.type === 'success' ? (
+                      <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-400 mt-0.5" />
                     ) : (
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
+                      <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-400 mt-0.5" />
                     )}
-                    <span>{passwordStatus.message}</span>
+                    <div className="space-y-1">
+                      <p className="font-semibold text-sm">{paymentStatusNotice.message}</p>
+                    </div>
                   </div>
                 )}
 
-                <div>
-                  <label className="block text-xs text-zinc-300 font-medium mb-1.5">
-                    Current Password <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    required
-                    type="password"
-                    value={currPassword}
-                    onChange={(e) => setCurrPassword(e.target.value)}
-                    placeholder="Enter your current password"
-                    className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                  />
+                {/* Section Info Card */}
+                <div className="p-4 bg-noir-850 border border-noir-750 rounded-xl flex items-start gap-3">
+                  <ShieldCheck className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1 text-bone-dim leading-relaxed">
+                    <p className="text-white font-semibold text-xs">Payment Gateway Priority &amp; Key Hierarchy</p>
+                    <p className="text-[11px]">
+                      Configure payment method availability and gateway credentials below. Credentials saved here in the database take precedence over your system <code className="text-gold font-mono">.env</code> variables immediately without restarting the server. If any field is left empty, the system automatically falls back to <code className="text-gold font-mono">.env</code> defaults. If required keys are missing from both, customer checkout will gracefully display an error.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <form onSubmit={handleSavePaymentConfig} className="space-y-6">
+                  {/* 1. Payment Method Toggles */}
+                  <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                    <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Sliders className="w-4 h-4 text-red-400" />
+                        <span>1. Payment Method Toggles (Enable / Disable)</span>
+                      </div>
+                      <span className="text-[11px] text-zinc-400">Controls live visibility on Checkout &amp; Order Tracking</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Momo Toggle */}
+                      <div
+                        className={`p-4 rounded-xl border transition-all ${
+                          paymentForm.momoEnabled
+                            ? 'bg-amber-950/20 border-amber-500/50 text-white'
+                            : 'bg-[#12141c] border-zinc-800 text-zinc-500 opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <span className="font-semibold text-xs text-white block">Mobile Money</span>
+                            <span className="text-[11px] text-zinc-400">MTN &amp; Airtel Uganda</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentForm({ ...paymentForm, momoEnabled: !paymentForm.momoEnabled })}
+                            className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                              paymentForm.momoEnabled ? 'bg-emerald-600 justify-end' : 'bg-zinc-700 justify-start'
+                            }`}
+                          >
+                            <div className="w-4 h-4 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Auto-detects carrier prefix from phone number and triggers instant PIN push prompt.
+                        </p>
+                        <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[11px]">
+                          <span className="text-zinc-500 font-mono">Status:</span>
+                          <span
+                            className={`font-semibold font-mono uppercase ${
+                              paymentForm.momoEnabled ? 'text-emerald-400' : 'text-zinc-500'
+                            }`}
+                          >
+                            {paymentForm.momoEnabled ? 'Active on Checkout' : 'Disabled'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Toggle */}
+                      <div
+                        className={`p-4 rounded-xl border transition-all ${
+                          paymentForm.cardEnabled
+                            ? 'bg-rose-950/20 border-rose-500/50 text-white'
+                            : 'bg-[#12141c] border-zinc-800 text-zinc-500 opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <span className="font-semibold text-xs text-white block">Credit &amp; Debit Card</span>
+                            <span className="text-[11px] text-zinc-400">Visa / Mastercard</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentForm({ ...paymentForm, cardEnabled: !paymentForm.cardEnabled })}
+                            className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                              paymentForm.cardEnabled ? 'bg-emerald-600 justify-end' : 'bg-zinc-700 justify-start'
+                            }`}
+                          >
+                            <div className="w-4 h-4 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Redirects client to secure 3D-Secure bank authentication portal with real-time settlement.
+                        </p>
+                        <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[11px]">
+                          <span className="text-zinc-500 font-mono">Status:</span>
+                          <span
+                            className={`font-semibold font-mono uppercase ${
+                              paymentForm.cardEnabled ? 'text-emerald-400' : 'text-zinc-500'
+                            }`}
+                          >
+                            {paymentForm.cardEnabled ? 'Active on Checkout' : 'Disabled'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Cash Toggle */}
+                      <div
+                        className={`p-4 rounded-xl border transition-all ${
+                          paymentForm.cashEnabled
+                            ? 'bg-emerald-950/20 border-emerald-500/50 text-white'
+                            : 'bg-[#12141c] border-zinc-800 text-zinc-500 opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <span className="font-semibold text-xs text-white block">Cash on Studio Pickup</span>
+                            <span className="text-[11px] text-zinc-400">In-Person Settlement</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentForm({ ...paymentForm, cashEnabled: !paymentForm.cashEnabled })}
+                            className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                              paymentForm.cashEnabled ? 'bg-emerald-600 justify-end' : 'bg-zinc-700 justify-start'
+                            }`}
+                          >
+                            <div className="w-4 h-4 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Available when customer selects Studio Pickup. Customer pays at studio reception.
+                        </p>
+                        <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[11px]">
+                          <span className="text-zinc-500 font-mono">Status:</span>
+                          <span
+                            className={`font-semibold font-mono uppercase ${
+                              paymentForm.cashEnabled ? 'text-emerald-400' : 'text-zinc-500'
+                            }`}
+                          >
+                            {paymentForm.cashEnabled ? 'Active on Pickup' : 'Disabled'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. MarzPay Primary Gateway Credentials */}
+                  <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-5 shadow-sm">
+                    <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Key className="w-4 h-4 text-red-400" />
+                        <span>2. MarzPay API Credentials (Primary Gateway)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded font-mono uppercase font-bold ${
+                            paymentForm.marzpayMode === 'live'
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
+                              : 'bg-amber-950 text-amber-300 border border-amber-700'
+                          }`}
+                        >
+                          {paymentForm.marzpayMode === 'live' ? 'Live Mode' : 'Sandbox Mode'}
+                        </span>
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded font-mono uppercase ${
+                            paymentConfig?.marzpay.isConfigured
+                              ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50'
+                              : 'bg-red-950/60 text-red-400 border border-red-800/50'
+                          }`}
+                        >
+                          {paymentConfig?.marzpay.isConfigured ? 'Keys Active' : 'Missing Keys'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Mode Selector */}
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                        Gateway Operating Mode
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentForm({ ...paymentForm, marzpayMode: 'live' })}
+                          className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${
+                            paymentForm.marzpayMode === 'live'
+                              ? 'bg-emerald-950/30 border-emerald-500 text-white font-semibold ring-1 ring-emerald-500/40'
+                              : 'bg-[#12141c] border-zinc-800 text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                            <span className="text-xs uppercase font-label-caps">Live Mode (Production)</span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400">Real money collections via MTN &amp; Airtel</p>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentForm({ ...paymentForm, marzpayMode: 'sandbox' })}
+                          className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${
+                            paymentForm.marzpayMode === 'sandbox'
+                              ? 'bg-amber-950/30 border-amber-500 text-white font-semibold ring-1 ring-amber-500/40'
+                              : 'bg-[#12141c] border-zinc-800 text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="w-2 h-2 rounded-full bg-amber-400" />
+                            <span className="text-xs uppercase font-label-caps">Sandbox (Test Mode)</span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400">Simulated test transactions without billing</p>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* MarzPay API Key */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="text-xs text-zinc-300 font-medium">
+                          MarzPay API Key (Client ID)
+                        </label>
+                        {paymentConfig && (
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                              paymentConfig.marzpay.apiKeySource === 'db'
+                                ? 'text-emerald-400 bg-emerald-950/50 border border-emerald-800/40'
+                                : paymentConfig.marzpay.apiKeySource === 'env'
+                                ? 'text-sky-400 bg-sky-950/50 border border-sky-800/40'
+                                : 'text-amber-400 bg-amber-950/50 border border-amber-800/40'
+                            }`}
+                          >
+                            {paymentConfig.marzpay.apiKeySource === 'db'
+                              ? '✓ Custom DB Override'
+                              : paymentConfig.marzpay.apiKeySource === 'env'
+                              ? `ℹ System .env Active (${paymentConfig.marzpay.apiKeyMasked})`
+                              : '⚠ Missing'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={paymentForm.marzpayApiKey}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, marzpayApiKey: e.target.value })}
+                          placeholder={
+                            paymentConfig?.hasEnvDefaults.marzpayApiKey
+                              ? `Leave blank to use system .env: ${paymentConfig.marzpay.apiKeyMasked}`
+                              : 'Enter MarzPay API Key (e.g. marz_xxxx...)'
+                          }
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                        {paymentForm.marzpayApiKey && (
+                          <button
+                            type="button"
+                            onClick={() => setPaymentForm({ ...paymentForm, marzpayApiKey: '' })}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-zinc-400 hover:text-red-400 px-1.5 py-0.5 bg-zinc-800 rounded cursor-pointer"
+                            title="Revert to .env default"
+                          >
+                            Reset to .env
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* MarzPay API Secret */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="text-xs text-zinc-300 font-medium">
+                          MarzPay API Secret
+                        </label>
+                        {paymentConfig && (
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                              paymentConfig.marzpay.apiSecretSource === 'db'
+                                ? 'text-emerald-400 bg-emerald-950/50 border border-emerald-800/40'
+                                : paymentConfig.marzpay.apiSecretSource === 'env'
+                                ? 'text-sky-400 bg-sky-950/50 border border-sky-800/40'
+                                : 'text-amber-400 bg-amber-950/50 border border-amber-800/40'
+                            }`}
+                          >
+                            {paymentConfig.marzpay.apiSecretSource === 'db'
+                              ? '✓ Custom DB Override'
+                              : paymentConfig.marzpay.apiSecretSource === 'env'
+                              ? `ℹ System .env Active (${paymentConfig.marzpay.apiSecretMasked})`
+                              : '⚠ Missing'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type={showApiSecret ? 'text' : 'password'}
+                          value={paymentForm.marzpayApiSecret}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, marzpayApiSecret: e.target.value })}
+                          placeholder={
+                            paymentConfig?.hasEnvDefaults.marzpayApiSecret
+                              ? `Leave blank to use system .env: ${paymentConfig.marzpay.apiSecretMasked}`
+                              : 'Enter MarzPay API Secret'
+                          }
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600 pr-24"
+                        />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setShowApiSecret(!showApiSecret)}
+                            className="text-zinc-400 hover:text-white p-1 rounded cursor-pointer"
+                            title={showApiSecret ? 'Hide secret' : 'Show secret'}
+                          >
+                            {showApiSecret ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                          {paymentForm.marzpayApiSecret && (
+                            <button
+                              type="button"
+                              onClick={() => setPaymentForm({ ...paymentForm, marzpayApiSecret: '' })}
+                              className="text-[10px] font-mono text-zinc-400 hover:text-red-400 px-1.5 py-0.5 bg-zinc-800 rounded cursor-pointer"
+                              title="Revert to .env default"
+                            >
+                              Reset
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* MarzPay Webhook Secret & Base URL */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                          MarzPay Webhook Secret (HMAC Signature)
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentForm.marzpayWebhookSecret}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, marzpayWebhookSecret: e.target.value })}
+                          placeholder="Optional webhook signing secret"
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                          MarzPay API Base URL
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentForm.marzpayApiBase}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, marzpayApiBase: e.target.value })}
+                          placeholder="https://wallet.wearemarz.com/api/v1"
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Test Connection Button */}
+                    <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-[11px] text-zinc-400">
+                        Test your credentials live against the MarzPay gateway network without modifying user cart balances.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleTestPaymentConnection}
+                        disabled={testingPaymentConn}
+                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border border-zinc-700 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        {testingPaymentConn ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-gold" />
+                            <span>Pinging Gateway...</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Test Gateway Connection</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 3. Secondary Gateways (Optional) */}
+                  <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                    <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-red-400" />
+                        <span>3. Secondary / Backup Gateways (Optional)</span>
+                      </div>
+                      <span className="text-[11px] text-zinc-500 font-mono">Flutterwave &amp; Paystack</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                          Flutterwave Public Key
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentForm.flwPublicKey}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, flwPublicKey: e.target.value })}
+                          placeholder={paymentConfig?.flw.publicKeyMasked ? `Using env: ${paymentConfig.flw.publicKeyMasked}` : 'FLWPUBK_TEST-...'}
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                          Flutterwave Secret Key
+                        </label>
+                        <input
+                          type="password"
+                          value={paymentForm.flwSecretKey}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, flwSecretKey: e.target.value })}
+                          placeholder={paymentConfig?.flw.secretKeyMasked ? `Using env: ${paymentConfig.flw.secretKeyMasked}` : 'FLWSECK_TEST-...'}
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                        Paystack Secret Key
+                      </label>
+                      <input
+                        type="password"
+                        value={paymentForm.paystackSecretKey}
+                        onChange={(e) => setPaymentForm({ ...paymentForm, paystackSecretKey: e.target.value })}
+                        placeholder={paymentConfig?.paystack.secretKeyMasked ? `Using env: ${paymentConfig.paystack.secretKeyMasked}` : 'sk_test_...'}
+                        className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Save Button */}
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      type="submit"
+                      disabled={savingPaymentConfig}
+                      className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-red-950/40 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>{savingPaymentConfig ? 'Deploying...' : 'Save & Deploy Payment Settings'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* ================= SECTION 5: ADMIN SECURITY & MASTER PASSWORD ================= */}
+            {settingsSubTab === 'security' && (
+              <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm max-w-4xl">
+                <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-red-400" />
+                    <span>Admin Security &amp; Master Password</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 font-mono">
+                    Account: {adminUser?.email || 'admin@marvintattoos.com'}
+                  </span>
+                </div>
+
+                <form onSubmit={handlePasswordChange} className="space-y-4 max-w-xl">
+                  {passwordStatus && (
+                    <div
+                      className={`p-3 rounded-lg border text-xs flex items-center gap-2 ${
+                        passwordStatus.type === 'success'
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                          : 'bg-red-500/10 border-red-500/30 text-red-300'
+                      }`}
+                    >
+                      {passwordStatus.type === 'success' ? (
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
+                      )}
+                      <span>{passwordStatus.message}</span>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-xs text-zinc-300 font-medium mb-1.5">
-                      New Password <span className="text-red-400">*</span>
+                      Current Password <span className="text-red-400">*</span>
                     </label>
                     <input
                       required
                       type="password"
-                      value={newPasswordVal}
-                      onChange={(e) => setNewPasswordVal(e.target.value)}
-                      placeholder="At least 6 characters"
-                      minLength={6}
+                      value={currPassword}
+                      onChange={(e) => setCurrPassword(e.target.value)}
+                      placeholder="Enter your current password"
                       className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs text-zinc-300 font-medium mb-1.5">
-                      Confirm New Password <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      required
-                      type="password"
-                      value={confirmPasswordVal}
-                      onChange={(e) => setConfirmPasswordVal(e.target.value)}
-                      placeholder="Repeat new password"
-                      minLength={6}
-                      className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
-                    />
-                  </div>
-                </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                        New Password <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        required
+                        type="password"
+                        value={newPasswordVal}
+                        onChange={(e) => setNewPasswordVal(e.target.value)}
+                        placeholder="At least 6 characters"
+                        minLength={6}
+                        className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
 
-                <div className="pt-1">
-                  <button
-                    type="submit"
-                    disabled={passwordLoading}
-                    className="py-2.5 px-5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border border-zinc-700 flex items-center gap-2 disabled:opacity-50"
-                  >
-                    <Key className="w-3.5 h-3.5 text-red-400" />
-                    <span>{passwordLoading ? 'Updating Password...' : 'Change Master Password'}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
+                    <div>
+                      <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                        Confirm New Password <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        required
+                        type="password"
+                        value={confirmPasswordVal}
+                        onChange={(e) => setConfirmPasswordVal(e.target.value)}
+                        placeholder="Repeat new password"
+                        minLength={6}
+                        className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-1">
+                    <button
+                      type="submit"
+                      disabled={passwordLoading}
+                      className="py-2.5 px-5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border border-zinc-700 flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <Key className="w-3.5 h-3.5 text-red-400" />
+                      <span>{passwordLoading ? 'Updating Password...' : 'Change Master Password'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         )}
         </div>

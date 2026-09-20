@@ -6,6 +6,9 @@ import {
   updateHeroPortrait,
   updateLogo,
   updateOgImage,
+  getPaymentConfig,
+  updatePaymentConfig,
+  testPaymentConnection,
 } from "../controllers/settingController.js";
 import { requireAdmin } from "../middleware/auth.js";
 import { upload } from "../config/multer.js";
@@ -14,6 +17,11 @@ export const settingRouter = Router();
 
 settingRouter.get("/", getSettings);
 settingRouter.put("/", requireAdmin, updateSettings);
+
+// Payment Gateways & API Keys Management
+settingRouter.get("/payment-config", requireAdmin, getPaymentConfig);
+settingRouter.put("/payment-config", requireAdmin, updatePaymentConfig);
+settingRouter.post("/payment-config/test", requireAdmin, testPaymentConnection);
 settingRouter.post(
   "/hero-image",
   requireAdmin,

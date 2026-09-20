@@ -192,6 +192,18 @@ model SiteSetting {
   metaTitle          String?  @default("Marvin Tattoos & Piercing Atelier | Kampala, Uganda")
   metaDescription    String?  @db.Text
   ogImageUrl         String?
+  // Payment Methods & Gateway Controls
+  momoEnabled        Boolean  @default(true)
+  cardEnabled        Boolean  @default(true)
+  cashEnabled        Boolean  @default(true)
+  marzpayApiKey      String?  @db.Text
+  marzpayApiSecret   String?  @db.Text
+  marzpayWebhookSecret String? @db.Text
+  marzpayMode        String?  @default("live") // "live" | "sandbox"
+  marzpayApiBase     String?  @db.Text
+  flwPublicKey       String?  @db.Text
+  flwSecretKey       String?  @db.Text
+  paystackSecretKey  String?  @db.Text
   updatedAt          DateTime @updatedAt
 }
 

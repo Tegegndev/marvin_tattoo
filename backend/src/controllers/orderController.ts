@@ -3,19 +3,20 @@ import { prisma } from '../config/database.js';
 import { upsertUserOnAction } from '../services/userService.js';
 import { notifyAdminNewOrder, notifyCustomerOrderReceived } from '../services/whatsappService.js';
 import { z } from 'zod';
+import { getResolvedPaymentConfig } from '../services/paymentConfigService.js';
 
 const orderItemInputSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
-  quantity: z.coerce.number().int().positive('Quantity must be at least 1'),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1'),
 });
 
 const createOrderSchema = z.object({
-  clientName: z.string().min(2, 'Full name is required'),
-  clientPhone: z.string().min(7, 'Phone number is required'),
-  clientEmail: z.string().email('Valid email is required'),
+  clientName: z.string().min(2, 'Name must be at least 2 characters'),
+  clientPhone: z.string().min(7, 'Phone must be at least 7 characters'),
+  clientEmail: z.string().email('Invalid email address'),
   deliveryMethod: z.enum(['STUDIO_PICKUP', 'KAMPALA_DISPATCH']).default('STUDIO_PICKUP'),
-  deliveryAddress: z.string().optional().nullable(),
-  deliveryNotes: z.string().optional().nullable(),
+  deliveryAddress: z.string().optional(),
+  deliveryNotes: z.string().optional(),
   paymentMethod: z.enum(['MTN_MOMO', 'AIRTEL_MONEY', 'MOMO', 'MOBILE_MONEY', 'CARD', 'CASH']).default('MTN_MOMO'),
   items: z.array(orderItemInputSchema).min(1, 'At least 1 item is required'),
 });
@@ -49,6 +50,52 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       validated.paymentMethod === 'MOMO' || validated.paymentMethod === 'MOBILE_MONEY'
         ? detectUgandaCarrier(validated.clientPhone)
         : validated.paymentMethod;
+
+    // Validate payment method configuration & toggles
+    const config = await getResolvedPaymentConfig();
+    const isMomo = resolvedPaymentMethod === 'MTN_MOMO' || resolvedPaymentMethod === 'AIRTEL_MONEY';
+    const isCard = resolvedPaymentMethod === 'CARD';
+    const isCash = resolvedPaymentMethod === 'CASH';
+
+    if (isMomo) {
+      if (!config.momoEnabled) {
+        res.status(400).json({
+          success: false,
+          message: 'Mobile Money payments are currently disabled. Please choose another payment option.',
+        });
+        return;
+      }
+      if (!config.marzpay.isConfigured) {
+        res.status(400).json({
+          success: false,
+          message: 'Mobile Money gateway is not configured yet. Please select Cash on Studio Pickup or contact us.',
+        });
+        return;
+      }
+    } else if (isCard) {
+      if (!config.cardEnabled) {
+        res.status(400).json({
+          success: false,
+          message: 'Card payments are currently disabled. Please choose Mobile Money or Cash on Pickup.',
+        });
+        return;
+      }
+      if (!config.marzpay.isConfigured) {
+        res.status(400).json({
+          success: false,
+          message: 'Card payment gateway is not configured yet. Please select Mobile Money or Cash on Pickup.',
+        });
+        return;
+      }
+    } else if (isCash) {
+      if (!config.cashEnabled) {
+        res.status(400).json({
+          success: false,
+          message: 'Cash on Studio Pickup is currently disabled. Please choose another payment option.',
+        });
+        return;
+      }
+    }
 
     // Fetch all products to resolve items flexibly
     let allDbProducts = await prisma.product.findMany();

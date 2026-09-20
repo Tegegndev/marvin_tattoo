@@ -10,6 +10,7 @@ import {
   formatPhoneNumber,
 } from '../services/marzpayService.js';
 import { verifyFlutterwaveTransaction } from '../services/flutterwaveService.js';
+import { getResolvedPaymentConfig, getPublicPaymentMethods } from '../services/paymentConfigService.js';
 import { z } from 'zod';
 
 const initPaymentSchema = z.object({
@@ -32,6 +33,18 @@ function detectUgandaCarrier(phone: string): 'MTN_MOMO' | 'AIRTEL_MONEY' {
     return 'AIRTEL_MONEY';
   }
   return 'MTN_MOMO';
+}
+
+/**
+ * Public endpoint to fetch available payment methods and their live statuses
+ */
+export async function getPaymentMethods(_req: Request, res: Response): Promise<void> {
+  try {
+    const methods = await getPublicPaymentMethods();
+    res.json({ success: true, data: methods });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Failed to fetch payment methods' });
+  }
 }
 
 /**
@@ -60,12 +73,47 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       return;
     }
 
+    // Validate payment method against live admin config / env
+    const config = await getResolvedPaymentConfig();
+    const isCard = validated.paymentMethod === 'CARD';
+
+    if (isCard) {
+      if (!config.cardEnabled) {
+        res.status(400).json({
+          success: false,
+          message: 'Card payments are currently disabled by store administration. Please choose Mobile Money or Cash on Pickup.',
+        });
+        return;
+      }
+      if (!config.marzpay.isConfigured) {
+        res.status(400).json({
+          success: false,
+          message: 'Card payment gateway is not configured yet. Please select Mobile Money or Cash on Pickup.',
+        });
+        return;
+      }
+    } else {
+      if (!config.momoEnabled) {
+        res.status(400).json({
+          success: false,
+          message: 'Mobile Money payments are currently disabled by store administration. Please choose another payment option.',
+        });
+        return;
+      }
+      if (!config.marzpay.isConfigured) {
+        res.status(400).json({
+          success: false,
+          message: 'Mobile Money gateway is not configured yet. Please choose Cash on Pickup or contact support.',
+        });
+        return;
+      }
+    }
+
     // Generate unique UUID v4 reference for MarzPay collection
     const reference = crypto.randomUUID();
     const rawPhone = validated.phoneNumber || order.clientPhone || '';
     const formattedPhone = rawPhone ? formatPhoneNumber(rawPhone) : order.clientPhone;
 
-    const isCard = validated.paymentMethod === 'CARD';
     const effectiveMethod: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' = isCard
       ? 'CARD'
       : detectUgandaCarrier(formattedPhone);

@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../config/database.js";
+import { env } from "../config/env.js";
 import { processAndSaveImage, deleteLocalImage } from "../services/imageService.js";
+import {
+  getAdminPaymentConfig,
+  getResolvedPaymentConfig,
+  invalidatePaymentConfigCache,
+} from "../services/paymentConfigService.js";
 
 export const DEFAULT_SOCIAL_LINKS = [
   {
@@ -413,3 +419,154 @@ export const updateHeroPortrait = async (
     next(error);
   }
 };
+
+export const getPaymentConfig = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const config = await getAdminPaymentConfig();
+    res.json({
+      success: true,
+      data: config,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePaymentConfig = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const {
+      momoEnabled,
+      cardEnabled,
+      cashEnabled,
+      marzpayApiKey,
+      marzpayApiSecret,
+      marzpayWebhookSecret,
+      marzpayMode,
+      marzpayApiBase,
+      flwPublicKey,
+      flwSecretKey,
+      paystackSecretKey,
+    } = req.body;
+
+    const dataToUpdate: Record<string, any> = {};
+
+    if (momoEnabled !== undefined) {
+      dataToUpdate.momoEnabled = momoEnabled === true || momoEnabled === "true";
+    }
+    if (cardEnabled !== undefined) {
+      dataToUpdate.cardEnabled = cardEnabled === true || cardEnabled === "true";
+    }
+    if (cashEnabled !== undefined) {
+      dataToUpdate.cashEnabled = cashEnabled === true || cashEnabled === "true";
+    }
+
+    if (marzpayApiKey !== undefined) {
+      dataToUpdate.marzpayApiKey = typeof marzpayApiKey === "string" ? marzpayApiKey.trim() : null;
+    }
+    if (marzpayApiSecret !== undefined) {
+      dataToUpdate.marzpayApiSecret = typeof marzpayApiSecret === "string" ? marzpayApiSecret.trim() : null;
+    }
+    if (marzpayWebhookSecret !== undefined) {
+      dataToUpdate.marzpayWebhookSecret = typeof marzpayWebhookSecret === "string" ? marzpayWebhookSecret.trim() : null;
+    }
+    if (marzpayMode !== undefined) {
+      dataToUpdate.marzpayMode = marzpayMode === "sandbox" ? "sandbox" : "live";
+    }
+    if (marzpayApiBase !== undefined) {
+      dataToUpdate.marzpayApiBase = typeof marzpayApiBase === "string" ? marzpayApiBase.trim() : null;
+    }
+    if (flwPublicKey !== undefined) {
+      dataToUpdate.flwPublicKey = typeof flwPublicKey === "string" ? flwPublicKey.trim() : null;
+    }
+    if (flwSecretKey !== undefined) {
+      dataToUpdate.flwSecretKey = typeof flwSecretKey === "string" ? flwSecretKey.trim() : null;
+    }
+    if (paystackSecretKey !== undefined) {
+      dataToUpdate.paystackSecretKey = typeof paystackSecretKey === "string" ? paystackSecretKey.trim() : null;
+    }
+
+    await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: dataToUpdate,
+      create: {
+        id: "studio_config",
+        ...dataToUpdate,
+        openingHours: "[]",
+        socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
+      },
+    });
+
+    invalidatePaymentConfigCache();
+
+    const updated = await getAdminPaymentConfig();
+
+    res.json({
+      success: true,
+      message: "Payment methods & API keys updated successfully",
+      data: updated,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const testPaymentConnection = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const config = await getResolvedPaymentConfig();
+    if (!config.marzpay.apiKey || !config.marzpay.apiSecret) {
+      res.status(400).json({
+        success: false,
+        message: "No MarzPay API Key and Secret found (neither in DB nor in .env). Please configure credentials first.",
+      });
+      return;
+    }
+
+    const base = (config.marzpay.apiBase || env.MARZPAY_API_BASE).replace(/\/+$/, "");
+    const authString = Buffer.from(`${config.marzpay.apiKey}:${config.marzpay.apiSecret}`).toString("base64");
+    const testUrl = `${base}/transactions?limit=1`;
+
+    const response = await fetch(testUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${authString}`,
+        Accept: "application/json",
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      res.status(400).json({
+        success: false,
+        message: "Authentication failed: MarzPay rejected the API Key / Secret credentials.",
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: `Gateway reachable and credentials authorized (${config.marzpay.mode.toUpperCase()} mode).`,
+      details: {
+        status: response.status,
+        mode: config.marzpay.mode,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to reach payment gateway.",
+    });
+  }
+};
+
