@@ -507,39 +507,19 @@ export async function initializePayment(data: {
       if (json.success && json.data) {
         return json.data;
       }
+      throw new Error(json.message || "Failed to initialize payment");
     } else {
       const errJson = await res.json().catch(() => null);
       throw new Error(errJson?.message || `Payment request failed with status ${res.status}`);
     }
   } catch (err: any) {
-    if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
-      throw err;
-    }
-    console.warn("Backend /api/payments/initialize offline, fallback to simulated prompt:", err);
+    console.error("Payment initialization error:", err);
+    throw new Error(
+      err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError")
+        ? "Unable to connect to the payment server. Please ensure the backend server is running on port 5050."
+        : err.message || "Failed to initialize payment"
+    );
   }
-
-  const promptText =
-    data.paymentMethod === "MTN_MOMO"
-      ? `A USSD push notification has been sent to ${data.phoneNumber}. Please enter your MTN MoMo PIN to complete payment.`
-      : data.paymentMethod === "AIRTEL_MONEY"
-      ? `An Airtel Money prompt has been sent to ${data.phoneNumber}. Please authorize the transaction on your handset.`
-      : `Payment gateway initialized for Card checkout. Please complete authorization.`;
-
-  // Update order in local storage if present
-  if (data.orderNumber) {
-    const order = getLocalOrderByNumber(data.orderNumber);
-    if (order) {
-      order.paymentStatus = "AUTHORIZED";
-      saveLocalOrder(order);
-    }
-  }
-
-  return {
-    merchantTxRef: `TX-LOCAL-${Date.now()}`,
-    status: "PENDING",
-    instruction: promptText,
-    isSandbox: true,
-  };
 }
 
 export async function verifyPayment(txRef: string): Promise<{
@@ -550,6 +530,13 @@ export async function verifyPayment(txRef: string): Promise<{
   reason?: string;
   isMock?: boolean;
 }> {
+  if (!txRef || txRef.startsWith("TX-LOCAL-")) {
+    return {
+      status: "FAILED",
+      reason: "Invalid transaction reference",
+    };
+  }
+
   try {
     const res = await fetch(apiUrl(`/api/payments/verify/${txRef}`));
     if (res.ok) {
@@ -557,6 +544,11 @@ export async function verifyPayment(txRef: string): Promise<{
       if (json.success && json.data) {
         return json.data;
       }
+    } else if (res.status === 404) {
+      return {
+        status: "FAILED",
+        reason: "Transaction not found on gateway",
+      };
     }
   } catch (err) {
     console.warn("Backend /api/payments/verify connection error:", err);
