@@ -94,6 +94,16 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       });
     }
 
+    if (order.paymentMethod !== validated.paymentMethod || (formattedPhone && order.clientPhone !== formattedPhone)) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          paymentMethod: validated.paymentMethod,
+          ...(formattedPhone ? { clientPhone: formattedPhone } : {}),
+        },
+      });
+    }
+
     // All initiated collections strictly start as PENDING
     const transaction = await prisma.paymentTransaction.create({
       data: {
@@ -134,7 +144,15 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       return;
     }
     console.error('initializePayment error:', error);
-    res.status(500).json({ success: false, message: error.message || 'Failed to initialize payment' });
+    let userMessage = error.message || 'Unable to initialize payment at this moment.';
+    if (userMessage.includes('IP_NOT_WHITELISTED') || userMessage.includes('not whitelisted')) {
+      userMessage =
+        'The card payment gateway is currently undergoing security network verification. Please complete checkout using MTN MoMo or Airtel Money, or message studio concierge on WhatsApp.';
+    } else if (userMessage.includes('fetch failed') || userMessage.includes('ECONNREFUSED')) {
+      userMessage =
+        'The payment network is temporarily unreachable. Please try again in a few seconds or use Mobile Money.';
+    }
+    res.status(400).json({ success: false, message: userMessage });
   }
 }
 

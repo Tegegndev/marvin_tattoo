@@ -4,6 +4,7 @@ import { Icons8 } from '../components/Icons8';
 import { createShopOrder, initializePayment, verifyPayment } from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
+import { formatPaymentError, UserFriendlyError } from '../utils/paymentErrors';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -41,6 +42,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [formattedError, setFormattedError] = useState<UserFriendlyError | null>(null);
   const [createdOrder, setCreatedOrder] = useState<any>(null);
   const [paymentInstruction, setPaymentInstruction] = useState<string>('');
 
@@ -51,6 +53,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [cardAuthUrl, setCardAuthUrl] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [verifyError, setVerifyError] = useState<string>('');
+  const [formattedVerifyError, setFormattedVerifyError] = useState<UserFriendlyError | null>(null);
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -82,7 +85,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         if (result?.status === 'SUCCESS') {
           handleCompletePaymentConfirmation();
         } else if (result?.status === 'FAILED') {
-          setVerifyError('Payment authorization failed or was declined on handset.');
+          const formatted = formatPaymentError(result.reason || 'Payment authorization failed or was declined on handset.', paymentMethod);
+          setFormattedVerifyError(formatted);
+          setVerifyError(formatted.description);
         }
       } catch (err) {
         console.warn('Background payment polling check:', err);
@@ -97,27 +102,37 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   const handleManualVerify = async () => {
     if (!activeTxRef) {
-      setVerifyError('No active payment reference found. Please return to checkout.');
+      setFormattedVerifyError({
+        title: 'Reference Missing',
+        description: 'No active payment transaction reference was found. Please return to checkout to place your order.',
+      });
       return;
     }
     setIsVerifying(true);
+    setFormattedVerifyError(null);
     setVerifyError('');
     try {
       const res = await verifyPayment(activeTxRef);
       if (res?.status === 'SUCCESS') {
         handleCompletePaymentConfirmation();
       } else if (res?.status === 'FAILED') {
-        setVerifyError(res.reason || 'Payment authorization was declined or cancelled. Please try again.');
+        const formatted = formatPaymentError(res.reason || 'Payment was declined or cancelled.', paymentMethod);
+        setFormattedVerifyError(formatted);
+        setVerifyError(formatted.description);
       } else {
-        // Still pending / processing - strictly inform user, never auto-approve
-        setVerifyError(
-          paymentMethod === 'CARD'
-            ? 'Card payment not yet confirmed by gateway. Please complete the 3D-Secure authorization in the portal and try again.'
-            : 'Payment authorization not yet detected from your mobile handset. Please enter your PIN on your phone screen, then check again.'
-        );
+        setFormattedVerifyError({
+          title: paymentMethod === 'CARD' ? 'Awaiting Card Confirmation' : 'Awaiting Mobile Money PIN',
+          description:
+            paymentMethod === 'CARD'
+              ? 'Your card payment has not been confirmed yet. Please ensure you completed the 3D-Secure approval or OTP in the portal, then click Check again.'
+              : 'Payment authorization has not been detected yet. Please check your phone screen, enter your secret PIN, and click Check again.',
+          suggestion: 'Mobile money push prompts may occasionally take 10–20 seconds to appear on your handset depending on telco network traffic.',
+        });
       }
-    } catch {
-      setVerifyError('Unable to connect to verification service. Please try again.');
+    } catch (err: any) {
+      const formatted = formatPaymentError(err, paymentMethod);
+      setFormattedVerifyError(formatted);
+      setVerifyError(formatted.description);
     } finally {
       setIsVerifying(false);
     }
@@ -126,7 +141,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
+    setFormattedError(null);
     setVerifyError('');
+    setFormattedVerifyError(null);
     setIsSubmitting(true);
 
     try {
@@ -178,10 +195,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         setIsSandboxPayment(Boolean(paymentRes.isSandbox));
         setCardAuthUrl(paymentRes.authUrl || null);
 
+        // Auto-open card gateway in new tab if available
+        if (paymentMethod === 'CARD' && paymentRes.authUrl && typeof window !== 'undefined') {
+          window.open(paymentRes.authUrl, '_blank');
+        }
+
         setPaymentInstruction(
           paymentRes.instruction ||
             (paymentMethod === 'CARD'
-              ? 'Please proceed to secure card payment authorization.'
+              ? 'Please complete your card details on the secure 3D-Secure bank portal, then verify below.'
               : 'Please authorize the payment prompt on your phone by entering your secret PIN.')
         );
         setCheckoutStep('payment_prompt');
@@ -190,7 +212,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       }
     } catch (err: any) {
       console.error('Order creation error:', err);
-      setErrorMessage(err.message || 'Failed to place order. Please check your details or reach out via WhatsApp.');
+      const formatted = formatPaymentError(err, paymentMethod);
+      setFormattedError(formatted);
+      setErrorMessage(formatted.description);
     } finally {
       setIsSubmitting(false);
     }
@@ -297,14 +321,60 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 onSubmit={handleCheckoutSubmit}
                 className="space-y-8"
               >
-                {errorMessage && (
-                  <div className="p-4 bg-red-950/70 border border-red-800 text-red-300 text-sm font-body-sm rounded-lg flex items-start gap-3">
-                    <Icons8 name="exclamation-circle" size={18} className="shrink-0 mt-0.5 text-red-400" />
-                    <div>
-                      <p className="font-bold">Checkout Notice</p>
-                      <p className="text-xs text-red-300/90 mt-0.5">{errorMessage}</p>
+                {(formattedError || errorMessage) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-5 bg-gradient-to-r from-red-950/70 via-noir-900 to-red-950/40 border border-red-800/80 rounded-xl space-y-2.5 shadow-xl text-left"
+                  >
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-8 h-8 rounded-lg bg-red-900/60 border border-red-700/60 flex items-center justify-center text-red-400 shrink-0 mt-0.5">
+                        <Icons8 name="exclamation-circle" size={18} />
+                      </div>
+                      <div className="space-y-1.5 flex-1">
+                        <h4 className="font-label-caps text-xs uppercase tracking-wider text-red-300 font-bold">
+                          {formattedError?.title || 'Checkout Notice'}
+                        </h4>
+                        <p className="font-body-sm text-xs text-bone-dim leading-relaxed">
+                          {formattedError?.description || errorMessage}
+                        </p>
+                        {formattedError?.suggestion && (
+                          <div className="p-3 rounded-lg bg-noir-850/90 border border-noir-750 text-gold text-xs font-body-sm mt-2 flex items-start gap-2.5">
+                            <Icons8 name="info" size={14} className="shrink-0 mt-0.5 text-gold" />
+                            <span>{formattedError.suggestion}</span>
+                          </div>
+                        )}
+                        {formattedError?.suggestMoMo && paymentMethod === 'CARD' && (
+                          <div className="pt-2 flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPaymentMethod('MTN_MOMO');
+                                setFormattedError(null);
+                                setErrorMessage('');
+                              }}
+                              className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                            >
+                              <span>Switch to MTN MoMo</span>
+                              <Icons8 name="arrow-right" size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPaymentMethod('AIRTEL_MONEY');
+                                setFormattedError(null);
+                                setErrorMessage('');
+                              }}
+                              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                            >
+                              <span>Switch to Airtel Money</span>
+                              <Icons8 name="arrow-right" size={12} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Section 1: Customer Info */}
@@ -663,22 +733,79 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </p>
                 </div>
 
-                {verifyError && (
-                  <div className="p-4 bg-red-950/70 border border-red-800 text-red-300 text-sm font-body-sm rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 max-w-xl mx-auto text-left">
-                    <div className="flex items-start gap-3">
-                      <Icons8 name="exclamation-circle" size={18} className="shrink-0 mt-0.5 text-red-400" />
-                      <div>
-                        <p className="font-bold">Payment Notice</p>
-                        <p className="text-xs text-red-300/90 mt-0.5">{verifyError}</p>
+                {(formattedVerifyError || verifyError) && (
+                  <div className="p-5 bg-red-950/50 border border-red-800/80 rounded-xl text-left space-y-3 max-w-xl mx-auto backdrop-blur-sm shadow-xl shadow-red-950/20">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-9 h-9 rounded-lg bg-red-900/60 border border-red-700/60 flex items-center justify-center shrink-0 text-red-300 mt-0.5">
+                        <Icons8 name="exclamation-circle" size={18} />
+                      </div>
+                      <div className="space-y-1.5 flex-1">
+                        <h4 className="font-label-caps text-sm uppercase text-red-200 font-bold tracking-wide">
+                          {formattedVerifyError?.title || 'Payment Verification Status'}
+                        </h4>
+                        <p className="font-body-sm text-xs sm:text-sm text-red-300/90 leading-relaxed">
+                          {formattedVerifyError?.description || verifyError}
+                        </p>
+                        {formattedVerifyError?.suggestion && (
+                          <div className="p-3 rounded-lg bg-noir-850/90 border border-noir-750 text-gold text-xs font-body-sm mt-2 flex items-start gap-2.5">
+                            <Icons8 name="info" size={14} className="shrink-0 mt-0.5 text-gold" />
+                            <span>{formattedVerifyError.suggestion}</span>
+                          </div>
+                        )}
+                        {formattedVerifyError?.suggestMoMo && (
+                          <div className="pt-2 flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPaymentMethod('MTN_MOMO');
+                                setCheckoutStep('checkout');
+                                setFormattedVerifyError(null);
+                                setVerifyError('');
+                              }}
+                              className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                            >
+                              <span>Switch to MTN MoMo</span>
+                              <Icons8 name="arrow-right" size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPaymentMethod('AIRTEL_MONEY');
+                                setCheckoutStep('checkout');
+                                setFormattedVerifyError(null);
+                                setVerifyError('');
+                              }}
+                              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                            >
+                              <span>Switch to Airtel Money</span>
+                              <Icons8 name="arrow-right" size={12} />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setCheckoutStep('checkout')}
-                      className="px-3 py-1.5 bg-red-900/80 hover:bg-red-800 text-white text-xs font-label-caps uppercase rounded shrink-0 transition-colors cursor-pointer border border-red-700/60"
-                    >
-                      Change / Retry
-                    </button>
+                    <div className="pt-2 border-t border-red-900/40 flex flex-wrap items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCheckoutStep('checkout');
+                          setFormattedVerifyError(null);
+                          setVerifyError('');
+                        }}
+                        className="px-3.5 py-1.5 bg-noir-800 hover:bg-noir-750 text-bone text-xs font-label-caps uppercase rounded-lg transition-colors cursor-pointer border border-noir-700 flex items-center gap-1.5"
+                      >
+                        <Icons8 name="arrow-left" size={12} />
+                        <span>Change Payment Method / Retry</span>
+                      </button>
+                      <a
+                        href="https://wa.me/256700000000?text=Hello%20Marvin%20Tattoo%2C%20I%20am%20having%20trouble%20with%20my%20payment"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-bone-muted hover:text-bone underline font-body-sm transition-colors"
+                      >
+                        Need concierge help?
+                      </a>
+                    </div>
                   </div>
                 )}
 
