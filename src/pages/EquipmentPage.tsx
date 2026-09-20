@@ -266,21 +266,11 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                               <button
                                 type="button"
                                 onClick={onOpenCart}
-                                className="px-2.5 py-1.5 bg-noir-900 hover:bg-noir-850 text-bone text-[11px] font-label-caps uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-colors flex items-center gap-1"
+                                className="px-3 py-1.5 bg-noir-900 hover:bg-noir-850 text-bone text-[11px] font-label-caps uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-colors flex items-center gap-1.5"
                                 title="Open Cart Drawer"
                               >
-                                <Icons8 name="shopping-bag" size={12} className="text-gold" />
-                                <span>Bag</span>
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => onNavigate('checkout')}
-                                className="px-3 py-1.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] uppercase tracking-wider font-bold transition-all shadow-sm shadow-crimson/25 flex items-center gap-1"
-                                title="Proceed directly to Checkout"
-                              >
-                                <span>Checkout</span>
-                                <Icons8 name="arrow-right" size={11} />
+                                <Icons8 name="shopping-bag" size={13} className="text-gold" />
+                                <span>View Bag</span>
                               </button>
                             </div>
                           </div>
