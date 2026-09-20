@@ -331,13 +331,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           Your Bag is Empty
         </h1>
         <p className="font-body-sm text-sm text-bone-dim max-w-md mb-8 leading-relaxed">
-          You have no items staged for checkout. Browse our studio equipment, aftercare supplies, and certified hardware.
+          Your bag is empty. Explore our tattoo machines, needles, and clinical aftercare supplies.
         </p>
         <button
           onClick={() => onNavigate('equipment')}
           className="px-8 py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-[0.2em] transition-all btn-gothic-glow border border-crimson/40 rounded flex items-center gap-2"
         >
-          <span>Explore Equipment Shop</span>
+          <span>Browse Studio Supplies</span>
           <Icons8 name="arrow-right" size={14} />
         </button>
       </div>
@@ -463,7 +463,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     {hasAutoFilled ? (
                       <span className="font-label-caps text-[10px] text-emerald-400 uppercase flex items-center gap-1 font-semibold bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded">
                         <Icons8 name="check-circle" size={12} />
-                        <span>Auto-Filled · Returning Client</span>
+                        <span>Saved Details Loaded</span>
                       </span>
                     ) : (
                       <span className="font-label-caps text-[10px] text-bone-muted uppercase">Required</span>
@@ -473,7 +473,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
                       <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1.5">
-                        Full Legal / Preferred Name *
+                        Full Name *
                       </label>
                       <input
                         required
@@ -547,7 +547,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         02
                       </div>
                       <h2 className="font-title-editorial text-lg sm:text-xl text-bone uppercase tracking-wide">
-                        Fulfillment Method
+                        Delivery Option
                       </h2>
                     </div>
                     <span className="font-label-caps text-[10px] text-bone-muted uppercase">Kampala</span>
@@ -601,12 +601,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                           </span>
                         </div>
                         <p className="text-xs text-bone-dim leading-relaxed">
-                          Express courier delivery directly to your door or office anywhere within Kampala metropolitan.
+                          Courier dispatch directly to your home or studio anywhere within the greater Kampala area.
                         </p>
                       </div>
                       <div className="mt-4 pt-3 border-t border-noir-800 text-[11px] text-bone-muted flex items-center gap-1.5">
                         <Icons8 name="motorcycle" size={13} />
-                        <span>Dispatched via verified courier</span>
+                        <span>Same-day dispatch across Kampala</span>
                       </div>
                     </div>
                   </div>
@@ -656,10 +656,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         03
                       </div>
                       <h2 className="font-title-editorial text-lg sm:text-xl text-bone uppercase tracking-wide">
-                        Payment Selection
+                        Payment Method
                       </h2>
                     </div>
-                    <span className="font-label-caps text-[10px] text-bone-muted uppercase">Secure &amp; Instant</span>
+                    <span className="font-label-caps text-[10px] text-bone-muted uppercase">Direct &amp; Secure</span>
                   </div>
 
                   <div className="space-y-3">
@@ -836,7 +836,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     </>
                   ) : (
                     <>
-                      <span>Complete Order &amp; Authorize (UGX {total.toLocaleString()})</span>
+                      <span>Place Order · UGX {total.toLocaleString()}</span>
                       <Icons8 name="arrow-right" size={16} />
                     </>
                   )}
@@ -1060,7 +1060,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     ) : (
                       <>
                         <Icons8 name="check" size={14} />
-                        <span>{paymentMethod === 'CARD' ? 'Check Card Payment Status' : 'I Have Approved The PIN Prompt'}</span>
+                        <span>{paymentMethod === 'CARD' ? 'Check Card Payment Status' : "I've Entered My PIN"}</span>
                       </>
                     )}
                   </button>
@@ -1296,19 +1296,19 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
             </div>
 
-            {/* Trust Badges */}
+            {/* Studio Highlights */}
             <div className="pt-2 border-t border-noir-800 space-y-2 text-[11px] text-bone-muted font-body-sm">
               <div className="flex items-center gap-2">
                 <Icons8 name="shield-alt" size={14} className="text-gold shrink-0" />
-                <span>Genuine manufacturer hardware &amp; studio certification</span>
+                <span>Sterile barrier packaging &amp; certified studio hardware</span>
               </div>
               <div className="flex items-center gap-2">
-                <Icons8 name="box" size={14} className="text-emerald-400 shrink-0" />
-                <span>Discreet, secure packaging &amp; dispatch</span>
+                <Icons8 name="store" size={14} className="text-emerald-400 shrink-0" />
+                <span>Kampala studio collection or express courier dispatch</span>
               </div>
               <div className="flex items-center gap-2">
-                <Icons8 name="headset" size={14} className="text-crimson-light shrink-0" />
-                <span>Direct WhatsApp concierge support (+256 704 779919)</span>
+                <Icons8 name="whatsapp" size={14} className="text-emerald-400 shrink-0" />
+                <span>Studio concierge on WhatsApp (+256 704 779919)</span>
               </div>
             </div>
           </div>

@@ -15,23 +15,37 @@ export function formatPaymentError(
   const msg =
     typeof rawError === 'string'
       ? rawError
-      : rawError?.message || rawError?.error || '';
+      : rawError?.message || rawError?.error || rawError?.gatewayError || '';
 
   const lower = msg.toLowerCase();
+  const isCard = currentMethod === 'CARD';
 
   // 1. Gateway Security / IP Whitelist or maintenance
   if (
     lower.includes('ip_not_whitelisted') ||
     lower.includes('not whitelisted') ||
     lower.includes('access denied') ||
-    lower.includes('security network')
+    lower.includes('security network') ||
+    lower.includes('unauthorized ip')
   ) {
+    if (isCard) {
+      return {
+        title: 'Card Gateway Unavailable',
+        description:
+          'Card processing is temporarily unavailable on our gateway. You can switch to Mobile Money (MTN / Airtel) for instant authorization.',
+        suggestion: 'Mobile Money push prompts arrive directly on your phone within seconds.',
+        suggestMoMo: true,
+      };
+    }
+
     return {
-      title: 'Card Payment Temporarily Unavailable',
+      title: 'Mobile Money Gateway Notice',
       description:
-        'Online card processing is currently unavailable on our payment provider. Please use Mobile Money (MTN / Airtel) to complete your order instantly.',
-      suggestion: 'Mobile Money push prompts arrive directly on your phone within seconds.',
-      suggestMoMo: true,
+        rawError?.gatewayError ||
+        rawError?.message ||
+        'The mobile money gateway is currently updating its security connection. Please try again in a moment or choose Cash on Pickup.',
+      suggestion: 'If this continues, you can contact our studio directly on WhatsApp or select Cash on Pickup.',
+      suggestMoMo: false,
     };
   }
 
@@ -41,27 +55,29 @@ export function formatPaymentError(
     lower.includes('networkerror') ||
     lower.includes('econnrefused') ||
     lower.includes('connection refused') ||
+    lower.includes('gateway_unreachable') ||
     lower.includes('offline')
   ) {
     return {
       title: 'Connection Issue',
       description:
-        'Could not connect to the payment server. Your order details are safe.',
+        'Could not reach the payment gateway. Your order items and information remain intact.',
       suggestion:
-        'Please check your internet connection and try again, or choose Cash on Pickup.',
+        'Please check your internet connection and try again, or select Cash on Pickup.',
+      suggestMoMo: false,
     };
   }
 
   // 3. Card 3D-Secure or missing redirect URL
   if (
-    currentMethod === 'CARD' &&
+    isCard &&
     (lower.includes('redirect') || lower.includes('3d-secure') || lower.includes('checkout link') || lower.includes('authurl'))
   ) {
     return {
       title: 'Card Portal Unavailable',
       description:
-        'The card checkout window could not open. Please use Mobile Money (MTN or Airtel) instead.',
-      suggestion: 'Mobile Money is the fastest payment option in Uganda.',
+        'The card payment window could not open. Please use Mobile Money (MTN or Airtel) instead.',
+      suggestion: 'Mobile Money is the fastest and most reliable payment method in Uganda.',
       suggestMoMo: true,
     };
   }
@@ -75,22 +91,28 @@ export function formatPaymentError(
     lower.includes('cancelled by user')
   ) {
     return {
-      title: 'Payment Declined',
-      description:
-        'The payment was cancelled or declined on your phone.',
-      suggestion:
-        'Please make sure your mobile money or card balance is sufficient, then try again.',
+      title: isCard ? 'Card Declined' : 'Payment Declined',
+      description: isCard
+        ? 'Your card was declined or the 3D-Secure approval was cancelled.'
+        : 'The payment prompt was cancelled or declined on your phone.',
+      suggestion: isCard
+        ? 'Please check your available card balance or switch to Mobile Money.'
+        : 'Please ensure your mobile money balance is sufficient and try again.',
+      suggestMoMo: isCard,
     };
   }
 
   // 5. Timeout
   if (lower.includes('timeout') || lower.includes('timed out') || lower.includes('no response')) {
     return {
-      title: 'Payment Timed Out',
-      description:
-        'We did not get approval from your phone before the session ended.',
-      suggestion:
-        'Keep your phone unlocked and click Try Again to get a fresh PIN prompt.',
+      title: isCard ? 'Card Session Timed Out' : 'Approval Timed Out',
+      description: isCard
+        ? 'The card authorization session expired before completion.'
+        : 'We did not receive confirmation from your phone before the session ended.',
+      suggestion: isCard
+        ? 'Please open the payment link again or switch to Mobile Money.'
+        : 'Keep your phone unlocked and click Verify again to check for approval.',
+      suggestMoMo: isCard,
     };
   }
 
@@ -105,12 +127,16 @@ export function formatPaymentError(
 
   // 7. General Fallback
   return {
-    title: 'Payment Failed',
+    title: isCard ? 'Card Payment Failed' : 'Payment Failed',
     description:
-      msg && msg.length < 160
+      msg && msg.length < 180
         ? msg
-        : 'Payment could not be completed at this time.',
-    suggestion: 'Please try again or select another payment method.',
-    suggestMoMo: currentMethod === 'CARD',
+        : (isCard
+            ? 'Card payment could not be completed at this time.'
+            : 'Mobile Money payment could not be completed at this time.'),
+    suggestion: isCard
+      ? 'Please retry or switch to Mobile Money (MTN / Airtel).'
+      : 'Please verify your phone number and try again, or choose Cash on Pickup.',
+    suggestMoMo: isCard,
   };
 }

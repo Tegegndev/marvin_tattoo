@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PageView } from '../types';
 import { LOGO_URL, SERVICES_DATA } from '../data/atelierData';
 import { Icons8 } from './Icons8';
-import { getUserOrders, DEFAULT_SITE_SETTINGS } from '../services/apiClient';
+import { getUserOrders, removeUserOrder, clearUserOrders, DEFAULT_SITE_SETTINGS } from '../services/apiClient';
 import { getUserBookings } from '../services/bookingApi';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -179,14 +179,32 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
                     </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={refreshHistory}
-                    className="text-[11px] font-label-caps uppercase text-bone-muted hover:text-gold flex items-center gap-1 cursor-pointer"
-                  >
-                    <Icons8 name="sync" size={11} />
-                    <span>Refresh</span>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    {activeHistoryTab === 'orders' && userOrders.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm('Remove all saved orders from this device storage?')) {
+                            clearUserOrders();
+                            refreshHistory();
+                          }
+                        }}
+                        className="text-[11px] font-label-caps uppercase text-red-400/80 hover:text-red-300 flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Clear order history on this device"
+                      >
+                        <Icons8 name="trash" size={11} />
+                        <span>Clear All</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={refreshHistory}
+                      className="text-[11px] font-label-caps uppercase text-bone-muted hover:text-gold flex items-center gap-1 cursor-pointer"
+                    >
+                      <Icons8 name="sync" size={11} />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Orders Content */}
@@ -217,9 +235,23 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
                               <span className="font-mono text-gold font-bold text-xs">
                                 {order.orderNumber}
                               </span>
-                              <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800">
-                                {order.orderStatus || 'PROCESSING'}
-                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800">
+                                  {order.orderStatus || 'PROCESSING'}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeUserOrder(order.orderNumber || order.id);
+                                    refreshHistory();
+                                  }}
+                                  className="text-bone-muted hover:text-red-400 p-1 rounded transition-colors cursor-pointer"
+                                  title="Remove from device storage"
+                                >
+                                  <Icons8 name="trash" size={12} />
+                                </button>
+                              </div>
                             </div>
 
                             <div className="space-y-0.5 text-bone-dim text-[11px]">

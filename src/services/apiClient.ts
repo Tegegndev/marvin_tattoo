@@ -352,6 +352,56 @@ export function saveLocalOrder(order: any): void {
   }
 }
 
+export function removeUserOrder(orderNumberOrId: string): void {
+  try {
+    const clean = orderNumberOrId.trim().toUpperCase();
+    const userList = getUserOrders();
+    const updated = userList.filter(
+      (o: any) =>
+        (o.orderNumber && o.orderNumber.toUpperCase() !== clean) &&
+        (o.id && o.id.toUpperCase() !== clean)
+    );
+    localStorage.setItem(USER_ORDERS_KEY, JSON.stringify(updated));
+
+    const localList = getLocalOrders();
+    const localUpdated = localList.filter(
+      (o: any) =>
+        (o.orderNumber && o.orderNumber.toUpperCase() !== clean) &&
+        (o.id && o.id.toUpperCase() !== clean)
+    );
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(localUpdated));
+
+    const last = getLastOrder();
+    if (
+      last &&
+      ((last.orderNumber && last.orderNumber.toUpperCase() === clean) ||
+        (last.id && last.id.toUpperCase() === clean))
+    ) {
+      localStorage.removeItem(LAST_ORDER_KEY);
+    }
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("storage"));
+    }
+  } catch (err) {
+    console.error("Failed to remove order from localStorage:", err);
+  }
+}
+
+export function clearUserOrders(): void {
+  try {
+    localStorage.removeItem(USER_ORDERS_KEY);
+    localStorage.removeItem(ORDERS_STORAGE_KEY);
+    localStorage.removeItem(LAST_ORDER_KEY);
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("storage"));
+    }
+  } catch (err) {
+    console.error("Failed to clear orders from localStorage:", err);
+  }
+}
+
 export function getLocalOrderByNumber(orderNumber: string): any | null {
   const clean = orderNumber.trim().toUpperCase();
   const list = getLocalOrders();

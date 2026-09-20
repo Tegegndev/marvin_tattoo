@@ -7,6 +7,9 @@ import {
   verifyPayment,
   fetchPublicPaymentMethods,
   PublicPaymentMethods,
+  getUserOrders,
+  removeUserOrder,
+  clearUserOrders,
 } from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { formatPaymentError, UserFriendlyError } from '../utils/paymentErrors';
@@ -26,6 +29,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [savedOrders, setSavedOrders] = useState<any[]>([]);
 
   // Re-payment states
   const [showPayModal, setShowPayModal] = useState<boolean>(false);
@@ -53,6 +57,13 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
         }
       })
       .catch((err) => console.warn('TrackOrder payment config fetch:', err));
+
+    const refreshSaved = () => {
+      setSavedOrders(getUserOrders());
+    };
+    refreshSaved();
+    window.addEventListener('storage', refreshSaved);
+    return () => window.removeEventListener('storage', refreshSaved);
   }, []);
   const [activeTxRef, setActiveTxRef] = useState<string>('');
   const [cardAuthUrl, setCardAuthUrl] = useState<string | null>(null);
@@ -380,6 +391,90 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
         </motion.div>
       )}
 
+      {/* Saved Orders on This Device */}
+      {!order && savedOrders.length > 0 && (
+        <div className="mb-10 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-noir-800">
+            <div className="flex items-center gap-2 text-xs font-label-caps uppercase text-bone font-bold tracking-wider">
+              <Icons8 name="clock" size={14} className="text-gold" />
+              <span>Saved Orders on this Device ({savedOrders.length})</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm('Remove all saved orders from this device storage?')) {
+                  clearUserOrders();
+                  setSavedOrders([]);
+                }
+              }}
+              className="text-[11px] font-label-caps uppercase text-red-400/80 hover:text-red-300 flex items-center gap-1.5 cursor-pointer transition-colors"
+              title="Clear all saved orders from browser storage"
+            >
+              <Icons8 name="trash" size={12} />
+              <span>Clear History</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {savedOrders.map((saved) => (
+              <div
+                key={saved.orderNumber || saved.id}
+                className="p-4 bg-noir-900 border border-noir-800 hover:border-noir-700 rounded-xl space-y-3 transition-all text-xs font-label-data"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-gold font-bold text-sm">
+                    #{saved.orderNumber}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-noir-800 text-bone-dim border border-noir-700">
+                      {saved.paymentStatus || saved.orderStatus || 'SAVED'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        removeUserOrder(saved.orderNumber || saved.id);
+                        setSavedOrders(getUserOrders());
+                      }}
+                      className="text-bone-muted hover:text-red-400 p-1 rounded transition-colors cursor-pointer"
+                      title="Remove from saved list"
+                    >
+                      <Icons8 name="trash" size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1 text-bone-dim text-[11px]">
+                  <div className="flex justify-between">
+                    <span>Total Amount:</span>
+                    <span className="text-crimson-light font-bold font-mono">
+                      UGX {(saved.totalAmount || saved.total || 0).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-bone-muted">
+                    <span>Fulfillment:</span>
+                    <span className="text-bone truncate max-w-[140px]">
+                      {saved.deliveryMethod === 'STUDIO_PICKUP' ? 'Studio Pickup' : 'Kampala Dispatch'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(saved.orderNumber);
+                    executeTrack(saved.orderNumber);
+                  }}
+                  className="w-full py-2 bg-noir-850 hover:bg-crimson text-bone font-label-caps text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-noir-750 hover:border-crimson font-bold"
+                >
+                  <Icons8 name="search" size={12} />
+                  <span>Track Live</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Order Result Card */}
       {order && (
         <motion.div
@@ -641,6 +736,22 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                 <span>Message Concierge on WhatsApp</span>
               </a>
             </div>
+
+            {savedOrders.some((s) => (s.orderNumber && s.orderNumber.toUpperCase() === order.orderNumber.toUpperCase()) || (s.id && s.id === order.id)) && (
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    removeUserOrder(order.orderNumber || order.id);
+                    setSavedOrders(getUserOrders());
+                  }}
+                  className="text-xs font-label-caps uppercase text-bone-muted hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Icons8 name="trash" size={12} />
+                  <span>Remove this order from saved device history</span>
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
       )}
