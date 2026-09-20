@@ -87,7 +87,7 @@ export const getSettings = async (
       if (typeof val === "object") return val;
       try {
         const parsed = JSON.parse(val);
-        return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback;
+        return Array.isArray(parsed) ? parsed : fallback;
       } catch {
         return fallback;
       }
@@ -261,7 +261,7 @@ export const updateHeroImage = async (
         id: "studio_config",
         heroBannerUrl,
         openingHours: "[]",
-        socialLinks: "[]",
+        socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
       },
     });
 
@@ -306,7 +306,7 @@ export const updateLogo = async (
         id: "studio_config",
         logoUrl,
         openingHours: "[]",
-        socialLinks: "[]",
+        socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
       },
     });
 
@@ -351,7 +351,7 @@ export const updateOgImage = async (
         id: "studio_config",
         ogImageUrl,
         openingHours: "[]",
-        socialLinks: "[]",
+        socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
       },
     });
 
@@ -400,7 +400,7 @@ export const updateHeroPortrait = async (
         id: "studio_config",
         heroPortraitUrl,
         openingHours: "[]",
-        socialLinks: "[]",
+        socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
       },
     });
 

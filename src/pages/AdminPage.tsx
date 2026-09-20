@@ -53,6 +53,7 @@ import {
   RotateCcw,
   Share2,
   Globe,
+  Menu,
 } from 'lucide-react';
 import {
   adminLogin,
@@ -148,6 +149,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   // Active Tab & Sub-Tabs
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
   const [shopSubTab, setShopSubTab] = useState<ShopSubTab>('products');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
 
   // Toast System
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -249,7 +251,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setSettings({
         ...globalSettings,
         socialLinks:
-          globalSettings.socialLinks && globalSettings.socialLinks.length > 0
+          Array.isArray(globalSettings.socialLinks)
             ? globalSettings.socialLinks
             : DEFAULT_SITE_SETTINGS.socialLinks,
       });
@@ -801,7 +803,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setSettings({
         ...data,
         socialLinks:
-          data.socialLinks && data.socialLinks.length > 0
+          Array.isArray(data.socialLinks)
             ? data.socialLinks
             : DEFAULT_SITE_SETTINGS.socialLinks,
       });
@@ -1446,7 +1448,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   if (!isAuthenticated && !authLoading) {
     return (
       <div className="w-full min-h-screen bg-[#0d0f15] flex items-center justify-center px-4 font-sans text-zinc-100 selection:bg-red-600 selection:text-white">
-        <div className="w-full max-w-sm p-8 bg-[#181a24] border border-zinc-700/80 rounded-2xl shadow-2xl space-y-6">
+        <div className="w-full max-w-sm p-5 sm:p-8 bg-[#181a24] border border-zinc-700/80 rounded-2xl shadow-2xl space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-zinc-700/70">
             <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center font-bold text-red-400 text-sm">
               M
@@ -1525,6 +1527,268 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     );
   }
 
+  // Helper to render sidebar navigation items
+  const renderNavList = (isMobile: boolean = false) => {
+    const handleTabClick = (tab: TabType, subTab?: ShopSubTab) => {
+      setActiveTab(tab);
+      if (subTab) setShopSubTab(subTab);
+      if (isMobile) setMobileSidebarOpen(false);
+    };
+
+    return (
+      <nav className="flex-1 p-3 space-y-5 overflow-y-auto text-xs font-sans">
+        {/* Section: Operational */}
+        <div className="space-y-1">
+          <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            Studio Management
+          </div>
+
+          <button
+            onClick={() => handleTabClick('bookings')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'bookings'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Calendar className="w-4 h-4 text-zinc-400" />
+              <span>Bookings</span>
+            </div>
+            {pendingBookingsCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold font-mono">
+                {pendingBookingsCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => handleTabClick('users')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'users'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Users className="w-4 h-4 text-zinc-400" />
+              <span>Clients CRM</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{usersList.length}</span>
+          </button>
+
+          <button
+            onClick={() => handleTabClick('services')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'services'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-zinc-400" />
+              <span>Services</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{servicesList.length}</span>
+          </button>
+
+          <button
+            onClick={() => handleTabClick('team')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'team'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Crown className="w-4 h-4 text-rose-400" />
+              <span>Team &amp; Artists</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{teamMembers.length}</span>
+          </button>
+        </div>
+
+        {/* Section: Commerce / Shop */}
+        <div className="space-y-1">
+          <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+            <span>Atelier Commerce</span>
+            {pendingOrdersCount > 0 && (
+              <span className="px-1.5 py-0.5 bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[9px] rounded-md font-bold font-mono">
+                {pendingOrdersCount} new
+              </span>
+            )}
+          </div>
+
+          <button
+            onClick={() => handleTabClick('shop', 'products')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'shop' && shopSubTab === 'products'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Package className="w-4 h-4 text-zinc-400" />
+              <span>Products Inventory</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{productsList.length}</span>
+          </button>
+
+          <button
+            onClick={() => handleTabClick('shop', 'categories')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'shop' && shopSubTab === 'categories'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Tag className="w-4 h-4 text-zinc-400" />
+              <span>Shop Categories</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{inventoryCategories.length}</span>
+          </button>
+
+          <button
+            onClick={() => handleTabClick('shop', 'orders')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'shop' && shopSubTab === 'orders'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <ShoppingBag className="w-4 h-4 text-zinc-400" />
+              <span>Orders</span>
+            </div>
+            {pendingOrdersCount > 0 ? (
+              <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-bold font-mono">
+                {pendingOrdersCount}
+              </span>
+            ) : (
+              <span className="text-[11px] font-mono text-zinc-400">{orders.length}</span>
+            )}
+          </button>
+        </div>
+
+        {/* Section: Content & Media */}
+        <div className="space-y-1">
+          <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            Content &amp; Media
+          </div>
+
+          <button
+            onClick={() => handleTabClick('portfolio')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'portfolio'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <ImageIcon className="w-4 h-4 text-zinc-400" />
+              <span>Portfolio Artworks</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{portfolioPieces.length}</span>
+          </button>
+
+          <button
+            onClick={() => handleTabClick('reviews')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'reviews'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Star className="w-4 h-4 text-zinc-400" />
+              <span>Client Reviews</span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-400">{testimonialsList.length}</span>
+          </button>
+        </div>
+
+        {/* Section: Configuration */}
+        <div className="space-y-1">
+          <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            Studio Configuration
+          </div>
+
+          <button
+            onClick={() => handleTabClick('settings')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+              activeTab === 'settings'
+                ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Settings className="w-4 h-4 text-zinc-400" />
+              <span>Site Settings</span>
+            </div>
+          </button>
+        </div>
+      </nav>
+    );
+  };
+
+  const renderSidebarBrand = (isMobile: boolean = false) => (
+    <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-red-600/15 border border-red-600/40 flex items-center justify-center font-bold text-red-400 text-xs shrink-0">
+          {(settings.studioName || 'M').charAt(0).toUpperCase()}
+        </div>
+        <div className="min-w-0">
+          <div className="text-xs font-semibold text-white tracking-tight flex items-center gap-1.5 truncate">
+            <span>{settings.studioName || 'Marvin Tattoo Studio'}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+          </div>
+          <span className="text-[11px] text-zinc-400 block truncate max-w-[150px]">
+            {settings.physicalAddress || 'New Pioneer Mall · Kampala'}
+          </span>
+        </div>
+      </div>
+      {isMobile ? (
+        <button
+          onClick={() => setMobileSidebarOpen(false)}
+          className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-[#222634] transition-colors shrink-0"
+          title="Close Navigation"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      ) : (
+        <button
+          onClick={() => onNavigate('home')}
+          className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-[#222634] transition-colors shrink-0"
+          title="Open Live Website"
+        >
+          <ExternalLink className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  );
+
+  const renderSidebarUser = () => (
+    <div className="p-4 border-t border-zinc-800/80 bg-[#12141c] flex items-center justify-between text-xs shrink-0">
+      <div className="flex items-center gap-3 overflow-hidden">
+        <div className="w-8 h-8 rounded-lg bg-zinc-700/70 border border-zinc-600/50 flex items-center justify-center text-xs font-bold text-white shrink-0">
+          M
+        </div>
+        <div className="truncate">
+          <span className="text-white text-xs block truncate font-semibold">Marvin Studio</span>
+          <span className="text-[11px] text-zinc-400 block truncate">{adminUser?.email || 'admin@marvintattoos.com'}</span>
+        </div>
+      </div>
+      <button
+        onClick={handleLogout}
+        className="p-1.5 text-zinc-400 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors shrink-0"
+        title="Sign Out"
+      >
+        <LogOut className="w-4 h-4" />
+      </button>
+    </div>
+  );
+
   // ================= MODERN REFINED DASHBOARD ================= //
   return (
     <div className="min-h-screen bg-[#0d0f15] text-zinc-100 font-sans flex flex-col md:flex-row selection:bg-red-600 selection:text-white antialiased">
@@ -1536,276 +1800,63 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* LEFT SIDEBAR RAIL */}
-      <aside className="w-full md:w-64 bg-[#151720] border-r border-zinc-800/80 flex flex-col shrink-0">
-        {/* Workspace Brand Header */}
-        <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-red-600/15 border border-red-600/40 flex items-center justify-center font-bold text-red-400 text-xs">
-              {(settings.studioName || 'M').charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-white tracking-tight flex items-center gap-1.5">
-                <span>{settings.studioName || 'Marvin Tattoo Studio'}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              </div>
-              <span className="text-[11px] text-zinc-400 block truncate max-w-[130px]">
-                {settings.physicalAddress || 'New Pioneer Mall, Shop Pi55, L5 · Kampala'}
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => onNavigate('home')}
-            className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-[#222634] transition-colors"
-            title="Open Live Website"
-          >
-            <ExternalLink className="w-4 h-4" />
-          </button>
+      {/* MOBILE NAVIGATION DRAWER & BACKDROP */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+
+          {/* Drawer Sidebar */}
+          <aside className="relative w-4/5 max-w-xs h-full bg-[#151720] border-r border-zinc-800/80 flex flex-col z-10 shadow-2xl">
+            {renderSidebarBrand(true)}
+            {renderNavList(true)}
+            {renderSidebarUser()}
+          </aside>
         </div>
+      )}
 
-        {/* Navigation Items */}
-        <nav className="flex-1 p-3 space-y-6 overflow-y-auto text-xs font-sans">
-          {/* Section: Operational */}
-          <div className="space-y-1">
-            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Studio Management
-            </div>
-
-            <button
-              onClick={() => setActiveTab('bookings')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'bookings'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Calendar className="w-4 h-4 text-zinc-400" />
-                <span>Bookings</span>
-              </div>
-              {pendingBookingsCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold font-mono">
-                  {pendingBookingsCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'users'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Users className="w-4 h-4 text-zinc-400" />
-                <span>Clients CRM</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{usersList.length}</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('services')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'services'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-4 h-4 text-zinc-400" />
-                <span>Services</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{servicesList.length}</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('team')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'team'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Crown className="w-4 h-4 text-rose-400" />
-                <span>Team &amp; Artists</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{teamMembers.length}</span>
-            </button>
-          </div>
-
-          {/* Section: Commerce / Shop */}
-          <div className="space-y-1">
-            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
-              <span>Atelier Commerce</span>
-              {pendingOrdersCount > 0 && (
-                <span className="px-1.5 py-0.5 bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[9px] rounded-md font-bold font-mono">
-                  {pendingOrdersCount} new
-                </span>
-              )}
-            </div>
-
-            <button
-              onClick={() => {
-                setActiveTab('shop');
-                setShopSubTab('products');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'shop' && shopSubTab === 'products'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Package className="w-4 h-4 text-zinc-400" />
-                <span>Products Inventory</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{productsList.length}</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab('shop');
-                setShopSubTab('categories');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'shop' && shopSubTab === 'categories'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Tag className="w-4 h-4 text-zinc-400" />
-                <span>Shop Categories</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{inventoryCategories.length}</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab('shop');
-                setShopSubTab('orders');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'shop' && shopSubTab === 'orders'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <ShoppingBag className="w-4 h-4 text-zinc-400" />
-                <span>Orders</span>
-              </div>
-              {pendingOrdersCount > 0 ? (
-                <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-bold font-mono">
-                  {pendingOrdersCount}
-                </span>
-              ) : (
-                <span className="text-[11px] font-mono text-zinc-400">{orders.length}</span>
-              )}
-            </button>
-          </div>
-
-          {/* Section: Content & Media */}
-          <div className="space-y-1">
-            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Content &amp; Media
-            </div>
-
-            <button
-              onClick={() => setActiveTab('portfolio')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'portfolio'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <ImageIcon className="w-4 h-4 text-zinc-400" />
-                <span>Portfolio Artworks</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{portfolioPieces.length}</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('reviews')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'reviews'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Star className="w-4 h-4 text-zinc-400" />
-                <span>Client Reviews</span>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">{testimonialsList.length}</span>
-            </button>
-          </div>
-
-          {/* Section: Configuration */}
-          <div className="space-y-1">
-            <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Studio Configuration
-            </div>
-
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                activeTab === 'settings'
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Settings className="w-4 h-4 text-zinc-400" />
-                <span>Site Settings</span>
-              </div>
-            </button>
-          </div>
-        </nav>
-
-        {/* Sidebar Footer User Card */}
-        <div className="p-4 border-t border-zinc-800/80 bg-[#12141c] flex items-center justify-between text-xs">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-zinc-700/70 border border-zinc-600/50 flex items-center justify-center text-xs font-bold text-white">
-              M
-            </div>
-            <div className="truncate">
-              <span className="text-white text-xs block truncate font-semibold">Marvin Studio</span>
-              <span className="text-[11px] text-zinc-400 block truncate">admin@marvintattoos.com</span>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="p-1.5 text-zinc-400 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors"
-            title="Sign Out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        </div>
+      {/* DESKTOP SIDEBAR RAIL */}
+      <aside className="hidden md:flex md:w-64 md:h-screen md:sticky md:top-0 bg-[#151720] border-r border-zinc-800/80 flex-col shrink-0">
+        {renderSidebarBrand(false)}
+        {renderNavList(false)}
+        {renderSidebarUser()}
       </aside>
 
       {/* MAIN WORKSPACE CONTENT */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#0d0f15]">
         {/* Top Minimal Header */}
-        <header className="h-16 px-6 border-b border-zinc-800/80 bg-[#151720]/90 backdrop-blur-md flex items-center justify-between shrink-0">
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-sans text-zinc-400">
-            <span>Marvin Atelier</span>
-            <span className="text-zinc-600">/</span>
-            <span className="text-white font-semibold capitalize">
-              {activeTab === 'users' ? 'Clients CRM' : activeTab === 'team' ? 'Team & Artists' : activeTab}
-            </span>
+        <header className="h-16 px-3.5 sm:px-6 border-b border-zinc-800/80 bg-[#151720]/90 backdrop-blur-md flex items-center justify-between shrink-0 gap-3">
+          {/* Left: Hamburger button on mobile + Breadcrumbs */}
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="md:hidden p-2 -ml-1 text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-xl relative transition-colors focus:outline-none shrink-0"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu className="w-5 h-5" />
+              {(pendingBookingsCount > 0 || pendingOrdersCount > 0) && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              )}
+            </button>
 
-            {activeTab === 'shop' && (
-              <>
-                <span className="text-zinc-600">/</span>
-                <span className="text-red-400 font-semibold capitalize">{shopSubTab}</span>
-              </>
-            )}
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-sans text-zinc-400 truncate">
+              <span className="hidden sm:inline">Marvin Atelier</span>
+              <span className="hidden sm:inline text-zinc-600">/</span>
+              <span className="text-white font-semibold capitalize truncate">
+                {activeTab === 'users' ? 'Clients CRM' : activeTab === 'team' ? 'Team & Artists' : activeTab}
+              </span>
+
+              {activeTab === 'shop' && (
+                <>
+                  <span className="text-zinc-600">/</span>
+                  <span className="text-red-400 font-semibold capitalize truncate">{shopSubTab}</span>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Quick Metrics Bar */}
@@ -1832,10 +1883,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </div>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             <button
               onClick={loadDashboardData}
-              className="p-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 rounded-xl text-zinc-300 hover:text-white transition-colors"
+              className="p-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 rounded-xl text-zinc-300 hover:text-white transition-colors shrink-0"
               title="Refresh Data"
             >
               <RefreshCw className="w-4 h-4" />
@@ -1845,41 +1896,45 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <button
                 onClick={handleSyncLegacyClients}
                 disabled={syncingLegacy}
-                className="px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-sans font-medium transition-colors flex items-center gap-2"
+                className="px-2.5 sm:px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-sans font-medium transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0"
                 title="Scan all historical bookings and orders to create and link client profiles"
               >
                 <RefreshCw className={`w-3.5 h-3.5 text-sky-400 ${syncingLegacy ? 'animate-spin' : ''}`} />
-                <span>{syncingLegacy ? 'Syncing...' : 'Sync Legacy Clients'}</span>
+                <span className="hidden sm:inline">{syncingLegacy ? 'Syncing...' : 'Sync Legacy Clients'}</span>
+                <span className="sm:hidden">{syncingLegacy ? 'Syncing...' : 'Sync'}</span>
               </button>
             )}
 
             {activeTab === 'services' && (
               <button
                 onClick={openAddServiceModal}
-                className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
+                className="px-2.5 sm:px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 shadow-md shadow-red-950/40 shrink-0"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Service</span>
+                <span className="hidden sm:inline">Add Service</span>
+                <span className="sm:hidden">Service</span>
               </button>
             )}
 
             {activeTab === 'team' && (
               <button
                 onClick={openAddMemberModal}
-                className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
+                className="px-2.5 sm:px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 shadow-md shadow-red-950/40 shrink-0"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Team Member</span>
+                <span className="hidden sm:inline">Add Team Member</span>
+                <span className="sm:hidden">Member</span>
               </button>
             )}
 
             {activeTab === 'portfolio' && (
               <button
                 onClick={openAddArtworkModal}
-                className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 shadow-md shadow-red-950/40"
+                className="px-2.5 sm:px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 shadow-md shadow-red-950/40 shrink-0"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Artwork</span>
+                <span className="hidden sm:inline">Add Artwork</span>
+                <span className="sm:hidden">Artwork</span>
               </button>
             )}
 
@@ -1888,49 +1943,52 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 {shopSubTab === 'products' && (
                   <button
                     onClick={() => setShopSubTab('categories')}
-                    className="px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-2"
+                    className="px-2.5 sm:px-3.5 py-2 bg-[#1e2230] hover:bg-[#282d3e] border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0"
                   >
                     <Tag className="w-4 h-4 text-sky-400" />
-                    <span>Categories</span>
+                    <span className="hidden sm:inline">Categories</span>
                   </button>
                 )}
                 <button
                   onClick={openAddProductModal}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                  className="px-2.5 sm:px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5 shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Add Product</span>
+                  <span className="hidden sm:inline">Add Product</span>
+                  <span className="sm:hidden">Product</span>
                 </button>
               </>
             )}
             {activeTab === 'reviews' && (
               <button
                 onClick={openAddReviewModal}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5"
+                className="px-2.5 sm:px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono uppercase font-semibold transition-colors flex items-center gap-1.5 shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Review</span>
+                <span className="hidden sm:inline">Add Review</span>
+                <span className="sm:hidden">Review</span>
               </button>
             )}
             <button
               onClick={() => onNavigate('home')}
-              className="px-3 py-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 text-zinc-300 rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5"
+              className="p-2 sm:px-3 sm:py-1.5 bg-[#1e2230] hover:bg-[#272c3d] border border-zinc-700 text-zinc-300 rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5 shrink-0"
+              title="Live Site"
             >
-              <span>Live Site</span>
+              <span className="hidden sm:inline">Live Site</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </div>
         </header>
 
         {/* Viewport Content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-3.5 sm:p-5 md:p-6 overflow-y-auto">
           {/* ================= 1. BOOKINGS CRM TABLE ================= */}
           {activeTab === 'bookings' && (
             <div className="space-y-5">
               {/* Filter & Search Toolbar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 {/* Status Pills */}
-                <div className="flex flex-wrap items-center gap-1.5 bg-[#161822] p-1.5 rounded-xl border border-zinc-800 text-xs font-sans">
+                <div className="flex items-center gap-1.5 bg-[#161822] p-1.5 rounded-xl border border-zinc-800 text-xs font-sans overflow-x-auto no-scrollbar max-w-full">
                   {['ALL', 'PENDING_REVIEW', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map((st) => (
                     <button
                       key={st}
@@ -1938,7 +1996,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         setBookingFilterStatus(st);
                         setTimeout(loadBookings, 50);
                       }}
-                      className={`px-3.5 py-1.5 rounded-lg transition-colors text-xs font-medium ${
+                      className={`px-3.5 py-1.5 rounded-lg transition-colors text-xs font-medium whitespace-nowrap ${
                         bookingFilterStatus === st
                           ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-sm'
                           : 'text-zinc-400 hover:text-white hover:bg-[#202434]'
@@ -1964,7 +2022,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </div>
                   <button
                     onClick={loadBookings}
-                    className="px-4 py-2.5 bg-[#202434] hover:bg-[#282e42] border border-zinc-700 text-xs text-zinc-100 rounded-xl transition-colors font-medium"
+                    className="px-4 py-2.5 bg-[#202434] hover:bg-[#282e42] border border-zinc-700 text-xs text-zinc-100 rounded-xl transition-colors font-medium shrink-0"
                   >
                     Filter
                   </button>
@@ -1973,7 +2031,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* High Density Table */}
               <div className="bg-[#181a24] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl">
-                <table className="w-full text-left text-xs border-collapse">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[700px] text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-zinc-800 bg-[#12141c] text-zinc-400 text-xs uppercase tracking-wider font-medium">
                       <th className="p-3.5 pl-5">Booking Ref</th>
@@ -2083,6 +2142,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     )}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}
@@ -2163,7 +2223,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
               {/* Users CRM Table */}
               <div className="bg-[#181a24] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl">
-                <table className="w-full text-left text-xs border-collapse">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[700px] text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-zinc-800 bg-[#12141c] text-zinc-400 text-xs uppercase tracking-wider font-medium">
                       <th className="p-3.5 pl-5">Client Name</th>
@@ -2280,6 +2341,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     )}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}
@@ -2800,10 +2862,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div className="space-y-6">
               {/* Shop Sub-Navigation Pill Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
-                <div className="flex items-center gap-1.5 bg-[#181a24] p-1.5 rounded-xl border border-zinc-800 text-xs">
+                <div className="flex items-center gap-1.5 bg-[#181a24] p-1.5 rounded-xl border border-zinc-800 text-xs overflow-x-auto no-scrollbar max-w-full">
                   <button
                     onClick={() => setShopSubTab('products')}
-                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs ${
+                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs whitespace-nowrap ${
                       shopSubTab === 'products'
                         ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
                         : 'text-zinc-400 hover:text-white'
@@ -2822,7 +2884,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   <button
                     onClick={() => setShopSubTab('categories')}
-                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs ${
+                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs whitespace-nowrap ${
                       shopSubTab === 'categories'
                         ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
                         : 'text-zinc-400 hover:text-white'
@@ -2841,7 +2903,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   <button
                     onClick={() => setShopSubTab('orders')}
-                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs ${
+                    className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 font-medium text-xs whitespace-nowrap ${
                       shopSubTab === 'orders'
                         ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
                         : 'text-zinc-400 hover:text-white'
@@ -2865,7 +2927,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
                   {shopSubTab === 'products' && (
                     <>
                       <button
@@ -3265,7 +3327,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
                   {/* Orders Table */}
                   <div className="bg-[#181a24] border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
-                    <table className="w-full text-left text-xs border-collapse">
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[650px] text-left text-xs border-collapse">
                       <thead>
                         <tr className="border-b border-zinc-800 bg-[#151720] text-zinc-400 text-[11px] uppercase tracking-wider font-semibold">
                           <th className="p-3.5 pl-4">Order #</th>
@@ -3361,6 +3424,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         )}
                       </tbody>
                     </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -4567,7 +4631,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       {/* INSPECTION SLIDE-OVER DRAWER FOR BOOKING */}
       {inspectBooking && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-800 h-full p-6 flex flex-col justify-between overflow-y-auto text-xs shadow-2xl">
+          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-800 h-full p-4 sm:p-6 flex flex-col justify-between overflow-y-auto text-xs shadow-2xl">
             <div className="space-y-5">
               <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
                 <span className="text-red-400 font-bold bg-red-500/15 px-2.5 py-1 rounded-lg border border-red-500/30 text-xs font-mono">
@@ -4685,7 +4749,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       {/* INSPECTION SLIDE-OVER DRAWER FOR ORDER */}
       {inspectOrder && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-800 h-full p-6 flex flex-col justify-between overflow-y-auto text-xs shadow-2xl">
+          <div className="w-full max-w-md bg-[#181a24] border-l border-zinc-800 h-full p-4 sm:p-6 flex flex-col justify-between overflow-y-auto text-xs shadow-2xl">
             <div className="space-y-5">
               <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
                 <span className="text-white font-bold font-mono text-sm">{inspectOrder.orderNumber}</span>
@@ -4802,7 +4866,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             className="w-full max-w-4xl bg-[#181a24] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh] text-xs"
           >
             {/* Modal Header */}
-            <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-800 bg-[#151720]">
+            <div className="flex justify-between items-center px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-800 bg-[#151720]">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
                   <ImageIcon className="w-4 h-4" />
@@ -4829,7 +4893,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Modal Body: 2-Column Workstation */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-y-auto flex-1">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6 overflow-y-auto flex-1">
               {/* LEFT COLUMN: Visual Asset Studio (5 cols) */}
               <div className="lg:col-span-5 space-y-4">
                 <div className="space-y-1">
@@ -5132,7 +5196,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Modal Footer Actions */}
-            <div className="px-6 py-4 border-t border-zinc-800 bg-[#151720] flex justify-between items-center">
+            <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-zinc-800 bg-[#151720] flex justify-between items-center">
               <span className="text-[11px] text-zinc-400 hidden sm:inline">
                 All changes sync immediately to studio portfolio and service pages.
               </span>
@@ -5163,10 +5227,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT SERVICE DISCIPLINE */}
       {showServiceModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <form
             onSubmit={handleSaveService}
-            className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl my-8"
+            className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-4 sm:p-6 space-y-4 text-xs shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
@@ -5411,10 +5475,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT TEAM MEMBER */}
       {showMemberModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <form
             onSubmit={handleSaveMember}
-            className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl my-8"
+            className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-4 sm:p-6 space-y-4 text-xs shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
@@ -5661,10 +5725,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT PRODUCT */}
       {showProductModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <form
             onSubmit={handleSaveProduct}
-            className="w-full max-w-lg bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl my-8"
+            className="w-full max-w-lg bg-[#181a24] border border-zinc-800 rounded-2xl p-4 sm:p-6 space-y-4 text-xs shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
               <div className="flex items-center gap-2.5">
@@ -5855,10 +5919,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: ADD / EDIT REVIEW */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <form
             onSubmit={handleSaveReview}
-            className="w-full max-w-lg bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-4 text-xs shadow-2xl"
+            className="w-full max-w-lg bg-[#181a24] border border-zinc-800 rounded-2xl p-4 sm:p-6 space-y-4 text-xs shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
               <h3 className="font-bold text-white text-sm">
@@ -5974,8 +6038,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: SHOP CATEGORIES MANAGER */}
       {showCategoryManagerModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-5 text-xs shadow-2xl my-8">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-4 sm:p-6 space-y-5 text-xs shadow-2xl my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-zinc-800 pb-3.5">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
@@ -6178,8 +6242,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MODAL: CLIENT DOSSIER / PROFILE DRAWER */}
       {inspectUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-6 space-y-5 text-xs shadow-2xl my-8">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#181a24] border border-zinc-800 rounded-2xl p-4 sm:p-6 space-y-5 text-xs shadow-2xl my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start border-b border-zinc-800 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center font-bold text-red-300 text-base">

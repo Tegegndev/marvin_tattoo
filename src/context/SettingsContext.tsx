@@ -96,7 +96,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ...DEFAULT_SITE_SETTINGS,
           ...data,
           socialLinks:
-            data.socialLinks && data.socialLinks.length > 0
+            Array.isArray(data.socialLinks)
               ? data.socialLinks
               : DEFAULT_SITE_SETTINGS.socialLinks,
         };
@@ -116,8 +116,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ...DEFAULT_SITE_SETTINGS,
       ...updated,
       socialLinks:
-        updated.socialLinks && updated.socialLinks.length > 0
+        Array.isArray(updated.socialLinks)
           ? updated.socialLinks
+          : Array.isArray(payload.socialLinks)
+          ? payload.socialLinks
           : DEFAULT_SITE_SETTINGS.socialLinks,
     };
     setSettings(merged);

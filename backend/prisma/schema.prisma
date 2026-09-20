@@ -53,7 +53,7 @@ model PortfolioPiece {
   zone          String   // e.g. "Forearm", "Chest", "Collarbone"
   flashId       String?  // e.g. "#MOM-701"
   imageUrl      String
-  description   String
+  description   String   @db.Text
   duration      String?  // e.g. "4 Hours (1 Session)"
   pigment       String?  // e.g. "Dynamic Triple Black"
   featured      Boolean  @default(false)
@@ -94,11 +94,11 @@ model Product {
   category    String      // Hard Goods, Aftercare, Needles, Titanium Jewelry
   price       Float
   currency    String      @default("UGX")
-  description String
+  description String      @db.Text
   imageUrl    String
   inStock     Boolean     @default(true)
   stockCount  Int         @default(10)
-  specs       String      // JSON string of specs array
+  specs       String      @db.Text // JSON string of specs array
   sortOrder   Int         @default(0)
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
@@ -164,7 +164,7 @@ model Testimonial {
   name             String
   role             String   // e.g. "Dark Realism & Sleeve", "Titanium Ear Piercing"
   stars            Int      @default(5)
-  quote            String
+  quote            String   @db.Text
   isGoogleVerified Boolean  @default(true)
   approved         Boolean  @default(true)
   createdAt        DateTime @default(now())
@@ -175,19 +175,19 @@ model SiteSetting {
   id                 String   @id @default("studio_config") // Singleton primary key
   studioName         String   @default("Marvin Tattoos & Piercing Atelier")
   heroStatement      String   @default("Clean Lines. Heavy Blackwork. Made to Age Well.")
-  heroSubtext        String   @default("Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.")
+  heroSubtext        String   @default("Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.") @db.Text
   heroBannerUrl      String   @default("/images/hero-banner.png")
   heroPortraitUrl    String?  @default("/images/marvin-founder.png")
   heroOpacity        Float    @default(0.45) // 0.0 to 1.0 overlay opacity
   announcementActive Boolean  @default(false)
-  announcementText   String?
+  announcementText   String?  @db.Text
   primaryPhone       String   @default("+256705748774")
   whatsappNumber     String   @default("+256705748774")
   contactEmail       String   @default("info@marvintattoos.com")
-  physicalAddress    String   @default("Level 5, New Pioneer Mall, Burton St, Kampala, Uganda")
+  physicalAddress    String   @default("Level 5, New Pioneer Mall, Burton St, Kampala, Uganda") @db.Text
   googleMapsUrl      String   @default("https://maps.google.com/?q=New+Pioneer+Mall+Kampala")
-  openingHours       String   // JSON string of opening hours array
-  socialLinks        String   // JSON string of social media links array
+  openingHours       String   @db.Text // JSON string of opening hours array
+  socialLinks        String   @db.Text // JSON string of social media links array
   logoUrl            String?  @default("/logo.svg")
   metaTitle          String?  @default("Marvin Tattoos & Piercing Atelier | Kampala, Uganda")
   metaDescription    String?  @db.Text
@@ -218,8 +218,8 @@ model Member {
   experience     String
   specialty      String
   slotsRemaining Int      @default(4)
-  bio            String
-  badges         String   @default("[]") // JSON string of badge strings
+  bio            String   @db.Text
+  badges         String   @default("[]") @db.Text // JSON string of badge strings
   instagram      String?
   active         Boolean  @default(true)
   sortOrder      Int      @default(0)
