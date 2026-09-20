@@ -167,11 +167,13 @@ export function App() {
             <Suspense fallback={<PageLoaderFallback />}>
               {currentPage === 'home' && (
                 <HomePage
+                  cart={cart}
                   onNavigate={setCurrentPage}
                   onSelectPiece={setSelectedArtwork}
                   onSelectService={handleSelectService}
                   onBookService={handleBookService}
                   onAddToCart={handleAddToCart}
+                  onOpenCart={() => setIsCartOpen(true)}
                   onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
                   onOpenVerify={() => setIsVerifyOpen(true)}
                 />
@@ -222,6 +224,7 @@ export function App() {
 
               {currentPage === 'equipment' && (
                 <EquipmentPage
+                  cart={cart}
                   onAddToCart={handleAddToCart}
                   onOpenCart={() => setIsCartOpen(true)}
                   onNavigate={setCurrentPage}

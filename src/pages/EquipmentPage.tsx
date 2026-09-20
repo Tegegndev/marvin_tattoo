@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { PageView, ProductItem } from '../types';
+import { PageView, ProductItem, CartItem } from '../types';
 import { fetchProducts } from '../services/apiClient';
 import { ProductGridSkeleton } from '../components/ContentPreloader';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Icons8 } from '../components/Icons8';
 
 interface EquipmentPageProps {
+  cart?: CartItem[];
   onAddToCart: (product: ProductItem) => void;
   onOpenCart: () => void;
   onNavigate: (page: PageView) => void;
 }
 
 export const EquipmentPage: React.FC<EquipmentPageProps> = ({
+  cart = [],
   onAddToCart,
   onOpenCart,
+  onNavigate,
 }) => {
   const [productList, setProductList] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -139,6 +142,8 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                 const isAdded = addedItemIds.includes(prod.id);
                 const isOutOfStock = !prod.inStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
                 const isLowStock = !isOutOfStock && prod.stockCount !== undefined && prod.stockCount <= 5;
+                const itemInCart = cart.find((item) => item.product.id === prod.id);
+                const qtyInCart = itemInCart ? itemInCart.quantity : (isAdded ? 1 : 0);
 
               return (
                 <motion.div
@@ -195,37 +200,93 @@ export const EquipmentPage: React.FC<EquipmentPageProps> = ({
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-noir-700/60 flex items-center justify-between">
-                    <span className="font-label-data text-base text-bone font-bold">
-                      {prod.currency === 'USD' || prod.currency === '$'
-                        ? `$${prod.price.toFixed(2)}`
-                        : `UGX ${prod.price.toLocaleString()}`}
-                    </span>
-                    <button
-                      onClick={() => !isOutOfStock && handleAdd(prod)}
-                      disabled={isOutOfStock}
-                      className={`px-4 py-2 font-label-caps text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 border ${
-                        isOutOfStock
-                          ? 'bg-noir-900 text-bone-dim border-noir-800 cursor-not-allowed opacity-60'
-                          : isAdded
-                          ? 'bg-emerald-800 text-white border-emerald-600'
-                          : 'bg-noir-800 hover:bg-crimson text-bone border-noir-700'
-                      }`}
-                    >
-                      {isOutOfStock ? (
-                        <span>Out of Stock</span>
-                      ) : isAdded ? (
-                        <>
-                          <Icons8 name="check" size={14} />
-                          <span>Added</span>
-                        </>
-                      ) : (
-                        <>
-                          <Icons8 name="shopping-bag" size={14} />
-                          <span>Add to Bag</span>
-                        </>
+                  <div>
+                    <div className="pt-3 border-t border-noir-700/60 flex items-center justify-between">
+                      <span className="font-label-data text-base text-bone font-bold">
+                        {prod.currency === 'USD' || prod.currency === '$'
+                          ? `$${prod.price.toFixed(2)}`
+                          : `UGX ${prod.price.toLocaleString()}`}
+                      </span>
+                      <button
+                        onClick={() => !isOutOfStock && handleAdd(prod)}
+                        disabled={isOutOfStock}
+                        className={`px-4 py-2 font-label-caps text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 border ${
+                          isOutOfStock
+                            ? 'bg-noir-900 text-bone-dim border-noir-800 cursor-not-allowed opacity-60'
+                            : isAdded
+                            ? 'bg-emerald-800 text-white border-emerald-600'
+                            : 'bg-noir-800 hover:bg-crimson text-bone border-noir-700'
+                        }`}
+                      >
+                        {isOutOfStock ? (
+                          <span>Out of Stock</span>
+                        ) : isAdded ? (
+                          <>
+                            <Icons8 name="check" size={14} />
+                            <span>Added</span>
+                          </>
+                        ) : qtyInCart > 0 ? (
+                          <>
+                            <Icons8 name="shopping-bag" size={14} />
+                            <span>Add More</span>
+                          </>
+                        ) : (
+                          <>
+                            <Icons8 name="shopping-bag" size={14} />
+                            <span>Add to Bag</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Contextual Cart / Direct Checkout Bar Below Product */}
+                    <AnimatePresence>
+                      {(qtyInCart > 0 || isAdded) && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="p-2.5 bg-noir-950 border border-emerald-800/60 rounded flex items-center justify-between gap-2 shadow-inner">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                              <div className="truncate">
+                                <span className="font-label-caps text-[11px] text-bone uppercase block leading-tight truncate font-bold">
+                                  {qtyInCart} in Bag
+                                </span>
+                                <span className="font-label-data text-[10px] text-emerald-400/90 hidden sm:inline">
+                                  Ready for checkout
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={onOpenCart}
+                                className="px-2.5 py-1.5 bg-noir-900 hover:bg-noir-850 text-bone text-[11px] font-label-caps uppercase tracking-wider border border-noir-700 hover:border-slate-500 transition-colors flex items-center gap-1"
+                                title="Open Cart Drawer"
+                              >
+                                <Icons8 name="shopping-bag" size={12} className="text-gold" />
+                                <span>Bag</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => onNavigate('checkout')}
+                                className="px-3 py-1.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-[11px] uppercase tracking-wider font-bold transition-all shadow-sm shadow-crimson/25 flex items-center gap-1"
+                                title="Proceed directly to Checkout"
+                              >
+                                <span>Checkout</span>
+                                <Icons8 name="arrow-right" size={11} />
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
                       )}
-                    </button>
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               );
