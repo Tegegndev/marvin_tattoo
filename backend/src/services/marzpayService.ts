@@ -96,9 +96,16 @@ async function callMarzPayApi(endpoint: string, method: string = "GET", body?: a
   const data = (await response.json().catch(() => null)) as any;
 
   if (!response.ok) {
-    const errorMsg = data?.message || `MarzPay API request failed with status ${response.status}`;
+    const errorMsg =
+      data?.message ||
+      data?.error ||
+      data?.description ||
+      (typeof data === "string" ? data : `MarzPay API request failed with status ${response.status}`);
     console.error(`[MarzPay API Error] ${method} ${url}:`, errorMsg, data);
-    throw new Error(errorMsg);
+    const err: any = new Error(errorMsg);
+    err.status = response.status;
+    err.raw = data;
+    throw err;
   }
 
   return data;

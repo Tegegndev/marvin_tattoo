@@ -210,15 +210,52 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       return;
     }
     console.error('initializePayment error:', error);
-    let userMessage = error.message || 'Unable to initialize payment at this moment.';
-    if (userMessage.includes('IP_NOT_WHITELISTED') || userMessage.includes('not whitelisted')) {
-      userMessage =
-        'The card payment gateway is currently undergoing security network verification. Please complete checkout using MTN MoMo or Airtel Money, or message studio concierge on WhatsApp.';
-    } else if (userMessage.includes('fetch failed') || userMessage.includes('ECONNREFUSED')) {
-      userMessage =
-        'The payment network is temporarily unreachable. Please try again in a few seconds or use Mobile Money.';
+    const rawMsg = error?.message || 'Unable to initialize payment at this moment.';
+    const rawDataStr = JSON.stringify(error?.raw || {});
+    const combinedError = `${rawMsg} ${rawDataStr}`;
+
+    // Extract IPv4 address if MarzPay mentioned the caller's IP in the error
+    const ipMatch = combinedError.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/);
+    const detectedIp = ipMatch ? ipMatch[0] : undefined;
+
+    const isIpWhitelistErr =
+      combinedError.toLowerCase().includes('whitelist') ||
+      combinedError.includes('IP_NOT_WHITELISTED') ||
+      combinedError.toLowerCase().includes('ip address not allowed') ||
+      combinedError.toLowerCase().includes('unauthorized ip');
+
+    if (isIpWhitelistErr) {
+      res.status(400).json({
+        success: false,
+        code: 'IP_NOT_WHITELISTED',
+        message: detectedIp
+          ? `MarzPay Gateway Security Notice: Server IP ${detectedIp} is not whitelisted. Please whitelist ${detectedIp} in your MarzPay Merchant Dashboard (or remove IP restrictions for Vercel/serverless hosting).`
+          : 'MarzPay Gateway Security Notice: Your server IP is not whitelisted in the MarzPay Merchant Portal. Please add your server IP under API Settings in MarzPay or disable IP restriction for serverless hosting.',
+        detectedIp,
+        gatewayError: rawMsg,
+        gatewayDetails: error?.raw || null,
+        paymentMethod: req.body?.paymentMethod,
+      });
+      return;
     }
-    res.status(400).json({ success: false, message: userMessage });
+
+    if (rawMsg.includes('fetch failed') || rawMsg.includes('ECONNREFUSED')) {
+      res.status(503).json({
+        success: false,
+        code: 'GATEWAY_UNREACHABLE',
+        message: 'The payment gateway network is temporarily unreachable. Please try again in a few moments.',
+        gatewayError: rawMsg,
+        paymentMethod: req.body?.paymentMethod,
+      });
+      return;
+    }
+
+    res.status(400).json({
+      success: false,
+      message: rawMsg,
+      gatewayDetails: error?.raw || null,
+      paymentMethod: req.body?.paymentMethod,
+    });
   }
 }
 
