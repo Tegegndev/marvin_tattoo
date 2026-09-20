@@ -157,6 +157,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [shopSubTab, setShopSubTab] = useState<ShopSubTab>('products');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
 
+  // Lock body scroll and close on Escape when mobile sidebar drawer is open
+  useEffect(() => {
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileSidebarOpen) {
+        setMobileSidebarOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileSidebarOpen]);
+
   // Toast System
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const showToast = (msg: string) => {
@@ -1630,8 +1649,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       if (isMobile) setMobileSidebarOpen(false);
     };
 
+    const itemPadding = isMobile ? 'px-3.5 py-3 text-[13px]' : 'px-3 py-2.5 text-xs';
+
     return (
-      <nav className="flex-1 p-3 space-y-5 overflow-y-auto text-xs font-sans">
+      <nav className="flex-1 p-3 space-y-4 sm:space-y-5 overflow-y-auto overscroll-contain touch-pan-y no-scrollbar text-xs font-sans">
         {/* Section: Operational */}
         <div className="space-y-1">
           <div className="px-2.5 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
@@ -1640,7 +1661,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('bookings')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'bookings'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1659,7 +1680,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('users')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'users'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1674,7 +1695,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('services')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'services'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1689,7 +1710,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('team')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'team'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1716,7 +1737,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('shop', 'products')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'shop' && shopSubTab === 'products'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1731,7 +1752,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('shop', 'categories')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'shop' && shopSubTab === 'categories'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1746,7 +1767,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('shop', 'orders')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'shop' && shopSubTab === 'orders'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1774,7 +1795,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('portfolio')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'portfolio'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1789,7 +1810,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('reviews')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'reviews'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1811,7 +1832,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => handleTabClick('settings')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            className={`w-full flex items-center justify-between ${itemPadding} rounded-xl transition-all ${
               activeTab === 'settings'
                 ? 'bg-red-500/15 text-red-400 border border-red-500/30 font-semibold shadow-sm'
                 : 'text-zinc-300 hover:text-white hover:bg-[#1f222d]'
@@ -1829,13 +1850,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   const renderSidebarBrand = (isMobile: boolean = false) => (
     <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <div className="w-8 h-8 rounded-lg bg-red-600/15 border border-red-600/40 flex items-center justify-center font-bold text-red-400 text-xs shrink-0">
           {(settings.studioName || 'M').charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0">
           <div className="text-xs font-semibold text-white tracking-tight flex items-center gap-1.5 truncate">
-            <span>{settings.studioName || 'Marvin Tattoo Studio'}</span>
+            <span className="truncate">{settings.studioName || 'Marvin Tattoo Studio'}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
           </div>
           <span className="text-[11px] text-zinc-400 block truncate max-w-[150px]">
@@ -1844,13 +1865,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         </div>
       </div>
       {isMobile ? (
-        <button
-          onClick={() => setMobileSidebarOpen(false)}
-          className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-[#222634] transition-colors shrink-0"
-          title="Close Navigation"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1 shrink-0 ml-2">
+          <button
+            onClick={() => {
+              setMobileSidebarOpen(false);
+              onNavigate('home');
+            }}
+            className="text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-[#222634] transition-colors"
+            title="Open Live Website"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setMobileSidebarOpen(false)}
+            className="text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-[#222634] transition-colors"
+            title="Close Navigation"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       ) : (
         <button
           onClick={() => onNavigate('home')}
@@ -1864,19 +1897,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   );
 
   const renderSidebarUser = () => (
-    <div className="p-4 border-t border-zinc-800/80 bg-[#12141c] flex items-center justify-between text-xs shrink-0">
-      <div className="flex items-center gap-3 overflow-hidden">
+    <div className="p-3.5 sm:p-4 border-t border-zinc-800/80 bg-[#12141c] flex items-center justify-between text-xs shrink-0">
+      <div className="flex items-center gap-3 overflow-hidden min-w-0">
         <div className="w-8 h-8 rounded-lg bg-zinc-700/70 border border-zinc-600/50 flex items-center justify-center text-xs font-bold text-white shrink-0">
           M
         </div>
-        <div className="truncate">
+        <div className="truncate min-w-0">
           <span className="text-white text-xs block truncate font-semibold">Marvin Studio</span>
           <span className="text-[11px] text-zinc-400 block truncate">{adminUser?.email || 'admin@marvintattoos.com'}</span>
         </div>
       </div>
       <button
         onClick={handleLogout}
-        className="p-1.5 text-zinc-400 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors shrink-0"
+        className="p-2 text-zinc-400 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors shrink-0 ml-2"
         title="Sign Out"
       >
         <LogOut className="w-4 h-4" />
@@ -1897,15 +1930,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* MOBILE NAVIGATION DRAWER & BACKDROP */}
       {mobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
+        <div className="fixed inset-0 z-[100] md:hidden flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity animate-fade-in"
             onClick={() => setMobileSidebarOpen(false)}
           />
 
           {/* Drawer Sidebar */}
-          <aside className="relative w-4/5 max-w-xs h-full bg-[#151720] border-r border-zinc-800/80 flex flex-col z-10 shadow-2xl">
+          <aside className="relative w-4/5 max-w-xs h-[100dvh] max-h-[100dvh] bg-[#151720] border-r border-zinc-800/80 flex flex-col z-10 shadow-2xl overflow-hidden animate-slide-in-left">
             {renderSidebarBrand(true)}
             {renderNavList(true)}
             {renderSidebarUser()}
@@ -1923,7 +1956,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       {/* MAIN WORKSPACE CONTENT */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#0d0f15]">
         {/* Top Minimal Header */}
-        <header className="h-16 px-3.5 sm:px-6 border-b border-zinc-800/80 bg-[#151720]/90 backdrop-blur-md flex items-center justify-between shrink-0 gap-3">
+        <header className="sticky top-0 z-30 h-16 px-3.5 sm:px-6 border-b border-zinc-800/80 bg-[#151720]/95 backdrop-blur-md flex items-center justify-between shrink-0 gap-3">
           {/* Left: Hamburger button on mobile + Breadcrumbs */}
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <button

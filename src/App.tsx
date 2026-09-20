@@ -144,18 +144,20 @@ export function App() {
       {/* Studio Preloader with Gothic M & Crimson Dot */}
       {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
 
-      {/* Editorial Navbar */}
-      <Navbar
-        currentPage={currentPage}
-        onNavigate={setCurrentPage}
-        cartCount={totalCartCount}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
-        onOpenVerify={() => setIsVerifyOpen(true)}
-      />
+      {/* Editorial Navbar - Public customer views only */}
+      {currentPage !== 'admin' && (
+        <Navbar
+          currentPage={currentPage}
+          onNavigate={setCurrentPage}
+          cartCount={totalCartCount}
+          onOpenCart={() => setIsCartOpen(true)}
+          onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
+          onOpenVerify={() => setIsVerifyOpen(true)}
+        />
+      )}
 
       {/* Main Routed Content Area with Page Transitions */}
-      <main className="flex-1 w-full overflow-hidden">
+      <main className={`flex-1 w-full ${currentPage === 'admin' ? 'min-h-screen' : 'overflow-hidden'}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
