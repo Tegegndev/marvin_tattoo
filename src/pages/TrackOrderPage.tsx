@@ -4,6 +4,7 @@ import { Icons8 } from '../components/Icons8';
 import { trackOrder, initializePayment, verifyPayment } from '../services/apiClient';
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { formatPaymentError, UserFriendlyError } from '../utils/paymentErrors';
+import { detectCarrier, carrierToPaymentMethod, getCarrierName, CarrierType } from '../utils/carrierDetect';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TrackOrderPageProps {
@@ -22,7 +23,8 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
 
   // Re-payment states
   const [showPayModal, setShowPayModal] = useState<boolean>(false);
-  const [payMethod, setPayMethod] = useState<'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD'>('MTN_MOMO');
+  const [payMode, setPayMode] = useState<'MOMO' | 'CARD'>('MOMO');
+  const [payCarrierOverride, setPayCarrierOverride] = useState<CarrierType | null>(null);
   const [payPhone, setPayPhone] = useState<string>('');
   const [isInitiatingPay, setIsInitiatingPay] = useState<boolean>(false);
   const [payModalStep, setPayModalStep] = useState<'choose' | 'waiting' | 'success'>('choose');
@@ -32,6 +34,11 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
   const [formattedPayError, setFormattedPayError] = useState<UserFriendlyError | null>(null);
   const [formattedVerifyError, setFormattedVerifyError] = useState<UserFriendlyError | null>(null);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
+
+  const detectedPayCarrier = detectCarrier(payPhone);
+  const effectivePayCarrier: CarrierType = payCarrierOverride || (detectedPayCarrier !== 'UNKNOWN' ? detectedPayCarrier : 'MTN');
+  const payMethod: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' =
+    payMode === 'CARD' ? 'CARD' : carrierToPaymentMethod(effectivePayCarrier);
 
   const executeTrack = async (orderNum: string) => {
     if (!orderNum.trim()) {
@@ -46,7 +53,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
     } catch (err: any) {
       console.error('Track order error:', err);
       setOrder(null);
-      setError(err.message || 'No order matching this reference was found in our atelier ledger.');
+      setError(err.message || 'No order found with this reference number. Please check the number and try again.');
     } finally {
       setLoading(false);
     }
@@ -76,7 +83,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
           }
         } else if (result?.status === 'FAILED') {
           const formatted = formatPaymentError(
-            result.reason || 'Payment authorization failed or was declined on handset.',
+            result.reason || 'Payment was declined on your handset.',
             payMethod
           );
           setFormattedVerifyError(formatted);
@@ -94,9 +101,8 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
 
   const openPayModal = () => {
     if (!order) return;
-    const initialMethod: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' =
-      order.paymentMethod === 'AIRTEL_MONEY' ? 'AIRTEL_MONEY' : order.paymentMethod === 'CARD' ? 'CARD' : 'MTN_MOMO';
-    setPayMethod(initialMethod);
+    setPayMode(order.paymentMethod === 'CARD' ? 'CARD' : 'MOMO');
+    setPayCarrierOverride(null);
     setPayPhone(order.clientPhone || '');
     setFormattedPayError(null);
     setFormattedVerifyError(null);
@@ -131,8 +137,8 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
       setInstruction(
         res.instruction ||
           (payMethod === 'CARD'
-            ? 'Please proceed to the secure 3D-Secure card payment gateway.'
-            : `A payment prompt has been dispatched to ${payPhone}. Please authorize on your handset by entering your secret PIN.`)
+            ? 'Please click below to open the card payment page.'
+            : `A payment prompt has been sent to ${payPhone}. Please enter your PIN on your phone to approve.`)
       );
       setPayModalStep('waiting');
     } catch (err: any) {
@@ -213,14 +219,14 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
       case 'PROCESSING':
       case 'PREPARING':
         return {
-          label: 'Studio Packing & Sterilization',
+          label: 'Preparing Order',
           color: 'bg-blue-950/80 text-blue-400 border-blue-700',
           step: 2,
         };
       case 'PENDING_PAYMENT':
       default:
         return {
-          label: 'Order Logged · Pending Payment',
+          label: 'Order Placed · Payment Pending',
           color: 'bg-amber-950/80 text-amber-400 border-amber-700',
           step: 1,
         };
@@ -348,8 +354,8 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-title-editorial text-lg sm:text-xl text-bone uppercase tracking-wide">
                       {order.paymentStatus === 'FAILED'
-                        ? 'Payment Authorization Failed'
-                        : 'Payment Awaiting Settlement'}
+                        ? 'Payment Failed'
+                        : 'Payment Needed'}
                     </h3>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-label-data uppercase border font-semibold ${
@@ -363,10 +369,10 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                   </div>
                   <p className="font-body-sm text-xs sm:text-sm text-bone-dim max-w-2xl leading-relaxed">
                     {order.paymentMethod === 'CASH'
-                      ? 'This order is recorded as cash upon pickup at our Kampala studio. Prefer to settle securely online now with MTN MoMo, Airtel Money, or Card to guarantee priority packing?'
+                      ? 'This order is scheduled for cash upon pickup at our studio. You can also pay online now with Mobile Money (MTN / Airtel) or Card.'
                       : order.paymentStatus === 'FAILED'
-                      ? 'The previous payment attempt was declined or timed out. Your order is logged in our ledger; click Pay Now to authorize via Mobile Money or Card.'
-                      : 'Your order is recorded in our atelier ledger, but payment authorization has not completed yet. Authorize now to fast-track sterilization and packing.'}
+                      ? 'The previous payment was declined. Click Pay Now to retry with Mobile Money or Card.'
+                      : 'Your order has been placed, but payment is still pending. Click Pay Now to complete payment.'}
                   </p>
                 </div>
               </div>
@@ -387,7 +393,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-noir-800 pb-6">
               <div>
                 <span className="font-label-caps text-[10px] uppercase text-bone-muted tracking-widest block mb-1">
-                  Official Order Reference
+                  Order Number
                 </span>
                 <h2 className="font-title-editorial text-xl sm:text-2xl text-bone uppercase">
                   {order.orderNumber}
@@ -409,10 +415,10 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
             <div className="py-2">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 {[
-                  { stepNum: 1, title: 'Order Logged', desc: 'Recorded in atelier ledger' },
-                  { stepNum: 2, title: 'Payment & Verification', desc: 'Payment approved & checked' },
-                  { stepNum: 3, title: 'Sterilization & Packing', desc: 'Sealed in sterile pack' },
-                  { stepNum: 4, title: order.deliveryMethod === 'STUDIO_PICKUP' ? 'Ready for Pickup' : 'Dispatched / Delivered', desc: order.deliveryMethod === 'STUDIO_PICKUP' ? 'New Pioneer Mall, Shop Pi55, Level 5' : 'En route via courier' },
+                  { stepNum: 1, title: 'Order Placed', desc: 'Order confirmed' },
+                  { stepNum: 2, title: 'Payment Confirmed', desc: 'Payment verified' },
+                  { stepNum: 3, title: 'Preparing Order', desc: 'Items packed and checked' },
+                  { stepNum: 4, title: order.deliveryMethod === 'STUDIO_PICKUP' ? 'Ready for Pickup' : 'Dispatched / Delivered', desc: order.deliveryMethod === 'STUDIO_PICKUP' ? 'Ready at Pioneer Mall, Shop Pi55' : 'On the way via courier' },
                 ].map((s) => {
                   const isCurrent = statusInfo && statusInfo.step === s.stepNum;
                   const isPassed = statusInfo && statusInfo.step > s.stepNum;
@@ -594,7 +600,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
               <div className="p-5 border-b border-noir-800 flex items-center justify-between bg-noir-850">
                 <div>
                   <span className="font-label-caps text-[10px] uppercase text-gold tracking-widest block">
-                    Direct Atelier Checkout
+                    Order Payment
                   </span>
                   <h3 className="font-title-editorial text-lg sm:text-xl text-bone uppercase">
                     Pay For Order #{order.orderNumber}
@@ -622,7 +628,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                         </p>
                       </div>
                       <span className="text-[11px] px-2.5 py-1 rounded bg-noir-800 text-bone-dim border border-noir-700 font-label-data uppercase">
-                        Instant Authorization
+                        Instant Prompt
                       </span>
                     </div>
 
@@ -631,96 +637,140 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                       <label className="block font-label-caps text-xs uppercase text-bone-dim">
                         Select Payment Method
                       </label>
-                      <div className="grid grid-cols-1 gap-2.5">
-                        {/* MTN */}
-                        <button
-                          type="button"
-                          onClick={() => setPayMethod('MTN_MOMO')}
-                          className={`p-3.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
-                            payMethod === 'MTN_MOMO'
-                              ? 'bg-amber-950/30 border-amber-500 text-amber-100 ring-1 ring-amber-500/50'
+                      <div className="space-y-2.5">
+                        {/* 1. Mobile Money (MTN / Airtel) */}
+                        <div
+                          onClick={() => setPayMode('MOMO')}
+                          className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            payMode === 'MOMO'
+                              ? 'bg-amber-950/20 border-amber-500/70 text-bone ring-1 ring-amber-500/40'
                               : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone'
                           }`}
                         >
-                          <div className="flex items-center gap-3">
-                            <span className="w-3 h-3 rounded-full bg-amber-400 shrink-0" />
-                            <div>
-                              <p className="font-label-caps text-xs uppercase font-bold text-bone">MTN Mobile Money</p>
-                              <p className="text-[11px] text-bone-dim">Direct USSD PIN prompt on handset</p>
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                              <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
+                                <span className="flex items-center -space-x-1">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-noir-900" />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-noir-900" />
+                                </span>
+                                <span>Mobile Money (MTN / Airtel)</span>
+                              </div>
+                              <p className="text-[11px] text-bone-dim">
+                                Direct push prompt sent to your phone. Network is auto-detected.
+                              </p>
+                            </div>
+                            <div
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                                payMode === 'MOMO' ? 'border-amber-400 bg-amber-400' : 'border-noir-600'
+                              }`}
+                            >
+                              {payMode === 'MOMO' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
                             </div>
                           </div>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${payMethod === 'MTN_MOMO' ? 'border-amber-400 bg-amber-400' : 'border-noir-600'}`}>
-                            {payMethod === 'MTN_MOMO' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
-                          </div>
-                        </button>
 
-                        {/* Airtel */}
-                        <button
-                          type="button"
-                          onClick={() => setPayMethod('AIRTEL_MONEY')}
-                          className={`p-3.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
-                            payMethod === 'AIRTEL_MONEY'
-                              ? 'bg-red-950/30 border-red-500 text-red-100 ring-1 ring-red-500/50'
-                              : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="w-3 h-3 rounded-full bg-red-500 shrink-0" />
-                            <div>
-                              <p className="font-label-caps text-xs uppercase font-bold text-bone">Airtel Money</p>
-                              <p className="text-[11px] text-bone-dim">Push authorization prompt on handset</p>
+                          {/* Network detection tag inside option */}
+                          {payMode === 'MOMO' && (
+                            <div className="mt-2.5 pt-2.5 border-t border-noir-800 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                              <div className="flex items-center gap-1.5 text-bone">
+                                <span
+                                  className={`w-2 h-2 rounded-full ${
+                                    effectivePayCarrier === 'MTN' ? 'bg-amber-400' : 'bg-red-500'
+                                  }`}
+                                />
+                                <span>
+                                  Network:{' '}
+                                  <strong className="text-bone">
+                                    {effectivePayCarrier === 'MTN' ? 'MTN Mobile Money' : 'Airtel Money'}
+                                  </strong>
+                                </span>
+                                {detectedPayCarrier !== 'UNKNOWN' && !payCarrierOverride && (
+                                  <span className="text-[10px] text-emerald-400 font-label-data">(auto-detected)</span>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPayCarrierOverride(effectivePayCarrier === 'MTN' ? 'AIRTEL' : 'MTN');
+                                }}
+                                className="text-[10px] font-label-caps uppercase text-bone-muted hover:text-gold underline cursor-pointer"
+                              >
+                                Switch to {effectivePayCarrier === 'MTN' ? 'Airtel' : 'MTN'}
+                              </button>
                             </div>
-                          </div>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${payMethod === 'AIRTEL_MONEY' ? 'border-red-400 bg-red-400' : 'border-noir-600'}`}>
-                            {payMethod === 'AIRTEL_MONEY' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
-                          </div>
-                        </button>
+                          )}
+                        </div>
 
-                        {/* Card */}
-                        <button
-                          type="button"
-                          onClick={() => setPayMethod('CARD')}
-                          className={`p-3.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
-                            payMethod === 'CARD'
+                        {/* 2. Visa / Mastercard */}
+                        <div
+                          onClick={() => setPayMode('CARD')}
+                          className={`p-3.5 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
+                            payMode === 'CARD'
                               ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
                               : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone'
                           }`}
                         >
-                          <div className="flex items-center gap-3">
-                            <Icons8 name="credit-card" size={18} className="text-crimson-light shrink-0" />
-                            <div>
-                              <p className="font-label-caps text-xs uppercase font-bold text-bone">Visa / Mastercard</p>
-                              <p className="text-[11px] text-bone-dim">3D-Secure card verification</p>
+                          <div className="space-y-1">
+                            <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
+                              <Icons8 name="credit-card" size={16} className="text-crimson-light shrink-0" />
+                              <span>Visa / Mastercard</span>
                             </div>
+                            <p className="text-[11px] text-bone-dim">Pay online with debit or credit card</p>
                           </div>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${payMethod === 'CARD' ? 'border-crimson bg-crimson' : 'border-noir-600'}`}>
-                            {payMethod === 'CARD' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                          <div
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                              payMode === 'CARD' ? 'border-crimson bg-crimson' : 'border-noir-600'
+                            }`}
+                          >
+                            {payMode === 'CARD' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                           </div>
-                        </button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Phone input */}
+                    {/* Phone input with auto-detect tag */}
                     <div>
-                      <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1.5">
-                        {payMethod === 'CARD' ? 'Billing Contact Number *' : 'Mobile Money Phone Number *'}
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block font-label-caps text-xs uppercase text-bone-dim">
+                          {payMode === 'CARD' ? 'Contact Phone Number *' : 'Phone Number (MTN / Airtel) *'}
+                        </label>
+                        {detectedPayCarrier !== 'UNKNOWN' && (
+                          <span
+                            className={`text-[10px] font-label-data px-2 py-0.5 rounded border uppercase font-bold flex items-center gap-1 ${
+                              detectedPayCarrier === 'MTN'
+                                ? 'bg-amber-950/60 text-amber-300 border-amber-600/50'
+                                : 'bg-red-950/60 text-red-300 border-red-600/50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                detectedPayCarrier === 'MTN' ? 'bg-amber-400' : 'bg-red-500'
+                              }`}
+                            />
+                            <span>{detectedPayCarrier === 'MTN' ? 'MTN MoMo' : 'Airtel Money'}</span>
+                          </span>
+                        )}
+                      </div>
                       <input
                         type="tel"
                         required
                         value={payPhone}
-                        onChange={(e) => setPayPhone(e.target.value)}
-                        placeholder="e.g. +256 770 000 000"
+                        onChange={(e) => {
+                          setPayPhone(e.target.value);
+                          setPayCarrierOverride(null);
+                        }}
+                        placeholder="e.g. 0772 000000 or 0705 000000"
                         className="w-full px-4 py-3 bg-noir-850 border border-noir-750 rounded-lg text-bone font-body-sm text-sm focus:outline-none focus:border-crimson focus:ring-1 focus:ring-crimson/40 placeholder:text-bone-muted/50"
                       />
                       <p className="text-[11px] text-bone-muted mt-1 font-body-sm">
-                        {payMethod === 'CARD'
-                          ? 'Used for transaction receipt notification and OTP verification.'
-                          : 'Must be an active SIM registered for mobile money to receive the PIN request.'}
+                        {payMode === 'CARD'
+                          ? 'Used for payment confirmation.'
+                          : 'Enter the phone number where you want to receive the mobile money PIN request.'}
                       </p>
                     </div>
 
-                    {/* Senior Error Display */}
+                    {/* Error Display */}
                     {formattedPayError && (
                       <div className="p-4 bg-red-950/50 border border-red-800/80 rounded-xl text-left space-y-2.5">
                         <div className="flex items-start gap-2.5">
@@ -740,27 +790,17 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                             <span>{formattedPayError.suggestion}</span>
                           </div>
                         )}
-                        {formattedPayError.suggestMoMo && payMethod === 'CARD' && (
-                          <div className="pt-1 flex flex-wrap gap-2">
+                        {formattedPayError.suggestMoMo && payMode === 'CARD' && (
+                          <div className="pt-1">
                             <button
                               type="button"
                               onClick={() => {
-                                setPayMethod('MTN_MOMO');
+                                setPayMode('MOMO');
                                 setFormattedPayError(null);
                               }}
-                              className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-label-caps uppercase rounded cursor-pointer"
+                              className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-label-caps uppercase rounded cursor-pointer"
                             >
-                              Switch to MTN MoMo
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPayMethod('AIRTEL_MONEY');
-                                setFormattedPayError(null);
-                              }}
-                              className="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-300 text-xs font-label-caps uppercase rounded cursor-pointer"
-                            >
-                              Switch to Airtel Money
+                              Switch to Mobile Money (MTN / Airtel)
                             </button>
                           </div>
                         )}
@@ -794,7 +834,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                     <div className="relative mx-auto w-20 h-20 flex items-center justify-center">
                       <div className="absolute inset-0 rounded-full bg-crimson/20 animate-ping" />
                       <div className="relative w-16 h-16 rounded-full bg-noir-850 border border-crimson/40 flex items-center justify-center text-crimson-light shadow-xl">
-                        {payMethod === 'CARD' ? (
+                        {payMode === 'CARD' ? (
                           <Icons8 name="credit-card" size={28} />
                         ) : (
                           <Icons8 name="mobile" size={28} />
@@ -804,7 +844,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
 
                     <div className="space-y-2">
                       <h4 className="font-title-editorial text-xl text-bone uppercase">
-                        {payMethod === 'CARD' ? 'Complete Card Checkout' : 'Check Your Phone Screen'}
+                        {payMode === 'CARD' ? 'Complete Card Payment' : 'Check Your Phone Screen'}
                       </h4>
                       <p className="font-body-sm text-xs sm:text-sm text-bone-dim leading-relaxed max-w-md mx-auto">
                         {instruction}
@@ -812,17 +852,17 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                     </div>
 
                     {/* Card gateway redirect link */}
-                    {payMethod === 'CARD' && cardAuthUrl && (
+                    {payMode === 'CARD' && cardAuthUrl && (
                       <div className="p-4 bg-noir-850 border border-noir-750 rounded-xl text-left space-y-3">
                         <div className="flex items-center justify-between border-b border-noir-800 pb-2">
-                          <span className="font-label-caps text-xs uppercase text-bone font-bold">Official Card Portal</span>
+                          <span className="font-label-caps text-xs uppercase text-bone font-bold">Secure Card Payment</span>
                           <span className="text-[11px] text-emerald-400 font-label-data flex items-center gap-1">
                             <Icons8 name="shield-alt" size={12} />
-                            <span>Encrypted SSL</span>
+                            <span>Protected</span>
                           </span>
                         </div>
                         <p className="text-xs text-bone-dim">
-                          Click below to open the official gateway authorization window in a new tab:
+                          Click below to open the card payment page in a new window:
                         </p>
                         <a
                           href={cardAuthUrl}
@@ -830,7 +870,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                           rel="noopener noreferrer"
                           className="w-full py-3 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                         >
-                          <span>Open 3D Secure Portal</span>
+                          <span>Open Card Payment Page</span>
                           <Icons8 name="arrow-right" size={14} />
                         </a>
                       </div>
@@ -875,7 +915,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                     <div className="space-y-3 pt-2">
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-noir-850 border border-noir-750 text-xs text-bone-dim font-label-data">
                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                        <span>Awaiting network settlement...</span>
+                        <span>Waiting for payment confirmation...</span>
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-2">
@@ -922,7 +962,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({
                         Payment Confirmed!
                       </h4>
                       <p className="font-body-sm text-sm text-bone-dim max-w-sm mx-auto leading-relaxed">
-                        Your payment of <span className="text-gold font-bold">UGX {(order.totalAmount || 0).toLocaleString()}</span> has been verified. Order <span className="text-bone font-mono">#{order.orderNumber}</span> is now moving to studio packing & sterilization.
+                        Your payment of <span className="text-gold font-bold">UGX {(order.totalAmount || 0).toLocaleString()}</span> has been verified. Order <span className="text-bone font-mono">#{order.orderNumber}</span> is now being prepared for delivery.
                       </p>
                     </div>
                     <button

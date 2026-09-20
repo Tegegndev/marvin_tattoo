@@ -15,9 +15,24 @@ import { z } from 'zod';
 const initPaymentSchema = z.object({
   orderId: z.string().optional(),
   orderNumber: z.string().optional(),
-  paymentMethod: z.enum(['MTN_MOMO', 'AIRTEL_MONEY', 'CARD']).default('MTN_MOMO'),
+  paymentMethod: z.enum(['MTN_MOMO', 'AIRTEL_MONEY', 'MOMO', 'MOBILE_MONEY', 'CARD']).default('MOMO'),
   phoneNumber: z.string().optional(),
 });
+
+function detectUgandaCarrier(phone: string): 'MTN_MOMO' | 'AIRTEL_MONEY' {
+  const digits = (phone || '').replace(/\D/g, '');
+  let local = digits;
+  if (local.startsWith('256')) {
+    local = local.slice(3);
+  } else if (local.startsWith('0')) {
+    local = local.slice(1);
+  }
+  const p2 = local.slice(0, 2);
+  if (['70', '75', '74', '20'].includes(p2)) {
+    return 'AIRTEL_MONEY';
+  }
+  return 'MTN_MOMO';
+}
 
 /**
  * Initialize payment via MarzPay (Mobile Money or Card)
@@ -28,17 +43,6 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
 
     if (!validated.orderId && !validated.orderNumber) {
       res.status(400).json({ success: false, message: 'Either orderId or orderNumber is required' });
-      return;
-    }
-
-    if (
-      (validated.paymentMethod === 'MTN_MOMO' || validated.paymentMethod === 'AIRTEL_MONEY') &&
-      (!validated.phoneNumber || validated.phoneNumber.trim().length < 7)
-    ) {
-      res.status(400).json({
-        success: false,
-        message: 'A valid phone number is required for Mobile Money collections',
-      });
       return;
     }
 
@@ -58,18 +62,32 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
 
     // Generate unique UUID v4 reference for MarzPay collection
     const reference = crypto.randomUUID();
-    const formattedPhone = validated.phoneNumber ? formatPhoneNumber(validated.phoneNumber) : order.clientPhone;
+    const rawPhone = validated.phoneNumber || order.clientPhone || '';
+    const formattedPhone = rawPhone ? formatPhoneNumber(rawPhone) : order.clientPhone;
+
+    const isCard = validated.paymentMethod === 'CARD';
+    const effectiveMethod: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' = isCard
+      ? 'CARD'
+      : detectUgandaCarrier(formattedPhone);
+
+    if (!isCard && (!formattedPhone || formattedPhone.trim().length < 7)) {
+      res.status(400).json({
+        success: false,
+        message: 'A valid MTN or Airtel phone number is required for mobile money payment',
+      });
+      return;
+    }
 
     let gatewayResult;
 
-    if (validated.paymentMethod === 'CARD') {
+    if (effectiveMethod === 'CARD') {
       gatewayResult = await collectCard({
         amount: order.totalAmount,
         reference,
         phoneNumber: formattedPhone,
         country: 'UG',
         currency: order.currency || 'UGX',
-        description: `Order #${order.orderNumber} - Marvin Tattoo Atelier`,
+        description: `Order #${order.orderNumber} - Marvin Tattoo`,
         callbackUrl: env.MARZPAY_CALLBACK_URL || undefined,
         metadata: [
           { orderId: order.id },
@@ -84,7 +102,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
         reference,
         country: 'UG',
         currency: order.currency || 'UGX',
-        description: `Order #${order.orderNumber} - Marvin Tattoo Atelier`,
+        description: `Order #${order.orderNumber} - Marvin Tattoo`,
         callbackUrl: env.MARZPAY_CALLBACK_URL || undefined,
         metadata: [
           { orderId: order.id },
@@ -94,11 +112,11 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
       });
     }
 
-    if (order.paymentMethod !== validated.paymentMethod || (formattedPhone && order.clientPhone !== formattedPhone)) {
+    if (order.paymentMethod !== effectiveMethod || (formattedPhone && order.clientPhone !== formattedPhone)) {
       await prisma.order.update({
         where: { id: order.id },
         data: {
-          paymentMethod: validated.paymentMethod,
+          paymentMethod: effectiveMethod,
           ...(formattedPhone ? { clientPhone: formattedPhone } : {}),
         },
       });
@@ -113,20 +131,20 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
         merchantTxRef: reference,
         amount: order.totalAmount,
         currency: order.currency,
-        paymentMethod: validated.paymentMethod,
+        paymentMethod: effectiveMethod,
         phoneNumber: formattedPhone,
         status: 'PENDING',
       },
     });
 
     const instruction =
-      validated.paymentMethod === 'CARD'
-        ? 'Please proceed to the secure 3D-Secure card payment gateway.'
-        : `A payment prompt has been dispatched to ${formattedPhone}. Please authorize on your handset by entering your secret PIN.`;
+      effectiveMethod === 'CARD'
+        ? 'Please proceed to the card authorization window to complete payment.'
+        : `A payment prompt has been sent to ${formattedPhone}. Please check your phone and enter your PIN.`;
 
     res.json({
       success: true,
-      message: gatewayResult.message || 'Payment initialized successfully',
+      message: gatewayResult.message || 'Payment initiated successfully',
       data: {
         transactionId: transaction.id,
         merchantTxRef: reference,
@@ -135,7 +153,7 @@ export async function initializePayment(req: Request, res: Response): Promise<vo
         instruction,
         authUrl: gatewayResult.redirectUrl || null,
         isSandbox: gatewayResult.isSandbox || env.MARZPAY_MODE === 'sandbox',
-        paymentMethod: validated.paymentMethod,
+        paymentMethod: effectiveMethod,
       },
     });
   } catch (error: any) {

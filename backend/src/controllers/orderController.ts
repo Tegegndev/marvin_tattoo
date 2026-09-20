@@ -16,9 +16,24 @@ const createOrderSchema = z.object({
   deliveryMethod: z.enum(['STUDIO_PICKUP', 'KAMPALA_DISPATCH']).default('STUDIO_PICKUP'),
   deliveryAddress: z.string().optional().nullable(),
   deliveryNotes: z.string().optional().nullable(),
-  paymentMethod: z.enum(['MTN_MOMO', 'AIRTEL_MONEY', 'CARD', 'CASH']).default('MTN_MOMO'),
+  paymentMethod: z.enum(['MTN_MOMO', 'AIRTEL_MONEY', 'MOMO', 'MOBILE_MONEY', 'CARD', 'CASH']).default('MTN_MOMO'),
   items: z.array(orderItemInputSchema).min(1, 'At least 1 item is required'),
 });
+
+function detectUgandaCarrier(phone: string): 'MTN_MOMO' | 'AIRTEL_MONEY' {
+  const digits = (phone || '').replace(/\D/g, '');
+  let local = digits;
+  if (local.startsWith('256')) {
+    local = local.slice(3);
+  } else if (local.startsWith('0')) {
+    local = local.slice(1);
+  }
+  const p2 = local.slice(0, 2);
+  if (['70', '75', '74', '20'].includes(p2)) {
+    return 'AIRTEL_MONEY';
+  }
+  return 'MTN_MOMO';
+}
 
 function generateOrderNumber(): string {
   const year = new Date().getFullYear();
@@ -29,6 +44,11 @@ function generateOrderNumber(): string {
 export async function createOrder(req: Request, res: Response): Promise<void> {
   try {
     const validated = createOrderSchema.parse(req.body);
+
+    const resolvedPaymentMethod: string =
+      validated.paymentMethod === 'MOMO' || validated.paymentMethod === 'MOBILE_MONEY'
+        ? detectUgandaCarrier(validated.clientPhone)
+        : validated.paymentMethod;
 
     // Fetch all products to resolve items flexibly
     let allDbProducts = await prisma.product.findMany();
@@ -108,7 +128,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
         currency: 'UGX',
         orderStatus: 'PENDING_PAYMENT',
         paymentStatus: 'PENDING',
-        paymentMethod: validated.paymentMethod,
+        paymentMethod: resolvedPaymentMethod,
         userPhone: user ? user.phone : null,
         items: {
           create: orderItemsData,
@@ -136,7 +156,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
         totalAmount: calculatedTotal,
         deliveryMethod: validated.deliveryMethod,
         deliveryAddress: validated.deliveryAddress,
-        paymentMethod: validated.paymentMethod,
+        paymentMethod: resolvedPaymentMethod,
         itemsText: itemsSummary,
       }),
       notifyCustomerOrderReceived({

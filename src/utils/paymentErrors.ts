@@ -6,11 +6,11 @@ export interface UserFriendlyError {
 }
 
 /**
- * Translates raw gateway or network error messages into polished, senior-level user notices.
+ * Translates raw gateway or network error messages into plain, helpful notices.
  */
 export function formatPaymentError(
   rawError: any,
-  currentMethod?: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' | string
+  currentMethod?: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'MOMO' | 'CARD' | string
 ): UserFriendlyError {
   const msg =
     typeof rawError === 'string'
@@ -27,11 +27,10 @@ export function formatPaymentError(
     lower.includes('security network')
   ) {
     return {
-      title: 'Payment Gateway Undergoing Verification',
+      title: 'Card Payment Temporarily Unavailable',
       description:
-        'The online card payment gateway is undergoing scheduled security updates.',
-      suggestion:
-        'Please complete your order using MTN Mobile Money or Airtel Money for immediate authorization, or chat with our studio concierge on WhatsApp.',
+        'Online card processing is currently unavailable on our payment provider. Please use Mobile Money (MTN / Airtel) to complete your order instantly.',
+      suggestion: 'Mobile Money push prompts arrive directly on your phone within seconds.',
       suggestMoMo: true,
     };
   }
@@ -47,9 +46,9 @@ export function formatPaymentError(
     return {
       title: 'Connection Issue',
       description:
-        'We could not reach the payment gateway server at this second. Your cart items and order remain safely preserved.',
+        'Could not connect to the payment server. Your order details are safe.',
       suggestion:
-        'Please check your internet connection and try again, or select Cash on Studio Pickup.',
+        'Please check your internet connection and try again, or choose Cash on Pickup.',
     };
   }
 
@@ -59,11 +58,10 @@ export function formatPaymentError(
     (lower.includes('redirect') || lower.includes('3d-secure') || lower.includes('checkout link') || lower.includes('authurl'))
   ) {
     return {
-      title: 'Card Authorization Gateway Unavailable',
+      title: 'Card Portal Unavailable',
       description:
-        'Your bank checkout portal could not be initialized at this moment.',
-      suggestion:
-        'We recommend selecting MTN Mobile Money or Airtel Money for instant one-touch checkout.',
+        'The card checkout window could not open. Please use Mobile Money (MTN or Airtel) instead.',
+      suggestion: 'Mobile Money is the fastest payment option in Uganda.',
       suggestMoMo: true,
     };
   }
@@ -77,43 +75,42 @@ export function formatPaymentError(
     lower.includes('cancelled by user')
   ) {
     return {
-      title: 'Payment Was Not Authorized',
+      title: 'Payment Declined',
       description:
-        'The transaction was declined by your bank or mobile money provider.',
+        'The payment was cancelled or declined on your phone.',
       suggestion:
-        'Please verify that your wallet has enough balance to cover the total, then re-initiate payment.',
+        'Please make sure your mobile money or card balance is sufficient, then try again.',
     };
   }
 
   // 5. Timeout
   if (lower.includes('timeout') || lower.includes('timed out') || lower.includes('no response')) {
     return {
-      title: 'Authorization Timed Out',
+      title: 'Payment Timed Out',
       description:
-        'We did not receive a confirmation from your device before the session expired.',
+        'We did not get approval from your phone before the session ended.',
       suggestion:
-        'Keep your phone unlocked and click "Pay Now" to prompt your handset again.',
+        'Keep your phone unlocked and click Try Again to get a fresh PIN prompt.',
     };
   }
 
   // 6. Invalid phone number
   if (lower.includes('phone') && (lower.includes('invalid') || lower.includes('required') || lower.includes('short'))) {
     return {
-      title: 'Invalid Mobile Number',
+      title: 'Invalid Phone Number',
       description:
-        'Please enter a valid Ugandan mobile money number (e.g. 0705 123 456 or +256 772 123 456).',
+        'Please enter a valid Ugandan phone number (e.g. 0772 123 456 or 0705 123 456).',
     };
   }
 
   // 7. General Fallback
   return {
-    title: 'Payment Notice',
+    title: 'Payment Failed',
     description:
       msg && msg.length < 160
         ? msg
-        : 'We were unable to complete the payment authorization at this moment.',
-    suggestion:
-      'Please try again in a few moments, or select an alternative payment method.',
+        : 'Payment could not be completed at this time.',
+    suggestion: 'Please try again or select another payment method.',
     suggestMoMo: currentMethod === 'CARD',
   };
 }

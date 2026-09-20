@@ -5,6 +5,7 @@ import { createShopOrder, initializePayment, verifyPayment } from '../services/a
 import { printReceipt, OrderReceiptData } from '../utils/receiptGenerator';
 import { getSavedUserProfile, saveUserProfile } from '../utils/userProfile';
 import { formatPaymentError, UserFriendlyError } from '../utils/paymentErrors';
+import { detectCarrier, carrierToPaymentMethod, getCarrierName, CarrierType } from '../utils/carrierDetect';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,7 +26,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 }) => {
   const [checkoutStep, setCheckoutStep] = useState<'checkout' | 'payment_prompt' | 'confirmed'>('checkout');
   const [deliveryMethod, setDeliveryMethod] = useState<'STUDIO_PICKUP' | 'KAMPALA_DISPATCH'>('STUDIO_PICKUP');
-  const [paymentMethod, setPaymentMethod] = useState<'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' | 'CASH'>('MTN_MOMO');
+  const [paymentMode, setPaymentMode] = useState<'MOMO' | 'CARD' | 'CASH'>('MOMO');
+  const [momoCarrierOverride, setMomoCarrierOverride] = useState<CarrierType | null>(null);
   const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
 
   const [shippingData, setShippingData] = useState(() => {
@@ -61,6 +63,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   );
   const dispatchFee = deliveryMethod === 'KAMPALA_DISPATCH' ? 10000 : 0;
   const total = subtotal + dispatchFee;
+
+  const detectedCarrier = detectCarrier(shippingData.phone);
+  const effectiveCarrier: CarrierType = momoCarrierOverride || (detectedCarrier !== 'UNKNOWN' ? detectedCarrier : 'MTN');
+  const paymentMethod: 'MTN_MOMO' | 'AIRTEL_MONEY' | 'CARD' | 'CASH' =
+    paymentMode === 'CARD' ? 'CARD' : paymentMode === 'CASH' ? 'CASH' : carrierToPaymentMethod(effectiveCarrier);
 
   const handleCompletePaymentConfirmation = () => {
     setCheckoutStep('confirmed');
@@ -344,30 +351,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                             <span>{formattedError.suggestion}</span>
                           </div>
                         )}
-                        {formattedError?.suggestMoMo && paymentMethod === 'CARD' && (
+                        {formattedError?.suggestMoMo && paymentMode === 'CARD' && (
                           <div className="pt-2 flex flex-wrap items-center gap-2">
                             <button
                               type="button"
                               onClick={() => {
-                                setPaymentMethod('MTN_MOMO');
+                                setPaymentMode('MOMO');
                                 setFormattedError(null);
                                 setErrorMessage('');
                               }}
-                              className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                              className="px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
                             >
-                              <span>Switch to MTN MoMo</span>
-                              <Icons8 name="arrow-right" size={12} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPaymentMethod('AIRTEL_MONEY');
-                                setFormattedError(null);
-                                setErrorMessage('');
-                              }}
-                              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
-                            >
-                              <span>Switch to Airtel Money</span>
+                              <span>Switch to Mobile Money (MTN / Airtel)</span>
                               <Icons8 name="arrow-right" size={12} />
                             </button>
                           </div>
@@ -415,17 +410,38 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     </div>
 
                     <div>
-                      <label className="block font-label-caps text-xs uppercase text-bone-dim mb-1.5">
-                        Phone Number (MoMo / Airtel) *
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block font-label-caps text-xs uppercase text-bone-dim">
+                          Phone Number (MTN / Airtel) *
+                        </label>
+                        {detectedCarrier !== 'UNKNOWN' && (
+                          <span
+                            className={`text-[10px] font-label-data px-2 py-0.5 rounded border uppercase font-bold flex items-center gap-1.5 transition-all ${
+                              detectedCarrier === 'MTN'
+                                ? 'bg-amber-950/60 text-amber-300 border-amber-600/50'
+                                : 'bg-red-950/60 text-red-300 border-red-600/50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                detectedCarrier === 'MTN' ? 'bg-amber-400' : 'bg-red-500'
+                              }`}
+                            />
+                            <span>{detectedCarrier === 'MTN' ? 'MTN MoMo' : 'Airtel Money'}</span>
+                          </span>
+                        )}
+                      </div>
                       <input
                         required
                         type="tel"
                         autoComplete="tel"
                         value={shippingData.phone}
-                        onChange={(e) => setShippingData({ ...shippingData, phone: e.target.value })}
+                        onChange={(e) => {
+                          setShippingData({ ...shippingData, phone: e.target.value });
+                          setMomoCarrierOverride(null);
+                        }}
                         className="w-full px-4 py-3 bg-noir-850 border border-noir-750 rounded-lg text-bone font-body-sm text-sm focus:outline-none focus:border-crimson focus:ring-1 focus:ring-crimson/40 transition-colors placeholder:text-bone-muted/50"
-                        placeholder="+256 700 000000"
+                        placeholder="e.g. 0772 000000 or 0705 000000"
                       />
                     </div>
 
@@ -569,102 +585,126 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     <span className="font-label-caps text-[10px] text-bone-muted uppercase">Secure &amp; Instant</span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* MTN MoMo */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('MTN_MOMO')}
-                      className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                        paymentMethod === 'MTN_MOMO'
-                          ? 'bg-amber-950/30 border-amber-500 text-amber-100 ring-1 ring-amber-500/50'
+                  <div className="space-y-3">
+                    {/* 1. Mobile Money (MTN / Airtel auto-detected) */}
+                    <div
+                      onClick={() => setPaymentMode('MOMO')}
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                        paymentMode === 'MOMO'
+                          ? 'bg-amber-950/20 border-amber-500/70 text-bone ring-1 ring-amber-500/40'
                           : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
                       }`}
                     >
-                      <div className="space-y-1">
-                        <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                          <span>MTN Mobile Money</span>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
+                            <span className="flex items-center -space-x-1">
+                              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-noir-900" />
+                              <span className="w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-noir-900" />
+                            </span>
+                            <span>Mobile Money (MTN / Airtel)</span>
+                          </div>
+                          <p className="text-[11px] text-bone-dim">
+                            Instant push prompt sent to your phone. Network is auto-detected from your number.
+                          </p>
                         </div>
-                        <p className="text-[11px] text-bone-dim">
-                          Instant USSD PIN prompt directly on your MTN line
-                        </p>
+                        <div
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                            paymentMode === 'MOMO' ? 'border-amber-400 bg-amber-400' : 'border-noir-600'
+                          }`}
+                        >
+                          {paymentMode === 'MOMO' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+                        </div>
                       </div>
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'MTN_MOMO' ? 'border-amber-400 bg-amber-400' : 'border-noir-600'}`}>
-                        {paymentMethod === 'MTN_MOMO' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
-                      </div>
-                    </button>
 
-                    {/* Airtel Money */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('AIRTEL_MONEY')}
-                      className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                        paymentMethod === 'AIRTEL_MONEY'
-                          ? 'bg-red-950/30 border-red-500 text-red-100 ring-1 ring-red-500/50'
-                          : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
-                      }`}
-                    >
-                      <div className="space-y-1">
-                        <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                          <span>Airtel Money</span>
+                      {/* Dynamic Carrier Detection Line */}
+                      {paymentMode === 'MOMO' && (
+                        <div className="mt-3 pt-3 border-t border-noir-800 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                          <div className="flex items-center gap-1.5 text-bone">
+                            <span
+                              className={`w-2 h-2 rounded-full ${
+                                effectiveCarrier === 'MTN' ? 'bg-amber-400' : 'bg-red-500'
+                              }`}
+                            />
+                            <span>
+                              Network:{' '}
+                              <strong className="text-bone">
+                                {effectiveCarrier === 'MTN' ? 'MTN Mobile Money' : 'Airtel Money'}
+                              </strong>
+                            </span>
+                            {detectedCarrier !== 'UNKNOWN' && !momoCarrierOverride && (
+                              <span className="text-[10px] text-emerald-400 font-label-data">(auto-detected)</span>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMomoCarrierOverride(effectiveCarrier === 'MTN' ? 'AIRTEL' : 'MTN');
+                            }}
+                            className="text-[10px] font-label-caps uppercase text-bone-muted hover:text-gold underline cursor-pointer"
+                          >
+                            Switch to {effectiveCarrier === 'MTN' ? 'Airtel' : 'MTN'}
+                          </button>
                         </div>
-                        <p className="text-[11px] text-bone-dim">
-                          Instant USSD push prompt on your Airtel device
-                        </p>
-                      </div>
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'AIRTEL_MONEY' ? 'border-red-400 bg-red-400' : 'border-noir-600'}`}>
-                        {paymentMethod === 'AIRTEL_MONEY' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
-                      </div>
-                    </button>
+                      )}
+                    </div>
 
-                    {/* Visa / Master */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('CARD')}
-                      className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                        paymentMethod === 'CARD'
-                          ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
-                          : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
-                      }`}
-                    >
-                      <div className="space-y-1">
-                        <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
-                          <Icons8 name="credit-card" size={15} className="text-crimson-light" />
-                          <span>Visa / Mastercard</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* 2. Visa / Mastercard */}
+                      <div
+                        onClick={() => setPaymentMode('CARD')}
+                        className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
+                          paymentMode === 'CARD'
+                            ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
+                            : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
+                            <Icons8 name="credit-card" size={15} className="text-crimson-light" />
+                            <span>Visa / Mastercard</span>
+                          </div>
+                          <p className="text-[11px] text-bone-dim">
+                            Pay securely with debit or credit card
+                          </p>
                         </div>
-                        <p className="text-[11px] text-bone-dim">
-                          International &amp; local cards with 3D Secure verification
-                        </p>
+                        <div
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                            paymentMode === 'CARD' ? 'border-crimson bg-crimson' : 'border-noir-600'
+                          }`}
+                        >
+                          {paymentMode === 'CARD' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                        </div>
                       </div>
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'CARD' ? 'border-crimson bg-crimson' : 'border-noir-600'}`}>
-                        {paymentMethod === 'CARD' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                      </div>
-                    </button>
 
-                    {/* Cash on Pickup */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('CASH')}
-                      className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
-                        paymentMethod === 'CASH'
-                          ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
-                          : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
-                      }`}
-                    >
-                      <div className="space-y-1">
-                        <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
-                          <Icons8 name="money-bill-wave" size={15} className="text-crimson-light" />
-                          <span>Cash on Pickup</span>
+                      {/* 3. Cash on Pickup */}
+                      <div
+                        onClick={() => setPaymentMode('CASH')}
+                        className={`p-4 rounded-xl border text-left transition-all flex items-start justify-between cursor-pointer ${
+                          paymentMode === 'CASH'
+                            ? 'bg-crimson/20 border-crimson text-bone ring-1 ring-crimson/50'
+                            : 'bg-noir-850 border-noir-750 text-bone-dim hover:text-bone hover:border-noir-600'
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <div className="font-label-caps text-xs uppercase font-bold text-bone flex items-center gap-2">
+                            <Icons8 name="money-bill-wave" size={15} className="text-crimson-light" />
+                            <span>Cash on Pickup</span>
+                          </div>
+                          <p className="text-[11px] text-bone-dim">
+                            Pay in cash or POS at our studio reception
+                          </p>
                         </div>
-                        <p className="text-[11px] text-bone-dim">
-                          Pay in cash or POS terminal directly at our reception
-                        </p>
+                        <div
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                            paymentMode === 'CASH' ? 'border-crimson bg-crimson' : 'border-noir-600'
+                          }`}
+                        >
+                          {paymentMode === 'CASH' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                        </div>
                       </div>
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'CASH' ? 'border-crimson bg-crimson' : 'border-noir-600'}`}>
-                        {paymentMethod === 'CASH' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                      </div>
-                    </button>
+                    </div>
                   </div>
                 </div>
 
@@ -698,17 +738,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 exit={{ opacity: 0, scale: 0.98 }}
                 className="bg-noir-900 border border-noir-800 rounded-xl p-8 sm:p-10 text-center space-y-8 relative overflow-hidden"
               >
-                {/* Gateway Provider Header Icon */}
+                {/* Provider Header Icon */}
                 <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
                   <div className="absolute inset-0 rounded-full bg-crimson/10 animate-ping opacity-75" />
                   <div className={`w-20 h-20 rounded-full flex items-center justify-center relative z-10 border ${
-                    paymentMethod === 'MTN_MOMO'
+                    paymentMode === 'CARD'
+                      ? 'bg-crimson/15 border-crimson/60 text-bone'
+                      : effectiveCarrier === 'MTN'
                       ? 'bg-amber-500/15 border-amber-500/60 text-amber-400'
-                      : paymentMethod === 'AIRTEL_MONEY'
-                      ? 'bg-red-500/15 border-red-500/60 text-red-400'
-                      : 'bg-crimson/15 border-crimson/60 text-bone'
+                      : 'bg-red-500/15 border-red-500/60 text-red-400'
                   }`}>
-                    {paymentMethod === 'CARD' ? (
+                    {paymentMode === 'CARD' ? (
                       <Icons8 name="credit-card" size={38} className="text-crimson-light" />
                     ) : (
                       <Icons8 name="mobile-alt" size={38} />
@@ -719,14 +759,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 <div className="space-y-2 max-w-lg mx-auto">
                   <div className="flex items-center justify-center gap-2">
                     <span className="font-label-caps text-xs text-gold uppercase tracking-widest font-bold">
-                      {paymentMethod === 'CARD' ? 'Card Authorization' : 'Mobile Money Authorization'}
-                    </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-noir-800 text-bone-muted border border-noir-750 font-label-data uppercase">
-                      MarzPay Gateway
+                      {paymentMode === 'CARD' ? 'Card Payment' : `${getCarrierName(effectiveCarrier)} Payment`}
                     </span>
                   </div>
                   <h2 className="font-title-editorial text-2xl sm:text-3xl text-bone uppercase">
-                    {paymentMethod === 'CARD' ? 'Complete Card Checkout' : 'Check Your Phone Screen'}
+                    {paymentMode === 'CARD' ? 'Complete Card Payment' : 'Check Your Phone'}
                   </h2>
                   <p className="font-body-sm text-sm text-bone-dim leading-relaxed">
                     {paymentInstruction}
@@ -741,7 +778,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       </div>
                       <div className="space-y-1.5 flex-1">
                         <h4 className="font-label-caps text-sm uppercase text-red-200 font-bold tracking-wide">
-                          {formattedVerifyError?.title || 'Payment Verification Status'}
+                          {formattedVerifyError?.title || 'Payment Verification'}
                         </h4>
                         <p className="font-body-sm text-xs sm:text-sm text-red-300/90 leading-relaxed">
                           {formattedVerifyError?.description || verifyError}
@@ -757,27 +794,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                             <button
                               type="button"
                               onClick={() => {
-                                setPaymentMethod('MTN_MOMO');
+                                setPaymentMode('MOMO');
                                 setCheckoutStep('checkout');
                                 setFormattedVerifyError(null);
                                 setVerifyError('');
                               }}
-                              className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                              className="px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
                             >
-                              <span>Switch to MTN MoMo</span>
-                              <Icons8 name="arrow-right" size={12} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPaymentMethod('AIRTEL_MONEY');
-                                setCheckoutStep('checkout');
-                                setFormattedVerifyError(null);
-                                setVerifyError('');
-                              }}
-                              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-lg text-xs font-label-caps uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
-                            >
-                              <span>Switch to Airtel Money</span>
+                              <span>Switch to Mobile Money (MTN / Airtel)</span>
                               <Icons8 name="arrow-right" size={12} />
                             </button>
                           </div>
@@ -809,18 +833,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 )}
 
-                {/* Card Gateway Live Redirect (when provided by gateway in Live mode) */}
-                {paymentMethod === 'CARD' && cardAuthUrl && (
+                {/* Card Gateway Redirect */}
+                {paymentMode === 'CARD' && cardAuthUrl && (
                   <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-4 text-left">
                     <div className="flex items-center justify-between border-b border-noir-800 pb-3">
-                      <span className="font-label-caps text-xs uppercase text-bone font-bold">3D Secure Card Gateway</span>
+                      <span className="font-label-caps text-xs uppercase text-bone font-bold">Secure Card Checkout</span>
                       <span className="text-xs text-emerald-400 font-label-data flex items-center gap-1">
                         <Icons8 name="shield-alt" size={12} />
-                        <span>Encrypted SSL</span>
+                        <span>Protected</span>
                       </span>
                     </div>
                     <p className="text-xs text-bone-dim leading-relaxed">
-                      Click the button below to open the official MarzPay card authorization portal to complete your Visa or Mastercard transaction securely.
+                      Click the button below to open the card payment page to authorize your Visa or Mastercard.
                     </p>
                     <a
                       href={cardAuthUrl}
@@ -828,57 +852,57 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       rel="noopener noreferrer"
                       className="w-full py-3.5 bg-crimson hover:bg-crimson-hover text-bone font-label-caps text-xs uppercase tracking-widest transition-colors btn-gothic-glow rounded-xl flex items-center justify-center gap-2 font-bold cursor-pointer"
                     >
-                      <span>Open Card Payment Gateway</span>
+                      <span>Open Card Payment Page</span>
                       <Icons8 name="external-link-alt" size={14} />
                     </a>
                   </div>
                 )}
 
-                {/* Card Authorization Instructions */}
-                {paymentMethod === 'CARD' && !cardAuthUrl && (
+                {/* Card Instructions when portal URL already opened */}
+                {paymentMode === 'CARD' && !cardAuthUrl && (
                   <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-3 text-left">
                     <div className="flex items-center justify-between border-b border-noir-800 pb-3">
-                      <span className="font-label-caps text-xs uppercase text-bone font-bold">Card Payment Processing</span>
+                      <span className="font-label-caps text-xs uppercase text-bone font-bold">Card Payment</span>
                       <span className="text-xs text-emerald-400 font-label-data flex items-center gap-1">
                         <Icons8 name="shield-alt" size={12} />
-                        <span>Secure Bank Gateway</span>
+                        <span>Secure</span>
                       </span>
                     </div>
                     <p className="text-xs text-bone-dim leading-relaxed">
-                      Please complete the 3D-Secure approval prompt sent by your bank or payment app, then click <strong className="text-bone">Check Card Payment Status</strong> below to confirm.
+                      Please complete the approval on your banking app or SMS code, then click <strong className="text-bone">Check Card Payment Status</strong> below.
                     </p>
                   </div>
                 )}
 
                 {/* Step Instructions for Mobile Money */}
-                {paymentMethod !== 'CARD' && (
+                {paymentMode !== 'CARD' && (
                   <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl text-left space-y-4 max-w-xl mx-auto">
                     <div className="flex items-center justify-between pb-2 border-b border-noir-800">
                       <span className="font-label-caps text-xs uppercase text-gold tracking-wider">
-                        Prompt Instructions ({paymentMethod === 'MTN_MOMO' ? 'MTN MoMo' : 'Airtel Money'})
+                        Payment Steps ({getCarrierName(effectiveCarrier)})
                       </span>
                       <span className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-label-data">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>Awaiting Handset PIN</span>
+                        <span>Waiting for PIN</span>
                       </span>
                     </div>
                     <div className="flex items-start gap-3 text-sm text-bone-dim">
                       <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                         1
                       </span>
-                      <span>Unlock your mobile device to view the push prompt from <strong className="text-bone">{paymentMethod === 'MTN_MOMO' ? 'MTN MoMo' : 'Airtel Money'}</strong>.</span>
+                      <span>Unlock your phone (<span className="font-mono text-bone">{shippingData.phone}</span>) to view the prompt from <strong className="text-bone">{getCarrierName(effectiveCarrier)}</strong>.</span>
                     </div>
                     <div className="flex items-start gap-3 text-sm text-bone-dim">
                       <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                         2
                       </span>
-                      <span>Enter your mobile money PIN to authorize <strong className="text-bone">UGX {total.toLocaleString()}</strong>.</span>
+                      <span>Enter your PIN to authorize <strong className="text-bone">UGX {total.toLocaleString()}</strong>.</span>
                     </div>
                     <div className="flex items-start gap-3 text-sm text-bone-dim">
                       <span className="w-5 h-5 rounded-full bg-noir-800 text-bone font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                         3
                       </span>
-                      <span>The page will auto-confirm once your payment settles. You can also click the button below to verify immediately.</span>
+                      <span>This page will confirm automatically as soon as payment is received.</span>
                     </div>
                   </div>
                 )}
@@ -891,7 +915,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                   {activeTxRef && (
                     <div className="flex justify-between text-bone-dim">
-                      <span>MarzPay TX Ref:</span>
+                      <span>Payment Reference:</span>
                       <span className="text-bone-muted font-mono text-[11px]">{activeTxRef}</span>
                     </div>
                   )}
@@ -955,13 +979,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
                 <div className="space-y-2 max-w-lg mx-auto">
                   <span className="font-label-caps text-xs text-emerald-400 uppercase tracking-widest block font-bold">
-                    Order Successfully Placed &amp; Logged
+                    Order Confirmed
                   </span>
                   <h2 className="font-title-editorial text-2xl sm:text-3xl text-bone uppercase">
                     Order #{createdOrder?.orderNumber || 'CONFIRMED'}
                   </h2>
                   <p className="font-body-sm text-sm text-bone-dim leading-relaxed">
-                    Thank you, <strong className="text-bone">{shippingData.fullName || 'Valued Client'}</strong>. Your order has been recorded in our studio ledger.
+                    Thank you, <strong className="text-bone">{shippingData.fullName || 'Customer'}</strong>. Your order has been placed successfully.
                   </p>
                 </div>
 
@@ -973,10 +997,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     </div>
                     <div>
                       <h4 className="font-title-editorial text-base text-bone uppercase">
-                        Official Order Receipt
+                        Order Receipt
                       </h4>
                       <p className="font-body-sm text-xs text-bone-dim mt-1 leading-relaxed">
-                        Print or save your PDF receipt to track your order status with our studio concierge.
+                        Download or print your PDF receipt for order collection and tracking.
                       </p>
                     </div>
                   </div>
