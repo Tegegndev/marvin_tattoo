@@ -600,7 +600,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   {isSubmitting ? (
                     <>
                       <Icons8 name="spinner" size={18} className="animate-spin" />
-                      <span>Transmitting Atelier Order...</span>
+                      <span>Processing Order...</span>
                     </>
                   ) : (
                     <>
@@ -621,14 +621,6 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 exit={{ opacity: 0, scale: 0.98 }}
                 className="bg-noir-900 border border-noir-800 rounded-xl p-8 sm:p-10 text-center space-y-8 relative overflow-hidden"
               >
-                {/* Sandbox Mode Indicator Banner */}
-                {isSandboxPayment && (
-                  <div className="bg-amber-500/10 border border-amber-500/40 text-amber-300 px-4 py-2 rounded-lg text-xs font-label-caps uppercase flex items-center justify-center gap-2 max-w-xl mx-auto">
-                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                    <span>MarzPay Sandbox Mode · Safe Dev Environment (No Real Money Debited)</span>
-                  </div>
-                )}
-
                 {/* Gateway Provider Header Icon */}
                 <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
                   <div className="absolute inset-0 rounded-full bg-crimson/10 animate-ping opacity-75" />
@@ -650,7 +642,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 <div className="space-y-2 max-w-lg mx-auto">
                   <div className="flex items-center justify-center gap-2">
                     <span className="font-label-caps text-xs text-gold uppercase tracking-widest font-bold">
-                      {paymentMethod === 'CARD' ? 'Card Authorization' : 'Mobile Money Push Handshake'}
+                      {paymentMethod === 'CARD' ? 'Card Authorization' : 'Mobile Money Authorization'}
                     </span>
                     <span className="text-[10px] px-2 py-0.5 rounded bg-noir-800 text-bone-muted border border-noir-750 font-label-data uppercase">
                       MarzPay Gateway
@@ -708,80 +700,19 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 )}
 
-                {/* Card Sandbox Test Terminal (active when MarzPay is in Sandbox mode without hosted web URL) */}
+                {/* Card Authorization Instructions */}
                 {paymentMethod === 'CARD' && !cardAuthUrl && (
-                  <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-4 text-left">
+                  <div className="p-6 bg-noir-850 border border-noir-750 rounded-xl max-w-xl mx-auto space-y-3 text-left">
                     <div className="flex items-center justify-between border-b border-noir-800 pb-3">
-                      <span className="font-label-caps text-xs uppercase text-bone font-bold">Sandbox Card Terminal</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/40 font-label-data uppercase">
-                        MarzPay Test Env
+                      <span className="font-label-caps text-xs uppercase text-bone font-bold">Card Payment Processing</span>
+                      <span className="text-xs text-emerald-400 font-label-data flex items-center gap-1">
+                        <Icons8 name="shield-alt" size={12} />
+                        <span>Secure Bank Gateway</span>
                       </span>
                     </div>
                     <p className="text-xs text-bone-dim leading-relaxed">
-                      MarzPay hosted web card portals are active in <strong>Live Mode</strong>. In this Sandbox environment, test your payment pipeline below:
+                      Please complete the 3D-Secure approval prompt sent by your bank or payment app, then click <strong className="text-bone">Check Card Payment Status</strong> below to confirm.
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setIsVerifying(true);
-                          setVerifyError('');
-                          try {
-                            await fetch('/api/payments/marzpay/webhook', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                event_type: 'collection.completed',
-                                transaction: { reference: activeTxRef, status: 'completed', amount: { raw: total, currency: 'UGX' } },
-                                collection: { provider: 'card', provider_transaction_id: `VISA-TEST-${Date.now()}` }
-                              }),
-                            });
-                            const check = await verifyPayment(activeTxRef);
-                            if (check.status === 'SUCCESS') {
-                              handleCompletePaymentConfirmation();
-                            }
-                          } catch (e: any) {
-                            setVerifyError(e.message || 'Simulation failed');
-                          } finally {
-                            setIsVerifying(false);
-                          }
-                        }}
-                        className="py-2.5 px-3 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 rounded-lg text-xs font-label-caps uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Icons8 name="check" size={13} />
-                        <span>Simulate 3DS Approval</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setIsVerifying(true);
-                          setVerifyError('');
-                          try {
-                            await fetch('/api/payments/marzpay/webhook', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                event_type: 'collection.failed',
-                                transaction: { reference: activeTxRef, status: 'failed' }
-                              }),
-                            });
-                            const check = await verifyPayment(activeTxRef);
-                            if (check.status === 'FAILED') {
-                              setVerifyError('Card payment authorization was declined by issuing bank (Sandbox simulation).');
-                            }
-                          } catch (e: any) {
-                            setVerifyError(e.message || 'Simulation failed');
-                          } finally {
-                            setIsVerifying(false);
-                          }
-                        }}
-                        className="py-2.5 px-3 bg-red-950/80 hover:bg-red-900 border border-red-500/50 text-red-300 rounded-lg text-xs font-label-caps uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Icons8 name="times" size={13} />
-                        <span>Simulate Card Declined</span>
-                      </button>
-                    </div>
                   </div>
                 )}
 
@@ -851,7 +782,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     {isVerifying ? (
                       <>
                         <Icons8 name="spinner" size={16} className="animate-spin" />
-                        <span>Verifying Handshake...</span>
+                        <span>Verifying Payment...</span>
                       </>
                     ) : (
                       <>

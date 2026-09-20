@@ -24,6 +24,6 @@ export const env = {
   MARZPAY_API_SECRET: process.env.MARZPAY_API_SECRET || "",
   MARZPAY_WEBHOOK_SECRET: process.env.MARZPAY_WEBHOOK_SECRET || "",
   MARZPAY_CALLBACK_URL: process.env.MARZPAY_CALLBACK_URL || "",
-  MARZPAY_MODE: process.env.MARZPAY_MODE || "sandbox",
+  MARZPAY_MODE: process.env.MARZPAY_MODE || "live",
 };
 

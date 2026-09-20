@@ -118,7 +118,7 @@ export async function collectMobileMoney(
       status: "processing",
       provider: formattedPhone.startsWith("+25675") || formattedPhone.startsWith("+25670") ? "airtel" : "mtn",
       message: "Collection initiated successfully. Check handset for PIN prompt.",
-      isSandbox: true,
+      isSandbox: env.MARZPAY_MODE === "sandbox",
     };
   }
 
@@ -176,8 +176,8 @@ export async function collectCard(
       reference: params.reference,
       status: "pending",
       redirectUrl: undefined,
-      message: "Card collection initiated in Sandbox Mode.",
-      isSandbox: true,
+      message: "Card payment initialized. Please complete authorization.",
+      isSandbox: env.MARZPAY_MODE === "sandbox",
     };
   }
 
