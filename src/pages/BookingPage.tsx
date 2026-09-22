@@ -178,7 +178,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({
   const sendWhatsAppBookingSummary = (record: BookingRecord) => {
     const matched = SERVICES_DATA.find((s) => s.id === record.serviceType || s.id.replace(/-/g, '_') === record.serviceType);
     const selectedServiceLabel = matched ? matched.title : currentService.title;
-    const message = `Hello Marvin Tattoos Atelier! 
+    const message = `Hello Marvin Tattoo Studio! 
 I just submitted a booking request online.
 
 • Reference Code: ${record.referenceCode}

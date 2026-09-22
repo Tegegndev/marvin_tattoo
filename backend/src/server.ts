@@ -30,23 +30,36 @@ try {
   app.use("/uploads", express.static(getUploadDir()));
 } catch {}
 
+// Root ping / health
+app.get("/", (_req, res) => {
+  res.json({
+    status: "online",
+    service: "Marvin Tattoo Studio API",
+    version: "1.0.0",
+    health: "/api/health",
+  });
+});
+
 // Mount API routes
 app.use("/api", router);
 
 // Error Handling Middleware
 app.use(errorHandler);
 
-app.listen(env.PORT, async () => {
-  console.log(`⚡ Marvin Tattoos Atelier API running on http://localhost:${env.PORT}`);
-  console.log(`⚡ Environment: ${env.NODE_ENV}`);
+if (!process.env.VERCEL) {
+  app.listen(env.PORT, async () => {
+    console.log(`⚡ Marvin Tattoo Studio API running on http://localhost:${env.PORT}`);
+    console.log(`⚡ Environment: ${env.NODE_ENV}`);
 
-  // Automatically feed and synchronize clients database from bookings and orders
-  try {
-    const stats = await syncHistoricalUsers();
-    console.log(`⚡ Client CRM Auto-Sync: ${stats.syncedUsers} clients populated from ${stats.totalBookings} bookings and ${stats.totalOrders} orders.`);
-  } catch (err) {
-    console.warn("Client CRM initial sync notice:", err);
-  }
-});
+    // Automatically feed and synchronize clients database from bookings and orders
+    try {
+      const stats = await syncHistoricalUsers();
+      console.log(`⚡ Client CRM Auto-Sync: ${stats.syncedUsers} clients populated from ${stats.totalBookings} bookings and ${stats.totalOrders} orders.`);
+    } catch (err) {
+      console.warn("Client CRM initial sync notice:", err);
+    }
+  });
+}
 
 export default app;
+

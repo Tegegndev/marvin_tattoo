@@ -30,3 +30,4 @@ output/
 # Planning
 PLAN.md
 .env
+*.zip

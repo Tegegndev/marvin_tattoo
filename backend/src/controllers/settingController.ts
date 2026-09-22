@@ -7,6 +7,11 @@ import {
   getResolvedPaymentConfig,
   invalidatePaymentConfigCache,
 } from "../services/paymentConfigService.js";
+import {
+  getAdminTelegramConfig,
+  invalidateTelegramConfigCache,
+  testTelegramConnection,
+} from "../services/telegramService.js";
 
 export const DEFAULT_SOCIAL_LINKS = [
   {
@@ -51,11 +56,27 @@ export const DEFAULT_SOCIAL_LINKS = [
   },
 ];
 
+let cachedSettingsResponse: { data: any; timestamp: number } | null = null;
+const SETTINGS_CACHE_TTL_MS = 30000; // 30 seconds cache
+
+export function invalidateSettingsCache(): void {
+  cachedSettingsResponse = null;
+}
+
 export const getSettings = async (
   _req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  const now = Date.now();
+  if (cachedSettingsResponse && now - cachedSettingsResponse.timestamp < SETTINGS_CACHE_TTL_MS) {
+    res.json({
+      success: true,
+      data: cachedSettingsResponse.data,
+    });
+    return;
+  }
+
   try {
     let settings = await prisma.siteSetting.findUnique({
       where: { id: "studio_config" },
@@ -101,15 +122,39 @@ export const getSettings = async (
 
     const parsedSocials = parseSafe(settings.socialLinks, DEFAULT_SOCIAL_LINKS);
 
+    const cleanMetaTitle =
+      settings.metaTitle?.includes("Piercing Atelier")
+        ? "Marvin Tattoo Studio | Kampala, Uganda"
+        : settings.metaTitle || "Marvin Tattoo Studio | Kampala, Uganda";
+
+    const cleanStudioName =
+      settings.studioName?.includes("Piercing Atelier")
+        ? "Marvin Tattoo Studio"
+        : settings.studioName || "Marvin Tattoo Studio";
+
+    const resultData = {
+      ...settings,
+      studioName: cleanStudioName,
+      metaTitle: cleanMetaTitle,
+      openingHours: parseSafe(settings.openingHours, []),
+      socialLinks: parsedSocials,
+    };
+
+    cachedSettingsResponse = { data: resultData, timestamp: now };
+
     res.json({
       success: true,
-      data: {
-        ...settings,
-        openingHours: parseSafe(settings.openingHours, []),
-        socialLinks: parsedSocials,
-      },
+      data: resultData,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (cachedSettingsResponse) {
+      console.warn("⚠️ [Prisma Connection Warning] Database query timed out, serving cached site settings:", error.message);
+      res.json({
+        success: true,
+        data: cachedSettingsResponse.data,
+      });
+      return;
+    }
     next(error);
   }
 };
@@ -198,7 +243,7 @@ export const updateSettings = async (
         googleMapsUrl:
           googleMapsUrl || "https://maps.google.com/?q=New+Pioneer+Mall+Kampala",
         logoUrl: logoUrl || "/logo.svg",
-        metaTitle: metaTitle || "Marvin Tattoos & Piercing Atelier | Kampala, Uganda",
+        metaTitle: metaTitle || "Marvin Tattoo Studio | Kampala, Uganda",
         metaDescription: metaDescription || null,
         ogImageUrl: ogImageUrl || null,
         openingHours:
@@ -221,6 +266,8 @@ export const updateSettings = async (
         return fallback;
       }
     };
+
+    invalidateSettingsCache();
 
     res.json({
       success: true,
@@ -505,6 +552,7 @@ export const updatePaymentConfig = async (
     });
 
     invalidatePaymentConfigCache();
+    invalidateSettingsCache();
 
     const updated = await getAdminPaymentConfig();
 
@@ -567,6 +615,124 @@ export const testPaymentConnection = async (
       success: false,
       message: error.message || "Failed to reach payment gateway.",
     });
+  }
+};
+
+export const getTelegramConfig = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const config = await getAdminTelegramConfig();
+    res.json({
+      success: true,
+      data: config,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTelegramConfig = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const {
+      telegramEnabled,
+      telegramBotToken,
+      telegramChatId,
+      telegramNotifyBookings,
+      telegramNotifyOrders,
+      telegramNotifyPayments,
+    } = req.body;
+
+    const dataToUpdate: Record<string, any> = {};
+
+    if (telegramEnabled !== undefined) {
+      dataToUpdate.telegramEnabled =
+        telegramEnabled === true || telegramEnabled === "true";
+    }
+
+    if (telegramBotToken !== undefined) {
+      dataToUpdate.telegramBotToken =
+        typeof telegramBotToken === "string" ? telegramBotToken.trim() : null;
+    }
+
+    if (telegramChatId !== undefined) {
+      dataToUpdate.telegramChatId =
+        typeof telegramChatId === "string" ? telegramChatId.trim() : null;
+    }
+
+    if (telegramNotifyBookings !== undefined) {
+      dataToUpdate.telegramNotifyBookings =
+        telegramNotifyBookings === true || telegramNotifyBookings === "true";
+    }
+
+    if (telegramNotifyOrders !== undefined) {
+      dataToUpdate.telegramNotifyOrders =
+        telegramNotifyOrders === true || telegramNotifyOrders === "true";
+    }
+
+    if (telegramNotifyPayments !== undefined) {
+      dataToUpdate.telegramNotifyPayments =
+        telegramNotifyPayments === true || telegramNotifyPayments === "true";
+    }
+
+    await prisma.siteSetting.upsert({
+      where: { id: "studio_config" },
+      update: dataToUpdate,
+      create: {
+        id: "studio_config",
+        ...dataToUpdate,
+        openingHours: "[]",
+        socialLinks: JSON.stringify(DEFAULT_SOCIAL_LINKS),
+      },
+    });
+
+    invalidateTelegramConfigCache();
+    invalidateSettingsCache();
+
+    const updated = await getAdminTelegramConfig();
+
+    res.json({
+      success: true,
+      message: "Telegram notification settings updated successfully",
+      data: updated,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const testTelegramConnectionHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { botToken, chatId } = req.body || {};
+    const result = await testTelegramConnection(botToken, chatId);
+
+    if (!result.success) {
+      res.status(400).json({
+        success: false,
+        message: result.message,
+        botUsername: result.botUsername,
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: result.message,
+      botUsername: result.botUsername,
+      botFirstName: result.botFirstName,
+    });
+  } catch (error) {
+    next(error);
   }
 };
 

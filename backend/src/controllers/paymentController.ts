@@ -11,6 +11,7 @@ import {
 } from '../services/marzpayService.js';
 import { verifyFlutterwaveTransaction } from '../services/flutterwaveService.js';
 import { getResolvedPaymentConfig, getPublicPaymentMethods } from '../services/paymentConfigService.js';
+import { notifyTelegramPaymentSuccess } from '../services/telegramService.js';
 import { z } from 'zod';
 
 const initPaymentSchema = z.object({
@@ -328,6 +329,15 @@ export async function verifyPayment(req: Request, res: Response): Promise<void> 
           },
         });
 
+        notifyTelegramPaymentSuccess({
+          orderNumber: transaction.order.orderNumber,
+          amount: transaction.amount,
+          paymentMethod: transaction.paymentMethod,
+          customerPhone: transaction.phoneNumber || transaction.order.clientPhone,
+          gatewayRef: statusRes.providerTxId || transaction.gatewayRef,
+          merchantTxRef: transaction.merchantTxRef,
+        }).catch((err) => console.error('Telegram payment alert error:', err));
+
         res.json({
           success: true,
           data: {
@@ -394,6 +404,15 @@ export async function verifyPayment(req: Request, res: Response): Promise<void> 
           },
         });
 
+        notifyTelegramPaymentSuccess({
+          orderNumber: transaction.order.orderNumber,
+          amount: transaction.amount,
+          paymentMethod: transaction.paymentMethod,
+          customerPhone: transaction.phoneNumber || transaction.order.clientPhone,
+          gatewayRef: transaction.gatewayRef,
+          merchantTxRef: transaction.merchantTxRef,
+        }).catch((err) => console.error('Telegram payment alert error:', err));
+
         res.json({
           success: true,
           data: {
@@ -458,15 +477,18 @@ export async function handleMarzPayWebhook(req: Request, res: Response): Promise
             ...(uuid ? [{ gatewayRef: uuid }] : []),
           ],
         },
+        include: { order: true },
       });
 
       if (transaction) {
         if (eventType === 'collection.completed' || status === 'completed' || status === 'success' || status === 'successful') {
+          const wasAlreadySuccess = transaction.status === 'SUCCESS';
+
           await prisma.paymentTransaction.update({
             where: { id: transaction.id },
             data: {
               status: 'SUCCESS',
-              paidAt: new Date(),
+              paidAt: transaction.paidAt || new Date(),
               providerTxId: providerTxId || transaction.providerTxId,
               rawWebhookPayload: JSON.stringify(body),
             },
@@ -479,6 +501,17 @@ export async function handleMarzPayWebhook(req: Request, res: Response): Promise
               orderStatus: 'PROCESSING',
             },
           });
+
+          if (!wasAlreadySuccess) {
+            notifyTelegramPaymentSuccess({
+              orderNumber: transaction.order.orderNumber,
+              amount: transaction.amount,
+              paymentMethod: transaction.paymentMethod,
+              customerPhone: transaction.phoneNumber || transaction.order.clientPhone,
+              gatewayRef: providerTxId || transaction.gatewayRef,
+              merchantTxRef: transaction.merchantTxRef,
+            }).catch((err) => console.error('Telegram webhook payment alert error:', err));
+          }
         } else if (
           eventType === 'collection.failed' ||
           eventType === 'collection.cancelled' ||
@@ -533,6 +566,7 @@ export async function handleWebhook(req: Request, res: Response): Promise<void> 
       const txRef = payload.data.tx_ref;
       const transaction = await prisma.paymentTransaction.findUnique({
         where: { merchantTxRef: txRef },
+        include: { order: true },
       });
 
       if (transaction && transaction.status !== 'SUCCESS') {
@@ -552,6 +586,15 @@ export async function handleWebhook(req: Request, res: Response): Promise<void> 
             orderStatus: 'PROCESSING',
           },
         });
+
+        notifyTelegramPaymentSuccess({
+          orderNumber: transaction.order.orderNumber,
+          amount: transaction.amount,
+          paymentMethod: transaction.paymentMethod,
+          customerPhone: transaction.phoneNumber || transaction.order.clientPhone,
+          gatewayRef: payload.data?.id ? String(payload.data.id) : transaction.gatewayRef,
+          merchantTxRef: transaction.merchantTxRef,
+        }).catch((err) => console.error('Telegram FLW webhook payment alert error:', err));
       }
     }
 

@@ -33,7 +33,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingData = {
     { day: "Sunday", hours: "By Appointment Only" },
   ],
   logoUrl: "/logo.svg",
-  metaTitle: "Marvin Tattoos & Piercing Atelier | Kampala, Uganda",
+  metaTitle: "Marvin Tattoo Studio | Kampala, Uganda",
   metaDescription:
     "Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.",
   ogImageUrl: "",
@@ -473,7 +473,7 @@ export async function createShopOrder(orderData: {
   const totalAmount = subtotal + dispatchFee;
 
   const directWhatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hello Marvin Tattoos Atelier! I just placed Order #${orderNumber} for UGX ${totalAmount.toLocaleString()} (${orderData.paymentMethod.replace(
+    `Hello Marvin Tattoo Studio! I just placed Order #${orderNumber} for UGX ${totalAmount.toLocaleString()} (${orderData.paymentMethod.replace(
       "_",
       " "
     )}).\nClient: ${orderData.clientName} (${orderData.clientPhone})\nFulfillment: ${
@@ -731,6 +731,73 @@ export async function testAdminPaymentConnection(): Promise<{
   const json = await res.json();
   if (!res.ok || !json.success) {
     throw new Error(json.message || "Payment gateway connection test failed");
+  }
+  return json;
+}
+
+// ================= TELEGRAM BOT NOTIFICATION SETTINGS ================= //
+
+export interface AdminTelegramConfig {
+  enabled: boolean;
+  hasBotToken: boolean;
+  maskedBotToken: string;
+  rawBotToken?: string;
+  chatId: string;
+  notifyBookings: boolean;
+  notifyOrders: boolean;
+  notifyPayments: boolean;
+  isConfigured: boolean;
+  source: "db" | "env" | "missing";
+}
+
+export async function fetchAdminTelegramConfig(): Promise<AdminTelegramConfig> {
+  const res = await fetch(apiUrl("/api/settings/telegram-config"), {
+    headers: getAuthHeaders(),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to load Telegram notification settings");
+  }
+  return json.data;
+}
+
+export async function updateAdminTelegramConfig(data: Partial<{
+  telegramEnabled: boolean;
+  telegramBotToken: string;
+  telegramChatId: string;
+  telegramNotifyBookings: boolean;
+  telegramNotifyOrders: boolean;
+  telegramNotifyPayments: boolean;
+}>): Promise<AdminTelegramConfig> {
+  const res = await fetch(apiUrl("/api/settings/telegram-config"), {
+    method: "PUT",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Failed to update Telegram notification settings");
+  }
+  return json.data;
+}
+
+export async function testAdminTelegramConnection(data?: {
+  botToken?: string;
+  chatId?: string;
+}): Promise<{
+  success: boolean;
+  message: string;
+  botUsername?: string;
+  botFirstName?: string;
+}> {
+  const res = await fetch(apiUrl("/api/settings/telegram-config/test"), {
+    method: "POST",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(data || {}),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || "Telegram connection test failed");
   }
   return json;
 }

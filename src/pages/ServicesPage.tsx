@@ -166,7 +166,9 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                 >
                   <img
                     src={service.image}
-                    alt={service.title}
+                    alt={`${service.title} - Custom Tattoo Discipline at Marvin Tattoo Studio Kampala`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover interactive-img-zoom filter grayscale group-hover:grayscale-0 contrast-110 brightness-95 group-hover:brightness-100 transition-all duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/40 pointer-events-none" />

@@ -224,7 +224,9 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             >
               <img
                 src={featuredPiece.image}
-                alt={featuredPiece.title}
+                alt={`${featuredPiece.title} - Custom Tattoo by Marvin Tattoo Studio Kampala`}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover object-[center_20%] filter grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-noir-950/60 via-transparent to-transparent pointer-events-none" />
@@ -340,7 +342,9 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 >
                   <img
                     src={piece.image}
-                    alt={piece.title}
+                    alt={`${piece.title} - Custom ${piece.categoryLabel || piece.category} by Marvin Tattoo Studio`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover interactive-img-zoom"
                   />
                   <div className="absolute top-3 left-3 px-2.5 py-1 bg-noir-950/85 backdrop-blur-sm text-gold font-label-caps text-[10px] uppercase tracking-widest border border-gold/30">

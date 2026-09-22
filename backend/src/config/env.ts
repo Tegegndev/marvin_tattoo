@@ -14,9 +14,6 @@ export const env = {
   PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY || "",
   STUDIO_WHATSAPP: process.env.STUDIO_WHATSAPP || "+256705748774",
   ADMIN_NOTIFICATION_PHONE: process.env.ADMIN_NOTIFICATION_PHONE || "256705748774",
-  META_WHATSAPP_TOKEN: process.env.META_WHATSAPP_TOKEN || "",
-  META_WHATSAPP_PHONE_NUMBER_ID: process.env.META_WHATSAPP_PHONE_NUMBER_ID || "",
-  META_WHATSAPP_API_VERSION: process.env.META_WHATSAPP_API_VERSION || "v21.0",
   IMAGE_BUCKET_URL: process.env.IMAGE_BUCKET_URL || "https://images.tegegn.com.et",
   IMAGE_BUCKET_API_KEY: process.env.IMAGE_BUCKET_API_KEY || "",
   MARZPAY_API_BASE: process.env.MARZPAY_API_BASE || "https://wallet.wearemarz.com/api/v1",
@@ -25,5 +22,8 @@ export const env = {
   MARZPAY_WEBHOOK_SECRET: process.env.MARZPAY_WEBHOOK_SECRET || "",
   MARZPAY_CALLBACK_URL: process.env.MARZPAY_CALLBACK_URL || "",
   MARZPAY_MODE: process.env.MARZPAY_MODE || "live",
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || "",
+  TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID || "",
+  TELEGRAM_ENABLED: process.env.TELEGRAM_ENABLED === "true",
 };
 

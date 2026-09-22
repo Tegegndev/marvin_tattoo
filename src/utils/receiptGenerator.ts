@@ -66,7 +66,7 @@ export function generateReceiptHTML(data: OrderReceiptData): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Official Receipt - ${data.orderNumber} - Marvin Tattoos Atelier</title>
+  <title>Official Receipt - ${data.orderNumber} - Marvin Tattoo Studio</title>
   <style>
     @page {
       size: A4;
@@ -281,7 +281,7 @@ export function generateReceiptHTML(data: OrderReceiptData): string {
 
     <div class="footer">
       <p style="margin: 0 0 6px 0;"><strong>Track Order Status:</strong> Present this receipt or your reference code <strong>${data.orderNumber}</strong> to our concierge via WhatsApp at <strong>+256 704 779919</strong> or at the studio counter.</p>
-      <p style="margin: 0; color: #9ca3af;">Marvin Tattoos Atelier · Kampala, Uganda · All studio equipment sealed in sterile barrier packaging.</p>
+      <p style="margin: 0; color: #9ca3af;">Marvin Tattoo Studio · Kampala, Uganda · All studio equipment sealed in sterile barrier packaging.</p>
     </div>
   </div>
 

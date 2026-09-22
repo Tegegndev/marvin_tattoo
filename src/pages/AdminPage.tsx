@@ -55,6 +55,10 @@ import {
   Globe,
   Menu,
   EyeOff,
+  Send,
+  Bell,
+  Bot,
+  HelpCircle,
 } from 'lucide-react';
 import {
   adminLogin,
@@ -105,6 +109,10 @@ import {
   updateAdminPaymentConfig,
   testAdminPaymentConnection,
   AdminPaymentConfig,
+  fetchAdminTelegramConfig,
+  updateAdminTelegramConfig,
+  testAdminTelegramConnection,
+  AdminTelegramConfig,
   DEFAULT_SITE_SETTINGS,
 } from '../services/apiClient';
 import { formatImageUrl, handleImageError, PLACEHOLDERS } from '../config/api';
@@ -117,7 +125,7 @@ interface AdminPageProps {
 
 type TabType = 'bookings' | 'users' | 'services' | 'team' | 'shop' | 'portfolio' | 'reviews' | 'settings';
 type ShopSubTab = 'products' | 'categories' | 'orders';
-type SettingsSubTab = 'branding' | 'payments' | 'security';
+type SettingsSubTab = 'branding' | 'payments' | 'telegram' | 'security';
 
 const SOCIAL_PLATFORMS: { id: string; label: string; icon: string; prefix: string; placeholder: string }[] = [
   { id: 'instagram', label: 'Instagram', icon: 'instagram', prefix: 'https://instagram.com/Marvintattoos256', placeholder: 'https://instagram.com/username' },
@@ -292,6 +300,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [testingPaymentConn, setTestingPaymentConn] = useState<boolean>(false);
   const [paymentStatusNotice, setPaymentStatusNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [showApiSecret, setShowApiSecret] = useState<boolean>(false);
+
+  // Telegram Bot Notifications State
+  const [telegramConfig, setTelegramConfig] = useState<AdminTelegramConfig | null>(null);
+  const [telegramForm, setTelegramForm] = useState({
+    telegramEnabled: false,
+    telegramBotToken: '',
+    telegramChatId: '',
+    telegramNotifyBookings: true,
+    telegramNotifyOrders: true,
+    telegramNotifyPayments: true,
+  });
+  const [loadingTelegramConfig, setLoadingTelegramConfig] = useState<boolean>(false);
+  const [savingTelegramConfig, setSavingTelegramConfig] = useState<boolean>(false);
+  const [testingTelegramConn, setTestingTelegramConn] = useState<boolean>(false);
+  const [telegramStatusNotice, setTelegramStatusNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [showBotToken, setShowBotToken] = useState<boolean>(false);
+  const [showSetupGuide, setShowSetupGuide] = useState<boolean>(false);
 
   useEffect(() => {
     if (globalSettings && globalSettings.studioName) {
@@ -855,6 +880,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             : DEFAULT_SITE_SETTINGS.socialLinks,
       });
       await loadPaymentConfig();
+      await loadTelegramConfig();
     } catch (err) {
       console.error('Failed to load settings:', err);
     }
@@ -923,6 +949,71 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       });
     } finally {
       setTestingPaymentConn(false);
+    }
+  };
+
+  const loadTelegramConfig = async () => {
+    setLoadingTelegramConfig(true);
+    try {
+      const data = await fetchAdminTelegramConfig();
+      setTelegramConfig(data);
+      setTelegramForm({
+        telegramEnabled: data.enabled,
+        telegramBotToken: data.rawBotToken || '',
+        telegramChatId: data.chatId || '',
+        telegramNotifyBookings: data.notifyBookings,
+        telegramNotifyOrders: data.notifyOrders,
+        telegramNotifyPayments: data.notifyPayments,
+      });
+    } catch (err) {
+      console.error('Failed to load Telegram config:', err);
+    } finally {
+      setLoadingTelegramConfig(false);
+    }
+  };
+
+  const handleSaveTelegramConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingTelegramConfig(true);
+    setTelegramStatusNotice(null);
+    try {
+      const updated = await updateAdminTelegramConfig(telegramForm);
+      setTelegramConfig(updated);
+      setTelegramStatusNotice({
+        type: 'success',
+        message: 'Telegram notification settings and bot credentials saved successfully.',
+      });
+      showToast('Telegram settings saved');
+    } catch (err: any) {
+      setTelegramStatusNotice({
+        type: 'error',
+        message: err.message || 'Failed to save Telegram settings.',
+      });
+    } finally {
+      setSavingTelegramConfig(false);
+    }
+  };
+
+  const handleTestTelegramConnection = async () => {
+    setTestingTelegramConn(true);
+    setTelegramStatusNotice(null);
+    try {
+      const res = await testAdminTelegramConnection({
+        botToken: telegramForm.telegramBotToken,
+        chatId: telegramForm.telegramChatId,
+      });
+      setTelegramStatusNotice({
+        type: 'success',
+        message: res.message || 'Telegram connection verified successfully.',
+      });
+      showToast('Telegram test sent!');
+    } catch (err: any) {
+      setTelegramStatusNotice({
+        type: 'error',
+        message: err.message || 'Telegram test failed.',
+      });
+    } finally {
+      setTestingTelegramConn(false);
     }
   };
 
@@ -2440,7 +2531,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                 onClick={() =>
                                   openWhatsApp(
                                     u.phone,
-                                    `Hello ${u.name}! This is Marvin Tattoos Atelier. We are checking in with you regarding your studio experience.`
+                                    `Hello ${u.name}! This is Marvin Tattoo Studio. We are checking in with you regarding your studio experience.`
                                   )
                                 }
                                 className="p-2 bg-emerald-950/50 hover:bg-emerald-900/80 border border-emerald-800/70 text-emerald-300 rounded-lg transition-colors"
@@ -3530,7 +3621,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                                     onClick={() =>
                                       openWhatsApp(
                                         o.clientPhone,
-                                        `Hello ${o.clientName}! This is Marvin Tattoos Atelier regarding Order #${o.orderNumber}. Your items are prepared.`
+                                        `Hello ${o.clientName}! This is Marvin Tattoo Studio regarding Order #${o.orderNumber}. Your items are prepared.`
                                       )
                                     }
                                     className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 rounded-lg text-xs flex items-center gap-1 font-medium transition-colors"
@@ -3916,6 +4007,39 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       }`}
                     >
                       {paymentConfig.marzpay.isConfigured ? 'Ready' : 'Setup'}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSettingsSubTab('telegram');
+                    loadTelegramConfig();
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    settingsSubTab === 'telegram'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-950/40'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                  }`}
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Telegram Bot Alerts</span>
+                  {telegramConfig && (
+                    <span
+                      className={`ml-1 text-[9px] px-1.5 py-0.5 rounded font-mono uppercase ${
+                        telegramConfig.enabled && telegramConfig.isConfigured
+                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60'
+                          : telegramConfig.isConfigured
+                          ? 'bg-amber-950 text-amber-300 border border-amber-800/60'
+                          : 'bg-zinc-800 text-zinc-400 border border-zinc-700/60'
+                      }`}
+                    >
+                      {telegramConfig.enabled && telegramConfig.isConfigured
+                        ? 'Active'
+                        : telegramConfig.isConfigured
+                        ? 'Paused'
+                        : 'Setup'}
                     </span>
                   )}
                 </button>
@@ -4633,7 +4757,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         type="text"
                         value={settings.metaTitle || ''}
                         onChange={(e) => setSettings({ ...settings, metaTitle: e.target.value })}
-                        placeholder="e.g. Marvin Tattoos & Piercing Atelier | Kampala, Uganda"
+                        placeholder="e.g. Marvin Tattoo Studio | Kampala, Uganda"
                         className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-medium focus:outline-none focus:border-red-500"
                       />
                       <p className="text-[11px] text-zinc-400 mt-1">
@@ -4654,7 +4778,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                         rows={3}
                         value={settings.metaDescription || ''}
                         onChange={(e) => setSettings({ ...settings, metaDescription: e.target.value })}
-                        placeholder="e.g. Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft."
+                        placeholder="e.g. Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft."
                         className="w-full px-3.5 py-2 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                       />
                       <p className="text-[11px] text-zinc-400 mt-1">
@@ -5182,6 +5306,308 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
+            {/* ================= SECTION: TELEGRAM BOT NOTIFICATIONS ================= */}
+            {settingsSubTab === 'telegram' && (
+              <div className="space-y-6 max-w-4xl">
+                {/* Status Notice if any */}
+                {telegramStatusNotice && (
+                  <div
+                    className={`p-4 rounded-xl border text-xs flex items-center gap-3 transition-all ${
+                      telegramStatusNotice.type === 'success'
+                        ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200'
+                        : 'bg-red-950/40 border-red-500/50 text-red-200'
+                    }`}
+                  >
+                    {telegramStatusNotice.type === 'success' ? (
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                    )}
+                    <div className="space-y-1">
+                      <p className="font-semibold text-sm">{telegramStatusNotice.message}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Section Overview / Info Card */}
+                <div className="p-4 bg-noir-850 border border-noir-750 rounded-xl flex items-start gap-3">
+                  <Bot className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1 text-bone-dim leading-relaxed">
+                    <div className="flex items-center justify-between">
+                      <p className="text-white font-semibold text-xs">Instant Telegram Push Alerts for Marvin &amp; Studio Crew</p>
+                      <button
+                        type="button"
+                        onClick={() => setShowSetupGuide(!showSetupGuide)}
+                        className="text-[11px] text-gold hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                      >
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        <span>{showSetupGuide ? 'Hide BotFather Guide' : 'How to set up in 2 mins'}</span>
+                      </button>
+                    </div>
+                    <p className="text-[11px]">
+                      Receive automated instant alerts right on your phone or studio Telegram group when clients submit booking intakes, place shop orders, or complete Mobile Money/Card payments. Tokens and chat IDs configured here take precedence immediately over system <code className="text-gold font-mono">.env</code> variables.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Collapsible Step-by-Step Setup Guide */}
+                {showSetupGuide && (
+                  <div className="p-4 bg-[#12141c] border border-gold/30 rounded-xl space-y-3 text-xs">
+                    <div className="flex items-center gap-2 font-semibold text-gold">
+                      <Send className="w-4 h-4" />
+                      <span>Quick Telegram Bot Setup (3 Steps)</span>
+                    </div>
+                    <ol className="space-y-2 text-zinc-300 list-decimal list-inside text-[11px] leading-relaxed">
+                      <li>
+                        <strong className="text-white">Create your Bot:</strong> Open Telegram and search for <a href="https://t.me/BotFather" target="_blank" rel="noreferrer" className="text-red-400 underline">@BotFather</a>. Send <code className="bg-zinc-800 px-1 py-0.5 rounded text-white font-mono">/newbot</code>, choose a display name (e.g. <em>Marvin Tattoo Atelier</em>) and username (e.g. <em>marvin_tattoo_alerts_bot</em>). Copy the HTTP API token provided.
+                      </li>
+                      <li>
+                        <strong className="text-white">Start your Bot:</strong> Open the chat with your new bot in Telegram and click <strong className="text-white">START</strong> (or send <code className="bg-zinc-800 px-1 py-0.5 rounded text-white font-mono">/start</code>).
+                      </li>
+                      <li>
+                        <strong className="text-white">Get your Admin Chat ID:</strong> Message <a href="https://t.me/userinfobot" target="_blank" rel="noreferrer" className="text-red-400 underline">@userinfobot</a> or <a href="https://t.me/GetIDsBot" target="_blank" rel="noreferrer" className="text-red-400 underline">@GetIDsBot</a> on Telegram to get your numeric ID (e.g. <code className="bg-zinc-800 px-1 py-0.5 rounded text-white font-mono">123456789</code>). For Telegram Groups, add your bot as an admin to the group and copy the group ID (e.g. <code className="bg-zinc-800 px-1 py-0.5 rounded text-white font-mono">-100...</code>).
+                      </li>
+                    </ol>
+                  </div>
+                )}
+
+                <form onSubmit={handleSaveTelegramConfig} className="space-y-6">
+                  {/* 1. Master Switch & Event Toggles */}
+                  <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                    <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Sliders className="w-4 h-4 text-red-400" />
+                        <span>1. Master Dispatcher &amp; Event Subscriptions</span>
+                      </div>
+                      <span className="text-[11px] text-zinc-400 font-mono">
+                        Source: {telegramConfig?.source ? telegramConfig.source.toUpperCase() : 'DB'}
+                      </span>
+                    </div>
+
+                    {/* Master Switch Card */}
+                    <div
+                      className={`p-4 rounded-xl border transition-all ${
+                        telegramForm.telegramEnabled
+                          ? 'bg-emerald-950/20 border-emerald-500/50 text-white'
+                          : 'bg-[#12141c] border-zinc-800 text-zinc-400 opacity-70'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Send className="w-4 h-4 text-emerald-400" />
+                            <span className="font-semibold text-xs text-white">Enable Telegram Bot Notifications</span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400">
+                            When enabled, automated messages will be delivered directly to the configured Chat ID(s).
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setTelegramForm({ ...telegramForm, telegramEnabled: !telegramForm.telegramEnabled })}
+                          className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                            telegramForm.telegramEnabled ? 'bg-emerald-600 justify-end' : 'bg-zinc-700 justify-start'
+                          }`}
+                        >
+                          <div className="w-4 h-4 rounded-full bg-white shadow-md" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Event Notification Checkboxes/Toggles */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                      {/* Bookings */}
+                      <div
+                        className={`p-4 rounded-xl border transition-all ${
+                          telegramForm.telegramNotifyBookings
+                            ? 'bg-red-950/20 border-red-500/50 text-white'
+                            : 'bg-[#12141c] border-zinc-800 text-zinc-500 opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <span className="font-semibold text-xs text-white block">Client Bookings</span>
+                            <span className="text-[11px] text-zinc-400">Intake Submissions</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setTelegramForm({ ...telegramForm, telegramNotifyBookings: !telegramForm.telegramNotifyBookings })}
+                            className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                              telegramForm.telegramNotifyBookings ? 'bg-red-600 justify-end' : 'bg-zinc-700 justify-start'
+                            }`}
+                          >
+                            <div className="w-3.5 h-3.5 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Ref code (MRT-XXXX), client phone, service, date, time slot, notes, and direct CRM link.
+                        </p>
+                      </div>
+
+                      {/* Orders */}
+                      <div
+                        className={`p-4 rounded-xl border transition-all ${
+                          telegramForm.telegramNotifyOrders
+                            ? 'bg-amber-950/20 border-amber-500/50 text-white'
+                            : 'bg-[#12141c] border-zinc-800 text-zinc-500 opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <span className="font-semibold text-xs text-white block">Shop Orders</span>
+                            <span className="text-[11px] text-zinc-400">Aftercare &amp; Merchandise</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setTelegramForm({ ...telegramForm, telegramNotifyOrders: !telegramForm.telegramNotifyOrders })}
+                            className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                              telegramForm.telegramNotifyOrders ? 'bg-amber-600 justify-end' : 'bg-zinc-700 justify-start'
+                            }`}
+                          >
+                            <div className="w-3.5 h-3.5 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Order No (ORD-XXXX), item list, delivery method &amp; address, client phone, and total in UGX.
+                        </p>
+                      </div>
+
+                      {/* Payments */}
+                      <div
+                        className={`p-4 rounded-xl border transition-all ${
+                          telegramForm.telegramNotifyPayments
+                            ? 'bg-emerald-950/20 border-emerald-500/50 text-white'
+                            : 'bg-[#12141c] border-zinc-800 text-zinc-500 opacity-60'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <span className="font-semibold text-xs text-white block">Payment Confirmations</span>
+                            <span className="text-[11px] text-zinc-400">MoMo &amp; Card Verification</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setTelegramForm({ ...telegramForm, telegramNotifyPayments: !telegramForm.telegramNotifyPayments })}
+                            className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                              telegramForm.telegramNotifyPayments ? 'bg-emerald-600 justify-end' : 'bg-zinc-700 justify-start'
+                            }`}
+                          >
+                            <div className="w-3.5 h-3.5 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                          Instant notification when customer completes payment via MTN, Airtel, or Card gateway.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Bot Credentials & Admin Chat IDs */}
+                  <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm">
+                    <div className="text-xs font-semibold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Key className="w-4 h-4 text-red-400" />
+                        <span>2. Bot Token &amp; Admin Chat ID</span>
+                      </div>
+                      <span className="text-[11px] text-zinc-500">Live Telegram Bot API Credentials</span>
+                    </div>
+
+                    <div className="space-y-4">
+                      {/* Bot Token Input */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-xs text-zinc-300 font-medium">
+                            Telegram Bot Token
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setShowBotToken(!showBotToken)}
+                            className="text-[11px] text-zinc-400 hover:text-white flex items-center gap-1 cursor-pointer font-mono"
+                          >
+                            {showBotToken ? (
+                              <>
+                                <EyeOff className="w-3 h-3" />
+                                <span>Hide Token</span>
+                              </>
+                            ) : (
+                              <>
+                                <Eye className="w-3 h-3" />
+                                <span>Reveal Token</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <input
+                          type={showBotToken ? 'text' : 'password'}
+                          value={telegramForm.telegramBotToken}
+                          onChange={(e) => setTelegramForm({ ...telegramForm, telegramBotToken: e.target.value })}
+                          placeholder={telegramConfig?.maskedBotToken || 'e.g. 7123456789:AAH...'}
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                        <p className="text-[11px] text-zinc-500 mt-1">
+                          Generated via <a href="https://t.me/BotFather" target="_blank" rel="noreferrer" className="text-gold underline">@BotFather</a> when creating or managing your Telegram bot.
+                        </p>
+                      </div>
+
+                      {/* Admin Chat ID Input */}
+                      <div>
+                        <label className="block text-xs text-zinc-300 font-medium mb-1.5">
+                          Admin Chat ID / Channel ID / Group ID
+                        </label>
+                        <input
+                          type="text"
+                          value={telegramForm.telegramChatId}
+                          onChange={(e) => setTelegramForm({ ...telegramForm, telegramChatId: e.target.value })}
+                          placeholder="e.g. 123456789 or -100123456789 (comma-separate for multiple)"
+                          className="w-full px-3.5 py-2.5 bg-[#12141c] border border-zinc-700/80 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-zinc-600"
+                        />
+                        <p className="text-[11px] text-zinc-500 mt-1">
+                          Numeric ID of the Telegram user or group receiving alerts. Supports comma-separated IDs (e.g. <code className="text-zinc-400 font-mono">123456, 987654</code>) so multiple studio team members receive notifications simultaneously.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Test Connection Button */}
+                    <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-[11px] text-zinc-400">
+                        Sends an immediate test notification to verify that the bot token and chat ID are functional.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleTestTelegramConnection}
+                        disabled={testingTelegramConn || !telegramForm.telegramBotToken}
+                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border border-zinc-700 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        {testingTelegramConn ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-gold" />
+                            <span>Connecting to Telegram...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-3.5 h-3.5 text-blue-400" />
+                            <span>Test Telegram Connection</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Save Button */}
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      type="submit"
+                      disabled={savingTelegramConfig}
+                      className="py-2.5 px-6 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-red-950/40 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>{savingTelegramConfig ? 'Saving...' : 'Save & Deploy Telegram Settings'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
             {/* ================= SECTION 5: ADMIN SECURITY & MASTER PASSWORD ================= */}
             {settingsSubTab === 'security' && (
               <div className="p-5 bg-[#181a24] border border-zinc-800 rounded-xl space-y-4 shadow-sm max-w-4xl">
@@ -5487,7 +5913,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 onClick={() =>
                   openWhatsApp(
                     inspectOrder.clientPhone,
-                    `Hello ${inspectOrder.clientName}! This is Marvin Tattoos Atelier regarding Order #${inspectOrder.orderNumber}. Your items are prepared.`
+                    `Hello ${inspectOrder.clientName}! This is Marvin Tattoo Studio regarding Order #${inspectOrder.orderNumber}. Your items are prepared.`
                   )
                 }
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
@@ -6923,7 +7349,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     onClick={() =>
                       openWhatsApp(
                         inspectUser.phone,
-                        `Hello ${inspectUser.name}! This is Marvin Tattoos Atelier.`
+                        `Hello ${inspectUser.name}! This is Marvin Tattoo Studio.`
                       )
                     }
                     className="p-1.5 text-emerald-400 hover:text-emerald-300 bg-emerald-500/15 rounded-lg border border-emerald-500/30 transition-colors"

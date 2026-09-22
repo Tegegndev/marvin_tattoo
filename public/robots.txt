@@ -1,0 +1,28 @@
+# Robots.txt for Marvin Tattoo Studio (https://marvintattoos.com)
+User-agent: *
+Allow: /
+Disallow: /#admin
+Disallow: /admin
+Disallow: /api/
+
+# Explicitly allow AI Answer Engines & Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# XML Sitemap
+Sitemap: https://marvintattoos.com/sitemap.xml

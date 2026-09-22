@@ -26,6 +26,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const cached = localStorage.getItem(SETTINGS_STORAGE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
+          if (parsed.metaTitle && parsed.metaTitle.includes('Piercing Atelier')) {
+            parsed.metaTitle = 'Marvin Tattoo Studio | Kampala, Uganda';
+          }
+          if (parsed.studioName && (parsed.studioName.includes('Piercing') || parsed.studioName === 'Marvin Tattoos Atelier')) {
+            parsed.studioName = 'Marvin Tattoo Studio';
+          }
           const merged = { ...DEFAULT_SITE_SETTINGS, ...parsed };
           if (!merged.socialLinks || merged.socialLinks.length === 0) {
             merged.socialLinks = DEFAULT_SITE_SETTINGS.socialLinks;
@@ -43,7 +49,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Apply document title and SEO meta tags when settings change
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      const pageTitle = settings.metaTitle?.trim() || settings.studioName?.trim() || 'Marvin Tattoo Studio';
+      let pageTitle = settings.metaTitle?.trim() || settings.studioName?.trim() || 'Marvin Tattoo Studio';
+      if (pageTitle.includes('Piercing Atelier')) {
+        pageTitle = 'Marvin Tattoo Studio | Kampala, Uganda';
+      }
       document.title = pageTitle;
 
       // Update meta description
@@ -92,6 +101,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setLoading(true);
       const data = await fetchSiteSettings();
       if (data && data.studioName) {
+        if (data.metaTitle && data.metaTitle.includes('Piercing Atelier')) {
+          data.metaTitle = 'Marvin Tattoo Studio | Kampala, Uganda';
+        }
+        if (data.studioName && (data.studioName.includes('Piercing') || data.studioName === 'Marvin Tattoos Atelier')) {
+          data.studioName = 'Marvin Tattoo Studio';
+        }
         const merged: SiteSettingData = {
           ...DEFAULT_SITE_SETTINGS,
           ...data,
@@ -112,6 +127,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const saveSettings = useCallback(async (payload: Partial<SiteSettingData>): Promise<SiteSettingData> => {
     const updated = await adminUpdateSettings(payload);
+    if (updated.metaTitle && updated.metaTitle.includes('Piercing Atelier')) {
+      updated.metaTitle = 'Marvin Tattoo Studio | Kampala, Uganda';
+    }
+    if (updated.studioName && (updated.studioName.includes('Piercing') || updated.studioName === 'Marvin Tattoos Atelier')) {
+      updated.studioName = 'Marvin Tattoo Studio';
+    }
     const merged: SiteSettingData = {
       ...DEFAULT_SITE_SETTINGS,
       ...updated,

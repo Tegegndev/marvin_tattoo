@@ -65,7 +65,12 @@ export interface MarzPayCollectionResult {
 /**
  * Helper to make authenticated requests to MarzPay Merchant API
  */
-async function callMarzPayApi(endpoint: string, method: string = "GET", body?: any): Promise<any> {
+async function callMarzPayApi(
+  endpoint: string,
+  method = "GET",
+  body?: any,
+  retries = 1
+): Promise<any> {
   const config = await getResolvedPaymentConfig();
   const base = (config.marzpay.apiBase || env.MARZPAY_API_BASE).replace(/\/+$/, "");
   const url = `${base}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
@@ -85,30 +90,45 @@ async function callMarzPayApi(endpoint: string, method: string = "GET", body?: a
   const options: RequestInit = {
     method,
     headers,
-    signal: AbortSignal.timeout(15000),
+    signal: AbortSignal.timeout(25000),
   };
 
   if (body) {
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(url, options);
-  const data = (await response.json().catch(() => null)) as any;
+  try {
+    const response = await fetch(url, options);
+    const data = (await response.json().catch(() => null)) as any;
 
-  if (!response.ok) {
-    const errorMsg =
-      data?.message ||
-      data?.error ||
-      data?.description ||
-      (typeof data === "string" ? data : `MarzPay API request failed with status ${response.status}`);
-    console.error(`[MarzPay API Error] ${method} ${url}:`, errorMsg, data);
-    const err: any = new Error(errorMsg);
-    err.status = response.status;
-    err.raw = data;
+    if (!response.ok) {
+      const errorMsg =
+        data?.message ||
+        data?.error ||
+        data?.description ||
+        (typeof data === "string" ? data : `MarzPay API request failed with status ${response.status}`);
+      console.error(`[MarzPay API Error] ${method} ${url}:`, errorMsg, data);
+      const err: any = new Error(errorMsg);
+      err.status = response.status;
+      err.raw = data;
+      throw err;
+    }
+
+    return data;
+  } catch (err: any) {
+    const isTimeout =
+      err?.name === "TimeoutError" ||
+      err?.code === "UND_ERR_CONNECT_TIMEOUT" ||
+      err?.cause?.code === "UND_ERR_CONNECT_TIMEOUT" ||
+      err?.message?.includes("fetch failed") ||
+      err?.message?.includes("timeout");
+
+    if (isTimeout && retries > 0) {
+      console.warn(`⚠️ [MarzPay API] Connection timed out connecting to ${url}. Automatically retrying...`);
+      return callMarzPayApi(endpoint, method, body, retries - 1);
+    }
     throw err;
   }
-
-  return data;
 }
 
 /**
@@ -241,9 +261,9 @@ export async function getCollectionStatus(
   try {
     let apiRes: any = null;
     try {
-      apiRes = await callMarzPayApi(`/collect-money/${referenceOrUuid}`, "GET");
-    } catch {
       apiRes = await callMarzPayApi(`/transactions?reference=${encodeURIComponent(referenceOrUuid)}`, "GET");
+    } catch {
+      apiRes = await callMarzPayApi(`/transactions/${referenceOrUuid}`, "GET");
     }
 
     let tx: any = null;
@@ -253,10 +273,15 @@ export async function getCollectionStatus(
       tx = apiRes.data.transaction;
       coll = apiRes.data.collection || {};
     } else if (Array.isArray(apiRes.data?.transactions)) {
-      // STRICT FILTER: Match ONLY the transaction matching our referenceOrUuid
-      tx = apiRes.data.transactions.find(
-        (t: any) => t.reference === referenceOrUuid || t.uuid === referenceOrUuid
-      );
+      // Prefer credit transaction (customer payment collection), fallback to reference match
+      tx =
+        apiRes.data.transactions.find(
+          (t: any) => (t.type === "credit" || !t.type) && (t.reference === referenceOrUuid || t.uuid === referenceOrUuid)
+        ) ||
+        apiRes.data.transactions.find(
+          (t: any) => t.reference === referenceOrUuid || t.uuid === referenceOrUuid
+        ) ||
+        apiRes.data.transactions[0];
       coll = tx || {};
     } else if (apiRes.transaction) {
       tx = apiRes.transaction;

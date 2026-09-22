@@ -9,7 +9,6 @@ import { productRouter } from "./productRoutes.js";
 import { orderRouter } from "./orderRoutes.js";
 import { paymentRouter } from "./paymentRoutes.js";
 import { userRouter } from "./userRoutes.js";
-import { notificationRouter } from "./notificationRoutes.js";
 import { memberRouter } from "./memberRoutes.js";
 
 export const router = Router();
@@ -35,7 +34,6 @@ router.use("/products", productRouter);
 router.use("/orders", orderRouter);
 router.use("/payments", paymentRouter);
 router.use("/users", userRouter);
-router.use("/notifications", notificationRouter);
 router.use("/members", memberRouter);
 router.use("/team", memberRouter);
 

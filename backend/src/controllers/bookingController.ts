@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../config/database.js';
 import { processAndSaveImage } from '../services/imageService.js';
 import { upsertUserOnAction } from '../services/userService.js';
-import { notifyAdminNewBooking, notifyCustomerBookingReceived } from '../services/whatsappService.js';
+import { notifyTelegramNewBooking } from '../services/telegramService.js';
 import { z } from 'zod';
 
 const bookingSchema = z.object({
@@ -67,30 +67,19 @@ export async function createBooking(req: Request, res: Response): Promise<void> 
       },
     });
 
-    // Send automated WhatsApp alerts in background
-    Promise.allSettled([
-      notifyAdminNewBooking({
-        referenceCode,
-        clientName: validated.clientName,
-        clientPhone: validated.clientPhone,
-        clientEmail: validated.clientEmail,
-        serviceType: validated.serviceType,
-        placement: validated.placement,
-        size: validated.size,
-        preferredDate: validated.preferredDate,
-        timeSlot: validated.timeSlot,
-        notes: validated.notes,
-      }),
-      notifyCustomerBookingReceived({
-        referenceCode,
-        clientName: validated.clientName,
-        clientPhone: validated.clientPhone,
-        serviceType: validated.serviceType,
-        placement: validated.placement,
-        preferredDate: validated.preferredDate,
-        timeSlot: validated.timeSlot,
-      }),
-    ]).catch((err) => console.error('Booking WhatsApp notifications error:', err));
+    // Send automated Telegram alert in background
+    notifyTelegramNewBooking({
+      referenceCode,
+      clientName: validated.clientName,
+      clientPhone: validated.clientPhone,
+      clientEmail: validated.clientEmail,
+      serviceType: validated.serviceType,
+      placement: validated.placement,
+      size: validated.size,
+      preferredDate: validated.preferredDate,
+      timeSlot: validated.timeSlot,
+      notes: validated.notes,
+    }).catch((err) => console.error('Booking Telegram notification error:', err));
 
     const whatsAppMessage = encodeURIComponent(
       `Hello Marvin Tattoo Studio! I have submitted a consultation/booking request.\n\n*Ref Code:* ${referenceCode}\n*Name:* ${validated.clientName}\n*Service:* ${validated.serviceType}\n*Placement:* ${validated.placement}\n*Preferred Date:* ${new Date(validated.preferredDate).toLocaleDateString()}`

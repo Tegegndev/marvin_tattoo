@@ -1,0 +1,29 @@
+{
+  "name": "Marvin Tattoo Studio",
+  "short_name": "Marvin Tattoos",
+  "description": "Kampala's premier custom tattoo studio located at New Pioneer Mall, Burton Street. Dark realism, fine-line micro-detail, solid blackwork, and custom cover-ups with hospital-grade sterilization.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0d12",
+  "theme_color": "#0c0d12",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

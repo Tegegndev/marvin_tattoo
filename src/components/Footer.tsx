@@ -555,42 +555,66 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
                 Quick Navigation
               </div>
               <div className="grid grid-cols-2 gap-1 font-label-caps text-label-caps uppercase text-bone-dim">
-                <button
-                  onClick={() => onNavigate('about')}
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('about');
+                  }}
                   className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   About
-                </button>
-                <button
-                  onClick={() => onNavigate('portfolio')}
+                </a>
+                <a
+                  href="/portfolio"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('portfolio');
+                  }}
                   className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   Portfolio
-                </button>
-                <button
-                  onClick={() => onNavigate('aftercare')}
+                </a>
+                <a
+                  href="/aftercare"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('aftercare');
+                  }}
                   className="text-left hover:text-bone transition-colors py-1 text-gold font-semibold cursor-pointer"
                 >
                   Aftercare
-                </button>
-                <button
-                  onClick={() => onNavigate('equipment')}
+                </a>
+                <a
+                  href="/equipment"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('equipment');
+                  }}
                   className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   Shop
-                </button>
-                <button
-                  onClick={() => onNavigate('location')}
+                </a>
+                <a
+                  href="/location"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('location');
+                  }}
                   className="text-left hover:text-bone transition-colors py-1 cursor-pointer"
                 >
                   Location
-                </button>
-                <button
-                  onClick={() => onNavigate('track-order')}
+                </a>
+                <a
+                  href="/track-order"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('track-order');
+                  }}
                   className="text-left hover:text-crimson-light transition-colors py-1 font-semibold cursor-pointer"
                 >
                   Track Order
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -602,21 +626,56 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onTrackOrder }) => {
             © {new Date().getFullYear()} {(settings.studioName || 'MARVIN TATTOO STUDIO').toUpperCase()} (@MARVINTATTOOS256). ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 font-label-caps text-label-caps uppercase text-bone-dim">
-            <button onClick={() => onNavigate('track-order')} className="hover:text-crimson-light text-bone font-semibold transition-colors cursor-pointer">
+            <a
+              href="/track-order"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate('track-order');
+              }}
+              className="hover:text-crimson-light text-bone font-semibold transition-colors cursor-pointer"
+            >
               Track Order
-            </button>
-            <button onClick={() => onNavigate('aftercare')} className="hover:text-bone text-gold font-semibold transition-colors cursor-pointer">
+            </a>
+            <a
+              href="/aftercare"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate('aftercare');
+              }}
+              className="hover:text-bone text-gold font-semibold transition-colors cursor-pointer"
+            >
               Aftercare Guide
-            </button>
-            <button onClick={() => onNavigate('location')} className="hover:text-bone transition-colors cursor-pointer">
+            </a>
+            <a
+              href="/location"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate('location');
+              }}
+              className="hover:text-bone transition-colors cursor-pointer"
+            >
               Studio Location
-            </button>
-            <button onClick={() => onNavigate('about')} className="hover:text-bone transition-colors cursor-pointer">
+            </a>
+            <a
+              href="/about"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate('about');
+              }}
+              className="hover:text-bone transition-colors cursor-pointer"
+            >
               Hygiene Standards
-            </button>
-            <button onClick={() => onNavigate('booking')} className="hover:text-bone transition-colors cursor-pointer">
+            </a>
+            <a
+              href="/booking"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate('booking');
+              }}
+              className="hover:text-bone transition-colors cursor-pointer"
+            >
               Book Terms
-            </button>
+            </a>
           </div>
         </div>
       </div>

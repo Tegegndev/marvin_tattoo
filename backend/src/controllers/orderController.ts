@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database.js';
 import { upsertUserOnAction } from '../services/userService.js';
-import { notifyAdminNewOrder, notifyCustomerOrderReceived } from '../services/whatsappService.js';
+import { notifyTelegramNewOrder } from '../services/telegramService.js';
 import { z } from 'zod';
 import { getResolvedPaymentConfig } from '../services/paymentConfigService.js';
 
@@ -194,27 +194,17 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       .map((i) => `• ${i.quantity}x ${i.product.name} (UGX ${i.unitPrice.toLocaleString()})`)
       .join('\n');
 
-    // Send automated WhatsApp alerts in background
-    Promise.allSettled([
-      notifyAdminNewOrder({
-        orderNumber,
-        clientName: validated.clientName,
-        clientPhone: validated.clientPhone,
-        totalAmount: calculatedTotal,
-        deliveryMethod: validated.deliveryMethod,
-        deliveryAddress: validated.deliveryAddress,
-        paymentMethod: resolvedPaymentMethod,
-        itemsText: itemsSummary,
-      }),
-      notifyCustomerOrderReceived({
-        orderNumber,
-        clientName: validated.clientName,
-        clientPhone: validated.clientPhone,
-        totalAmount: calculatedTotal,
-        deliveryMethod: validated.deliveryMethod,
-        itemsText: itemsSummary,
-      }),
-    ]).catch((err) => console.error('Order WhatsApp notifications error:', err));
+    // Send automated Telegram alert in background
+    notifyTelegramNewOrder({
+      orderNumber,
+      clientName: validated.clientName,
+      clientPhone: validated.clientPhone,
+      totalAmount: calculatedTotal,
+      deliveryMethod: validated.deliveryMethod,
+      deliveryAddress: validated.deliveryAddress,
+      paymentMethod: resolvedPaymentMethod,
+      itemsText: itemsSummary,
+    }).catch((err) => console.error('Order Telegram notification error:', err));
 
     const whatsAppMessage = encodeURIComponent(
       `Hello Marvin Tattoo Studio! I have placed an aftercare / shop order.\n\n*Order No:* ${orderNumber}\n*Client:* ${validated.clientName}\n*Phone:* ${validated.clientPhone}\n*Delivery:* ${validated.deliveryMethod}\n*Payment:* ${validated.paymentMethod}\n*Total:* UGX ${calculatedTotal.toLocaleString()}\n\n*Items:*\n${itemsSummary}`

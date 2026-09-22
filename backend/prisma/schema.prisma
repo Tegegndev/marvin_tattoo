@@ -4,7 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.0.x", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "rhel-openssl-1.1.x", "rhel-openssl-3.0.x"]
 }
 
 // 1. Studio Admin
@@ -173,9 +174,9 @@ model Testimonial {
 // 9. Dynamic Site Configuration & Studio Settings (Singleton)
 model SiteSetting {
   id                 String   @id @default("studio_config") // Singleton primary key
-  studioName         String   @default("Marvin Tattoos & Piercing Atelier")
+  studioName         String   @default("Marvin Tattoo Studio")
   heroStatement      String   @default("Clean Lines. Heavy Blackwork. Made to Age Well.")
-  heroSubtext        String   @default("Kampala's premier sanctuary for bespoke dark realism, clinical titanium piercings, and aesthetic PMU. 14+ years of master craft.") @db.Text
+  heroSubtext        String   @default("Kampala's premier sanctuary for bespoke dark realism, clean fine-line, and custom body art. 14+ years of master craft.") @db.Text
   heroBannerUrl      String   @default("/images/hero-banner.png")
   heroPortraitUrl    String?  @default("/images/marvin-founder.png")
   heroOpacity        Float    @default(0.45) // 0.0 to 1.0 overlay opacity
@@ -189,7 +190,7 @@ model SiteSetting {
   openingHours       String   @db.Text // JSON string of opening hours array
   socialLinks        String   @db.Text // JSON string of social media links array
   logoUrl            String?  @default("/logo.svg")
-  metaTitle          String?  @default("Marvin Tattoos & Piercing Atelier | Kampala, Uganda")
+  metaTitle          String?  @default("Marvin Tattoo Studio | Kampala, Uganda")
   metaDescription    String?  @db.Text
   ogImageUrl         String?
   // Payment Methods & Gateway Controls
@@ -204,6 +205,13 @@ model SiteSetting {
   flwPublicKey       String?  @db.Text
   flwSecretKey       String?  @db.Text
   paystackSecretKey  String?  @db.Text
+  // Telegram Bot Notifications
+  telegramEnabled        Boolean  @default(false)
+  telegramBotToken       String?  @db.Text
+  telegramChatId         String?  @db.Text
+  telegramNotifyBookings Boolean  @default(true)
+  telegramNotifyOrders   Boolean  @default(true)
+  telegramNotifyPayments Boolean  @default(true)
   updatedAt          DateTime @updatedAt
 }
 

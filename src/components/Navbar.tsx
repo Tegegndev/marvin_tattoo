@@ -85,8 +85,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       <div className="h-16 sm:h-20 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Logo */}
-        <button
-          onClick={() => {
+        <a
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
             onNavigate('home');
             setMobileMenuOpen(false);
           }}
@@ -98,16 +100,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="h-9 sm:h-11 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             src={formatImageUrl(settings.logoUrl || LOGO_URL)}
           />
-        </button>
+        </a>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 bg-noir-900/80 p-1 rounded border border-noir-700/50">
           {navLinks.map((link) => {
             const isActive = currentPage === link.id || (link.id === 'services' && currentPage === 'service-detail');
+            const hrefPath = link.id === 'home' ? '/' : `/${link.id}`;
             return (
-              <button
+              <a
                 key={link.id}
-                onClick={() => onNavigate(link.id)}
+                href={hrefPath}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate(link.id);
+                }}
                 className={`relative px-4 py-2 font-label-caps text-xs uppercase tracking-widest transition-colors duration-200 ${
                   isActive
                     ? 'text-bone font-bold'
@@ -124,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="relative z-10 flex items-center">
                   {link.label}
                 </span>
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -156,8 +163,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Book Appointment CTA (Responsive: icon-only on <360px, "Book" on 360-640px, "Book Session" on >=640px) */}
-          <button
-            onClick={() => {
+          <a
+            href="/booking"
+            onClick={(e) => {
+              e.preventDefault();
               onNavigate('booking');
               setMobileMenuOpen(false);
             }}
@@ -167,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Icons8 name="calendar-check" size={14} />
             <span className="hidden sm:inline">Book Session</span>
             <span className="hidden min-[360px]:inline sm:hidden">Book</span>
-          </button>
+          </a>
 
           {/* Mobile Menu Toggle */}
           <button
@@ -204,10 +213,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               {navLinks.map((link) => {
                 const isActive = currentPage === link.id || (link.id === 'services' && currentPage === 'service-detail');
+                const hrefPath = link.id === 'home' ? '/' : `/${link.id}`;
                 return (
-                  <button
+                  <a
                     key={link.id}
-                    onClick={() => {
+                    href={hrefPath}
+                    onClick={(e) => {
+                      e.preventDefault();
                       onNavigate(link.id);
                       setMobileMenuOpen(false);
                     }}
@@ -221,7 +233,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {isActive && (
                       <span className="text-xs text-slate-300">●</span>
                     )}
-                  </button>
+                  </a>
                 );
               })}
 

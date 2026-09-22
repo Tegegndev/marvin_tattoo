@@ -5,3 +5,5 @@ dev.db
 dev.db-journal
 uploads/*
 !uploads/.gitkeep
+*.zip
+prisma-engines/

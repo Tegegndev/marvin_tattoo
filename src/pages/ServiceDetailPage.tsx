@@ -241,7 +241,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4 p-3 bg-noir-950/85 backdrop-blur-md border border-noir-800 flex items-center justify-between text-xs">
-                <span className="font-label-caps uppercase text-bone-dim">Marvin Tattoos Atelier</span>
+                <span className="font-label-caps uppercase text-bone-dim">Marvin Tattoo Studio</span>
                 <span className="font-label-data uppercase text-crimson-light font-bold">{currentService.title}</span>
               </div>
             </div>

@@ -88,6 +88,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [addedItemIds, setAddedItemIds] = useState<string[]>([]);
   const [selectedPortfolioCategory, setSelectedPortfolioCategory] = useState<string>('all');
   const [selectedServiceCategory, setSelectedServiceCategory] = useState<string>('ALL');
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const handleProductAdd = (prod: ProductItem) => {
@@ -983,6 +984,143 @@ export const HomePage: React.FC<HomePageProps> = ({
                 >
                   <Icons8 name="whatsapp" size={16} className="text-emerald-400" />
                   <span>Chat With Marvin on WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 07. STUDIO FAQS & AT A GLANCE (AEO & AI SEARCH OPTIMIZED) */}
+      <section id="faq-section" className="w-full py-20 px-4 md:px-8 lg:px-12 bg-noir-950 border-b border-noir-700/40">
+        <div className="max-w-7xl mx-auto space-y-12">
+          {/* Section Header */}
+          <div className="space-y-3 max-w-3xl">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-crimson" />
+              <span className="font-label-caps text-xs uppercase text-crimson-light tracking-[0.25em] font-bold">
+                CLARITY &amp; PROTOCOLS
+              </span>
+            </div>
+            <h2 className="font-headline-xl text-3xl sm:text-4xl text-bone uppercase font-bold tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="font-body-md text-sm sm:text-base text-bone-muted leading-relaxed">
+              Clear answers to essential questions regarding custom tattoo sessions, pricing, hospital-grade hygiene, and aftercare at Marvin Tattoo Studio.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Left Column: Interactive Q&A Accordion (7 Cols) */}
+            <div className="lg:col-span-7 space-y-3">
+              {[
+                {
+                  q: "Where is Marvin Tattoo Studio located in Kampala?",
+                  a: "Marvin Tattoo Studio is located on Level 5, Shop No. Pi55, New Pioneer Mall on Burton Street in central Kampala, Uganda. The studio features private suites with lift access and secure parking.",
+                },
+                {
+                  q: "How much does a custom tattoo cost at Marvin Tattoo Studio?",
+                  a: "Pricing starts from UGX 100,000 for minimalist fine-line pieces and small custom flash. Half-day sittings range between UGX 450,000 - 750,000, and full-day sessions (for realism sleeves or backpieces) start from UGX 1,000,000 - 1,500,000+. Transparent quotes are provided during your design consultation.",
+                },
+                {
+                  q: "Do you accept walk-ins, or do I need to book an appointment?",
+                  a: "Walk-ins are welcomed Monday through Saturday starting at 10:45 AM for small flash designs, lettering, and consultations. For large-scale dark realism portraits, custom sleeves, and cover-ups, advance booking is required so Marvin can prepare your custom design.",
+                },
+                {
+                  q: "What sterilization and hygiene protocols do you use?",
+                  a: "We practice hospital-grade aseptic hygiene: 100% single-use tri-beveled surgical needles opened in front of you, certified medical barrier wrapping on all machinery, multi-stage autoclave sterilization for stainless grips, and premium international non-toxic inks.",
+                },
+                {
+                  q: "Can you cover up or rework an old, faded tattoo?",
+                  a: "Yes. Marvin specializes in dark blackwork transformations and cover-ups. We assess the old ink's saturation and your skin anatomy to craft a bold new piece that completely conceals the previous work with crisp, clean longevity.",
+                },
+                {
+                  q: "How should I care for my tattoo during the healing process?",
+                  a: "Keep the sterile wrap on for the instructed time, gently cleanse 2–3 times daily with lukewarm water and unscented antibacterial soap, pat dry with clean paper towels, and apply a thin layer of aftercare balm. Avoid swimming, gyms, and sun exposure for 2–3 weeks.",
+                },
+              ].map((faq, index) => {
+                const isOpen = openFaqIndex === index;
+                return (
+                  <div
+                    key={index}
+                    className="border border-noir-800 bg-noir-900 overflow-hidden transition-colors"
+                  >
+                    <button
+                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                      className="w-full p-5 text-left flex items-center justify-between gap-4 font-label-caps text-xs sm:text-sm uppercase tracking-wider text-bone hover:text-white font-bold transition-colors cursor-pointer"
+                    >
+                      <span>{faq.q}</span>
+                      <span className="text-crimson-light shrink-0 text-base">
+                        {isOpen ? '−' : '+'}
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-5 pt-1 border-t border-noir-800 text-xs sm:text-sm font-body-sm text-bone-muted leading-relaxed">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Right Column: Studio At A Glance Fact Card (5 Cols) */}
+            <div className="lg:col-span-5 bg-noir-900 border border-noir-700/80 p-6 sm:p-8 space-y-6">
+              <div className="space-y-2 border-b border-noir-800 pb-5">
+                <span className="font-label-caps text-[10px] uppercase text-gold tracking-widest font-bold block">
+                  CANONICAL ENTITY SUMMARY
+                </span>
+                <h3 className="font-headline-sm text-xl text-bone uppercase font-bold">
+                  Marvin Tattoo Studio At a Glance
+                </h3>
+                <p className="font-body-sm text-xs text-bone-muted">
+                  Verified reference data for visitors and AI answer engines.
+                </p>
+              </div>
+
+              <dl className="space-y-3.5 text-xs font-label-data">
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Founder / Artist</dt>
+                  <dd className="text-bone font-bold text-right">Marvin (14+ Yrs Experience)</dd>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Established</dt>
+                  <dd className="text-bone font-bold text-right">2014</dd>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Core Disciplines</dt>
+                  <dd className="text-bone font-bold text-right">Dark Realism, Fine-Line, Cover-ups</dd>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Location</dt>
+                  <dd className="text-bone font-bold text-right">Level 5, Shop No. Pi55, New Pioneer Mall, Burton St, Kampala</dd>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Hygiene Standard</dt>
+                  <dd className="text-emerald-400 font-bold text-right">Hospital-Grade Autoclave Sterilization</dd>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Phone / WhatsApp</dt>
+                  <dd className="text-crimson-light font-bold text-right">+256 705 748774</dd>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <dt className="text-bone-muted uppercase shrink-0">Accepted Payments</dt>
+                  <dd className="text-bone font-bold text-right">Cash, MTN MoMo, Airtel Money, Cards</dd>
+                </div>
+              </dl>
+
+              <div className="pt-4 border-t border-noir-800 flex flex-col gap-2.5">
+                <button
+                  onClick={() => onNavigate('aftercare')}
+                  className="w-full py-2.5 bg-noir-800 hover:bg-noir-750 text-bone text-xs font-label-caps uppercase tracking-wider transition-colors text-center border border-noir-700"
+                >
+                  View Aftercare Healing Guide
+                </button>
+                <button
+                  onClick={() => onNavigate('location')}
+                  className="w-full py-2.5 bg-noir-800 hover:bg-noir-750 text-bone text-xs font-label-caps uppercase tracking-wider transition-colors text-center border border-noir-700"
+                >
+                  View Studio Location &amp; Directions
                 </button>
               </div>
             </div>
