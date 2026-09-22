@@ -14,7 +14,7 @@ export const env = {
   PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY || "",
   STUDIO_WHATSAPP: process.env.STUDIO_WHATSAPP || "+256705748774",
   ADMIN_NOTIFICATION_PHONE: process.env.ADMIN_NOTIFICATION_PHONE || "256705748774",
-  IMAGE_BUCKET_URL: process.env.IMAGE_BUCKET_URL || "https://images.tegegn.com.et",
+  IMAGE_BUCKET_URL: process.env.IMAGE_BUCKET_URL || "https://images.marvintattoos256.com",
   IMAGE_BUCKET_API_KEY: process.env.IMAGE_BUCKET_API_KEY || "",
   MARZPAY_API_BASE: process.env.MARZPAY_API_BASE || "https://wallet.wearemarz.com/api/v1",
   MARZPAY_API_KEY: process.env.MARZPAY_API_KEY || "",

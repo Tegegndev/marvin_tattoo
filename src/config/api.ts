@@ -10,27 +10,27 @@ export const API_BASE_URL: string = (
   ""
 ).replace(/\/+$/, "");
 
-export const CDN_BASE_URL: string = "https://images.tegegn.com.et";
+export const CDN_BASE_URL: string = "https://images.marvintattoos256.com";
 
 export const PLACEHOLDERS = {
-  hero: "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
-  avatar: "https://images.tegegn.com.et/uploads/team/1789826344_marvin-founder_b2cc1a27311c8a00.png",
-  portfolio: "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
+  hero: "https://images.marvintattoos256.com/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
+  avatar: "https://images.marvintattoos256.com/uploads/team/1789826344_marvin-founder_b2cc1a27311c8a00.png",
+  portfolio: "https://images.marvintattoos256.com/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
   product: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?auto=format&fit=crop&w=600&q=80",
-  service: "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
+  service: "https://images.marvintattoos256.com/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
 };
 
 const LEGACY_IMAGE_MAP: Record<string, string> = {
-  "/images/hero-banner.png": "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
-  "/images/hero.webp": "https://images.tegegn.com.et/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
-  "/images/marvin-founder.png": "https://images.tegegn.com.et/uploads/team/1789826344_marvin-founder_b2cc1a27311c8a00.png",
-  "/images/portfolio/script-abdul-collarbone.png": "https://images.tegegn.com.et/uploads/portfolio/1789826346_script-abdul-collarbone_e1ab970708f4d4a5.png",
-  "/images/portfolio/cosmetic-eyebrow-pmu.png": "https://images.tegegn.com.et/uploads/portfolio/1789826347_cosmetic-eyebrow-pmu_ef2585dee08a45cf.png",
-  "/images/portfolio/back-portrait-man.png": "https://images.tegegn.com.et/uploads/portfolio/1789826349_back-portrait-man_54b71acab7c9cecf.png",
-  "/images/portfolio/portrait-elder-woman.png": "https://images.tegegn.com.et/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
-  "/images/portfolio/spider-navel-piercing.png": "https://images.tegegn.com.et/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
-  "/logo.png": "https://images.tegegn.com.et/uploads/branding/1789826352_logo_93aae80f6e7e2507.png",
-  "/logo-black.png": "https://images.tegegn.com.et/uploads/branding/1789826353_logo-black_2c9e69789b595c45.png",
+  "/images/hero-banner.png": "https://images.marvintattoos256.com/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
+  "/images/hero.webp": "https://images.marvintattoos256.com/uploads/shop/1789826343_hero-banner_e85bc2ae224b5ab6.png",
+  "/images/marvin-founder.png": "https://images.marvintattoos256.com/uploads/team/1789826344_marvin-founder_b2cc1a27311c8a00.png",
+  "/images/portfolio/script-abdul-collarbone.png": "https://images.marvintattoos256.com/uploads/portfolio/1789826346_script-abdul-collarbone_e1ab970708f4d4a5.png",
+  "/images/portfolio/cosmetic-eyebrow-pmu.png": "https://images.marvintattoos256.com/uploads/portfolio/1789826347_cosmetic-eyebrow-pmu_ef2585dee08a45cf.png",
+  "/images/portfolio/back-portrait-man.png": "https://images.marvintattoos256.com/uploads/portfolio/1789826349_back-portrait-man_54b71acab7c9cecf.png",
+  "/images/portfolio/portrait-elder-woman.png": "https://images.marvintattoos256.com/uploads/portfolio/1789826350_portrait-elder-woman_e2c751d34cb83dd2.png",
+  "/images/portfolio/spider-navel-piercing.png": "https://images.marvintattoos256.com/uploads/portfolio/1789826351_spider-navel-piercing_119a9a950efa3f23.png",
+  "/logo.png": "https://images.marvintattoos256.com/uploads/branding/1789826352_logo_93aae80f6e7e2507.png",
+  "/logo-black.png": "https://images.marvintattoos256.com/uploads/branding/1789826353_logo-black_2c9e69789b595c45.png",
 };
 
 /**
@@ -52,7 +52,12 @@ export function formatImageUrl(
     return fallback;
   }
 
-  const trimmed = url.trim();
+  let trimmed = url.trim();
+
+  // Seamlessly rewrite legacy image bucket URLs to new domain
+  if (trimmed.includes("images.tegegn.com.et")) {
+    trimmed = trimmed.replace("images.tegegn.com.et", "images.marvintattoos256.com");
+  }
 
   // 1. Check direct legacy mapping
   if (LEGACY_IMAGE_MAP[trimmed]) {
